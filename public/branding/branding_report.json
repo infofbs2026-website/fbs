@@ -1,0 +1,233 @@
+[
+  {
+    "page": 1,
+    "text": "Brand Guidlins",
+    "images": [
+      {
+        "name": "page_1_asset_1_20.png",
+        "path": "public\\branding\\page_1_asset_1_20.png",
+        "width": 1897,
+        "height": 981,
+        "ext": "png"
+      },
+      {
+        "name": "page_1_asset_2_21.png",
+        "path": "public\\branding\\page_1_asset_2_21.png",
+        "width": 1731,
+        "height": 284,
+        "ext": "png"
+      },
+      {
+        "name": "page_1_asset_3_22.png",
+        "path": "public\\branding\\page_1_asset_3_22.png",
+        "width": 1750,
+        "height": 634,
+        "ext": "png"
+      },
+      {
+        "name": "page_1_asset_4_23.png",
+        "path": "public\\branding\\page_1_asset_4_23.png",
+        "width": 1024,
+        "height": 1536,
+        "ext": "png"
+      },
+      {
+        "name": "page_1_asset_5_143.jpeg",
+        "path": "public\\branding\\page_1_asset_5_143.jpeg",
+        "width": 736,
+        "height": 1308,
+        "ext": "jpeg"
+      },
+      {
+        "name": "page_1_asset_6_146.png",
+        "path": "public\\branding\\page_1_asset_6_146.png",
+        "width": 1728,
+        "height": 972,
+        "ext": "png"
+      }
+    ],
+    "render": "public\\branding\\page_1_full.png"
+  },
+  {
+    "page": 2,
+    "text": "براند سعودي يعمل كمنصة رقمية منظمة لعرضFBS | فارس بن سعود للوحات المميزة\nلوحات المركبات المميزة، إضافة إلى تقديم خدمات وساطة مرنة ومنظمة في سوق\n.اللوحات، سواء للوحات المعروضة عبر منصاتنا أو لوحات يتم االتفاق عليها خارجها\nنوفّر بيئة عرض احترافية، مع إدارة التحقق، تنظيم التواصل بين اĠͱطراف، وضمان إتمام\n.اĠͺجراءات إلكترونيًا عبر القنوات الرسمية، دون امتالك اللوحات أو بيعها بشكل مباشر\nنظرة عامة على البراند",
+    "images": [
+      {
+        "name": "page_2_asset_1_29.png",
+        "path": "public\\branding\\page_2_asset_1_29.png",
+        "width": 1024,
+        "height": 1536,
+        "ext": "png"
+      },
+      {
+        "name": "page_2_asset_2_158.png",
+        "path": "public\\branding\\page_2_asset_2_158.png",
+        "width": 1728,
+        "height": 972,
+        "ext": "png"
+      },
+      {
+        "name": "page_2_asset_3_161.jpeg",
+        "path": "public\\branding\\page_2_asset_3_161.jpeg",
+        "width": 736,
+        "height": 1308,
+        "ext": "jpeg"
+      }
+    ],
+    "render": "public\\branding\\page_2_full.png"
+  },
+  {
+    "page": 3,
+    "text": "#1A2541\n#1E2A5E\n#D9B87F\n#D0AD67\nمخطط االوان",
+    "images": [
+      {
+        "name": "page_3_asset_1_34.png",
+        "path": "public\\branding\\page_3_asset_1_34.png",
+        "width": 1024,
+        "height": 1536,
+        "ext": "png"
+      },
+      {
+        "name": "page_3_asset_2_37.png",
+        "path": "public\\branding\\page_3_asset_2_37.png",
+        "width": 2251,
+        "height": 2251,
+        "ext": "png"
+      },
+      {
+        "name": "page_3_asset_3_172.jpeg",
+        "path": "public\\branding\\page_3_asset_3_172.jpeg",
+        "width": 736,
+        "height": 1308,
+        "ext": "jpeg"
+      },
+      {
+        "name": "page_3_asset_4_177.png",
+        "path": "public\\branding\\page_3_asset_4_177.png",
+        "width": 1728,
+        "height": 972,
+        "ext": "png"
+      }
+    ],
+    "render": "public\\branding\\page_3_full.png"
+  },
+  {
+    "page": 4,
+    "text": "تدرج االوان",
+    "images": [
+      {
+        "name": "page_4_asset_1_47.png",
+        "path": "public\\branding\\page_4_asset_1_47.png",
+        "width": 1024,
+        "height": 1536,
+        "ext": "png"
+      },
+      {
+        "name": "page_4_asset_2_48.png",
+        "path": "public\\branding\\page_4_asset_2_48.png",
+        "width": 1810,
+        "height": 2808,
+        "ext": "png"
+      },
+      {
+        "name": "page_4_asset_3_197.png",
+        "path": "public\\branding\\page_4_asset_3_197.png",
+        "width": 1728,
+        "height": 972,
+        "ext": "png"
+      },
+      {
+        "name": "page_4_asset_4_200.jpeg",
+        "path": "public\\branding\\page_4_asset_4_200.jpeg",
+        "width": 736,
+        "height": 1308,
+        "ext": "jpeg"
+      }
+    ],
+    "render": "public\\branding\\page_4_full.png"
+  },
+  {
+    "page": 5,
+    "text": "F\n الخطوطFonts -\nالخط العربي\nMyriad Arabic\nEnglish Font\nNorwester",
+    "images": [
+      {
+        "name": "page_5_asset_1_54.png",
+        "path": "public\\branding\\page_5_asset_1_54.png",
+        "width": 1024,
+        "height": 1536,
+        "ext": "png"
+      },
+      {
+        "name": "page_5_asset_2_210.png",
+        "path": "public\\branding\\page_5_asset_2_210.png",
+        "width": 1728,
+        "height": 972,
+        "ext": "png"
+      },
+      {
+        "name": "page_5_asset_3_213.jpeg",
+        "path": "public\\branding\\page_5_asset_3_213.jpeg",
+        "width": 736,
+        "height": 1308,
+        "ext": "jpeg"
+      }
+    ],
+    "render": "public\\branding\\page_5_full.png"
+  },
+  {
+    "page": 6,
+    "text": "Business card sample",
+    "images": [
+      {
+        "name": "page_6_asset_1_61.png",
+        "path": "public\\branding\\page_6_asset_1_61.png",
+        "width": 1024,
+        "height": 1536,
+        "ext": "png"
+      },
+      {
+        "name": "page_6_asset_2_228.png",
+        "path": "public\\branding\\page_6_asset_2_228.png",
+        "width": 1728,
+        "height": 972,
+        "ext": "png"
+      },
+      {
+        "name": "page_6_asset_3_231.jpeg",
+        "path": "public\\branding\\page_6_asset_3_231.jpeg",
+        "width": 736,
+        "height": 1308,
+        "ext": "jpeg"
+      }
+    ],
+    "render": "public\\branding\\page_6_full.png"
+  },
+  {
+    "page": 7,
+    "text": ".نق<ّ ر وقتكم ونتطلع إلى فرصة التعاون معكم \nشكرًا لكم",
+    "images": [
+      {
+        "name": "page_7_asset_1_67.png",
+        "path": "public\\branding\\page_7_asset_1_67.png",
+        "width": 1024,
+        "height": 1536,
+        "ext": "png"
+      },
+      {
+        "name": "page_7_asset_2_241.png",
+        "path": "public\\branding\\page_7_asset_2_241.png",
+        "width": 1728,
+        "height": 972,
+        "ext": "png"
+      },
+      {
+        "name": "page_7_asset_3_244.jpeg",
+        "path": "public\\branding\\page_7_asset_3_244.jpeg",
+        "width": 736,
+        "height": 1308,
+        "ext": "jpeg"
+      }
+    ],
+    "render": "public\\branding\\page_7_full.png"
+  }
+]

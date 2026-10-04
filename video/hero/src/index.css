@@ -1,0 +1,8 @@
+@font-face {
+  font-family: "Noto Arabic";
+  src: url("../public/fonts/noto-sans-arabic-arabic-wght-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+}
+
+* { box-sizing: border-box; }

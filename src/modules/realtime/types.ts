@@ -1,0 +1,3 @@
+export type AuctionSnapshot={auctionId:string;status:string;currentBid:string;minimumNextBid:string;sequence:number;version:number;bidCount:number;serverTime:string;effectiveEndAt:string;startAt:string;highestBidderMasked:string|null;termsVersion:string|null};
+export type ConnectionState='CONNECTED'|'RECONNECTING'|'SYNCING'|'DEGRADED';
+export function eventAction(current:{sequence:number;version:number},event:{sequence:number;version:number}):'IGNORE'|'APPLY'|'RESYNC'{if(event.version<=current.version)return 'IGNORE';if(event.sequence<current.sequence||event.sequence>current.sequence+1||event.version>current.version+1)return 'RESYNC';return 'APPLY';}

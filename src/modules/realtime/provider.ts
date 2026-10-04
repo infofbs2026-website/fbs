@@ -1,0 +1,8 @@
+import 'server-only';
+import { Rest } from 'ably';
+import { Redis } from '@upstash/redis';
+import { DomainError } from '@/lib/errors';
+import type { AuctionSnapshot } from './types';
+export interface RealtimeProvider{publish(auctionId:string,event:string,snapshot:AuctionSnapshot):Promise<void>;createChannelToken(auctionId:string):Promise<unknown>;}
+export function realtimeProvider():RealtimeProvider{const key=process.env.ABLY_API_KEY;if(!key)throw new DomainError('SYSTEM_DEGRADED',undefined,{},503);const client=new Rest({key});return {async publish(id,event,snapshot){const {auctionId,status,currentBid,minimumNextBid,sequence,version,bidCount,serverTime,effectiveEndAt,startAt,highestBidderMasked,termsVersion}=snapshot;await client.channels.get(`auction:${id}`).publish(event,{auctionId,status,currentBid,minimumNextBid,sequence,version,bidCount,serverTime,effectiveEndAt,startAt,highestBidderMasked,termsVersion});},async createChannelToken(id){return client.auth.createTokenRequest({ttl:60000,capability:JSON.stringify({[`auction:${id}`]:['subscribe']})});}};}
+export async function projectToRedis(snapshot:AuctionSnapshot){const url=process.env.UPSTASH_REDIS_REST_URL,token=process.env.UPSTASH_REDIS_REST_TOKEN;if(!url||!token)throw new DomainError('SYSTEM_DEGRADED',undefined,{},503);const redis=new Redis({url,token});await redis.eval("local old=redis.call('HGET',KEYS[1],'version'); if old and tonumber(old)>=tonumber(ARGV[1]) then return 0 end; redis.call('HSET',KEYS[1],'version',ARGV[1],'payload',ARGV[2]); redis.call('EXPIRE',KEYS[1],86400); return 1",[`auction:${snapshot.auctionId}:state`],[snapshot.version,JSON.stringify(snapshot)]);}

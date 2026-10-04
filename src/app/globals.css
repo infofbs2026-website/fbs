@@ -1,0 +1,486 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/noto-sans-arabic';
+
+@font-face {
+  font-family: 'Norwester';
+  src: url('/fonts/norwester.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme inline {
+  --color-navy: #1a2541;
+  --color-navy-deep: #101728;
+  --color-navy-surface: #1e2a5e;
+  --color-navy-card: #1e2a5e;
+  --color-navy-light: #283770;
+  --color-gold: #d9b87f;
+  --color-gold-light: #faebd0;
+  --color-gold-accent: #d0ad67;
+  --color-gold-dark: #b69248;
+  --color-paper: #f8fafc;
+  --color-subtle: #f1f5f9;
+  --color-muted: #64748b;
+  --color-line: #e2e8f0;
+  --font-sans: 'Myriad Arabic', var(--font-ibm-plex-arabic), 'IBM Plex Sans Arabic', 'Noto Sans Arabic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Norwester', 'Myriad Arabic', var(--font-ibm-plex-arabic), sans-serif;
+  --font-norwester: 'Norwester', sans-serif;
+}
+
+@layer base {
+  * { box-sizing: border-box; }
+  html, body {
+    overflow-x: clip;
+    max-width: 100vw;
+  }
+  body {
+    margin: 0;
+    background-color: var(--color-paper);
+    color: var(--color-navy);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  button, input, select, textarea { font: inherit; }
+  button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+  button:not(:disabled), select { cursor: pointer; }
+  button:disabled { cursor: not-allowed; opacity: .55; }
+  :focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
+  ::selection { background: #d9b87f; color: #1a2541; }
+  input, select, textarea { min-width: 0; }
+  summary { cursor: pointer; }
+}
+
+@layer components {
+  .container-fbs { @apply mx-auto w-full max-w-[1400px] px-5 sm:px-8 xl:px-10; }
+
+  .btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2.5 rounded-xl px-6 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-[0.98];
+  }
+
+  .btn-gold {
+    background: linear-gradient(135deg, #faebd0 0%, #d9b87f 50%, #d0ad67 100%);
+    color: #1a2541;
+    border: 1px solid rgba(217, 184, 127, 0.7);
+    box-shadow: 0 2px 10px rgba(217, 184, 127, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  }
+  .btn-gold:hover {
+    background: linear-gradient(135deg, #ffffff 0%, #e8ca95 50%, #d9b87f 100%);
+    border-color: #d9b87f;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(217, 184, 127, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  }
+
+  .btn-navy {
+    background-color: #1a2541;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  .btn-navy:hover {
+    background-color: #1e2a5e;
+    color: #ffffff;
+    border-color: rgba(217, 184, 127, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(26, 37, 65, 0.25);
+  }
+
+  .btn-outline {
+    @apply border border-line bg-white text-navy transition-all;
+  }
+  .btn-outline:hover {
+    @apply border-gold/60 bg-slate-50 text-navy;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .btn-outline-gold {
+    border: 1px solid rgba(217, 184, 127, 0.4);
+    background: rgba(217, 184, 127, 0.08);
+    color: #faebd0;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    transition: all 0.2s ease;
+  }
+  .btn-outline-gold:hover {
+    border-color: #d9b87f;
+    background: rgba(217, 184, 127, 0.18);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(217, 184, 127, 0.2);
+  }
+
+  .field {
+    @apply w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm text-navy transition-all placeholder:text-muted/60 focus:border-gold focus:ring-1 focus:ring-gold;
+  }
+  .label { @apply mb-2 block text-xs font-bold uppercase tracking-wider text-slate-700; }
+  .eyebrow { @apply mb-3 flex items-center gap-2 text-xs font-semibold tracking-wider; }
+  .section-title { @apply text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl text-navy; }
+  .section-subtitle { @apply mt-3 max-w-2xl text-sm leading-relaxed text-muted sm:text-base; }
+
+  .panel {
+    @apply rounded-2xl border border-line bg-white p-6 shadow-xs;
+  }
+
+  .luxury-card {
+    background: rgba(255, 255, 255, 0.88);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(226, 232, 240, 0.85);
+    border-radius: 1.25rem;
+    box-shadow:
+      0 10px 30px -5px rgba(26, 37, 65, 0.06),
+      0 2px 6px -1px rgba(0, 0, 0, 0.03),
+      inset 0 1px 1px rgba(255, 255, 255, 1);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .luxury-card:hover {
+    border-color: rgba(217, 184, 127, 0.6);
+    box-shadow:
+      0 20px 45px -8px rgba(26, 37, 65, 0.12),
+      0 0 24px rgba(217, 184, 127, 0.18),
+      inset 0 1px 1px rgba(255, 255, 255, 1);
+    transform: translateY(-3px);
+  }
+
+  .filter-sidebar-card {
+    transform: none !important;
+  }
+  .filter-sidebar-card:hover {
+    transform: none !important;
+    border-color: rgba(217, 184, 127, 0.4);
+    box-shadow: 0 15px 35px -5px rgba(26, 37, 65, 0.1), 0 0 16px rgba(217, 184, 127, 0.1);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.35);
+    border-radius: 9999px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(217, 184, 127, 0.7);
+  }
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+  }
+
+  .table-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .table-scrollbar::-webkit-scrollbar-track {
+    background: #f8fafc;
+  }
+  .table-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(12, 22, 45, 0.25);
+    border-radius: 9999px;
+  }
+  .table-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(12, 22, 45, 0.6);
+  }
+  .table-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(12, 22, 45, 0.25) #f8fafc;
+  }
+
+  /* Apple Vision Pro Glassmorphism */
+  .glass-vision {
+    background: rgba(14, 21, 38, 0.65);
+    -webkit-backdrop-filter: blur(32px) saturate(190%);
+    backdrop-filter: blur(32px) saturate(190%);
+    border: 1px solid rgba(217, 184, 127, 0.25);
+    box-shadow: 
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.2),
+      0 24px 60px -12px rgba(0, 0, 0, 0.65);
+    border-radius: 1.5rem;
+    position: relative;
+  }
+
+  .glass-vision-card {
+    background: rgba(20, 29, 56, 0.55);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(217, 184, 127, 0.2);
+    box-shadow: 
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
+      0 16px 36px -8px rgba(0, 0, 0, 0.5);
+    border-radius: 1.25rem;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .glass-vision-card:hover {
+    border-color: rgba(217, 184, 127, 0.5);
+    background: rgba(24, 35, 68, 0.7);
+    transform: translateY(-3px);
+    box-shadow: 
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.25),
+      0 24px 48px -10px rgba(0, 0, 0, 0.6),
+      0 0 24px rgba(217, 184, 127, 0.2);
+  }
+
+  .luxury-card-dark {
+    background: linear-gradient(145deg, rgba(20, 29, 56, 0.75) 0%, rgba(14, 21, 38, 0.9) 100%);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(217, 184, 127, 0.25);
+    border-radius: 1.5rem;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .luxury-card-dark:hover {
+    border-color: rgba(217, 184, 127, 0.55);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25), 0 25px 50px -10px rgba(0, 0, 0, 0.6);
+    transform: translateY(-2px);
+  }
+}
+
+.font-norwester {
+  font-family: 'Norwester', 'Oswald', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+/* Custom Gradients & Shadows */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #fcedcd 0%, #d9b87f 50%, #b88f47 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Pure Procedural CSS Luxury Atmosphere with Vibrant Ambient Beams */
+.hero-luxury-ambient {
+  background-color: #050813;
+  background-image:
+    radial-gradient(ellipse 800px 600px at 75% 25%, rgba(217, 184, 127, 0.32) 0%, rgba(208, 173, 103, 0.14) 35%, transparent 70%),
+    radial-gradient(ellipse 900px 700px at 15% 75%, rgba(37, 99, 235, 0.42) 0%, rgba(30, 58, 138, 0.22) 40%, transparent 75%),
+    radial-gradient(ellipse 700px 450px at 50% 0%, rgba(250, 235, 208, 0.28) 0%, rgba(217, 184, 127, 0.1) 45%, transparent 70%),
+    linear-gradient(rgba(217, 184, 127, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(217, 184, 127, 0.07) 1px, transparent 1px),
+    linear-gradient(180deg, #050813 0%, #0c152a 50%, #050813 100%);
+  background-size:
+    auto,
+    auto,
+    auto,
+    52px 52px,
+    52px 52px,
+    auto;
+  background-repeat:
+    no-repeat,
+    no-repeat,
+    no-repeat,
+    repeat,
+    repeat,
+    no-repeat;
+}
+
+/* Neomorphic Recessed Display Tray for Plates */
+.plate-tray-recessed {
+  background: linear-gradient(180deg, #f0f3f8 0%, #e5e9f2 100%);
+  box-shadow:
+    inset 0 3px 8px rgba(15, 23, 42, 0.09),
+    inset 0 1px 3px rgba(15, 23, 42, 0.06),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.plate-tray-recessed-dark {
+  background: linear-gradient(180deg, rgba(10, 15, 28, 0.8) 0%, rgba(16, 24, 44, 0.6) 100%);
+  box-shadow:
+    inset 0 3px 8px rgba(0, 0, 0, 0.5),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================================== */
+/* TRUE SKEUOMORPHIC SAUDI VEHICLE PLATE STYLING                  */
+/* ============================================================== */
+
+/* Authentic stamped metal aluminum plate */
+.plate-skeuomorphic {
+  background: linear-gradient(145deg, #ffffff 0%, #fbfbfa 35%, #f1efe9 70%, #dedbd2 100%);
+  box-shadow:
+    0 24px 50px -10px rgba(10, 16, 30, 0.45),
+    0 8px 20px -4px rgba(0, 0, 0, 0.22),
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 3px 0 rgba(0, 0, 0, 0.25);
+  position: relative;
+  border-radius: 1rem;
+  border: 1px solid rgba(203, 213, 225, 0.9);
+}
+
+.plate-skeuomorphic-dark {
+  background: linear-gradient(145deg, #ffffff 0%, #f7f6f2 40%, #e9e7e0 75%, #d8d5cb 100%);
+  box-shadow:
+    0 30px 65px -12px rgba(0, 0, 0, 0.7),
+    0 10px 24px -4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 3px 0 rgba(0, 0, 0, 0.3);
+  position: relative;
+  border-radius: 1rem;
+  border: 1px solid rgba(203, 213, 225, 0.9);
+}
+
+/* Die-embossed stamped plate characters with top light and drop shadow */
+.plate-char-emboss {
+  color: #0b0f19;
+  text-shadow:
+    0 1.5px 0.5px rgba(255, 255, 255, 0.95),
+    0 -1px 0.5px rgba(0, 0, 0, 0.9),
+    1px 2px 3px rgba(0, 0, 0, 0.35);
+  letter-spacing: 0.12em;
+}
+
+/* Chrome mounting bolt with specular highlight and socket */
+.plate-bolt {
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #e2e8f0 25%, #94a3b8 60%, #475569 85%, #1e293b 100%);
+  box-shadow:
+    0 2px 4px -1px rgba(0, 0, 0, 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1.5px rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.85);
+  position: absolute;
+  border-radius: 9999px;
+  z-index: 20;
+}
+
+/* Laser hologram security seal on KSA stripe */
+@keyframes hologram-shimmer {
+  0% { filter: hue-rotate(0deg); opacity: 0.85; }
+  50% { filter: hue-rotate(180deg); opacity: 0.95; }
+  100% { filter: hue-rotate(360deg); opacity: 0.85; }
+}
+
+.plate-hologram {
+  background: linear-gradient(135deg, #d9b87f 0%, #34d399 25%, #60a5fa 50%, #f472b6 75%, #d9b87f 100%);
+  background-size: 200% 200%;
+  animation: hologram-shimmer 8s linear infinite;
+  box-shadow:
+    inset 0 0 2px rgba(255, 255, 255, 0.85),
+    0 1px 2px rgba(0, 0, 0, 0.25);
+  border-radius: 9999px;
+}
+
+/* Micro animations */
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.15); }
+}
+
+.animate-pulse-live {
+  animation: pulse-live 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes plate-fade-in {
+  from {
+    opacity: 0.2;
+    transform: scale(0.97) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-plate-switch {
+  animation: plate-fade-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes gold-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-badge {
+  background: linear-gradient(90deg, rgba(217,184,127,0.15) 0%, rgba(217,184,127,0.35) 50%, rgba(217,184,127,0.15) 100%);
+  background-size: 200% 100%;
+  animation: gold-shimmer 3.5s ease-in-out infinite;
+}
+
+/* Transport (نقل) Royal Blue Security Stripe */
+.plate-transport-stripe {
+  background: linear-gradient(180deg, #005a9e 0%, #006ebc 35%, #007bc9 65%, #005699 100%);
+  box-shadow:
+    inset 1px 0 1px rgba(255, 255, 255, 0.4),
+    inset -1px 0 2px rgba(0, 0, 0, 0.45);
+}
+
+/* White Die-Embossed Characters on Transport Stripe */
+.plate-transport-char-emboss {
+  color: #ffffff;
+  text-shadow:
+    0 1.5px 2px rgba(0, 0, 0, 0.8),
+    0 -0.5px 0.5px rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.12em;
+}
+
+/* Official Saudi Transport Triangle Indicator (مثلث النقل الرسمي المعتمد) */
+.plate-transport-triangle {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 9px solid #ffffff;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6));
+}
+
+@keyframes shimmer-wave {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+  background-color: #e2e8f0;
+}
+
+.skeleton-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.75) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer-wave 1.6s infinite ease-in-out;
+}
+
+.skeleton-shimmer-dark {
+  position: relative;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+.skeleton-shimmer-dark::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(217, 184, 127, 0.25) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer-wave 1.6s infinite ease-in-out;
+}
+
+@media(prefers-reduced-motion:reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+

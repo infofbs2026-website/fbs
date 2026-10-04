@@ -1,0 +1,8 @@
+node_modules
+.next
+tmp
+package-lock.json
+docs/PRD.md
+test-results
+playwright-report
+supabase

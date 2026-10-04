@@ -1,0 +1,16 @@
+node_modules/
+.next/
+.env*
+!.env.example
+tmp/
+test-results/
+playwright-report/
+*.tsbuildinfo
+*.log
+.vercel/
+out/
+dist/
+
+# Sensitive or large private files
+*سجل تجاري*
+
