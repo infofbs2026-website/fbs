@@ -44,12 +44,9 @@ export function HomeWhyFbs() {
               <span className="tracking-wide">لماذا فارس بن سعود؟</span>
             </div>
 
-            {/* Commanding Luxury Headline - Single Line */}
-            <h2 className="text-2xl font-black tracking-tight sm:text-3xl lg:text-[1.95rem] xl:text-[2.25rem] leading-tight text-navy">
-              <span>التميّز خيارك.</span>{' '}
-              <span className="bg-gradient-to-r from-[#976a26] via-[#cb9b48] to-[#976a26] bg-clip-text text-transparent drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)] whitespace-nowrap">
-                والثقة هي ضماننا.
-              </span>
+            {/* Commanding Luxury Headline - Unified Single Color */}
+            <h2 className="text-2xl font-black tracking-tight sm:text-3xl lg:text-[1.95rem] xl:text-[2.25rem] leading-tight text-navy-deep">
+              التميّز خيارك، والثقة هي ضماننا.
             </h2>
 
             {/* Subtitle Paragraph */}

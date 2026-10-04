@@ -45,12 +45,9 @@ export function HomeLiveAuctions({ liveAuctions }: HomeLiveAuctionsProps) {
                 <span className="tracking-wide">منافسة حية ومباشرة الآن</span>
               </div>
 
-              {/* Commanding Luxury Headline */}
-              <h2 className="text-3xl font-black tracking-tight text-navy sm:text-4xl lg:text-[2.65rem] leading-tight">
-                <span>المزادات</span>{' '}
-                <span className="bg-gradient-to-r from-[#976a26] via-[#cb9b48] to-[#976a26] bg-clip-text text-transparent drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]">
-                  المباشرة الحية
-                </span>
+              {/* Commanding Luxury Headline - Unified Single Color */}
+              <h2 className="text-3xl font-black tracking-tight text-navy-deep sm:text-4xl lg:text-[2.65rem] leading-tight">
+                المزادات المباشرة الحية
               </h2>
 
               <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-slate-600 font-medium">

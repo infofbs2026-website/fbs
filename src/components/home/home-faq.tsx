@@ -114,10 +114,7 @@ export function HomeFaq() {
               <span className="tracking-wide">مركز المعرفة والشفافية</span>
             </div>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-navy-deep tracking-tight">
-              الأسئلة{' '}
-              <span className="bg-gradient-to-r from-[#976a26] via-[#cb9b48] to-[#976a26] bg-clip-text text-transparent">
-                الشائعة والمساعدة
-              </span>
+              الأسئلة الشائعة والمساعدة
             </h2>
             <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed font-medium">
               إجابات تفصيلية ودقيقة لكافة الجوانب التشغيلية، من آليات المزايدة والتفويض البنكي إلى التوثيق ونقل الملكية

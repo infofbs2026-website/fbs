@@ -50,9 +50,13 @@ export default async function Home() {
   const market = await getMarketplace({ pageSize: 12 });
   const displayPlates = market.plates.length > 0 ? market.plates : fallbackPlates;
   const liveAuctions = displayPlates.filter((p) => p.auction?.status === 'LIVE');
-  const endingSoonAuctions = displayPlates.filter(
-    (p) => p.auction && (p.auction.status === 'LIVE' || p.auction.status === 'REGISTRATION_OPEN')
+  const endingSoonCandidates = displayPlates.filter(
+    (p) => p.auction && (p.auction.status === 'LIVE' || p.auction.status === 'REGISTRATION_OPEN' || p.auction.status === 'SCHEDULED')
   );
+  const carouselAuctions =
+    endingSoonCandidates.length >= 4
+      ? endingSoonCandidates
+      : displayPlates.filter((p) => p.auction || p.priceHalalas).slice(0, 8);
 
   return (
     <>
@@ -68,7 +72,7 @@ export default async function Home() {
       {/* BELOW THE FOLD SECTIONS: LAZY-HYDRATED, ZERO HERO COMPETITION  */}
       {/* ============================================================== */}
       <HomeLiveAuctions liveAuctions={liveAuctions} />
-      <HomeEndingSoon endingSoonAuctions={endingSoonAuctions} />
+      <HomeEndingSoon endingSoonAuctions={carouselAuctions} />
       <HomeStats />
       <HomeHowItWorks />
       <HomeWhyFbs />
