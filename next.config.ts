@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 const config: NextConfig = {
   poweredByHeader: false,
+  allowedDevOrigins: ['127.0.0.1', 'localhost', '192.168.1.14'],
   async headers() {
     return [{source: '/:path*', headers: [
       {key:'X-Content-Type-Options',value:'nosniff'},
