@@ -26,6 +26,7 @@ import { SarSymbol } from '@/components/sar-symbol';
 import { getMarketplace } from '@/modules/marketplace/service';
 import type { MarketplacePlate } from '@/modules/marketplace/types';
 import { fallbackPlates } from '@/modules/marketplace/mock-data';
+import { ScrollReveal, StaggerGrid, CountUp, HeroAtmosphere } from '@/components/home-motion';
 
 /* Bespoke SVG for listing a new plate (Authentic plate frame with plus badge) */
 function SvgPlatePlus({ className = 'w-5 h-5' }: { className?: string }) {
@@ -85,90 +86,93 @@ export default async function Home() {
       {/* 1. HERO SECTION: LUXURY AUTOMOTIVE PRESTIGE                     */}
       {/* ============================================================== */}
       <section className="hero-luxury-ambient relative border-b border-[#d9b87f]/25 text-white pt-20 sm:pt-24 lg:pt-28 pb-16 sm:pb-20 lg:pb-24">
-        {/* Ambient Procedural Lighting & Mathematical Automotive Contours */}
-        <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
-          {/* Subtle Ambient Radial Golden Glow */}
-          <div className="absolute -top-24 start-1/2 -translate-x-1/2 h-[500px] w-[850px] rounded-full bg-gradient-to-b from-gold/15 via-gold/5 to-transparent blur-[120px]" />
+        {/* Living Luxury Aurora Atmosphere & Coordinate Beams */}
+        <HeroAtmosphere />
 
-          {/* Precision Aerospace & Automotive Contour Lines */}
-          <svg className="absolute inset-0 w-full h-full opacity-[0.06]" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1440 800" aria-hidden="true">
-            <path d="M-100 420 C 350 200, 850 650, 1540 260" fill="none" stroke="#d9b87f" strokeWidth="1.5" />
-            <path d="M-100 500 C 450 280, 950 720, 1540 340" fill="none" stroke="#d9b87f" strokeWidth="1" strokeDasharray="6 8" />
-          </svg>
-        </div>
-
-        {/* Top/Middle Hero Grid: Left Content & Right Showcase Card (Lifted up by 3vh, keeping total hero height & search bar position constant) */}
+        {/* Top/Middle Hero Grid: Left Content & Right Showcase Card */}
         <div className="container-fbs relative z-10 grid items-start gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:gap-12 xl:gap-16 pt-[2vh] pb-[3vh]">
           <div className="pt-0 flex flex-col justify-between h-full">
             <div>
-              {/* Prestige Eyebrow Badge - Expanded Padding & Top Aligned */}
-              <div className="inline-flex items-center gap-3 rounded-full border border-gold/40 bg-[#121a2d]/90 px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-gold-light backdrop-blur-xl shadow-lg shadow-gold/5">
-                <span className="h-2.5 w-2.5 rounded-full bg-gold animate-pulse-live shadow-[0_0_8px_#d9b87f] shrink-0" />
-                <span className="tracking-wide">المزاد الرسمي الأول للوحات النخبة في المملكة العربية السعودية</span>
-              </div>
+              {/* Prestige Eyebrow Badge */}
+              <ScrollReveal direction="up" delay={40}>
+                <div className="inline-flex items-center gap-3 rounded-full border border-gold/40 bg-[#121a2d]/90 px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-gold-light backdrop-blur-xl shadow-lg shadow-gold/5">
+                  <span className="h-2.5 w-2.5 rounded-full bg-gold animate-pulse-live shadow-[0_0_8px_#d9b87f] shrink-0" />
+                  <span className="tracking-wide">المزاد الرسمي الأول للوحات النخبة في المملكة العربية السعودية</span>
+                </div>
+              </ScrollReveal>
 
-              {/* Commanding Luxury Headline - Enlarged to Fill Visual Area */}
-              <h1 className="mt-6 max-w-2xl text-4xl font-black leading-[1.18] sm:text-5xl lg:text-[3.5rem] xl:text-[3.85rem] tracking-tight">
-                لوحتك الاستثنائية
-                <br />
-                <span className="gold-gradient-text">تبدأ من هنا.</span>
-              </h1>
+              {/* Commanding Luxury Headline with Gold Shimmer */}
+              <ScrollReveal direction="up" delay={100}>
+                <h1 className="mt-6 max-w-2xl text-4xl font-black leading-[1.18] sm:text-5xl lg:text-[3.5rem] xl:text-[3.85rem] tracking-tight">
+                  لوحتك الاستثنائية
+                  <br />
+                  <span className="gold-gradient-text">تبدأ من هنا.</span>
+                </h1>
+              </ScrollReveal>
 
-              {/* Rhythmic Spacing for Subtitle Paragraph */}
-              <p className="mt-6 max-w-xl text-base leading-relaxed text-slate-200 sm:text-lg lg:text-xl lg:leading-relaxed">
-                وجهتك المتخصصة لامتلاك وعرض أندر لوحات المركبات السعودية. ننظم المزادات المباشرة بتوثيق معتمد
-                للملكية، وتسوية مالية موثوقة تضمن حقوق الطرفين.
-              </p>
+              {/* Subtitle Paragraph */}
+              <ScrollReveal direction="up" delay={160}>
+                <p className="mt-6 max-w-xl text-base leading-relaxed text-slate-200 sm:text-lg lg:text-xl lg:leading-relaxed">
+                  وجهتك المتخصصة لامتلاك وعرض أندر لوحات المركبات السعودية. ننظم المزادات المباشرة بتوثيق معتمد
+                  للملكية، وتسوية مالية موثوقة تضمن حقوق الطرفين.
+                </p>
+              </ScrollReveal>
             </div>
 
-            {/* CTAs: Expanded Spacing Above Buttons to Match Card Height */}
-            <div className="mt-9 sm:mt-10 lg:mt-11 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-              <Link
-                href="/auctions"
-                className="group btn btn-gold text-sm sm:text-base font-black h-14 sm:h-[58px] w-full sm:w-[280px] lg:w-[295px] justify-center gap-3 shadow-xl transition-all duration-300 hover:shadow-[0_0_25px_rgba(217,184,127,0.45)] hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap px-6"
-              >
-                <Gavel className="w-5 h-5 text-navy shrink-0 transition-transform duration-300 group-hover:-rotate-12" />
-                <span className="whitespace-nowrap">استكشف المزادات الحية</span>
-                <ArrowLeft className="w-4 h-4 text-navy/80 shrink-0 transition-transform duration-300 group-hover:-translate-x-1" />
-              </Link>
-              <Link
-                href="/sell-your-plate"
-                className="group btn btn-outline-gold text-sm sm:text-base font-black h-14 sm:h-[58px] w-full sm:w-[280px] lg:w-[295px] justify-center gap-3 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-gold/50 bg-[#121a2d]/85 text-white hover:border-gold hover:bg-gold/15 whitespace-nowrap px-6"
-              >
-                <SvgPlatePlus className="w-5 h-5 text-gold shrink-0 transition-transform duration-300 group-hover:scale-110" />
-                <span className="whitespace-nowrap">اعرض لوحتك الآن</span>
-                <ArrowUpLeft className="w-4 h-4 text-gold/80 shrink-0 transition-transform duration-300 group-hover:-translate-x-0.5 group-hover:-translate-y-0.5" />
-              </Link>
-            </div>
+            {/* CTAs with Luxury Micro-interactions */}
+            <ScrollReveal direction="up" delay={220}>
+              <div className="mt-9 sm:mt-10 lg:mt-11 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                <Link
+                  href="/auctions"
+                  className="group btn btn-gold text-sm sm:text-base font-black h-14 sm:h-[58px] w-full sm:w-[280px] lg:w-[295px] justify-center gap-3 shadow-xl transition-all duration-300 hover:shadow-[0_0_25px_rgba(217,184,127,0.45)] hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap px-6"
+                >
+                  <Gavel className="w-5 h-5 text-navy shrink-0 transition-transform duration-300 group-hover:-rotate-12" />
+                  <span className="whitespace-nowrap">استكشف المزادات الحية</span>
+                  <ArrowLeft className="w-4 h-4 text-navy/80 shrink-0 transition-transform duration-300 group-hover:-translate-x-1" />
+                </Link>
+                <Link
+                  href="/sell-your-plate"
+                  className="group btn btn-outline-gold text-sm sm:text-base font-black h-14 sm:h-[58px] w-full sm:w-[280px] lg:w-[295px] justify-center gap-3 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-gold/50 bg-[#121a2d]/85 text-white hover:border-gold hover:bg-gold/15 whitespace-nowrap px-6"
+                >
+                  <SvgPlatePlus className="w-5 h-5 text-gold shrink-0 transition-transform duration-300 group-hover:scale-110" />
+                  <span className="whitespace-nowrap">اعرض لوحتك الآن</span>
+                  <ArrowUpLeft className="w-4 h-4 text-gold/80 shrink-0 transition-transform duration-300 group-hover:-translate-x-0.5 group-hover:-translate-y-0.5" />
+                </Link>
+              </div>
+            </ScrollReveal>
 
-            {/* Trust Badges - Spaced & Balanced */}
-            <div className="mt-10 sm:mt-12 flex flex-wrap gap-6 border-t border-white/10 pt-8 text-xs sm:text-sm text-slate-300">
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold/15 text-gold border border-gold/30 shadow-xs">
-                  <ShieldCheck size={19} />
-                </span>
-                <span className="font-semibold text-slate-200">توثيق وفحص الملكية 100%</span>
+            {/* Trust Badges */}
+            <ScrollReveal direction="up" delay={280}>
+              <div className="mt-10 sm:mt-12 flex flex-wrap gap-6 border-t border-white/10 pt-8 text-xs sm:text-sm text-slate-300">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold/15 text-gold border border-gold/30 shadow-xs">
+                    <ShieldCheck size={19} />
+                  </span>
+                  <span className="font-semibold text-slate-200">توثيق وفحص الملكية 100%</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold/15 text-gold border border-gold/30 shadow-xs">
+                    <Gavel size={19} />
+                  </span>
+                  <span className="font-semibold text-slate-200">مزايدة آنية ونظامية</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold/15 text-gold border border-gold/30 shadow-xs">
+                    <Landmark size={19} />
+                  </span>
+                  <span className="font-semibold text-slate-200">حماية بنكية للتأمين</span>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold/15 text-gold border border-gold/30 shadow-xs">
-                  <Gavel size={19} />
-                </span>
-                <span className="font-semibold text-slate-200">مزايدة آنية ونظامية</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold/15 text-gold border border-gold/30 shadow-xs">
-                  <Landmark size={19} />
-                </span>
-                <span className="font-semibold text-slate-200">حماية بنكية للتأمين</span>
-              </div>
-            </div>
+            </ScrollReveal>
           </div>
 
-          {/* Right Hero Showcase: Interactive Live Auction Card with Dynamic Real-Time Bids, Live Countdown & Direct CTA */}
-          <HeroAuctionCard
-            initialPlate={liveAuctions[0] || displayPlates[0]}
-            allLivePlates={liveAuctions.length > 0 ? liveAuctions : displayPlates.filter((p) => p.auction).slice(0, 5)}
-          />
+          {/* Right Hero Showcase: Interactive Live Auction Card */}
+          <ScrollReveal direction="left" delay={140}>
+            <HeroAuctionCard
+              initialPlate={liveAuctions[0] || displayPlates[0]}
+              allLivePlates={liveAuctions.length > 0 ? liveAuctions : displayPlates.filter((p) => p.auction).slice(0, 5)}
+            />
+          </ScrollReveal>
         </div>
       </section>
 
@@ -176,7 +180,9 @@ export default async function Home() {
       {/* 2. CONCIERGE SEARCH SECTION: QUICK FILTER CHIPS & SEARCH       */}
       {/* ============================================================== */}
       <section aria-label="البحث السريع والمتقدم" className="container-fbs relative z-30 -mt-16 sm:-mt-20 lg:-mt-22">
-        <HeroSearchBar />
+        <ScrollReveal direction="up" delay={100}>
+          <HeroSearchBar />
+        </ScrollReveal>
       </section>
 
       {/* ============================================================== */}
@@ -194,61 +200,63 @@ export default async function Home() {
         </div>
 
         <div className="container-fbs relative z-10">
-          <div className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
-            <div>
-              {/* Prestige Live Eyebrow Badge - Unified Luxury Gold/Navy Style */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-gradient-to-r from-gold/20 via-gold/10 to-amber-500/10 px-4.5 py-1.5 text-xs sm:text-sm font-black text-navy-deep backdrop-blur-md shadow-[0_2px_12px_rgba(217,184,127,0.22)] mb-3.5">
-                <Radio size={16} className="text-gold-dark shrink-0" />
-                <span className="tracking-wide">منافسة حية ومباشرة الآن</span>
+          <ScrollReveal direction="up" delay={50}>
+            <div className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+              <div>
+                {/* Prestige Live Eyebrow Badge */}
+                <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-gradient-to-r from-gold/20 via-gold/10 to-amber-500/10 px-4.5 py-1.5 text-xs sm:text-sm font-black text-navy-deep backdrop-blur-md shadow-[0_2px_12px_rgba(217,184,127,0.22)] mb-3.5">
+                  <Radio size={16} className="text-gold-dark shrink-0 animate-pulse" />
+                  <span className="tracking-wide">منافسة حية ومباشرة الآن</span>
+                </div>
+
+                {/* Commanding Luxury Headline */}
+                <h2 className="text-3xl font-black tracking-tight text-navy sm:text-4xl lg:text-[2.65rem] leading-tight">
+                  <span>المزادات</span>{' '}
+                  <span className="bg-gradient-to-r from-[#976a26] via-[#cb9b48] to-[#976a26] bg-clip-text text-transparent drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]">
+                    المباشرة الحية
+                  </span>
+                </h2>
+
+                <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-slate-600 font-medium">
+                  لوحات استثنائية ونادرة تخضع للمزايدة الآن في الوقت الفعلي مع تمديد تلقائي عادل وتوثيق رسمي فوري.
+                </p>
               </div>
 
-              {/* Commanding Luxury Headline */}
-              <h2 className="text-3xl font-black tracking-tight text-navy sm:text-4xl lg:text-[2.65rem] leading-tight">
-                <span>المزادات</span>{' '}
-                <span className="bg-gradient-to-r from-[#976a26] via-[#cb9b48] to-[#976a26] bg-clip-text text-transparent drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]">
-                  المباشرة الحية
+              {/* Header Action Button */}
+              <Link
+                href="/auctions/live"
+                className="group inline-flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white/95 px-5 py-3 text-sm font-black text-navy shadow-sm transition-all duration-300 hover:border-gold hover:shadow-[0_8px_20px_rgba(217,184,127,0.2)] hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <span>جميع المزادات الحية</span>
+                <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-gradient-to-br from-gold/20 via-gold/10 to-transparent text-gold-dark border border-gold/40 transition-transform duration-300 group-hover:-translate-x-1">
+                  <ArrowLeft size={15} />
                 </span>
-              </h2>
-
-              <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-slate-600 font-medium">
-                لوحات استثنائية ونادرة تخضع للمزايدة الآن في الوقت الفعلي مع تمديد تلقائي عادل وتوثيق رسمي فوري.
-              </p>
+              </Link>
             </div>
 
-            {/* Header Action Button */}
-            <Link
-              href="/auctions/live"
-              className="group inline-flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white/95 px-5 py-3 text-sm font-black text-navy shadow-sm transition-all duration-300 hover:border-gold hover:shadow-[0_8px_20px_rgba(217,184,127,0.2)] hover:scale-[1.02] active:scale-[0.98]"
-            >
-              <span>جميع المزادات الحية</span>
-              <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-gradient-to-br from-gold/20 via-gold/10 to-transparent text-gold-dark border border-gold/40 transition-transform duration-300 group-hover:-translate-x-1">
-                <ArrowLeft size={15} />
-              </span>
-            </Link>
-          </div>
+            {/* Live Market Indicators Micro-bar */}
+            <div className="mb-8 flex flex-wrap items-center gap-3 text-xs font-bold text-slate-600">
+              <div className="inline-flex items-center gap-2 rounded-xl bg-white/85 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-slate-800">مزايدة لحظية نشطة</span>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-xl bg-white/85 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
+                <ShieldCheck size={14} className="text-gold-accent" />
+                <span className="text-slate-800">توثيق رسمي مسبق للملكية</span>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-xl bg-white/85 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
+                <Clock size={14} className="text-gold-accent" />
+                <span className="text-slate-800">تمديد تلقائي عادل (Anti-Sniping)</span>
+              </div>
+            </div>
+          </ScrollReveal>
 
-          {/* Live Market Indicators Micro-bar */}
-          <div className="mb-8 flex flex-wrap items-center gap-3 text-xs font-bold text-slate-600">
-            <div className="inline-flex items-center gap-2 rounded-xl bg-white/85 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-slate-800">مزايدة لحظية نشطة</span>
-            </div>
-            <div className="inline-flex items-center gap-2 rounded-xl bg-white/85 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
-              <ShieldCheck size={14} className="text-gold-accent" />
-              <span className="text-slate-800">توثيق رسمي مسبق للملكية</span>
-            </div>
-            <div className="inline-flex items-center gap-2 rounded-xl bg-white/85 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
-              <Clock size={14} className="text-gold-accent" />
-              <span className="text-slate-800">تمديد تلقائي عادل (Anti-Sniping)</span>
-            </div>
-          </div>
-
-          {/* Cards Grid: Direct Competition Live Plates */}
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Cards Grid: Staggered Cascading Reveal */}
+          <StaggerGrid className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" baseDelay={130}>
             {liveAuctions.slice(0, 3).map((plate) => (
               <PlateCard key={plate.id} plate={plate} />
             ))}
-          </div>
+          </StaggerGrid>
         </div>
       </section>
 
@@ -267,61 +275,63 @@ export default async function Home() {
         </div>
 
         <div className="container-fbs relative z-10">
-          <div className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
-            <div>
-              {/* Prestige Eyebrow Badge - Unified Luxury Gold/Navy Style */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-gradient-to-r from-gold/20 via-gold/10 to-amber-500/10 px-4.5 py-1.5 text-xs sm:text-sm font-black text-navy-deep backdrop-blur-md shadow-[0_2px_12px_rgba(217,184,127,0.22)] mb-3.5">
-                <Clock size={16} className="text-gold-dark shrink-0" />
-                <span className="tracking-wide">فرص اللحظات الأخيرة</span>
+          <ScrollReveal direction="up" delay={50}>
+            <div className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+              <div>
+                {/* Prestige Eyebrow Badge */}
+                <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-gradient-to-r from-gold/20 via-gold/10 to-amber-500/10 px-4.5 py-1.5 text-xs sm:text-sm font-black text-navy-deep backdrop-blur-md shadow-[0_2px_12px_rgba(217,184,127,0.22)] mb-3.5">
+                  <Clock size={16} className="text-gold-dark shrink-0" />
+                  <span className="tracking-wide">فرص اللحظات الأخيرة</span>
+                </div>
+
+                {/* Commanding Luxury Headline */}
+                <h2 className="text-3xl font-black tracking-tight text-navy sm:text-4xl lg:text-[2.65rem] leading-tight">
+                  <span>تنتهي قريباً &</span>{' '}
+                  <span className="bg-gradient-to-r from-[#976a26] via-[#cb9b48] to-[#976a26] bg-clip-text text-transparent drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]">
+                    مزادات مرتقبة
+                  </span>
+                </h2>
+
+                <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-slate-600 font-medium">
+                  اغتنم فرصة المزايدة قبل إغلاق الجلسة أو جهز تأمينك البنكي للمزادات الحصرية القادمة.
+                </p>
               </div>
 
-              {/* Commanding Luxury Headline */}
-              <h2 className="text-3xl font-black tracking-tight text-navy sm:text-4xl lg:text-[2.65rem] leading-tight">
-                <span>تنتهي قريباً &</span>{' '}
-                <span className="bg-gradient-to-r from-[#976a26] via-[#cb9b48] to-[#976a26] bg-clip-text text-transparent drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]">
-                  مزادات مرتقبة
+              {/* Header Action Button */}
+              <Link
+                href="/auctions"
+                className="group inline-flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white/95 px-5 py-3 text-sm font-black text-navy shadow-sm transition-all duration-300 hover:border-gold hover:shadow-[0_8px_20px_rgba(217,184,127,0.2)] hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <span>جدول المزادات الكامل</span>
+                <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-gradient-to-br from-gold/20 via-gold/10 to-transparent text-gold-dark border border-gold/40 transition-transform duration-300 group-hover:-translate-x-1">
+                  <ArrowLeft size={15} />
                 </span>
-              </h2>
-
-              <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-slate-600 font-medium">
-                اغتنم فرصة المزايدة قبل إغلاق الجلسة أو جهز تأمينك البنكي للمزادات الحصرية القادمة.
-              </p>
+              </Link>
             </div>
 
-            {/* Header Action Button */}
-            <Link
-              href="/auctions"
-              className="group inline-flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white/95 px-5 py-3 text-sm font-black text-navy shadow-sm transition-all duration-300 hover:border-gold hover:shadow-[0_8px_20px_rgba(217,184,127,0.2)] hover:scale-[1.02] active:scale-[0.98]"
-            >
-              <span>جدول المزادات الكامل</span>
-              <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-gradient-to-br from-gold/20 via-gold/10 to-transparent text-gold-dark border border-gold/40 transition-transform duration-300 group-hover:-translate-x-1">
-                <ArrowLeft size={15} />
-              </span>
-            </Link>
-          </div>
+            {/* Upcoming Market Indicators Micro-bar */}
+            <div className="mb-8 flex flex-wrap items-center gap-3 text-xs font-bold text-slate-600">
+              <div className="inline-flex items-center gap-2 rounded-xl bg-white/85 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
+                <Clock size={14} className="text-amber-600" />
+                <span className="text-slate-800">إغلاق وشيك للجلسات</span>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-xl bg-white/85 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
+                <ShieldCheck size={14} className="text-gold-accent" />
+                <span className="text-slate-800">تفويض بنكي معتمد</span>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-xl bg-white/85 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
+                <BadgeCheck size={14} className="text-gold-accent" />
+                <span className="text-slate-800">لوحات نخبة مؤكدة النشر</span>
+              </div>
+            </div>
+          </ScrollReveal>
 
-          {/* Upcoming Market Indicators Micro-bar */}
-          <div className="mb-8 flex flex-wrap items-center gap-3 text-xs font-bold text-slate-600">
-            <div className="inline-flex items-center gap-2 rounded-xl bg-white/85 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
-              <Clock size={14} className="text-amber-600" />
-              <span className="text-slate-800">إغلاق وشيك للجلسات</span>
-            </div>
-            <div className="inline-flex items-center gap-2 rounded-xl bg-white/85 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
-              <ShieldCheck size={14} className="text-gold-accent" />
-              <span className="text-slate-800">تفويض بنكي معتمد</span>
-            </div>
-            <div className="inline-flex items-center gap-2 rounded-xl bg-white/85 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
-              <BadgeCheck size={14} className="text-gold-accent" />
-              <span className="text-slate-800">لوحات نخبة مؤكدة النشر</span>
-            </div>
-          </div>
-
-          {/* Cards Grid: Direct Competition Live Plates */}
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Cards Grid: Staggered Cascading Reveal */}
+          <StaggerGrid className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" baseDelay={130}>
             {endingSoonAuctions.slice(0, 3).map((plate) => (
               <PlateCard key={plate.id} plate={plate} />
             ))}
-          </div>
+          </StaggerGrid>
         </div>
       </section>
 
@@ -335,19 +345,26 @@ export default async function Home() {
         </div>
 
         <div className="container-fbs relative z-10">
-          <div className="mb-14 text-center">
-            <span className="eyebrow justify-center text-gold">
-              <TrendingUp size={14} />
-              <span>ريادة موثقة في سوق اللوحات</span>
-            </span>
-            <h2 className="text-3xl font-extrabold sm:text-4xl text-white">إحصائيات تمنحك الثقة</h2>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="glass-vision-card p-6 text-center">
-              <span className="block font-norwester text-4xl sm:text-5xl text-gold-light tracking-wide" dir="ltr">
-                +250M
+          <ScrollReveal direction="up" delay={40}>
+            <div className="mb-14 text-center">
+              <span className="eyebrow justify-center text-gold">
+                <TrendingUp size={14} />
+                <span>ريادة موثقة في سوق اللوحات</span>
               </span>
+              <h2 className="text-3xl font-extrabold sm:text-4xl text-white">إحصائيات تمنحك الثقة</h2>
+            </div>
+          </ScrollReveal>
+
+          {/* Animated 60fps Numbers Grid with Cascading Reveal */}
+          <StaggerGrid className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4" baseDelay={100}>
+            <div className="glass-vision-card p-6 text-center hover:scale-[1.03] transition-transform duration-300">
+              <CountUp
+                end={250}
+                prefix="+"
+                suffix="M"
+                duration={1600}
+                className="block font-norwester text-4xl sm:text-5xl text-gold-light tracking-wide drop-shadow-md"
+              />
               <h3 className="mt-2.5 flex items-center justify-center gap-1.5 text-sm font-bold text-slate-200">
                 <span>إجمالي التداولات</span>
                 <SarSymbol className="w-4 h-4 text-gold" />
@@ -355,30 +372,39 @@ export default async function Home() {
               <p className="mt-1 text-xs text-slate-400">صفقات موثقة ومحمية بالكامل</p>
             </div>
 
-            <div className="glass-vision-card p-6 text-center">
-              <span className="block font-norwester text-4xl sm:text-5xl text-gold-light tracking-wide" dir="ltr">
-                100%
-              </span>
+            <div className="glass-vision-card p-6 text-center hover:scale-[1.03] transition-transform duration-300">
+              <CountUp
+                end={100}
+                suffix="%"
+                duration={1400}
+                className="block font-norwester text-4xl sm:text-5xl text-gold-light tracking-wide drop-shadow-md"
+              />
               <h3 className="mt-2.5 text-sm font-bold text-slate-200">توثيق الملكية</h3>
               <p className="mt-1 text-xs text-slate-400">فحص رسمي مسبق لكل استمارة</p>
             </div>
 
-            <div className="glass-vision-card p-6 text-center">
-              <span className="block font-norwester text-4xl sm:text-5xl text-gold-light tracking-wide" dir="ltr">
-                +15,000
-              </span>
+            <div className="glass-vision-card p-6 text-center hover:scale-[1.03] transition-transform duration-300">
+              <CountUp
+                end={15000}
+                prefix="+"
+                duration={1800}
+                className="block font-norwester text-4xl sm:text-5xl text-gold-light tracking-wide drop-shadow-md"
+              />
               <h3 className="mt-2.5 text-sm font-bold text-slate-200">مزايد نشط</h3>
               <p className="mt-1 text-xs text-slate-400">مجتمع مهتم بأندر اللوحات بالمملكة</p>
             </div>
 
-            <div className="glass-vision-card p-6 text-center">
-              <span className="block font-norwester text-4xl sm:text-5xl text-gold-light tracking-wide" dir="ltr">
-                +4,200
-              </span>
+            <div className="glass-vision-card p-6 text-center hover:scale-[1.03] transition-transform duration-300">
+              <CountUp
+                end={4200}
+                prefix="+"
+                duration={1600}
+                className="block font-norwester text-4xl sm:text-5xl text-gold-light tracking-wide drop-shadow-md"
+              />
               <h3 className="mt-2.5 text-sm font-bold text-slate-200">لوحة استثنائية</h3>
               <p className="mt-1 text-xs text-slate-400">تم نقل ملكيتها وتسويتها بنجاح</p>
             </div>
-          </div>
+          </StaggerGrid>
         </div>
       </section>
 
@@ -396,7 +422,7 @@ export default async function Home() {
         </div>
 
         <div className="container-fbs relative z-10">
-          <div className="mb-14 text-center">
+          <ScrollReveal direction="up" className="mb-14 text-center">
             {/* Prestige Eyebrow Badge */}
             <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-gradient-to-r from-gold/20 via-gold/10 to-amber-500/10 px-4.5 py-1.5 text-xs sm:text-sm font-black text-navy-deep backdrop-blur-md shadow-[0_2px_12px_rgba(217,184,127,0.22)] mb-4">
               <ShieldCheck size={16} className="text-gold-dark shrink-0" />
@@ -413,9 +439,9 @@ export default async function Home() {
             <p className="mt-3.5 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed text-slate-600 font-medium">
               خطوات سهلة ومحمية تضمن لك المنافسة الشفافة والتسليم الرسمي المعتمد.
             </p>
-          </div>
+          </ScrollReveal>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <StaggerGrid className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4" baseDelay={100}>
             {steps.map((step) => (
               <div
                 key={step.number}
@@ -458,7 +484,7 @@ export default async function Home() {
                 </div>
               </div>
             ))}
-          </div>
+          </StaggerGrid>
         </div>
       </section>
 
@@ -477,7 +503,7 @@ export default async function Home() {
         </div>
 
         <div className="container-fbs relative z-10 grid gap-10 lg:grid-cols-[1fr_1.26fr] lg:items-stretch xl:gap-14">
-          <div className="flex flex-col justify-between h-full">
+          <ScrollReveal direction="right" delay={80} className="flex flex-col justify-between h-full">
             <div>
               {/* Prestige Eyebrow Badge - Without glowing dot */}
               <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-gradient-to-r from-gold/20 via-gold/10 to-amber-500/10 px-4 py-1.5 text-xs sm:text-sm font-black text-navy-deep backdrop-blur-md shadow-[0_2px_12px_rgba(217,184,127,0.22)] mb-4">
@@ -529,9 +555,9 @@ export default async function Home() {
                 <ArrowLeft size={18} className="text-gold transition-transform duration-300 group-hover:-translate-x-1.5" />
               </Link>
             </div>
-          </div>
+          </ScrollReveal>
 
-          <div className="grid gap-5 sm:grid-cols-2">
+          <StaggerGrid className="grid gap-5 sm:grid-cols-2" baseDelay={90}>
             {[
               {
                 icon: ShieldCheck,
@@ -603,7 +629,7 @@ export default async function Home() {
                 </div>
               );
             })}
-          </div>
+          </StaggerGrid>
         </div>
       </section>
 
@@ -627,7 +653,7 @@ export default async function Home() {
 
         <div className="container-fbs relative z-10">
           {/* Header */}
-          <div className="mb-12 sm:mb-16 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+          <ScrollReveal direction="up" className="mb-12 sm:mb-16 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
             <div className="max-w-2xl">
               {/* Unified Luxury Badge */}
               <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-gradient-to-r from-gold/20 via-gold/10 to-amber-500/10 px-4.5 py-1.5 text-xs sm:text-sm font-black text-navy-deep backdrop-blur-md shadow-[0_2px_12px_rgba(217,184,127,0.22)] mb-3.5">
@@ -651,10 +677,10 @@ export default async function Home() {
               <span>دليل الأسئلة الشامل</span>
               <ArrowLeft size={16} />
             </Link>
-          </div>
+          </ScrollReveal>
 
           {/* Trust Highlights Strip */}
-          <div className="mb-10 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <StaggerGrid className="mb-10 grid grid-cols-1 sm:grid-cols-3 gap-3" baseDelay={80}>
             {[
               { label: 'توثيق 100% عبر النفاذ الوطني وأبشر', desc: 'مطابقة رسمية لجميع المزايدين والملاك' },
               { label: 'حساب ضمان بنكي معتمد Escrow', desc: 'حماية كاملة لأموال المشتري حتى استلام اللوحة' },
@@ -673,10 +699,10 @@ export default async function Home() {
                 </div>
               </div>
             ))}
-          </div>
+          </StaggerGrid>
 
           {/* 10 Comprehensive FAQ Items in 2 Symmetrical Luxury Columns */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5 sm:gap-4.5 items-start">
+          <ScrollReveal direction="up" delay={100} className="grid grid-cols-1 lg:grid-cols-2 gap-3.5 sm:gap-4.5 items-start">
             {/* Column 1: Items 1 to 5 */}
             <div className="space-y-3 sm:space-y-3.5">
               {[
@@ -824,10 +850,10 @@ export default async function Home() {
                 </details>
               ))}
             </div>
-          </div>
+          </ScrollReveal>
 
           {/* Bottom VIP Concierge & Unified Seller Call-To-Action Banner */}
-          <div className="mt-14 sm:mt-20 relative overflow-hidden rounded-3xl border border-gold/40 bg-gradient-to-br from-[#0c1527] via-[#09101f] to-[#040812] p-8 sm:p-12 lg:p-14 text-white shadow-2xl flex flex-col justify-center">
+          <ScrollReveal direction="up" delay={120} className="mt-14 sm:mt-20 relative overflow-hidden rounded-3xl border border-gold/40 bg-gradient-to-br from-[#0c1527] via-[#09101f] to-[#040812] p-8 sm:p-12 lg:p-14 text-white shadow-2xl flex flex-col justify-center">
             {/* Top gold accent line */}
             <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-[#d9b87f]/80 to-transparent pointer-events-none" />
 
@@ -899,7 +925,7 @@ export default async function Home() {
                 </Link>
               </div>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </section>
     </>
