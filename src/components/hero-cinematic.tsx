@@ -156,13 +156,13 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
             autoPlay
             loop
             muted
-            preload="auto"
+            preload="metadata"
             poster="/videos/fbs-hero-poster.webp"
             style={{ objectFit: 'cover', objectPosition: 'center' }}
             className="hero-video-cover pointer-events-none select-none scale-[1.01]"
           >
-            <source src="/videos/fbs-hero-realistic-no-text.mp4" type="video/mp4" />
             <source src="/videos/fbs-hero-realistic-no-text.webm" type="video/webm" />
+            <source src="/videos/fbs-hero-realistic-no-text.mp4" type="video/mp4" />
           </video>
 
           {/* Minimal 1px Golden Horizon Line at the very bottom border */}
