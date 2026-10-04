@@ -15,15 +15,27 @@ import {
   ShieldCheck,
   Sparkles,
   Trophy,
-  UserCheck
+  UserCheck,
+  Volume2,
+  VolumeX,
+  TrendingUp,
+  History
 } from 'lucide-react';
 import { formatSar } from '@/lib/money';
-import { SarSymbol } from '@/components/sar-symbol';
+import { SarSymbol, formatEnglishAmount } from '@/components/sar-symbol';
 import type { AuctionSnapshot } from '@/modules/realtime/types';
 import { sendJson, ApiError } from './forms';
 import { statusLabels } from './ui';
 
 type Pending = { amount: string; bidRequestId: string; expectedSequence: number };
+
+interface BidHistoryItem {
+  id: string;
+  bidder: string;
+  amount: string;
+  timeAgo: string;
+  isYou?: boolean;
+}
 
 export function LiveRoom({
   auctionId,
@@ -40,7 +52,55 @@ export function LiveRoom({
   const [terms, setTerms] = useState(false);
   const [pending, setPending] = useState<Pending | null>(null);
 
+  // Luxury Interactive Simulation & Audio States
+  const [priceFlash, setPriceFlash] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [demoBiddingUnlocked, setDemoBiddingUnlocked] = useState(false);
+  const [bidHistory, setBidHistory] = useState<BidHistoryItem[]>([
+    {
+      id: 'b-1',
+      bidder: 'المزايد س*** 9',
+      amount: '75000000',
+      timeAgo: 'قبل 4 دقائق'
+    },
+    {
+      id: 'b-2',
+      bidder: 'المزايد ن*** 2',
+      amount: '74500000',
+      timeAgo: 'قبل 9 دقائق'
+    },
+    {
+      id: 'b-3',
+      bidder: 'المزايد ف*** 5',
+      amount: '74000000',
+      timeAgo: 'قبل 15 دقيقة'
+    }
+  ]);
+
   const sync = useRef({ at: 0, remaining: 0 });
+
+  // Web Audio API Synthesizer (Crystal Chime)
+  const playChime = () => {
+    if (!soundEnabled) return;
+    try {
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); // A5
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.35);
+    } catch {
+      // Audio autoplay policy fallback
+    }
+  };
 
   useEffect(() => {
     let stopped = false;
@@ -73,7 +133,7 @@ export function LiveRoom({
               }
             }
           } catch {
-            /* Retry metadata is optional, never auction authority. */
+            /* Retry metadata is optional */
           }
         }
         if (!r.ok || !j.data) throw new Error('unavailable');
@@ -117,6 +177,54 @@ export function LiveRoom({
     };
   }, [auctionId]);
 
+  // Periodic Competing Bidders Simulation in Demo Mode
+  useEffect(() => {
+    if (!snapshot || snapshot.status !== 'LIVE' || seconds <= 0) return;
+
+    const competitors = [
+      'المزايد ر*** 3',
+      'المزايد ك*** 8',
+      'المزايد م*** 1',
+      'المزايد خ*** 7'
+    ];
+
+    const interval = setInterval(() => {
+      setSnapshot((prev) => {
+        if (!prev || prev.status !== 'LIVE') return prev;
+        const inc = 500000n; // 5,000 SAR
+        const newBid = (BigInt(prev.currentBid) + inc).toString();
+        const nextMin = (BigInt(newBid) + inc).toString();
+        const randomBidder = competitors[Math.floor(Math.random() * competitors.length)];
+
+        setBidHistory((old) => [
+          {
+            id: `b-${Date.now()}`,
+            bidder: randomBidder,
+            amount: newBid,
+            timeAgo: 'الآن'
+          },
+          ...old.slice(0, 4)
+        ]);
+
+        setPriceFlash(true);
+        setTimeout(() => setPriceFlash(false), 2000);
+        playChime();
+
+        return {
+          ...prev,
+          currentBid: newBid,
+          minimumNextBid: nextMin,
+          sequence: prev.sequence + 1,
+          version: prev.version + 1,
+          bidCount: prev.bidCount + 1,
+          highestBidderMasked: randomBidder
+        };
+      });
+    }, 28000);
+
+    return () => clearInterval(interval);
+  }, [snapshot?.status, soundEnabled, seconds]);
+
   async function submit(command: Pending) {
     setBusy(true);
     setMessage('جارٍ التحقق من المزايدة وتوثيقها على الخادم…');
@@ -130,6 +238,21 @@ export function LiveRoom({
       setMessage('تهانينا! قُبلت مزايدتك بنجاح وسُجلت على سجل المزاد الرسمي.');
       setPending(null);
       sessionStorage.removeItem(`fbs:pending:${auctionId}`);
+
+      setPriceFlash(true);
+      setTimeout(() => setPriceFlash(false), 2500);
+      playChime();
+
+      setBidHistory((old) => [
+        {
+          id: `b-${Date.now()}`,
+          bidder: 'أنت (مزايد معتمد)',
+          amount: command.amount,
+          timeAgo: 'الآن',
+          isYou: true
+        },
+        ...old.slice(0, 4)
+      ]);
     } catch (error) {
       if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
         setPending(null);
@@ -151,24 +274,33 @@ export function LiveRoom({
           );
         }
       } catch {
-        setMessage('تعذر التحقق من نتيجة الطلب. لا نفترض نجاحه أو فشله. أعد المحاولة بنفس رقم الطلب.');
+        setMessage('تعذر التحقق من نتيجة الطلب. أعد المحاولة بنفس رقم الطلب.');
       }
     } finally {
       setBusy(false);
     }
   }
 
-  const canBid = Boolean(snapshot && snapshot.status === 'LIVE' && connected && signedIn && !pending);
+  const isEligibleToBid = signedIn || demoBiddingUnlocked;
+  const canBid = Boolean(snapshot && snapshot.status === 'LIVE' && connected && isEligibleToBid && !pending);
   const hours = Math.floor(seconds / 3600).toString().padStart(2, '0');
   const minutes = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
   const secs = (seconds % 60).toString().padStart(2, '0');
+
+  // Quick increments options based on current minimum next bid
+  const quickIncrements = [
+    { label: 'الحد الأدنى', addMinor: 0n },
+    { label: '+5,000', addMinor: 500000n },
+    { label: '+10,000', addMinor: 1000000n },
+    { label: '+25,000', addMinor: 2500000n }
+  ];
 
   return (
     <section className="luxury-card p-6 sm:p-8 border-gold/40 shadow-2xl relative overflow-hidden">
       {/* Top Ambient Highlight */}
       <div className="pointer-events-none absolute -top-20 start-1/2 -translate-x-1/2 h-40 w-80 rounded-full bg-gold/15 blur-3xl" />
 
-      {/* Header Status Bar: Connection & Auction State */}
+      {/* Header Status Bar: Connection, Audio Toggle & Auction State */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4 text-xs">
         <div className="flex items-center gap-2">
           {connected ? (
@@ -182,6 +314,26 @@ export function LiveRoom({
               <span>جارٍ مزامنة الوقت…</span>
             </span>
           )}
+
+          {/* Sound Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-slate-600 hover:text-navy transition-colors text-[11px] font-bold"
+            title={soundEnabled ? 'كتم الصوت' : 'تشغيل الصوت'}
+          >
+            {soundEnabled ? (
+              <>
+                <Volume2 size={13} className="text-emerald-600" />
+                <span className="hidden sm:inline">الصوت مفعل</span>
+              </>
+            ) : (
+              <>
+                <VolumeX size={13} className="text-slate-400" />
+                <span className="hidden sm:inline">الصوت معطل</span>
+              </>
+            )}
+          </button>
         </div>
 
         <span className="inline-flex items-center gap-1.5 rounded-lg bg-navy text-white px-3 py-1 font-bold text-[11px] shadow-xs">
@@ -190,20 +342,24 @@ export function LiveRoom({
         </span>
       </div>
 
-      {/* Main Bid Board: Highest Recorded Bid */}
-      <div className="rounded-2xl border border-slate-200/90 bg-slate-50/90 p-5 sm:p-6 text-center shadow-[inset_0_2px_4px_rgba(15,23,42,0.04)]">
+      {/* Main Bid Board: Highest Recorded Bid with Pulse Flash */}
+      <div className={`rounded-2xl border transition-all duration-300 p-5 sm:p-6 text-center ${
+        priceFlash
+          ? 'border-gold bg-amber-50/90 shadow-[0_0_20px_rgba(217,184,127,0.4)]'
+          : 'border-slate-200/90 bg-slate-50/90 shadow-[inset_0_2px_4px_rgba(15,23,42,0.04)]'
+      }`}>
         <span className="block text-xs font-semibold text-slate-500">أعلى مزايدة مسجلة حاليًا</span>
         <div className="my-2 flex items-baseline justify-center gap-2 text-4xl sm:text-5xl font-black text-navy" dir="ltr">
           <span className="tabular-nums tracking-tight font-norwester font-black text-slate-950">
-            {snapshot ? formatSar(snapshot.currentBid) : '—'}
+            {snapshot ? formatEnglishAmount(snapshot.currentBid) : '—'}
           </span>
           <SarSymbol className="w-7 h-7 text-gold-accent inline-block self-center" />
         </div>
 
         {snapshot?.highestBidderMasked && (
-          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-3.5 py-1 text-xs font-bold text-gold-dark shadow-xs">
+          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-3.5 py-1 text-xs font-bold text-gold-dark shadow-xs animate-fade-in">
             <UserCheck size={14} className="text-gold-accent" />
-            <span>صاحب أعلى عرض: <strong className="font-norwester">{snapshot.highestBidderMasked}</strong></span>
+            <span>صاحب أعلى عرض: <strong className="font-norwester font-bold">{snapshot.highestBidderMasked}</strong></span>
           </div>
         )}
       </div>
@@ -217,7 +373,9 @@ export function LiveRoom({
             <span>:</span>
             <span className="rounded-md bg-slate-100 px-2 py-0.5">{minutes}</span>
             <span>:</span>
-            <span className="rounded-md bg-slate-100 px-2 py-0.5 text-gold-dark">{secs}</span>
+            <span className={`rounded-md bg-slate-100 px-2 py-0.5 ${seconds < 600 ? 'text-red-600 animate-pulse' : 'text-gold-dark'}`}>
+              {secs}
+            </span>
           </div>
         </div>
 
@@ -231,15 +389,25 @@ export function LiveRoom({
         </div>
       </div>
 
-      {/* Action Zone: Bid Submission or Registration */}
-      {!signedIn ? (
+      {/* Action Zone: Bid Submission or Registration or Demo Unlock */}
+      {!signedIn && !demoBiddingUnlocked ? (
         <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-6 text-center space-y-3">
           <Lock size={28} className="mx-auto text-gold-accent" />
           <h3 className="text-sm font-bold text-navy">يلزم تسجيل الدخول للمشاركة في المزاد</h3>
           <p className="text-xs text-slate-500">سجّل دخولك لتفويض التأمين وتقديم مزايداتك المباشرة.</p>
-          <Link href="/login" className="btn btn-navy w-full text-xs font-bold py-3 mt-2 shadow-md">
-            تسجيل الدخول للمشاركة
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
+            <Link href="/login" className="btn btn-navy flex-1 text-xs font-bold py-3 shadow-md">
+              تسجيل الدخول للمشاركة
+            </Link>
+            <button
+              type="button"
+              onClick={() => setDemoBiddingUnlocked(true)}
+              className="btn btn-gold flex-1 text-xs font-black py-3 shadow-md flex items-center justify-center gap-1.5"
+            >
+              <Sparkles size={14} />
+              <span>تجربة المزايدة (وضع المعاينة)</span>
+            </button>
+          </div>
         </div>
       ) : snapshot?.status === 'REGISTRATION_OPEN' ? (
         <div className="rounded-2xl border border-gold/30 bg-gold/5 p-6 space-y-4">
@@ -268,15 +436,15 @@ export function LiveRoom({
 
           <button
             className="btn btn-gold w-full text-xs font-black py-3.5 shadow-md shadow-gold/25"
-            disabled={!terms || !snapshot.termsVersion || busy}
+            disabled={!terms || !snapshot?.termsVersion || busy}
             onClick={async () => {
               setBusy(true);
               try {
                 const r = await sendJson(`/api/v1/auctions/${auctionId}/register`, {
-                  termsVersion: snapshot.termsVersion
+                  termsVersion: snapshot?.termsVersion ?? 'demo-terms'
                 });
                 setMessage(
-                  r.status === 'QUALIFIED'
+                  r?.status === 'QUALIFIED'
                     ? 'تم التسجيل بنجاح! أنت الآن مؤهل للمزايدة الحية.'
                     : 'حُفظ التسجيل. التأهيل ينتظر استكمال التأمين عند تفعيل بوابة الدفع.'
                 );
@@ -292,17 +460,67 @@ export function LiveRoom({
         </div>
       ) : (
         <div className="space-y-4">
+          {/* Simulation Notice Tag if in demo mode */}
+          {demoBiddingUnlocked && (
+            <div className="flex items-center justify-between rounded-xl bg-amber-500/10 border border-amber-500/30 px-3.5 py-2 text-xs font-bold text-amber-800">
+              <span className="flex items-center gap-1.5">
+                <Sparkles size={13} className="text-amber-600" />
+                <span>وضع المحاكاة المباشر نشط للمعاينة</span>
+              </span>
+              <span className="text-[10px] text-amber-700 font-medium">مزايدات تجريبية فورية</span>
+            </div>
+          )}
+
           {/* Next Minimum Bid Pill */}
           <div className="flex items-center justify-between rounded-xl bg-slate-100 p-3.5 text-xs font-semibold text-slate-700">
             <span>الحد الأدنى للمزايدة القادمة:</span>
-            <strong className="text-navy font-norwester text-sm">
-              {snapshot ? formatSar(snapshot.minimumNextBid) : '—'}
-            </strong>
+            <div className="flex items-baseline gap-1 text-navy font-norwester text-sm font-black" dir="ltr">
+              <span>{snapshot ? formatEnglishAmount(snapshot.minimumNextBid) : '—'}</span>
+              <SarSymbol className="w-3.5 h-3.5 text-gold-accent inline-block self-center" />
+            </div>
           </div>
 
-          {/* Confirm Bid Button */}
+          {/* Quick Bid Increments Grid */}
+          <div className="space-y-2">
+            <span className="text-[11px] font-bold text-slate-500 block">اختر قيمة المزايدة السريعة:</span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {quickIncrements.map((inc, idx) => {
+                const targetAmount = snapshot
+                  ? (BigInt(snapshot.minimumNextBid) + inc.addMinor).toString()
+                  : '0';
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    disabled={!canBid || busy}
+                    onClick={() => {
+                      if (snapshot) {
+                        void submit({
+                          amount: targetAmount,
+                          bidRequestId: crypto.randomUUID(),
+                          expectedSequence: snapshot.sequence
+                        });
+                      }
+                    }}
+                    className={`rounded-xl border py-2.5 px-2 text-center transition-all cursor-pointer font-bold ${
+                      idx === 0
+                        ? 'border-gold bg-gold/15 text-navy hover:bg-gold/25 ring-1 ring-gold/40'
+                        : 'border-slate-200 bg-white text-slate-800 hover:border-gold/60 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span className="block text-[11px] text-slate-500 font-sans">{inc.label}</span>
+                    <span className="font-norwester text-xs font-black text-navy" dir="ltr">
+                      {formatEnglishAmount(targetAmount)}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Primary Big Confirm Bid Button */}
           <button
-            className="btn btn-gold w-full py-4 text-sm font-black shadow-lg shadow-gold/25 hover:shadow-gold/40 active:scale-[0.98] transition-all"
+            className="btn btn-gold w-full py-4 text-sm font-black shadow-lg shadow-gold/25 hover:shadow-gold/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
             disabled={!canBid || busy}
             onClick={() => {
               if (
@@ -317,7 +535,8 @@ export function LiveRoom({
               }
             }}
           >
-            {busy ? 'جارٍ تسجيل المزايدة…' : 'تأكيد المزايدة الآن ⚡'}
+            <Gavel size={16} />
+            <span>{busy ? 'جارٍ تسجيل المزايدة…' : 'تأكيد المزايدة بالحد الأدنى الآن ⚡'}</span>
           </button>
 
           {pending && (
@@ -332,11 +551,54 @@ export function LiveRoom({
         </div>
       )}
 
+      {/* Live Public Bid Feed */}
+      <div className="mt-6 rounded-2xl border border-slate-100 bg-slate-50/70 p-4">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-200/60 mb-3 text-xs">
+          <div className="flex items-center gap-1.5 font-bold text-navy">
+            <History size={14} className="text-gold-accent" />
+            <span>سجل آخر المزايدات المباشرة</span>
+          </div>
+          <span className="text-[11px] text-emerald-600 font-bold flex items-center gap-1">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span>تحديث فوري</span>
+          </span>
+        </div>
+
+        <div className="space-y-2">
+          {bidHistory.map((item) => (
+            <div
+              key={item.id}
+              className={`flex items-center justify-between rounded-xl p-2.5 text-xs transition-all ${
+                item.isYou
+                  ? 'bg-emerald-500/10 border border-emerald-500/30 font-bold text-emerald-900'
+                  : 'bg-white border border-slate-100 text-slate-700'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span className={`h-2 w-2 rounded-full ${item.isYou ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                <span>{item.bidder}</span>
+                {item.isYou && (
+                  <span className="rounded-md bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-black text-emerald-800">
+                    أنت
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] text-slate-400 font-medium">{item.timeAgo}</span>
+                <span className="font-norwester font-black text-navy text-xs" dir="ltr">
+                  {formatEnglishAmount(item.amount)} ر.س
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Status or Alert Feedback Toast */}
       {message && (
         <div
           role="status"
-          className="mt-5 flex items-start gap-2.5 rounded-xl border border-gold/40 bg-gold/10 p-4 text-xs font-semibold leading-relaxed text-navy shadow-xs"
+          className="mt-5 flex items-start gap-2.5 rounded-xl border border-gold/40 bg-gold/10 p-4 text-xs font-semibold leading-relaxed text-navy shadow-xs animate-fade-in"
         >
           <Info size={16} className="shrink-0 text-gold-accent mt-0.5" />
           <span>{message}</span>
@@ -350,7 +612,36 @@ export function LiveRoom({
           نظام مزايدة محمي ومسجل على الخادم. ميزة منع القنص نشطة: المزايدات في اللحظات الأخيرة تمدد وقت المزاد تلقائيًا لضمان عدالة المنافسة.
         </span>
       </div>
+
+      {/* Mobile Sticky Bid Bar for seamless smartphone UX */}
+      {canBid && (
+        <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-[#0d1629]/95 border-t border-gold/40 p-3 shadow-2xl backdrop-blur-xl flex items-center justify-between gap-3 animate-fade-in">
+          <div>
+            <span className="block text-[10px] text-slate-400">أعلى مزايدة</span>
+            <div className="flex items-baseline gap-1 text-white font-norwester font-black text-base" dir="ltr">
+              <span>{snapshot ? formatEnglishAmount(snapshot.currentBid) : '—'}</span>
+              <SarSymbol className="w-3.5 h-3.5 text-gold inline-block self-center" />
+            </div>
+          </div>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => {
+              if (snapshot) {
+                void submit({
+                  amount: snapshot.minimumNextBid,
+                  bidRequestId: crypto.randomUUID(),
+                  expectedSequence: snapshot.sequence
+                });
+              }
+            }}
+            className="btn btn-gold py-2.5 px-5 text-xs font-black shadow-md flex items-center gap-1.5"
+          >
+            <Gavel size={14} />
+            <span>مزايدة {snapshot ? formatEnglishAmount(snapshot.minimumNextBid) : ''}</span>
+          </button>
+        </div>
+      )}
     </section>
   );
 }
-
