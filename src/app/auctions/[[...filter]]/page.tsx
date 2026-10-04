@@ -1,8 +1,9 @@
+import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import { Catalog } from '@/components/catalog';
 import { createAdminClient } from '@/lib/supabase/server';
 
-export const metadata = { title: 'المزادات' };
+export const metadata: Metadata = { title: 'المزادات' };
 
 export default async function Auctions({
   params,

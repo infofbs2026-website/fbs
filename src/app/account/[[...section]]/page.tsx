@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { MfaSetup } from '@/components/mfa';
 import { notFound,redirect } from 'next/navigation';
@@ -36,7 +37,7 @@ const demoAccountData: Record<string, Record<string, unknown>[]> = {
   ]
 };
 
-export const metadata={title:'حسابي',robots:{index:false,follow:false}};
+export const metadata: Metadata = { title: 'حسابي', robots: { index: false, follow: false } };
 export default async function Account({params}:{params:Promise<{section?:string[]}>}){
   const user=await getViewer();if(!user)redirect('/login');
   const {section}=await params;const key=section?.[0]??'overview',config=sections[key];
