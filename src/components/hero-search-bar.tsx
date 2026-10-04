@@ -381,15 +381,15 @@ export function HeroSearchBar() {
 
   return (
     <div className="relative w-full">
-      {/* Main Search Bar Card - Dark Translucent Luxury Glassmorphism */}
-      <div className="rounded-3xl border border-gold/35 bg-[#0c1427]/90 backdrop-blur-2xl p-4 sm:p-6 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.55),0_10px_25px_-5px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.14),0_0_0_1px_rgba(217,184,127,0.25)]">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Main Controls Row with Enhanced Depth, High Contrast & Custom Dropdowns */}
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-            {/* Lighter Frosted Glass Search Input with High-Contrast White Text & Radiant Gold Icon */}
+      {/* Main Search Bar Card - Sleek, Uncluttered Luxury Glassmorphism with Higher Video Transparency */}
+      <div className="rounded-2xl border border-gold/35 bg-[#060c1c]/50 hover:bg-[#060c1c]/60 backdrop-blur-2xl p-2.5 sm:p-3 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.5),0_0_0_1px_rgba(217,184,127,0.2)] transition-all duration-300">
+        <form onSubmit={handleSubmit} className="space-y-3">
+          {/* Main Controls Row: Only Search Input + Advanced Filters Button + Search CTA */}
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
+            {/* Lighter Frosted Glass Search Input */}
             <div className="relative flex-1 group">
               <div className="absolute start-4 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center">
-                <Search size={22} className="text-gold group-focus-within:text-gold-light group-focus-within:scale-110 transition-all drop-shadow-[0_0_8px_rgba(217,184,127,0.4)]" />
+                <Search size={20} className="text-gold group-focus-within:text-gold-light group-focus-within:scale-110 transition-all drop-shadow-[0_0_8px_rgba(217,184,127,0.4)]" />
               </div>
               <input
                 value={q}
@@ -397,103 +397,127 @@ export function HeroSearchBar() {
                 name="q"
                 aria-label="حروف اللوحة أو أرقامها"
                 placeholder="ابحث برقم (مثال: 1 أو 777)، حروف (مثال: ف ب س)، أو مزيج (س ع د 1)..."
-                className="w-full h-[52px] rounded-2xl border border-white/20 bg-white/[0.12] hover:bg-white/[0.16] ps-12 pe-10 text-sm sm:text-base font-bold text-white placeholder:text-white/40 placeholder:font-normal shadow-[inset_0_2px_5px_rgba(0,0,0,0.25),0_1px_3px_rgba(255,255,255,0.06)] transition-all focus:border-gold focus:bg-white/[0.20] focus:outline-none focus:ring-4 focus:ring-gold/30"
+                className="w-full h-12 sm:h-[50px] rounded-xl border border-white/20 bg-white/[0.08] hover:bg-white/[0.12] ps-11 pe-9 text-xs sm:text-sm font-bold text-white placeholder:text-white/50 shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)] transition-all focus:border-gold focus:bg-white/[0.16] focus:outline-none focus:ring-2 focus:ring-gold/30"
                 maxLength={80}
               />
               {q && (
                 <button
                   type="button"
                   onClick={() => setQ('')}
-                  className="absolute end-3.5 top-1/2 -translate-y-1/2 p-1 text-slate-300 hover:text-white rounded-full hover:bg-white/20 transition-colors cursor-pointer"
+                  className="absolute end-3 top-1/2 -translate-y-1/2 p-1 text-slate-300 hover:text-white rounded-full hover:bg-white/20 transition-colors cursor-pointer"
                   aria-label="مسح النص"
                 >
-                  <X size={16} />
+                  <X size={15} />
                 </button>
               )}
-            </div>
-
-            {/* Custom Dropdown: Digits Count Selector */}
-            <div className="shrink-0 min-w-[170px]">
-              <CustomSelect
-                value={digitsCount}
-                onChange={setDigitsCount}
-                options={digitsOptions}
-                ariaLabel="عدد الأرقام"
-                dropdownWidth="w-56"
-              />
-            </div>
-
-            {/* Custom Dropdown: Plate Type Selector */}
-            <div className="shrink-0 min-w-[155px]">
-              <CustomSelect
-                value={plateType}
-                onChange={setPlateType}
-                options={plateTypeOptions}
-                ariaLabel="فئة اللوحة"
-                dropdownWidth="w-52"
-              />
             </div>
 
             {/* Toggle Advanced Filters Button */}
             <button
               type="button"
               onClick={() => setShowAdvanced(!showAdvanced)}
-              className={`h-[52px] flex items-center justify-center gap-2 rounded-2xl border px-4 text-xs sm:text-sm font-extrabold transition-all duration-200 shrink-0 cursor-pointer shadow-md ${
-                showAdvanced || minPrice || maxPrice || city
+              className={`h-12 sm:h-[50px] flex items-center justify-center gap-2 rounded-xl border px-3.5 sm:px-4 text-xs sm:text-sm font-bold transition-all duration-200 shrink-0 cursor-pointer shadow-md ${
+                showAdvanced || minPrice || maxPrice || city || digitsCount || plateType
                   ? 'border-gold bg-gold/20 text-gold-light shadow-[0_0_15px_rgba(217,184,127,0.25)] ring-2 ring-gold/40'
-                  : 'border-white/15 bg-[#121c33]/85 text-slate-100 hover:bg-[#16223d] hover:border-gold/50 hover:text-gold'
+                  : 'border-white/15 bg-white/[0.08] text-slate-100 hover:bg-white/[0.14] hover:border-gold/50 hover:text-gold'
               }`}
               title="خيارات وفلاتر متقدمة"
             >
-              <SlidersHorizontal size={17} className={showAdvanced || minPrice || maxPrice || city ? 'text-gold' : 'text-gold-light'} />
+              <SlidersHorizontal size={16} className={showAdvanced || minPrice || maxPrice || city || digitsCount || plateType ? 'text-gold' : 'text-gold-light'} />
               <span>فلاتر متقدمة</span>
-              {(minPrice || maxPrice || city) && (
+              {(minPrice || maxPrice || city || digitsCount || plateType) && (
                 <span className="flex h-2 w-2 rounded-full bg-gold animate-pulse" />
               )}
-              <ChevronDown size={15} className={`transition-transform duration-200 ${showAdvanced ? 'rotate-180 text-gold' : 'text-slate-400'}`} />
+              <ChevronDown size={14} className={`transition-transform duration-200 ${showAdvanced ? 'rotate-180 text-gold' : 'text-slate-400'}`} />
             </button>
 
             {/* Primary Action Button - Prestigious Gold CTA */}
             <button
               type="submit"
               disabled={isPending}
-              className="h-[52px] btn btn-gold flex items-center justify-center gap-2.5 rounded-2xl !px-8 text-sm sm:text-base font-black text-navy shadow-lg shadow-gold/25 hover:shadow-gold/40 active:scale-[0.98] border border-gold/70 shrink-0 cursor-pointer transition-all duration-200"
+              className="h-12 sm:h-[50px] btn btn-gold flex items-center justify-center gap-2 rounded-xl !px-6 sm:!px-7 text-xs sm:text-sm font-black text-navy shadow-lg shadow-gold/25 hover:shadow-gold/40 active:scale-[0.98] border border-gold/70 shrink-0 cursor-pointer transition-all duration-200"
             >
               <span className="font-black text-navy">{isPending ? 'جاري البحث...' : 'ابحث الآن'}</span>
-              <ArrowLeft size={17} className="text-navy" />
+              <ArrowLeft size={16} className="text-navy" />
             </button>
           </div>
 
-          {/* Advanced Filters Collapsible Drawer */}
+          {/* Advanced Filters Collapsible Drawer (Dropdowns, Price Range & Quick Filter Chips) */}
           {showAdvanced && (
-            <div className="rounded-2xl border border-white/10 bg-[#090f1d]/85 backdrop-blur-xl p-4 sm:p-5 mt-3 transition-all animate-fadeIn shadow-[inset_0_2px_6px_rgba(0,0,0,0.4)]">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
-                {/* Price Range Filter - Exactly 52px Matching Height */}
+            <div className="rounded-xl border border-white/10 bg-[#090f1d]/80 backdrop-blur-xl p-4 sm:p-5 mt-2 transition-all animate-fadeIn shadow-[inset_0_2px_6px_rgba(0,0,0,0.4)] space-y-4">
+              {/* Row 1: Dropdown Selectors */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-start">
+                {/* Custom Dropdown: Digits Count Selector */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-200 mb-2">النطاق السعري التقريبي</label>
+                  <label className="block text-xs font-bold text-slate-200 mb-1.5">عدد الأرقام</label>
+                  <CustomSelect
+                    value={digitsCount}
+                    onChange={setDigitsCount}
+                    options={digitsOptions}
+                    ariaLabel="عدد الأرقام"
+                    dropdownWidth="w-full"
+                  />
+                </div>
+
+                {/* Custom Dropdown: Plate Type Selector */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-200 mb-1.5">فئة اللوحة</label>
+                  <CustomSelect
+                    value={plateType}
+                    onChange={setPlateType}
+                    options={plateTypeOptions}
+                    ariaLabel="فئة اللوحة"
+                    dropdownWidth="w-full"
+                  />
+                </div>
+
+                {/* Custom City Selector */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-200 mb-1.5">المدينة / المنطقة</label>
+                  <CustomSelect
+                    value={city}
+                    onChange={setCity}
+                    options={cityOptions}
+                    ariaLabel="المدينة"
+                    dropdownWidth="w-full"
+                  />
+                </div>
+
+                {/* Custom Sort Selector */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-200 mb-1.5">ترتيب النتائج</label>
+                  <CustomSelect
+                    value={sort}
+                    onChange={setSort}
+                    options={sortOptions}
+                    ariaLabel="ترتيب العرض"
+                    dropdownWidth="w-full"
+                  />
+                </div>
+              </div>
+
+              {/* Row 2: Price Range Filter & Reset Button */}
+              <div className="border-t border-white/10 pt-3 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
+                  <span className="text-xs font-bold text-slate-200 shrink-0">النطاق السعري:</span>
                   <div className="flex items-center gap-2">
-                    <div className="relative flex-1">
-                      <input
-                        type="number"
-                        placeholder="من"
-                        value={minPrice}
-                        onChange={(e) => setMinPrice(e.target.value)}
-                        className="w-full h-[52px] rounded-2xl border border-white/15 bg-[#121c33]/85 px-4 text-xs sm:text-sm font-extrabold text-white placeholder:text-slate-400 focus:border-gold focus:outline-none focus:ring-4 focus:ring-gold/20 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] transition-all"
-                      />
-                    </div>
-                    <span className="text-xs font-extrabold text-slate-400 shrink-0">-</span>
-                    <div className="relative flex-1">
-                      <input
-                        type="number"
-                        placeholder="إلى"
-                        value={maxPrice}
-                        onChange={(e) => setMaxPrice(e.target.value)}
-                        className="w-full h-[52px] rounded-2xl border border-white/15 bg-[#121c33]/85 px-4 text-xs sm:text-sm font-extrabold text-white placeholder:text-slate-400 focus:border-gold focus:outline-none focus:ring-4 focus:ring-gold/20 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] transition-all"
-                      />
-                    </div>
+                    <input
+                      type="number"
+                      placeholder="من"
+                      value={minPrice}
+                      onChange={(e) => setMinPrice(e.target.value)}
+                      className="w-28 h-10 rounded-xl border border-white/15 bg-[#121c33]/85 px-3 text-xs font-bold text-white placeholder:text-slate-400 focus:border-gold focus:outline-none"
+                    />
+                    <span className="text-xs font-bold text-slate-400">-</span>
+                    <input
+                      type="number"
+                      placeholder="إلى"
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(e.target.value)}
+                      className="w-28 h-10 rounded-xl border border-white/15 bg-[#121c33]/85 px-3 text-xs font-bold text-white placeholder:text-slate-400 focus:border-gold focus:outline-none"
+                    />
                   </div>
-                  {/* Quick Price Buttons */}
-                  <div className="flex flex-wrap gap-1.5 mt-2.5">
+                  <div className="flex flex-wrap gap-1.5">
                     {[
                       ['أقل من 50 ألف', '', '50000'],
                       ['50k - 200k', '50000', '200000'],
@@ -506,7 +530,7 @@ export function HeroSearchBar() {
                           setMinPrice(min);
                           setMaxPrice(max);
                         }}
-                        className="rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-200 hover:border-gold/60 hover:bg-gold/15 hover:text-gold cursor-pointer transition-colors shadow-2xs"
+                        className="rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-200 hover:border-gold/60 hover:bg-gold/15 hover:text-gold cursor-pointer transition-colors"
                       >
                         {label}
                       </button>
@@ -514,76 +538,51 @@ export function HeroSearchBar() {
                   </div>
                 </div>
 
-                {/* Custom City Selector */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-200 mb-2">المدينة / المنطقة</label>
-                  <CustomSelect
-                    value={city}
-                    onChange={setCity}
-                    options={cityOptions}
-                    ariaLabel="المدينة"
-                    dropdownWidth="w-full"
-                  />
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-red-400 transition-colors cursor-pointer"
+                  >
+                    <RotateCcw size={13} />
+                    <span>إعادة تعيين الفلاتر</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Row 3: Quick Filter Chips (Shown ONLY in Advanced Mode) */}
+              <div className="border-t border-white/10 pt-3 flex flex-wrap items-center gap-2 text-xs font-semibold">
+                <div className="flex items-center gap-2 pe-2 text-xs font-black text-white shrink-0">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-md bg-gold/15 text-gold border border-gold/30">
+                    <SvgFilterFunnel className="w-3 h-3" />
+                  </span>
+                  <span>فلاتر سريعة:</span>
                 </div>
 
-                {/* Custom Sort Selector & Reset */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-200 mb-2">ترتيب عرض اللوحات</label>
-                  <CustomSelect
-                    value={sort}
-                    onChange={setSort}
-                    options={sortOptions}
-                    ariaLabel="ترتيب العرض"
-                    dropdownWidth="w-full"
-                  />
-
-                  <div className="flex justify-end mt-2.5">
-                    <button
-                      type="button"
-                      onClick={handleReset}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-red-400 transition-colors cursor-pointer"
+                {quickFilterChips.map((chip) => {
+                  const Icon = chip.icon;
+                  return (
+                    <Link
+                      key={chip.href}
+                      href={chip.href}
+                      className={`group inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 text-slate-200 transition-all duration-200 shadow-2xs hover:shadow-sm text-[11px] ${chip.color}`}
                     >
-                      <RotateCcw size={13} />
-                      <span>إعادة تعيين الفلاتر</span>
-                    </button>
-                  </div>
-                </div>
+                      <span className="transition-transform duration-200 group-hover:scale-110">
+                        <Icon className="w-3 h-3" />
+                      </span>
+                      <span>{chip.label}</span>
+                      {chip.badge && (
+                        <span className="ms-1 rounded-full bg-emerald-500/20 px-1.5 py-0.2 text-[9px] font-bold text-emerald-300 border border-emerald-500/30">
+                          {chip.badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           )}
         </form>
-
-        {/* Quick Filter Tabs Under the Search Bar with Dedicated Purpose-Built SVGs */}
-        <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-white/10 pt-4 text-xs font-semibold">
-          {/* Prominent, Clear "فلاتر سريعة" with Filter Funnel SVG */}
-          <div className="flex items-center gap-2 pe-2 text-sm font-black text-white shrink-0">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-gold/15 text-gold border border-gold/30">
-              <SvgFilterFunnel className="w-3.5 h-3.5" />
-            </span>
-            <span>فلاتر سريعة:</span>
-          </div>
-
-          {quickFilterChips.map((chip) => {
-            const Icon = chip.icon;
-            return (
-              <Link
-                key={chip.href}
-                href={chip.href}
-                className={`group inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-3 py-1.5 text-slate-200 transition-all duration-200 shadow-2xs hover:shadow-sm ${chip.color}`}
-              >
-                <span className="transition-transform duration-200 group-hover:scale-110">
-                  <Icon className="w-3.5 h-3.5" />
-                </span>
-                <span>{chip.label}</span>
-                {chip.badge && (
-                  <span className="ms-1 rounded-full bg-emerald-500/20 px-1.5 py-0.2 text-[9px] font-bold text-emerald-300 border border-emerald-500/30">
-                    {chip.badge}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-        </div>
       </div>
     </div>
   );

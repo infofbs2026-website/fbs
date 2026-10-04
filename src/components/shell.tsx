@@ -82,6 +82,13 @@ export function Brand({ variant = 'gold', className = '' }: { variant?: 'gold' |
 export function Header() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [heroRevealed, setHeroRevealed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      if ((window as any).__fbsHeroRevealed) return true;
+      if (window.location.pathname !== '/') return true;
+    }
+    return false;
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -92,6 +99,17 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (pathname !== '/') {
+      setHeroRevealed(true);
+      return;
+    }
+
+    const onReveal = () => setHeroRevealed(true);
+    window.addEventListener('fbs-hero-revealed', onReveal);
+    return () => window.removeEventListener('fbs-hero-revealed', onReveal);
+  }, [pathname]);
+
   const isAuthPage =
     pathname === '/login' ||
     pathname === '/register' ||
@@ -100,13 +118,18 @@ export function Header() {
     pathname === '/verify';
 
   const isTransparent = !isAuthPage && !scrolled;
+  const isHiddenByIntro = pathname === '/' && !heroRevealed;
 
   return (
     <header
-      className={`fixed top-0 start-0 end-0 z-50 transition-all duration-300 ease-in-out ${
+      className={`fixed top-0 start-0 end-0 z-50 transition-all duration-700 ease-out ${
+        isHiddenByIntro
+          ? 'opacity-0 -translate-y-8 pointer-events-none'
+          : 'opacity-100 translate-y-0'
+      } ${
         isTransparent
-          ? 'border-b border-transparent bg-transparent text-white shadow-none'
-          : 'border-b border-transparent bg-[#060b17]/95 backdrop-blur-2xl text-white shadow-[0_10px_35px_-10px_rgba(0,0,0,0.8)]'
+          ? 'border-b border-transparent bg-transparent text-white shadow-none backdrop-blur-none'
+          : 'border-b border-white/10 bg-[#060b17]/95 backdrop-blur-2xl text-white shadow-[0_10px_35px_-10px_rgba(0,0,0,0.8)]'
       }`}
     >
       <div className="container-fbs flex h-20 items-center justify-between gap-4">
@@ -136,46 +159,48 @@ export function Header() {
           })}
         </nav>
 
-        {/* Refined Luxury Action Controls */}
+        {/* Refined Luxury Action Controls - All Harmonized with rounded-full Capsule Styling */}
         <div className="flex items-center gap-3">
-          {/* Minimal Search Trigger */}
+          {/* Minimal Search Trigger - Rounded Full */}
           <Link
             href="/plates/search"
             aria-label="البحث عن لوحة"
             title="البحث عن لوحة"
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 backdrop-blur-md transition-all hover:border-gold/50 hover:bg-gold/15 hover:text-gold active:scale-[0.98]"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-slate-300 backdrop-blur-md transition-all hover:border-gold/50 hover:bg-gold/15 hover:text-gold active:scale-[0.98]"
           >
-            <Search size={17} />
+            <Search size={16} />
           </Link>
 
-          {/* Concierge Plate Listing CTA */}
+          {/* Concierge Plate Listing CTA - Rounded Full Capsule matching Login Button */}
           <Link
             href="/sell-your-plate"
-            className="hidden sm:inline-flex items-center gap-2 rounded-xl border border-gold/35 bg-gold/10 px-4 py-2 text-xs font-bold text-gold-light backdrop-blur-md transition-all hover:border-gold hover:bg-gold/20 hover:text-white active:scale-[0.98]"
+            className="group hidden sm:inline-flex h-10 items-center gap-2.5 rounded-full border border-gold/40 bg-gold/10 ps-2 pe-4 text-xs font-bold text-gold-light backdrop-blur-md transition-all duration-200 hover:border-gold hover:bg-gold/20 hover:text-white hover:shadow-[0_0_15px_rgba(217,184,127,0.25)] active:scale-[0.98]"
           >
-            <PlusCircle size={15} className="text-gold" />
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-[#141d33] to-[#0a1020] border border-gold/40 text-gold shadow-xs group-hover:border-gold group-hover:shadow-[0_0_8px_rgba(217,184,127,0.4)] transition-all shrink-0">
+              <PlusCircle size={14} />
+            </span>
             <span>اعرض لوحتك</span>
           </Link>
 
-          {/* Unified Luxury Member Pill Button with User Avatar */}
+          {/* Unified Luxury Member Pill Button with User Avatar - Rounded Full */}
           <Link
             href="/login"
-            className="group inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/5 py-1.5 ps-1.5 pe-4 text-xs font-bold text-slate-100 backdrop-blur-md transition-all duration-200 hover:border-gold/50 hover:bg-gold/15 hover:text-white hover:shadow-[0_0_15px_rgba(217,184,127,0.25)] active:scale-[0.98]"
+            className="group inline-flex h-10 items-center gap-2.5 rounded-full border border-white/15 bg-white/5 ps-2 pe-4 text-xs font-bold text-slate-100 backdrop-blur-md transition-all duration-200 hover:border-gold/50 hover:bg-gold/15 hover:text-white hover:shadow-[0_0_15px_rgba(217,184,127,0.25)] active:scale-[0.98]"
             title="تسجيل الدخول إلى حسابك"
           >
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-[#141d33] to-[#0a1020] border border-gold/40 text-gold shadow-xs group-hover:border-gold group-hover:shadow-[0_0_8px_rgba(217,184,127,0.4)] transition-all">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-[#141d33] to-[#0a1020] border border-gold/40 text-gold shadow-xs group-hover:border-gold group-hover:shadow-[0_0_8px_rgba(217,184,127,0.4)] transition-all shrink-0">
               <UserRound size={14} />
             </span>
             <span>تسجيل الدخول</span>
           </Link>
 
-          {/* Mobile Navigation Toggle */}
+          {/* Mobile Navigation Toggle - Rounded Full */}
           <details className="relative lg:hidden">
             <summary
               aria-label="فتح القائمة"
-              className="flex h-10 w-10 list-none items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-200 cursor-pointer transition-colors hover:border-gold/40 hover:text-gold"
+              className="flex h-10 w-10 list-none items-center justify-center rounded-full border border-white/15 bg-white/5 text-slate-200 cursor-pointer transition-colors hover:border-gold/40 hover:text-gold"
             >
-              <Menu size={20} />
+              <Menu size={18} />
             </summary>
             <nav
               className="absolute end-0 top-full mt-3 w-64 rounded-2xl border border-gold/30 bg-[#070c18]/98 p-4 shadow-2xl backdrop-blur-2xl"

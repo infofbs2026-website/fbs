@@ -20,13 +20,12 @@ import {
   Trophy
 } from 'lucide-react';
 import { PlateCard, PlateVisualizer } from '@/components/ui';
-import { HeroSearchBar } from '@/components/hero-search-bar';
-import { HeroAuctionCard } from '@/components/hero-auction-card';
+import { HeroCinematic } from '@/components/hero-cinematic';
 import { SarSymbol } from '@/components/sar-symbol';
 import { getMarketplace } from '@/modules/marketplace/service';
 import type { MarketplacePlate } from '@/modules/marketplace/types';
 import { fallbackPlates } from '@/modules/marketplace/mock-data';
-import { ScrollReveal, StaggerGrid, CountUp, HeroAtmosphere } from '@/components/home-motion';
+import { ScrollReveal, StaggerGrid, CountUp } from '@/components/home-motion';
 
 /* Bespoke SVG for listing a new plate (Authentic plate frame with plus badge) */
 function SvgPlatePlus({ className = 'w-5 h-5' }: { className?: string }) {
@@ -83,107 +82,12 @@ export default async function Home() {
   return (
     <>
       {/* ============================================================== */}
-      {/* 1. HERO SECTION: LUXURY AUTOMOTIVE PRESTIGE                     */}
+      {/* 1 & 2. HERO CINEMATIC & CONCIERGE SEARCH (WEBM VIDEO + CASCADE) */}
       {/* ============================================================== */}
-      <section className="hero-luxury-ambient relative border-b border-[#d9b87f]/25 text-white pt-20 sm:pt-24 lg:pt-28 pb-16 sm:pb-20 lg:pb-24">
-        {/* Living Luxury Aurora Atmosphere & Coordinate Beams */}
-        <HeroAtmosphere />
-
-        {/* Top/Middle Hero Grid: Left Content & Right Showcase Card */}
-        <div className="container-fbs relative z-10 grid items-start gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:gap-12 xl:gap-16 pt-[2vh] pb-[3vh]">
-          <div className="pt-0 flex flex-col justify-between h-full">
-            <div>
-              {/* Prestige Eyebrow Badge */}
-              <ScrollReveal direction="up" delay={40}>
-                <div className="inline-flex items-center gap-3 rounded-full border border-gold/40 bg-[#121a2d]/90 px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-gold-light backdrop-blur-xl shadow-lg shadow-gold/5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-gold animate-pulse-live shadow-[0_0_8px_#d9b87f] shrink-0" />
-                  <span className="tracking-wide">المزاد الرسمي الأول للوحات النخبة في المملكة العربية السعودية</span>
-                </div>
-              </ScrollReveal>
-
-              {/* Commanding Luxury Headline with Gold Shimmer */}
-              <ScrollReveal direction="up" delay={100}>
-                <h1 className="mt-6 max-w-2xl text-4xl font-black leading-[1.18] sm:text-5xl lg:text-[3.5rem] xl:text-[3.85rem] tracking-tight">
-                  لوحتك الاستثنائية
-                  <br />
-                  <span className="gold-gradient-text">تبدأ من هنا.</span>
-                </h1>
-              </ScrollReveal>
-
-              {/* Subtitle Paragraph */}
-              <ScrollReveal direction="up" delay={160}>
-                <p className="mt-6 max-w-xl text-base leading-relaxed text-slate-200 sm:text-lg lg:text-xl lg:leading-relaxed">
-                  وجهتك المتخصصة لامتلاك وعرض أندر لوحات المركبات السعودية. ننظم المزادات المباشرة بتوثيق معتمد
-                  للملكية، وتسوية مالية موثوقة تضمن حقوق الطرفين.
-                </p>
-              </ScrollReveal>
-            </div>
-
-            {/* CTAs with Luxury Micro-interactions */}
-            <ScrollReveal direction="up" delay={220}>
-              <div className="mt-9 sm:mt-10 lg:mt-11 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-                <Link
-                  href="/auctions"
-                  className="group btn btn-gold text-sm sm:text-base font-black h-14 sm:h-[58px] w-full sm:w-[280px] lg:w-[295px] justify-center gap-3 shadow-xl transition-all duration-300 hover:shadow-[0_0_25px_rgba(217,184,127,0.45)] hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap px-6"
-                >
-                  <Gavel className="w-5 h-5 text-navy shrink-0 transition-transform duration-300 group-hover:-rotate-12" />
-                  <span className="whitespace-nowrap">استكشف المزادات الحية</span>
-                  <ArrowLeft className="w-4 h-4 text-navy/80 shrink-0 transition-transform duration-300 group-hover:-translate-x-1" />
-                </Link>
-                <Link
-                  href="/sell-your-plate"
-                  className="group btn btn-outline-gold text-sm sm:text-base font-black h-14 sm:h-[58px] w-full sm:w-[280px] lg:w-[295px] justify-center gap-3 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-gold/50 bg-[#121a2d]/85 text-white hover:border-gold hover:bg-gold/15 whitespace-nowrap px-6"
-                >
-                  <SvgPlatePlus className="w-5 h-5 text-gold shrink-0 transition-transform duration-300 group-hover:scale-110" />
-                  <span className="whitespace-nowrap">اعرض لوحتك الآن</span>
-                  <ArrowUpLeft className="w-4 h-4 text-gold/80 shrink-0 transition-transform duration-300 group-hover:-translate-x-0.5 group-hover:-translate-y-0.5" />
-                </Link>
-              </div>
-            </ScrollReveal>
-
-            {/* Trust Badges */}
-            <ScrollReveal direction="up" delay={280}>
-              <div className="mt-10 sm:mt-12 flex flex-wrap gap-6 border-t border-white/10 pt-8 text-xs sm:text-sm text-slate-300">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold/15 text-gold border border-gold/30 shadow-xs">
-                    <ShieldCheck size={19} />
-                  </span>
-                  <span className="font-semibold text-slate-200">توثيق وفحص الملكية 100%</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold/15 text-gold border border-gold/30 shadow-xs">
-                    <Gavel size={19} />
-                  </span>
-                  <span className="font-semibold text-slate-200">مزايدة آنية ونظامية</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold/15 text-gold border border-gold/30 shadow-xs">
-                    <Landmark size={19} />
-                  </span>
-                  <span className="font-semibold text-slate-200">حماية بنكية للتأمين</span>
-                </div>
-              </div>
-            </ScrollReveal>
-          </div>
-
-          {/* Right Hero Showcase: Interactive Live Auction Card */}
-          <ScrollReveal direction="left" delay={140}>
-            <HeroAuctionCard
-              initialPlate={liveAuctions[0] || displayPlates[0]}
-              allLivePlates={liveAuctions.length > 0 ? liveAuctions : displayPlates.filter((p) => p.auction).slice(0, 5)}
-            />
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* ============================================================== */}
-      {/* 2. CONCIERGE SEARCH SECTION: QUICK FILTER CHIPS & SEARCH       */}
-      {/* ============================================================== */}
-      <section aria-label="البحث السريع والمتقدم" className="container-fbs relative z-30 -mt-16 sm:-mt-20 lg:-mt-22">
-        <ScrollReveal direction="up" delay={100}>
-          <HeroSearchBar />
-        </ScrollReveal>
-      </section>
+      <HeroCinematic
+        initialPlate={liveAuctions[0] || displayPlates[0]}
+        allLivePlates={liveAuctions.length > 0 ? liveAuctions : displayPlates.filter((p) => p.auction).slice(0, 5)}
+      />
 
       {/* ============================================================== */}
       {/* 3. LIVE AUCTIONS SECTION: DIRECT REAL-TIME COMPETITION          */}
