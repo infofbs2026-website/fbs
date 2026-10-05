@@ -12,27 +12,32 @@ export function HomeLiveAuctions({ liveAuctions }: HomeLiveAuctionsProps) {
   if (!liveAuctions || liveAuctions.length === 0) return null;
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#fbfcfe] via-[#f4f7fb] to-[#edf2f8] pt-16 sm:pt-20 pb-20 sm:pb-24">
-      {/* Ambient Subtle Procedural Glows & Contours */}
-      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
-        <div className="absolute -top-24 start-1/4 h-[450px] w-[700px] rounded-full bg-gradient-to-br from-emerald-500/10 via-gold/10 to-transparent blur-[130px]" />
-        <div className="absolute -bottom-24 end-1/4 h-[400px] w-[600px] rounded-full bg-gradient-to-tl from-gold/15 via-transparent to-transparent blur-[120px]" />
-        <svg
-          className="absolute inset-0 w-full h-full opacity-[0.035]"
-          xmlns="http://www.w3.org/2000/svg"
-          preserveAspectRatio="none"
-          viewBox="0 0 1440 800"
-          aria-hidden="true"
-        >
-          <path d="M-100 200 C 450 50, 950 450, 1540 180" fill="none" stroke="#d9b87f" strokeWidth="1.5" />
-          <path
-            d="M-100 300 C 550 150, 1050 550, 1540 260"
-            fill="none"
-            stroke="#d9b87f"
-            strokeWidth="1"
-            strokeDasharray="6 8"
-          />
-        </svg>
+    <section className="relative overflow-hidden bg-gradient-to-b from-white via-[#f8fafc] to-[#f1f5f9] pt-16 sm:pt-20 pb-20 sm:pb-24 border-t border-[#d9b87f]/30">
+      {/* Ambient Brand Subtle Geometry & Royal Gold/Navy Radiance (Strictly Brand Colors) */}
+      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden" aria-hidden="true">
+        {/* Overhead Subtle Gold Halo */}
+        <div
+          className="absolute -top-32 start-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full blur-[120px] opacity-70"
+          style={{
+            background: 'radial-gradient(ellipse at center, rgba(217,184,127,0.18) 0%, rgba(208,173,103,0.06) 50%, transparent 80%)'
+          }}
+        />
+
+        {/* Subtle Navy Depth on corners */}
+        <div className="absolute top-1/3 -start-32 h-[450px] w-[450px] rounded-full bg-navy/4 blur-[130px]" />
+        <div className="absolute bottom-10 -end-32 h-[450px] w-[450px] rounded-full bg-gold/6 blur-[130px]" />
+
+        {/* Micro-dot Luxury Architectural Matrix (Pure Brand Gold, 4% Opacity) */}
+        <div
+          className="absolute inset-0 opacity-[0.045]"
+          style={{
+            backgroundImage: 'radial-gradient(#d9b87f 1px, transparent 1px)',
+            backgroundSize: '28px 28px'
+          }}
+        />
+
+        {/* Golden Hairline Horizon Divider from Hero */}
+        <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#d9b87f]/60 to-transparent" />
       </div>
 
       <div className="container-fbs relative z-10">
@@ -69,15 +74,15 @@ export function HomeLiveAuctions({ liveAuctions }: HomeLiveAuctionsProps) {
 
           {/* Live Market Indicators Micro-bar */}
           <div className="mb-8 flex flex-wrap items-center gap-3 text-xs font-bold text-slate-600">
-            <div className="inline-flex items-center gap-2 rounded-xl bg-white/85 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
+            <div className="inline-flex items-center gap-2 rounded-xl bg-white/90 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-slate-800">مزايدة لحظية نشطة</span>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-xl bg-white/85 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
+            <div className="inline-flex items-center gap-2 rounded-xl bg-white/90 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
               <ShieldCheck size={14} className="text-gold-accent" />
               <span className="text-slate-800">توثيق رسمي مسبق للملكية</span>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-xl bg-white/85 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
+            <div className="inline-flex items-center gap-2 rounded-xl bg-white/90 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
               <Clock size={14} className="text-gold-accent" />
               <span className="text-slate-800">تمديد تلقائي عادل (Anti-Sniping)</span>
             </div>
