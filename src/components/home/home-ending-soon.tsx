@@ -29,8 +29,7 @@ function formatSar(halalas?: string | number | null) {
 
 /**
  * Isolated Countdown Timer:
- * Keeps timer re-renders completely isolated to this pill only,
- * preventing any re-renders of the parent carousel track or cards (0% stuttering).
+ * Self-contained ticking to prevent re-rendering the parent carousel track or cards (0% stuttering).
  */
 const LiveAuctionCountdown = memo(function LiveAuctionCountdown() {
   const [time, setTime] = useState({ hours: 4, minutes: 28, seconds: 45 });
@@ -81,7 +80,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
   // Repeat 3 times: perfectly covers 1400px container width with minimal DOM nodes for 60fps smoothness
   const loopedPlates = plates.length > 0 ? [...plates, ...plates, ...plates] : [];
 
-  // Measure repeating cycle width once
+  // Measure repeating cycle width
   const measureWidth = useCallback(() => {
     if (plates.length === 0) return 0;
     const firstCard = cardRefs.current[0];
@@ -98,7 +97,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
     return estimated;
   }, [plates.length]);
 
-  // Continuous Glide Animation Loop (Left to Right, 60fps GPU Composited)
+  // Continuous Perpetual Glide Loop (Left to Right, 60fps GPU Composited)
   useEffect(() => {
     if (plates.length === 0) return;
 
@@ -154,20 +153,20 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
     return () => window.removeEventListener('resize', handleResize);
   }, [measureWidth]);
 
-  // Pause on hover, resume after exactly 2 seconds
-  const handleMouseEnter = () => {
+  // Pause ONLY when directly hovering on a card, resume after 2 seconds on leave
+  const handleCardMouseEnter = () => {
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
     isPausedRef.current = true;
     setIsPaused(true);
   };
 
-  const handleMouseLeave = () => {
+  const handleCardMouseLeave = () => {
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
     resumeTimerRef.current = setTimeout(() => {
       isPausedRef.current = false;
       setIsPaused(false);
       lastTimeRef.current = performance.now();
-    }, 2000);
+    }, 2000); // 2 seconds delay before resuming continuous motion
   };
 
   useEffect(() => {
@@ -248,7 +247,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
   const handlePointerUp = () => {
     if (!isDraggingRef.current) return;
     isDraggingRef.current = false;
-    handleMouseLeave();
+    handleCardMouseLeave();
   };
 
   if (plates.length === 0) return null;
@@ -259,8 +258,6 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
       style={{
         background: 'linear-gradient(180deg, #091222 0%, #111f38 35%, #152646 65%, #0a1324 100%)'
       }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       {/* Luxury Atmospheric Glows */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
@@ -294,7 +291,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
                     <span className={`absolute inline-flex h-full w-full rounded-full bg-gold ${isPaused ? 'opacity-0' : 'animate-ping opacity-75'}`} />
                     <span className={`relative inline-flex h-2 w-2 rounded-full ${isPaused ? 'bg-amber-400 shadow-[0_0_8px_#f59e0b]' : 'bg-emerald-400 shadow-[0_0_8px_#10b981]'}`} />
                   </span>
-                  <span>{isPaused ? 'توقف مؤقت للتفحص (استئناف بعد ثانيتين)' : 'انسياب دائم من اليسار لليمين'}</span>
+                  <span>{isPaused ? 'توقف مؤقت للمعاينة (استئناف تلقائي)' : 'انسياب دائم من اليسار لليمين'}</span>
                 </div>
               </div>
 
@@ -342,19 +339,19 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
         </ScrollReveal>
 
         {/* ============================================================== */}
-        {/* SHOWCASE THEATER FRAME: Framed, 1400px Max, 1.5 - 2 Cards Fit  */}
+        {/* CAROUSEL TRACK: Frameless within 1400px (لا يوجد كارت خارجي)   */}
         {/* ============================================================== */}
         <div
-          className="relative w-full overflow-hidden rounded-3xl border border-gold/25 bg-[#08101d]/60 shadow-[0_20px_50px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.08)] py-5 px-2 sm:px-4 cursor-grab active:cursor-grabbing select-none"
+          className="relative w-full overflow-hidden py-4 cursor-grab active:cursor-grabbing select-none"
           dir="ltr"
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
         >
-          {/* Vignette Edge Masks on Frame Borders */}
-          <div className="absolute inset-y-0 start-0 w-8 sm:w-16 bg-gradient-to-r from-[#08101d] to-transparent z-20 pointer-events-none" />
-          <div className="absolute inset-y-0 end-0 w-8 sm:w-16 bg-gradient-to-l from-[#08101d] to-transparent z-20 pointer-events-none" />
+          {/* Subtle Side Vignette Masks directly blending with the section background */}
+          <div className="absolute inset-y-0 start-0 w-8 sm:w-16 bg-gradient-to-r from-[#12213d] to-transparent z-20 pointer-events-none" />
+          <div className="absolute inset-y-0 end-0 w-8 sm:w-16 bg-gradient-to-l from-[#12213d] to-transparent z-20 pointer-events-none" />
 
           {/* Continuous Gliding Track: Hardware Accelerated */}
           <div
@@ -377,6 +374,10 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
                     cardRefs.current[idx] = el;
                   }}
                   dir="rtl"
+                  onMouseEnter={handleCardMouseEnter}
+                  onMouseLeave={handleCardMouseLeave}
+                  onTouchStart={handleCardMouseEnter}
+                  onTouchEnd={handleCardMouseLeave}
                   className="relative shrink-0 w-[86vw] sm:w-[500px] md:w-[560px] lg:w-[620px] xl:w-[640px] rounded-2xl overflow-hidden border border-white/15 hover:border-gold shadow-[0_15px_35px_rgba(0,0,0,0.6)] hover:shadow-[0_20px_45px_rgba(217,184,127,0.3)] transition-all duration-300 bg-gradient-to-br from-[#121e36] via-[#0d1628] to-[#070e1a] p-5 sm:p-7 flex flex-col justify-between"
                 >
                   {/* Golden Top Shimmer Edge */}
