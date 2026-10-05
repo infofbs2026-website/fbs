@@ -59,7 +59,7 @@ export function HomeHowItWorks() {
       <div className="container-fbs relative z-10">
         <ScrollReveal direction="up" className="mb-14 text-center">
           {/* Prestige Eyebrow Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-gradient-to-r from-gold/20 via-gold/10 to-amber-500/10 px-4.5 py-1.5 text-xs sm:text-sm font-black text-navy-deep backdrop-blur-md shadow-[0_2px_12px_rgba(217,184,127,0.22)] mb-4">
+          <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-white/95 px-4.5 py-1.5 text-xs sm:text-sm font-black text-navy-deep shadow-[0_2px_12px_rgba(217,184,127,0.18)] mb-4">
             <ShieldCheck size={16} className="text-gold-dark shrink-0" />
             <span className="tracking-wide">رحلة واضحة · من المزايدة حتى نقل الملكية</span>
           </div>

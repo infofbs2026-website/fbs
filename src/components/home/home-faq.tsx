@@ -109,7 +109,7 @@ export function HomeFaq() {
         >
           <div className="max-w-2xl">
             {/* Unified Luxury Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-gradient-to-r from-gold/20 via-gold/10 to-amber-500/10 px-4.5 py-1.5 text-xs sm:text-sm font-black text-navy-deep backdrop-blur-md shadow-[0_2px_12px_rgba(217,184,127,0.22)] mb-3.5">
+            <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-white/95 px-4.5 py-1.5 text-xs sm:text-sm font-black text-navy-deep shadow-[0_2px_12px_rgba(217,184,127,0.18)] mb-3.5">
               <HelpCircle size={16} className="text-gold-dark shrink-0" />
               <span className="tracking-wide">مركز المعرفة والشفافية</span>
             </div>
