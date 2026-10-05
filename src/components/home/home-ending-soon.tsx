@@ -73,14 +73,12 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
   const dragStartXRef = useRef<number>(0);
   const dragStartOffsetRef = useRef<number>(0);
 
-  const [isPaused, setIsPaused] = useState(false);
-
   const plates = endingSoonAuctions && endingSoonAuctions.length > 0 ? endingSoonAuctions : [];
 
-  // Repeat 3 times: perfectly covers 1400px container width with minimal DOM nodes for 60fps smoothness
+  // Repeat 3 times to perfectly cover the 1400px container with minimal DOM nodes
   const loopedPlates = plates.length > 0 ? [...plates, ...plates, ...plates] : [];
 
-  // Measure repeating cycle width
+  // Measure repeating cycle width once and cache in ref
   const measureWidth = useCallback(() => {
     if (plates.length === 0) return 0;
     const firstCard = cardRefs.current[0];
@@ -101,6 +99,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
   useEffect(() => {
     if (plates.length === 0) return;
 
+    // Cache initial measurement
     const setWidth = measureWidth();
     if (offsetRef.current === 0 && setWidth > 0) {
       offsetRef.current = -setWidth;
@@ -110,15 +109,18 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
     }
 
     lastTimeRef.current = performance.now();
-    const SPEED = 60; // 60px/sec: calm, smooth, continuous, zero-jank glide
+    const SPEED = 48; // 48px/sec: calm, smooth, continuous, zero-jank luxury tempo
 
     const tick = (now: number) => {
       if (!lastTimeRef.current) lastTimeRef.current = now;
-      const delta = Math.min((now - lastTimeRef.current) / 1000, 0.1);
+      const elapsed = (now - lastTimeRef.current) / 1000;
       lastTimeRef.current = now;
 
+      // Clamp delta between 20fps and 120fps to prevent any tab switch or VSync frame jitter
+      const delta = Math.min(Math.max(elapsed, 0.005), 0.04);
+
       if (!isPausedRef.current && !isDraggingRef.current && trackRef.current) {
-        const currentSetWidth = singleSetWidthRef.current || measureWidth();
+        const currentSetWidth = singleSetWidthRef.current;
         if (currentSetWidth > 0) {
           offsetRef.current += SPEED * delta;
 
@@ -130,7 +132,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
             offsetRef.current += currentSetWidth;
           }
 
-          trackRef.current.style.transform = `translate3d(${offsetRef.current.toFixed(2)}px, 0, 0)`;
+          trackRef.current.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
         }
       }
 
@@ -157,14 +159,12 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
   const handleCardMouseEnter = () => {
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
     isPausedRef.current = true;
-    setIsPaused(true);
   };
 
   const handleCardMouseLeave = () => {
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
     resumeTimerRef.current = setTimeout(() => {
       isPausedRef.current = false;
-      setIsPaused(false);
       lastTimeRef.current = performance.now();
     }, 2000); // 2 seconds delay before resuming continuous motion
   };
@@ -179,7 +179,6 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
   const nudge = (direction: 'prev' | 'next') => {
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
     isPausedRef.current = true;
-    setIsPaused(true);
 
     const step = singleSetWidthRef.current > 0
       ? singleSetWidthRef.current / plates.length
@@ -196,7 +195,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
 
     if (trackRef.current) {
       trackRef.current.style.transition = 'transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)';
-      trackRef.current.style.transform = `translate3d(${offsetRef.current.toFixed(2)}px, 0, 0)`;
+      trackRef.current.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
     }
 
     setTimeout(() => {
@@ -207,7 +206,6 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
 
     resumeTimerRef.current = setTimeout(() => {
       isPausedRef.current = false;
-      setIsPaused(false);
       lastTimeRef.current = performance.now();
     }, 2000);
   };
@@ -220,7 +218,6 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
     dragStartXRef.current = e.clientX;
     dragStartOffsetRef.current = offsetRef.current;
     isPausedRef.current = true;
-    setIsPaused(true);
 
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
     if (trackRef.current) {
@@ -240,7 +237,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
     }
 
     if (trackRef.current) {
-      trackRef.current.style.transform = `translate3d(${offsetRef.current.toFixed(2)}px, 0, 0)`;
+      trackRef.current.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
     }
   };
 
@@ -280,19 +277,10 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
           {/* Header Bar */}
           <div className="mb-8 sm:mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
             <div>
-              <div className="flex flex-wrap items-center gap-3 mb-3.5">
-                <div className="inline-flex items-center gap-2 rounded-full border border-gold/55 bg-gradient-to-r from-gold/30 via-gold/15 to-amber-500/20 px-4.5 py-1.5 text-xs sm:text-sm font-black text-gold-light backdrop-blur-md shadow-[0_0_25px_rgba(217,184,127,0.3)]">
-                  <Flame size={16} className="text-amber-400 shrink-0 animate-bounce" />
-                  <span className="tracking-wide">المسرح الماسي · فرص اللحظات الأخيرة</span>
-                </div>
-
-                <div className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/10 px-3.5 py-1.5 text-xs font-bold text-gold-light backdrop-blur-md">
-                  <span className="relative flex h-2 w-2">
-                    <span className={`absolute inline-flex h-full w-full rounded-full bg-gold ${isPaused ? 'opacity-0' : 'animate-ping opacity-75'}`} />
-                    <span className={`relative inline-flex h-2 w-2 rounded-full ${isPaused ? 'bg-amber-400 shadow-[0_0_8px_#f59e0b]' : 'bg-emerald-400 shadow-[0_0_8px_#10b981]'}`} />
-                  </span>
-                  <span>{isPaused ? 'توقف مؤقت للمعاينة (استئناف تلقائي)' : 'انسياب دائم من اليسار لليمين'}</span>
-                </div>
+              {/* Prestige Golden Stage Badge (Status badge removed as requested) */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-gold/55 bg-gradient-to-r from-gold/30 via-gold/15 to-amber-500/20 px-4.5 py-1.5 text-xs sm:text-sm font-black text-gold-light backdrop-blur-md shadow-[0_0_25px_rgba(217,184,127,0.3)] mb-3.5">
+                <Flame size={16} className="text-amber-400 shrink-0 animate-bounce" />
+                <span className="tracking-wide">المسرح الماسي · فرص اللحظات الأخيرة</span>
               </div>
 
               <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-[2.65rem] leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
@@ -339,7 +327,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
         </ScrollReveal>
 
         {/* ============================================================== */}
-        {/* CAROUSEL TRACK: Frameless within 1400px (لا يوجد كارت خارجي)   */}
+        {/* CAROUSEL TRACK: Clean & Frameless, Cards Float Free (بدون أي ظلال) */}
         {/* ============================================================== */}
         <div
           className="relative w-full overflow-hidden py-4 cursor-grab active:cursor-grabbing select-none"
@@ -349,17 +337,14 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
         >
-          {/* Subtle Side Vignette Masks directly blending with the section background */}
-          <div className="absolute inset-y-0 start-0 w-8 sm:w-16 bg-gradient-to-r from-[#12213d] to-transparent z-20 pointer-events-none" />
-          <div className="absolute inset-y-0 end-0 w-8 sm:w-16 bg-gradient-to-l from-[#12213d] to-transparent z-20 pointer-events-none" />
-
-          {/* Continuous Gliding Track: Hardware Accelerated */}
+          {/* Continuous Gliding Track: Hardware GPU Accelerated */}
           <div
             ref={trackRef}
             className="flex gap-6 will-change-transform"
             style={{
               backfaceVisibility: 'hidden',
-              WebkitBackfaceVisibility: 'hidden'
+              WebkitBackfaceVisibility: 'hidden',
+              transform: 'translateZ(0)'
             }}
           >
             {loopedPlates.map((plate, idx) => {
@@ -378,7 +363,13 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
                   onMouseLeave={handleCardMouseLeave}
                   onTouchStart={handleCardMouseEnter}
                   onTouchEnd={handleCardMouseLeave}
-                  className="relative shrink-0 w-[86vw] sm:w-[500px] md:w-[560px] lg:w-[620px] xl:w-[640px] rounded-2xl overflow-hidden border border-white/15 hover:border-gold shadow-[0_15px_35px_rgba(0,0,0,0.6)] hover:shadow-[0_20px_45px_rgba(217,184,127,0.3)] transition-all duration-300 bg-gradient-to-br from-[#121e36] via-[#0d1628] to-[#070e1a] p-5 sm:p-7 flex flex-col justify-between"
+                  className="relative shrink-0 w-[86vw] sm:w-[500px] md:w-[560px] lg:w-[620px] xl:w-[640px] rounded-2xl overflow-hidden border border-white/15 hover:border-gold shadow-[0_15px_35px_rgba(0,0,0,0.6)] hover:shadow-[0_20px_45px_rgba(217,184,127,0.3)] transition-colors duration-150 bg-gradient-to-br from-[#121e36] via-[#0d1628] to-[#070e1a] p-5 sm:p-7 flex flex-col justify-between"
+                  style={{
+                    contain: 'layout paint',
+                    transform: 'translateZ(0)',
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden'
+                  }}
                 >
                   {/* Golden Top Shimmer Edge */}
                   <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-gold to-transparent" />
@@ -417,7 +408,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
                   {/* POSTER CENTER: MAJESTIC PLATE SHOWCASE CANVAS            */}
                   {/* -------------------------------------------------------- */}
                   <div className="py-6 sm:py-8 flex flex-col items-center justify-center">
-                    <div className="w-full max-w-[420px] sm:max-w-[480px] transform transition-transform duration-300 group-hover:scale-[1.02]">
+                    <div className="w-full max-w-[420px] sm:max-w-[480px]">
                       <PlateVisualizer
                         lettersAr={plate.lettersAr}
                         lettersEn={plate.lettersEn}
