@@ -28,15 +28,22 @@ function formatSar(halalas?: string | number | null) {
 }
 
 export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const cardRefs = useRef<(HTMLElement | null)[]>([]);
   const resumeTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const animFrameRef = useRef<number | null>(null);
+  const lastTimeRef = useRef<number>(0);
+  const offsetRef = useRef<number>(0);
+  const singleSetWidthRef = useRef<number>(0);
+  const isPausedRef = useRef<boolean>(false);
+  const isDraggingRef = useRef<boolean>(false);
+  const dragStartXRef = useRef<number>(0);
+  const dragStartOffsetRef = useRef<number>(0);
 
-  // Active ticking countdown (hours, minutes, seconds)
+  const [isPaused, setIsPaused] = useState(false);
   const [countdown, setCountdown] = useState({ hours: 4, minutes: 28, seconds: 45 });
 
+  // Active ticking countdown (hours, minutes, seconds)
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown((prev) => {
@@ -51,46 +58,98 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
 
   const plates = endingSoonAuctions && endingSoonAuctions.length > 0 ? endingSoonAuctions : [];
 
-  // Center a specific card index horizontally without affecting page vertical scroll
-  const scrollToIndex = useCallback((targetIndex: number) => {
-    const el = scrollContainerRef.current;
-    if (!el || plates.length === 0) return;
+  // Repeat the plates 4 times to guarantee a seamless infinite loop on all screen sizes
+  const loopedPlates = plates.length > 0 ? [...plates, ...plates, ...plates, ...plates] : [];
 
-    const boundedIndex = (targetIndex + plates.length) % plates.length;
-    const cardEl = el.children[boundedIndex] as HTMLElement;
-    if (!cardEl) return;
-
-    const targetScroll = cardEl.offsetLeft - (el.clientWidth - cardEl.offsetWidth) / 2;
-
-    el.scrollTo({
-      left: Math.max(0, targetScroll),
-      behavior: 'smooth'
-    });
-
-    setActiveIndex(boundedIndex);
-    setProgress(0);
+  // Measure the exact repeating period (width of one full set of cards + gaps)
+  const measureWidth = useCallback(() => {
+    if (plates.length === 0) return 0;
+    const firstCard = cardRefs.current[0];
+    const nextSetFirstCard = cardRefs.current[plates.length];
+    if (firstCard && nextSetFirstCard) {
+      const measured = nextSetFirstCard.offsetLeft - firstCard.offsetLeft;
+      if (measured > 0) {
+        singleSetWidthRef.current = measured;
+        return measured;
+      }
+    }
+    // Fallback calculation
+    const fallback = plates.length * 760;
+    singleSetWidthRef.current = fallback;
+    return fallback;
   }, [plates.length]);
 
-  // Motion from Left to Right:
-  const slideNext = useCallback(() => {
-    scrollToIndex(activeIndex + 1);
-  }, [activeIndex, scrollToIndex]);
+  // Continuous Perpetual Gliding Loop (Left to Right, 60fps)
+  useEffect(() => {
+    if (plates.length === 0) return;
 
-  const slidePrev = useCallback(() => {
-    scrollToIndex(activeIndex - 1);
-  }, [activeIndex, scrollToIndex]);
+    // Initial setup
+    const setWidth = measureWidth();
+    if (offsetRef.current === 0 && setWidth > 0) {
+      offsetRef.current = -setWidth;
+      if (trackRef.current) {
+        trackRef.current.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+      }
+    }
 
-  // Pause on hover, resume after exactly 2 seconds on unhover
+    lastTimeRef.current = performance.now();
+    const SPEED = 75; // 75 pixels per second: continuous, visible, graceful glide
+
+    const tick = (now: number) => {
+      const delta = Math.min((now - lastTimeRef.current) / 1000, 0.1);
+      lastTimeRef.current = now;
+
+      if (!isPausedRef.current && !isDraggingRef.current && trackRef.current) {
+        const currentSetWidth = singleSetWidthRef.current || measureWidth();
+        if (currentSetWidth > 0) {
+          // Continuous motion from Left to Right (increasing X translation)
+          offsetRef.current += SPEED * delta;
+
+          // Seamless infinite wrap without any visual jump
+          while (offsetRef.current >= 0) {
+            offsetRef.current -= currentSetWidth;
+          }
+          while (offsetRef.current < -currentSetWidth * 2) {
+            offsetRef.current += currentSetWidth;
+          }
+
+          trackRef.current.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+        }
+      }
+
+      animFrameRef.current = requestAnimationFrame(tick);
+    };
+
+    animFrameRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    };
+  }, [plates.length, measureWidth]);
+
+  // Recalculate set width on viewport resize
+  useEffect(() => {
+    const handleResize = () => {
+      measureWidth();
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [measureWidth]);
+
+  // Pause on hover / touch, resume after exactly 2 seconds on unhover
   const handleMouseEnter = () => {
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    isPausedRef.current = true;
     setIsPaused(true);
   };
 
   const handleMouseLeave = () => {
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
     resumeTimerRef.current = setTimeout(() => {
+      isPausedRef.current = false;
       setIsPaused(false);
-    }, 2000); // 2 seconds delay before resuming motion as requested
+      lastTimeRef.current = performance.now();
+    }, 2000); // 2-second delay before resuming continuous motion as requested
   };
 
   useEffect(() => {
@@ -99,49 +158,82 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
     };
   }, []);
 
-  // Snappy auto-slide ticker: 2600ms cycle (faster as requested)
-  useEffect(() => {
-    if (isPaused || plates.length <= 1) return;
+  // Manual Nudge (Prev / Next Buttons)
+  const nudge = (direction: 'prev' | 'next') => {
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    isPausedRef.current = true;
+    setIsPaused(true);
 
-    const stepMs = 40;
-    const totalMs = 2600; // 2.6 seconds per poster card
-    const increment = (stepMs / totalMs) * 100;
+    const step = singleSetWidthRef.current > 0
+      ? singleSetWidthRef.current / plates.length
+      : 760;
 
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          slideNext();
-          return 0;
-        }
-        return prev + increment;
-      });
-    }, stepMs);
+    // Direction handling: Next advances forward, Prev steps back
+    const delta = direction === 'next' ? step : -step;
+    offsetRef.current += delta;
 
-    return () => clearInterval(interval);
-  }, [isPaused, plates.length, slideNext]);
+    const setWidth = singleSetWidthRef.current;
+    if (setWidth > 0) {
+      while (offsetRef.current >= 0) offsetRef.current -= setWidth;
+      while (offsetRef.current < -setWidth * 2) offsetRef.current += setWidth;
+    }
 
-  // Track active index based on scroll position
-  const handleScroll = useCallback(() => {
-    const el = scrollContainerRef.current;
-    if (!el || plates.length === 0) return;
+    if (trackRef.current) {
+      trackRef.current.style.transition = 'transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      trackRef.current.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+    }
 
-    const scrollLeft = el.scrollLeft;
-    const cardWidth = el.firstElementChild ? (el.firstElementChild as HTMLElement).offsetWidth + 24 : 640;
-    const index = Math.round(scrollLeft / cardWidth);
-    setActiveIndex(Math.min(Math.max(index, 0), plates.length - 1));
-  }, [plates.length]);
+    setTimeout(() => {
+      if (trackRef.current) {
+        trackRef.current.style.transition = 'none';
+      }
+    }, 450);
 
-  useEffect(() => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
+    // Resume continuous motion after 2 seconds
+    resumeTimerRef.current = setTimeout(() => {
+      isPausedRef.current = false;
+      setIsPaused(false);
+      lastTimeRef.current = performance.now();
+    }, 2000);
+  };
 
-    el.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll);
-    return () => {
-      el.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
-    };
-  }, [handleScroll]);
+  // Pointer Drag & Swipe Handling
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if ((e.target as HTMLElement).closest('a, button')) return;
+
+    isDraggingRef.current = true;
+    dragStartXRef.current = e.clientX;
+    dragStartOffsetRef.current = offsetRef.current;
+    isPausedRef.current = true;
+    setIsPaused(true);
+
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    if (trackRef.current) {
+      trackRef.current.style.transition = 'none';
+    }
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDraggingRef.current) return;
+    const deltaX = e.clientX - dragStartXRef.current;
+    offsetRef.current = dragStartOffsetRef.current + deltaX;
+
+    const setWidth = singleSetWidthRef.current;
+    if (setWidth > 0) {
+      while (offsetRef.current >= 0) offsetRef.current -= setWidth;
+      while (offsetRef.current < -setWidth * 2) offsetRef.current += setWidth;
+    }
+
+    if (trackRef.current) {
+      trackRef.current.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+    }
+  };
+
+  const handlePointerUp = () => {
+    if (!isDraggingRef.current) return;
+    isDraggingRef.current = false;
+    handleMouseLeave();
+  };
 
   if (plates.length === 0) return null;
 
@@ -153,8 +245,6 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onTouchStart={handleMouseEnter}
-      onTouchEnd={handleMouseLeave}
     >
       {/* ============================================================== */}
       {/* 1. LUXURY ATMOSPHERIC STAGE LIGHTING (WARM RADIANCE & RAYS)   */}
@@ -182,13 +272,23 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
 
       <div className="container-fbs relative z-10">
         <ScrollReveal direction="up" delay={30}>
-          {/* Header Bar: Headline, Badge & Showcase Navigation */}
+          {/* Header Bar: Headline, Badges & Stage Navigation */}
           <div className="mb-10 sm:mb-12 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
             <div>
-              {/* Prestige Golden Stage Badge */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-gold/55 bg-gradient-to-r from-gold/30 via-gold/15 to-amber-500/20 px-4.5 py-1.5 text-xs sm:text-sm font-black text-gold-light backdrop-blur-md shadow-[0_0_25px_rgba(217,184,127,0.3)] mb-3.5">
-                <Flame size={16} className="text-amber-400 shrink-0 animate-bounce" />
-                <span className="tracking-wide">المسرح الماسي · فرص اللحظات الأخيرة</span>
+              {/* Prestige Golden Stage Badge & Live Status Indicator */}
+              <div className="flex flex-wrap items-center gap-3 mb-3.5">
+                <div className="inline-flex items-center gap-2 rounded-full border border-gold/55 bg-gradient-to-r from-gold/30 via-gold/15 to-amber-500/20 px-4.5 py-1.5 text-xs sm:text-sm font-black text-gold-light backdrop-blur-md shadow-[0_0_25px_rgba(217,184,127,0.3)]">
+                  <Flame size={16} className="text-amber-400 shrink-0 animate-bounce" />
+                  <span className="tracking-wide">المسرح الماسي · فرص اللحظات الأخيرة</span>
+                </div>
+
+                <div className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/10 px-3.5 py-1.5 text-xs font-bold text-gold-light backdrop-blur-md">
+                  <span className="relative flex h-2 w-2">
+                    <span className={`absolute inline-flex h-full w-full rounded-full bg-gold ${isPaused ? 'opacity-0' : 'animate-ping opacity-75'}`} />
+                    <span className={`relative inline-flex h-2 w-2 rounded-full ${isPaused ? 'bg-amber-400 shadow-[0_0_8px_#f59e0b]' : 'bg-emerald-400 shadow-[0_0_8px_#10b981]'}`} />
+                  </span>
+                  <span>{isPaused ? 'توقف مؤقت للتفحص (استئناف بعد ثانيتين)' : 'انسياب دائم من اليسار لليمين'}</span>
+                </div>
               </div>
 
               {/* Commanding Luxury Headline */}
@@ -197,17 +297,17 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
               </h2>
 
               <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-slate-200 font-medium">
-                لوحات استثنائية تقترب من الإغلاق النهائي. عروض تنافسية حية مع تمديد تلقائي عادل وتوثيق رسمي فوري.
+                لوحات استثنائية في حركة انسيابية مستمرة. قف بالماوس على أي لوحة لمعاينتها فورا، أو استكشف المزادات المتاحة.
               </p>
             </div>
 
-            {/* Stage Controls: Prev/Next Arrows & View All (Play/pause button removed as requested) */}
+            {/* Stage Controls: Prev/Next Arrows & View All */}
             <div className="flex items-center gap-3 self-start lg:self-end">
               {/* Prev / Next Luxury Buttons */}
               <div className="flex items-center gap-2" dir="ltr">
                 <button
                   type="button"
-                  onClick={slidePrev}
+                  onClick={() => nudge('prev')}
                   aria-label="السابق"
                   className="group flex h-12 w-12 items-center justify-center rounded-2xl border border-gold/50 bg-[#0d1830]/95 text-gold-light backdrop-blur-md transition-all duration-300 hover:border-gold hover:bg-gold hover:text-navy hover:scale-105 active:scale-95 shadow-lg shadow-black/50"
                   title="اللوحة السابقة"
@@ -216,10 +316,10 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
                 </button>
                 <button
                   type="button"
-                  onClick={slideNext}
+                  onClick={() => nudge('next')}
                   aria-label="التالي"
                   className="group flex h-12 w-12 items-center justify-center rounded-2xl border border-gold/50 bg-[#0d1830]/95 text-gold-light backdrop-blur-md transition-all duration-300 hover:border-gold hover:bg-gold hover:text-navy hover:scale-105 active:scale-95 shadow-lg shadow-black/50"
-                  title="اللوحة التالية (من اليسار لليمين)"
+                  title="اللوحة التالية"
                 >
                   <ChevronRight size={22} className="transition-transform group-hover:scale-110" />
                 </button>
@@ -235,44 +335,42 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
               </Link>
             </div>
           </div>
-
-          {/* Autoplay Active Progress Indicator Bar */}
-          <div className="mb-6 sm:mb-8 h-1 w-full bg-white/10 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-gold via-gold-light to-amber-400 shadow-[0_0_12px_#d9b87f] transition-all duration-100 ease-linear"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
         </ScrollReveal>
+      </div>
 
-        {/* ============================================================== */}
-        {/* 2. THE WIDE POSTER CAROUSEL (كروت عريضة بنصف عرض الشاشة)       */}
-        {/* ============================================================== */}
+      {/* ============================================================== */}
+      {/* 2. CONTINUOUS INFINITE GLIDING TRACK (حركة دائمة من اليسار لليمين) */}
+      {/* ============================================================== */}
+      <div
+        className="relative w-full overflow-hidden cursor-grab active:cursor-grabbing select-none py-4"
+        dir="ltr"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+      >
+        {/* Edge Vignette Masks for cinematic seamless gliding */}
+        <div className="absolute inset-y-0 start-0 w-8 sm:w-24 bg-gradient-to-r from-[#091222] to-transparent z-20 pointer-events-none" />
+        <div className="absolute inset-y-0 end-0 w-8 sm:w-24 bg-gradient-to-l from-[#0a1324] to-transparent z-20 pointer-events-none" />
+
+        {/* The Continuous Gliding Flex Track */}
         <div
-          ref={scrollContainerRef}
-          dir="ltr"
-          className="flex gap-6 sm:gap-8 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing -mx-4 px-4 sm:mx-0 sm:px-0"
-          style={{
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            WebkitOverflowScrolling: 'touch'
-          }}
+          ref={trackRef}
+          className="flex gap-6 sm:gap-8 will-change-transform px-4 sm:px-8"
         >
-          {plates.map((plate, idx) => {
+          {loopedPlates.map((plate, idx) => {
             const rawPrice = plate.auction?.currentPriceHalalas ?? plate.priceHalalas ?? '0';
-            const isActive = activeIndex === idx;
-            const bidsCount = plate.auction?.bidCount ?? 18 + (idx * 5);
+            const lotNum = (idx % plates.length) + 1;
+            const bidsCount = plate.auction?.bidCount ?? 18 + (lotNum * 5);
 
             return (
               <article
-                key={plate.id || idx}
+                key={`${plate.id || 'plate'}-${idx}`}
+                ref={(el) => {
+                  cardRefs.current[idx] = el;
+                }}
                 dir="rtl"
-                onClick={() => scrollToIndex(idx)}
-                className={`relative shrink-0 snap-center transition-all duration-500 w-[90vw] sm:w-[580px] lg:w-[680px] xl:w-[730px] rounded-3xl overflow-hidden border-2 ${
-                  isActive
-                    ? 'border-gold shadow-[0_20px_60px_-10px_rgba(0,0,0,0.8),0_0_40px_rgba(217,184,127,0.35)] scale-[1.01]'
-                    : 'border-white/15 hover:border-gold/50 shadow-xl opacity-85 hover:opacity-100 scale-[0.98]'
-                } bg-gradient-to-br from-[#101b30]/98 via-[#0c1628]/98 to-[#070e1c]/99 backdrop-blur-2xl p-6 sm:p-8 flex flex-col justify-between`}
+                className="relative shrink-0 w-[88vw] sm:w-[580px] lg:w-[680px] xl:w-[730px] rounded-3xl overflow-hidden border-2 border-white/15 hover:border-gold shadow-[0_20px_60px_-10px_rgba(0,0,0,0.8),0_0_35px_rgba(217,184,127,0.25)] hover:shadow-[0_25px_70px_-10px_rgba(0,0,0,0.9),0_0_45px_rgba(217,184,127,0.4)] transition-all duration-300 bg-gradient-to-br from-[#101b30]/98 via-[#0c1628]/98 to-[#070e1c]/99 backdrop-blur-2xl p-6 sm:p-8 flex flex-col justify-between"
               >
                 {/* Golden Top Shimmer Edge */}
                 <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-transparent via-gold to-transparent" />
@@ -288,7 +386,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
                     {/* Lot Number Emblem */}
                     <span className="inline-flex items-center gap-1.5 rounded-xl border border-gold/40 bg-gold/15 px-3 py-1 text-xs font-black text-gold-light">
                       <Gavel size={13} className="text-gold" />
-                      <span>لوط #{String(idx + 1).padStart(2, '0')}</span>
+                      <span>لوط #{String(lotNum).padStart(2, '0')}</span>
                     </span>
 
                     {/* Live Pulse Indicator */}
@@ -385,40 +483,26 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
             );
           })}
         </div>
+      </div>
 
-        {/* ============================================================== */}
-        {/* 3. BOTTOM CAROUSEL DOTS & SHOWCASE STATS                      */}
-        {/* ============================================================== */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          {/* Slide Navigation Dots */}
-          <div className="flex items-center gap-2.5" dir="ltr">
-            {plates.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => scrollToIndex(i)}
-                aria-label={`الانتقال إلى اللوط ${i + 1}`}
-                className={`h-2.5 rounded-full transition-all duration-300 ${
-                  activeIndex === i
-                    ? 'w-10 bg-gradient-to-r from-gold via-gold-light to-gold shadow-[0_0_12px_rgba(217,184,127,0.9)]'
-                    : 'w-2.5 bg-white/30 hover:bg-white/60'
-                }`}
-              />
-            ))}
-          </div>
+      {/* ============================================================== */}
+      {/* 3. BOTTOM TRUST & GUARANTEE STRIP                             */}
+      {/* ============================================================== */}
+      <div className="container-fbs relative z-10 mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10 pt-6">
+        <div className="flex items-center gap-3 text-xs font-bold text-slate-300">
+          <span className="flex items-center gap-1.5 text-gold-light">
+            <ShieldCheck size={16} className="text-gold" />
+            <span>حساب ضمان Escrow رسمي معتمد بنكياً</span>
+          </span>
+          <span className="text-white/20">•</span>
+          <span className="flex items-center gap-1.5 text-slate-300">
+            <Clock size={15} className="text-amber-400" />
+            <span>إلغاء فوري لحجز مبلغ المزايدة تلقائياً لغير الفائزين</span>
+          </span>
+        </div>
 
-          {/* Guarantee Badges Strip */}
-          <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-300">
-            <span className="flex items-center gap-1.5 text-slate-300">
-              <ShieldCheck size={14} className="text-gold" />
-              <span>حساب ضمان Escrow معتمد</span>
-            </span>
-            <span>•</span>
-            <span className="flex items-center gap-1.5 text-slate-300">
-              <Clock size={14} className="text-amber-400" />
-              <span>إلغاء فوري للتفويض لغير الفائزين</span>
-            </span>
-          </div>
+        <div className="text-xs text-slate-400 font-medium">
+          نظام المزايدات الفورية المعتمد لدى FBS للمزادات
         </div>
       </div>
     </section>
