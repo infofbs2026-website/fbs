@@ -7,10 +7,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
+  Crown,
   Flame,
   Gavel,
-  ShieldCheck,
-  Sparkles
+  ShieldCheck
 } from 'lucide-react';
 import { PlateVisualizer } from '@/components/ui';
 import { SarSymbol } from '@/components/sar-symbol';
@@ -275,25 +275,25 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <ScrollReveal direction="up" delay={30}>
           {/* Header Bar */}
-          <div className="mb-8 sm:mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-            <div>
-              {/* Prestige Golden Stage Badge (Status badge removed as requested) */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-gold/55 bg-gradient-to-r from-gold/30 via-gold/15 to-amber-500/20 px-4.5 py-1.5 text-xs sm:text-sm font-black text-gold-light backdrop-blur-md shadow-[0_0_25px_rgba(217,184,127,0.3)] mb-3.5">
+          <div className="mb-8 sm:mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-end text-center lg:text-start">
+            <div className="flex flex-col items-center lg:items-start">
+              {/* Prestige Golden Stage Badge */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-gold/55 bg-gradient-to-r from-gold/30 via-gold/15 to-amber-500/20 px-4.5 py-1.5 text-xs sm:text-sm font-black text-gold-light backdrop-blur-md shadow-[0_0_25px_rgba(217,184,127,0.3)] mb-3.5 mx-auto lg:mx-0">
                 <Flame size={16} className="text-amber-400 shrink-0 animate-bounce" />
                 <span className="tracking-wide">المسرح الماسي · فرص اللحظات الأخيرة</span>
               </div>
 
-              <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-[2.65rem] leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+              <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-[2.65rem] leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] text-center lg:text-start">
                 مزادات اللحظات الأخيرة والفرص النادرة
               </h2>
 
-              <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-slate-200 font-medium">
+              <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-slate-200 font-medium text-center lg:text-start mx-auto lg:mx-0">
                 لوحات استثنائية في حركة انسيابية مستمرة. قف بالماوس على أي لوحة لمعاينتها فوراً، أو استكشف المزادات المتاحة.
               </p>
             </div>
 
-            {/* Controls */}
-            <div className="flex items-center gap-3 self-start lg:self-end">
+            {/* Desktop Controls (Hidden on mobile, positioned below carousel on mobile) */}
+            <div className="hidden lg:flex items-center gap-3 self-end">
               <div className="flex items-center gap-2" dir="ltr">
                 <button
                   type="button"
@@ -363,7 +363,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
                   onMouseLeave={handleCardMouseLeave}
                   onTouchStart={handleCardMouseEnter}
                   onTouchEnd={handleCardMouseLeave}
-                  className="relative shrink-0 w-[86vw] sm:w-[500px] md:w-[560px] lg:w-[620px] xl:w-[640px] rounded-2xl overflow-hidden border border-white/15 hover:border-gold shadow-[0_15px_35px_rgba(0,0,0,0.6)] hover:shadow-[0_20px_45px_rgba(217,184,127,0.3)] transition-colors duration-150 bg-gradient-to-br from-[#121e36] via-[#0d1628] to-[#070e1a] p-5 sm:p-7 flex flex-col justify-between"
+                  className="relative shrink-0 w-[calc(100vw-2.5rem)] max-w-[440px] sm:w-[500px] md:w-[560px] lg:w-[620px] xl:w-[640px] rounded-2xl overflow-hidden border border-white/15 hover:border-gold shadow-[0_15px_35px_rgba(0,0,0,0.6)] hover:shadow-[0_20px_45px_rgba(217,184,127,0.3)] transition-colors duration-150 bg-gradient-to-br from-[#121e36] via-[#0d1628] to-[#070e1a] p-5 sm:p-7 flex flex-col justify-between"
                   style={{
                     contain: 'layout paint',
                     transform: 'translateZ(0)',
@@ -394,7 +394,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
 
                       {plate.featured && (
                         <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-amber-400/20 px-2.5 py-1 text-xs font-black text-amber-300 border border-amber-400/40">
-                          <Sparkles size={11} className="text-amber-300" />
+                          <Crown size={12} className="text-amber-300" />
                           <span>نخبة</span>
                         </span>
                       )}
@@ -468,6 +468,38 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
               );
             })}
           </div>
+        </div>
+
+        {/* Mobile Carousel Controls Bar: Positioned Below Carousel as requested */}
+        <div className="mt-4 mb-2 flex lg:hidden items-center justify-between gap-3 px-1">
+          <div className="flex items-center gap-2" dir="ltr">
+            <button
+              type="button"
+              onClick={() => nudge('prev')}
+              aria-label="السابق"
+              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-gold/50 bg-[#0d1830]/95 text-gold-light backdrop-blur-md transition-all active:scale-95 shadow-md shadow-black/50"
+              title="اللوحة السابقة"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              type="button"
+              onClick={() => nudge('next')}
+              aria-label="التالي"
+              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-gold/50 bg-[#0d1830]/95 text-gold-light backdrop-blur-md transition-all active:scale-95 shadow-md shadow-black/50"
+              title="اللوحة التالية"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+
+          <Link
+            href="/auctions"
+            className="inline-flex items-center gap-2 rounded-2xl border border-gold/50 bg-gradient-to-r from-gold/20 via-gold/10 to-transparent px-5 py-2.5 text-xs sm:text-sm font-black text-gold-light shadow-md active:scale-95"
+          >
+            <span>جميع المزادات</span>
+            <ArrowLeft size={15} />
+          </Link>
         </div>
 
         {/* Bottom Trust & Guarantee Strip */}

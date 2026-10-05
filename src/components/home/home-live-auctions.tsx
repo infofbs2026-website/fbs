@@ -42,20 +42,20 @@ export function HomeLiveAuctions({ liveAuctions }: HomeLiveAuctionsProps) {
 
       <div className="container-fbs relative z-10">
         <ScrollReveal direction="up" delay={50}>
-          <div className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
-            <div>
+          <div className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-end text-center sm:text-start">
+            <div className="flex flex-col items-center sm:items-start">
               {/* Prestige Live Eyebrow Badge */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-white/95 px-4.5 py-1.5 text-xs sm:text-sm font-black text-navy-deep shadow-[0_2px_12px_rgba(217,184,127,0.18)] mb-3.5">
+              <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-white/95 px-4.5 py-1.5 text-xs sm:text-sm font-black text-navy-deep shadow-[0_2px_12px_rgba(217,184,127,0.18)] mb-3.5 mx-auto sm:mx-0">
                 <Radio size={16} className="text-gold-dark shrink-0 animate-pulse" />
                 <span className="tracking-wide">منافسة حية ومباشرة الآن</span>
               </div>
 
               {/* Commanding Luxury Headline - Unified Single Color */}
-              <h2 className="text-3xl font-black tracking-tight text-navy-deep sm:text-4xl lg:text-[2.65rem] leading-tight">
+              <h2 className="text-3xl font-black tracking-tight text-navy-deep sm:text-4xl lg:text-[2.65rem] leading-tight text-center sm:text-start">
                 المزادات المباشرة الحية
               </h2>
 
-              <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-slate-600 font-medium">
+              <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-slate-600 font-medium text-center sm:text-start mx-auto sm:mx-0">
                 لوحات استثنائية ونادرة تخضع للمزايدة الآن في الوقت الفعلي مع تمديد تلقائي عادل وتوثيق رسمي فوري.
               </p>
             </div>
@@ -63,7 +63,7 @@ export function HomeLiveAuctions({ liveAuctions }: HomeLiveAuctionsProps) {
             {/* Header Action Button */}
             <Link
               href="/auctions/live"
-              className="group inline-flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white/95 px-5 py-3 text-sm font-black text-navy shadow-sm transition-all duration-300 hover:border-gold hover:shadow-[0_8px_20px_rgba(217,184,127,0.2)] hover:scale-[1.02] active:scale-[0.98]"
+              className="group inline-flex items-center justify-center gap-3 rounded-2xl border border-slate-200/90 bg-white/95 px-5 py-3 text-sm font-black text-navy shadow-sm transition-all duration-300 hover:border-gold hover:shadow-[0_8px_20px_rgba(217,184,127,0.2)] hover:scale-[1.02] active:scale-[0.98] self-center sm:self-auto shrink-0"
             >
               <span>جميع المزادات الحية</span>
               <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-gradient-to-br from-gold/20 via-gold/10 to-transparent text-gold-dark border border-gold/40 transition-transform duration-300 group-hover:-translate-x-1">
@@ -72,19 +72,24 @@ export function HomeLiveAuctions({ liveAuctions }: HomeLiveAuctionsProps) {
             </Link>
           </div>
 
-          {/* Live Market Indicators Micro-bar */}
-          <div className="mb-8 flex flex-wrap items-center gap-3 text-xs font-bold text-slate-600">
-            <div className="inline-flex items-center gap-2 rounded-xl bg-white/90 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-slate-800">مزايدة لحظية نشطة</span>
+          {/* Live Market Indicators 2+1 on mobile, flex on desktop */}
+          <div className="mb-8 grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-3 text-xs font-bold text-slate-600">
+            {/* Indicator 1: مزايدة لحظية نشطة (50% on mobile) */}
+            <div className="col-span-1 flex items-center justify-center gap-2 rounded-xl bg-white border border-slate-200/90 px-3 py-2.5 sm:py-2 backdrop-blur-md shadow-xs">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              <span className="text-slate-800 text-[11px] sm:text-xs whitespace-nowrap">مزايدة لحظية نشطة</span>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-xl bg-white/90 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
-              <ShieldCheck size={14} className="text-gold-accent" />
-              <span className="text-slate-800">توثيق رسمي مسبق للملكية</span>
+
+            {/* Indicator 2: توثيق رسمي مسبق للملكية (50% on mobile) */}
+            <div className="col-span-1 flex items-center justify-center gap-2 rounded-xl bg-white border border-slate-200/90 px-3 py-2.5 sm:py-2 backdrop-blur-md shadow-xs">
+              <ShieldCheck size={14} className="text-gold-accent shrink-0" />
+              <span className="text-slate-800 text-[11px] sm:text-xs whitespace-nowrap">توثيق رسمي مسبق</span>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-xl bg-white/90 border border-slate-200/80 px-3.5 py-1.5 backdrop-blur-md shadow-xs">
-              <Clock size={14} className="text-gold-accent" />
-              <span className="text-slate-800">تمديد تلقائي عادل (Anti-Sniping)</span>
+
+            {/* Indicator 3: تمديد تلقائي عادل (Full width on mobile row 2) */}
+            <div className="col-span-2 sm:col-auto flex items-center justify-center gap-2 rounded-xl bg-white border border-slate-200/90 px-3.5 py-2.5 sm:py-2 backdrop-blur-md shadow-xs">
+              <Clock size={14} className="text-gold-accent shrink-0" />
+              <span className="text-slate-800 text-[11px] sm:text-xs">تمديد تلقائي عادل (Anti-Sniping)</span>
             </div>
           </div>
         </ScrollReveal>

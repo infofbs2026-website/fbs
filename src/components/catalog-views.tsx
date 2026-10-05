@@ -9,9 +9,9 @@ import {
   Table as TableIcon,
   ArrowRight,
   ArrowLeft,
+  Crown,
   Gavel,
   ShieldCheck,
-  Sparkles,
   MapPin,
   Clock
 } from 'lucide-react';
@@ -102,7 +102,7 @@ export function PlateCardWide({ plate }: { plate: MarketplacePlate }) {
 
             {plate.featured && (
               <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-400/20 via-gold/25 to-amber-500/20 px-3 py-1 text-xs font-black text-gold-dark border border-gold/40 shadow-xs">
-                <Sparkles size={11} className="text-gold-dark" />
+                <Crown size={12} className="text-gold-dark" />
                 <span>نخبة</span>
               </span>
             )}

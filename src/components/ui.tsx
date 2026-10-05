@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowLeft, Clock, Gavel, MapPin, SearchX, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowLeft, Clock, Crown, Gavel, MapPin, SearchX, ShieldCheck } from 'lucide-react';
 import type { MarketplacePlate } from '@/modules/marketplace/types';
 
 export function PageTitle({
@@ -540,7 +540,7 @@ export function PlateCard({
 
             {plate.featured && (
               <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-400/20 via-gold/25 to-amber-500/20 px-3 py-1 text-xs font-black text-gold-dark border border-gold/40 shadow-xs">
-                <Sparkles size={11} className="text-gold-dark" />
+                <Crown size={12} className="text-gold-dark" />
                 <span>نخبة</span>
               </span>
             )}

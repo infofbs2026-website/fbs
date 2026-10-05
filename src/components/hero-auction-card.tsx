@@ -187,7 +187,7 @@ export function HeroAuctionCard({
 
   return (
     <div
-      className="relative flex items-start justify-center lg:justify-end pt-0 pb-2 w-full"
+      className="relative flex items-start justify-center lg:justify-end pt-0 pb-2 w-full max-w-full overflow-hidden sm:overflow-visible"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -195,7 +195,7 @@ export function HeroAuctionCard({
       <div className="absolute h-80 w-80 rounded-full bg-gradient-to-tr from-gold/30 via-indigo-600/20 to-transparent blur-3xl pointer-events-none lg:end-12" />
 
       {/* Main Glassmorphic Auction Card (Rich Depth with Golden Accents) */}
-      <div className="relative w-full max-w-[540px] xl:max-w-[550px] lg:ms-auto rounded-3xl border border-gold/35 bg-gradient-to-b from-[#141f38]/95 via-[#0e172a]/95 to-[#080e1c]/98 backdrop-blur-2xl p-4 sm:p-5 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65),0_10px_25px_-5px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.14)] transition-all duration-300">
+      <div className="relative w-full max-w-[540px] xl:max-w-[550px] mx-auto lg:ms-auto lg:mx-0 rounded-3xl border border-gold/35 bg-gradient-to-b from-[#141f38]/95 via-[#0e172a]/95 to-[#080e1c]/98 backdrop-blur-2xl p-4 sm:p-5 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65),0_10px_25px_-5px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.14)] transition-all duration-300">
         
         {/* Top Slim Golden Progress Line (Visual Rotation Bar, Freezes on Hover) */}
         {platesPool.length > 1 && !isEnded && (

@@ -191,33 +191,33 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
         <div className="container-fbs relative z-10 hero-grid-layout my-auto py-2 sm:py-4">
           
           {/* Right Column (RTL start): Headline, Subtitle, CTAs, Badges - Balanced Height */}
-          <div className="flex flex-col justify-between py-1 lg:py-2 min-h-full">
+          <div className="flex flex-col justify-between py-1 lg:py-2 min-h-full min-w-0 w-full">
             <div>
               {/* STAGE 1: Eyebrow Badge with Rounded-xl/2xl Corners matching the buttons and search bar */}
               <div
-                className={`transition-all duration-700 ease-out ${
+                className={`flex justify-center sm:justify-start transition-all duration-700 ease-out w-full ${
                   stage >= 1
                     ? 'opacity-100 translate-y-0'
                     : 'opacity-0 -translate-y-4 pointer-events-none'
                 }`}
               >
-                <div className="inline-flex items-center gap-2.5 rounded-xl sm:rounded-2xl border border-gold/45 bg-gradient-to-r from-gold/15 via-[#091124]/90 to-gold/10 px-4 py-2.5 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-bold text-gold-light backdrop-blur-2xl shadow-[0_4px_20px_rgba(217,184,127,0.18)] ring-1 ring-gold/25 hover:border-gold/60 transition-all duration-300">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gold/20 border border-gold/50 text-gold shrink-0 shadow-[0_0_10px_rgba(217,184,127,0.35)]">
-                    <SvgRoyalCrownCrest className="w-4 h-4 text-gold-light" />
+                <div className="inline-flex items-center gap-1.5 sm:gap-2.5 rounded-xl sm:rounded-2xl border border-gold/45 bg-gradient-to-r from-gold/15 via-[#091124]/90 to-gold/10 px-3 py-1.5 sm:px-5 sm:py-2.5 text-[10.5px] xs:text-[11px] sm:text-sm font-bold text-gold-light backdrop-blur-2xl shadow-[0_4px_20px_rgba(217,184,127,0.18)] ring-1 ring-gold/25 hover:border-gold/60 transition-all duration-300 text-center max-w-full">
+                  <span className="flex h-5 w-5 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-gold/20 border border-gold/50 text-gold shrink-0 shadow-[0_0_10px_rgba(217,184,127,0.35)]">
+                    <SvgRoyalCrownCrest className="w-3 h-3 sm:w-4 sm:h-4 text-gold-light" />
                   </span>
-                  <span className="tracking-wide text-gold-light">المزاد الرسمي الأول للوحات النخبة في المملكة العربية السعودية</span>
+                  <span className="tracking-normal sm:tracking-wide text-gold-light">المزاد الرسمي الأول للوحات النخبة في المملكة العربية السعودية</span>
                 </div>
               </div>
 
-              {/* STAGE 2: Commanding Luxury Headline & Subtitle (Even Larger & Grand) */}
+              {/* STAGE 2: Commanding Luxury Headline & Subtitle (Centered on mobile) */}
               <div
-                className={`transition-all duration-700 ease-out delay-75 ${
+                className={`transition-all duration-700 ease-out delay-75 w-full ${
                   stage >= 2
                     ? 'opacity-100 translate-y-0'
                     : 'opacity-0 translate-y-6 pointer-events-none'
                 }`}
               >
-                <h1 className="mt-6 sm:mt-7 max-w-2xl text-4xl sm:text-5xl lg:text-[4.15rem] xl:text-[4.75rem] font-black leading-[1.08] tracking-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]">
+                <h1 className="mt-6 sm:mt-7 max-w-2xl text-4xl sm:text-5xl lg:text-[4.15rem] xl:text-[4.75rem] font-black leading-[1.08] tracking-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] text-center sm:text-start mx-auto sm:mx-0 w-full">
                   لوحتك الاستثنائية
                   <br />
                   <span className="gold-gradient-text drop-shadow-[0_2px_14px_rgba(0,0,0,0.85)]">تبدأ من هنا.</span>
@@ -225,17 +225,17 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
               </div>
 
               <div
-                className={`transition-all duration-700 ease-out delay-150 ${
+                className={`transition-all duration-700 ease-out delay-150 w-full ${
                   stage >= 2
                     ? 'opacity-100 translate-y-0'
                     : 'opacity-0 translate-y-6 pointer-events-none'
                 }`}
               >
                 {/* Paragraph spanning the full max-w-[660px] width of the buttons below */}
-                <div className="relative mt-5 sm:mt-6 w-full max-w-[660px]">
-                  {/* Soft feathered dark diffusion strictly behind the text area - No borders, no hard edges */}
+                <div className="relative mt-5 sm:mt-6 w-full max-w-[660px] mx-auto sm:mx-0 text-center sm:text-start">
+                  {/* Soft feathered dark diffusion strictly behind the text area - No horizontal bleed */}
                   <div
-                    className="absolute -inset-2 rounded-2xl bg-[#040814]/40 blur-md pointer-events-none"
+                    className="absolute inset-0 -inset-y-2 rounded-2xl bg-[#040814]/40 blur-md pointer-events-none"
                     aria-hidden="true"
                   />
                   <p
@@ -254,17 +254,17 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
 
             {/* STAGE 3: CTAs Action Buttons & 3 Equal Trust Cards (Floats in third) */}
             <div
-              className={`transition-all duration-700 ease-out ${
+              className={`transition-all duration-700 ease-out w-full ${
                 stage >= 3
                   ? 'opacity-100 translate-y-0'
                   : 'opacity-0 translate-y-6 pointer-events-none'
               }`}
             >
               {/* Action Buttons Row with max-w-[660px] */}
-              <div className="mt-8 sm:mt-9 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 max-w-[660px]">
+              <div className="mt-8 sm:mt-9 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 max-w-[660px] mx-auto sm:mx-0 w-full">
                 <Link
                   href="/auctions"
-                  className="group btn btn-gold text-sm sm:text-base font-black h-13 sm:h-[54px] flex-1 justify-center gap-2.5 shadow-2xl transition-all duration-300 hover:shadow-[0_0_25px_rgba(217,184,127,0.5)] hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap px-6"
+                  className="group btn btn-gold text-sm sm:text-base font-black h-13 sm:h-[54px] flex-1 justify-center gap-2.5 shadow-2xl transition-all duration-300 hover:shadow-[0_0_25px_rgba(217,184,127,0.5)] hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap px-6 w-full sm:w-auto"
                 >
                   <Gavel className="w-5 h-5 text-navy shrink-0 transition-transform duration-300 group-hover:-rotate-12" />
                   <span className="whitespace-nowrap">استكشف المزادات الحية</span>
@@ -272,7 +272,7 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
                 </Link>
                 <Link
                   href="/sell-your-plate"
-                  className="group btn btn-outline-gold text-sm sm:text-base font-black h-13 sm:h-[54px] flex-1 justify-center gap-2.5 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-gold/55 bg-[#0a1224]/85 text-white hover:border-gold hover:bg-gold/20 whitespace-nowrap px-6 shadow-xl"
+                  className="group btn btn-outline-gold text-sm sm:text-base font-black h-13 sm:h-[54px] flex-1 justify-center gap-2.5 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-gold/55 bg-[#0a1224]/85 text-white hover:border-gold hover:bg-gold/20 whitespace-nowrap px-6 shadow-xl w-full sm:w-auto"
                 >
                   <SvgPlatePlus className="w-5 h-5 text-gold shrink-0 transition-transform duration-300 group-hover:scale-110" />
                   <span className="whitespace-nowrap">اعرض لوحتك الآن</span>
@@ -280,11 +280,11 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
                 </Link>
               </div>
 
-              {/* 3 Widened Trust Cards with Soft Visible Borders and Ample Horizontal Space */}
-              <div className="mt-7 sm:mt-8 border-t border-white/15 pt-6 max-w-[660px]">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 w-full">
-                  {/* Card 1: توثيق وفحص الملكية 100% */}
-                  <div className="flex h-13 sm:h-[54px] items-center gap-2.5 rounded-xl border border-gold/40 hover:border-gold/70 bg-gradient-to-b from-[#111c33]/90 via-[#0b1324]/90 to-[#070d1a]/95 px-3 sm:px-3.5 backdrop-blur-xl shadow-[0_4px_16px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.18)] transition-all">
+              {/* 3 Widened Trust Cards: 2+1 Layout on Mobile, 3 cols on Desktop */}
+              <div className="mt-7 sm:mt-8 border-t border-white/15 pt-6 max-w-[660px] mx-auto sm:mx-0 w-full">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 w-full">
+                  {/* Card 1: توثيق وفحص الملكية 100% (Spans full width on mobile) */}
+                  <div className="col-span-2 sm:col-span-1 flex h-13 sm:h-[54px] items-center justify-center gap-2.5 rounded-xl border border-gold/40 hover:border-gold/70 bg-gradient-to-b from-[#111c33]/90 via-[#0b1324]/90 to-[#070d1a]/95 px-3 sm:px-3.5 backdrop-blur-xl shadow-[0_4px_16px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.18)] transition-all">
                     <span className="flex h-7.5 w-7.5 shrink-0 items-center justify-center rounded-lg bg-gold/20 text-gold border border-gold/50 shadow-xs">
                       <ShieldCheck size={16} />
                     </span>
@@ -293,22 +293,22 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
                     </span>
                   </div>
 
-                  {/* Card 2: مزايدة آنية ونظامية */}
-                  <div className="flex h-13 sm:h-[54px] items-center gap-2.5 rounded-xl border border-gold/40 hover:border-gold/70 bg-gradient-to-b from-[#111c33]/90 via-[#0b1324]/90 to-[#070d1a]/95 px-3 sm:px-3.5 backdrop-blur-xl shadow-[0_4px_16px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.18)] transition-all">
-                    <span className="flex h-7.5 w-7.5 shrink-0 items-center justify-center rounded-lg bg-gold/20 text-gold border border-gold/50 shadow-xs">
-                      <Gavel size={16} />
+                  {/* Card 2: مزايدة آنية ونظامية (50% on mobile row 2) */}
+                  <div className="col-span-1 flex h-13 sm:h-[54px] items-center justify-center gap-2 rounded-xl border border-gold/40 hover:border-gold/70 bg-gradient-to-b from-[#111c33]/90 via-[#0b1324]/90 to-[#070d1a]/95 px-2 sm:px-3.5 backdrop-blur-xl shadow-[0_4px_16px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.18)] transition-all">
+                    <span className="flex h-7 w-7 sm:h-7.5 sm:w-7.5 shrink-0 items-center justify-center rounded-lg bg-gold/20 text-gold border border-gold/50 shadow-xs">
+                      <Gavel size={15} />
                     </span>
-                    <span className="font-bold text-slate-100 text-xs sm:text-[11.5px] xl:text-xs leading-none whitespace-nowrap">
+                    <span className="font-bold text-slate-100 text-[10.5px] xs:text-[11px] sm:text-[11.5px] xl:text-xs leading-none whitespace-nowrap">
                       مزايدة آنية ونظامية
                     </span>
                   </div>
 
-                  {/* Card 3: حماية بنكية للتأمين */}
-                  <div className="flex h-13 sm:h-[54px] items-center gap-2.5 rounded-xl border border-gold/40 hover:border-gold/70 bg-gradient-to-b from-[#111c33]/90 via-[#0b1324]/90 to-[#070d1a]/95 px-3 sm:px-3.5 backdrop-blur-xl shadow-[0_4px_16px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.18)] transition-all">
-                    <span className="flex h-7.5 w-7.5 shrink-0 items-center justify-center rounded-lg bg-gold/20 text-gold border border-gold/50 shadow-xs">
-                      <Landmark size={16} />
+                  {/* Card 3: حماية بنكية للتأمين (50% on mobile row 2) */}
+                  <div className="col-span-1 flex h-13 sm:h-[54px] items-center justify-center gap-2 rounded-xl border border-gold/40 hover:border-gold/70 bg-gradient-to-b from-[#111c33]/90 via-[#0b1324]/90 to-[#070d1a]/95 px-2 sm:px-3.5 backdrop-blur-xl shadow-[0_4px_16px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.18)] transition-all">
+                    <span className="flex h-7 w-7 sm:h-7.5 sm:w-7.5 shrink-0 items-center justify-center rounded-lg bg-gold/20 text-gold border border-gold/50 shadow-xs">
+                      <Landmark size={15} />
                     </span>
-                    <span className="font-bold text-slate-100 text-xs sm:text-[11.5px] xl:text-xs leading-none whitespace-nowrap">
+                    <span className="font-bold text-slate-100 text-[10.5px] xs:text-[11px] sm:text-[11.5px] xl:text-xs leading-none whitespace-nowrap">
                       حماية بنكية للتأمين
                     </span>
                   </div>
@@ -319,10 +319,10 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
 
           {/* STAGE 4: Interactive Live Auction Card (Glides in fourth from the side) */}
           <div
-            className={`relative flex items-center justify-center lg:justify-end transition-all duration-800 ease-out ${
+            className={`relative flex items-center justify-center lg:justify-end transition-all duration-800 ease-out min-w-0 w-full ${
               stage >= 4
                 ? 'opacity-100 translate-x-0 scale-100'
-                : 'opacity-0 -translate-x-8 scale-95 pointer-events-none'
+                : 'opacity-0 lg:-translate-x-8 translate-y-4 scale-95 pointer-events-none'
             }`}
           >
             <HeroAuctionCard

@@ -53,13 +53,14 @@
 }
 
 @layer components {
-  .container-fbs { @apply mx-auto w-full max-w-[1400px] px-5 sm:px-8 xl:px-10; }
+  .container-fbs { @apply mx-auto w-full max-w-[1400px] px-4 sm:px-8 xl:px-10; }
 
   .hero-grid-layout {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     align-items: center;
     gap: 2rem;
+    width: 100%;
   }
 
   @media (min-width: 1024px) {

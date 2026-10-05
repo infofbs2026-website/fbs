@@ -105,25 +105,25 @@ export function HomeFaq() {
         {/* Header */}
         <ScrollReveal
           direction="up"
-          className="mb-12 sm:mb-16 flex flex-col justify-between gap-6 sm:flex-row sm:items-end"
+          className="mb-12 sm:mb-16 flex flex-col justify-between gap-6 sm:flex-row sm:items-end text-center sm:text-start items-center sm:items-end"
         >
-          <div className="max-w-2xl">
+          <div className="max-w-2xl flex flex-col items-center sm:items-start">
             {/* Unified Luxury Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-white/95 px-4.5 py-1.5 text-xs sm:text-sm font-black text-navy-deep shadow-[0_2px_12px_rgba(217,184,127,0.18)] mb-3.5">
+            <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-white/95 px-4.5 py-1.5 text-xs sm:text-sm font-black text-navy-deep shadow-[0_2px_12px_rgba(217,184,127,0.18)] mb-3.5 mx-auto sm:mx-0">
               <HelpCircle size={16} className="text-gold-dark shrink-0" />
               <span className="tracking-wide">مركز المعرفة والشفافية</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-navy-deep tracking-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-navy-deep tracking-tight text-center sm:text-start">
               الأسئلة الشائعة والمساعدة
             </h2>
-            <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed font-medium">
+            <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed font-medium text-center sm:text-start mx-auto sm:mx-0">
               إجابات تفصيلية ودقيقة لكافة الجوانب التشغيلية، من آليات المزايدة والتفويض البنكي إلى التوثيق ونقل الملكية
               المعتمد.
             </p>
           </div>
           <Link
             href="/faq"
-            className="inline-flex items-center gap-2 self-start sm:self-auto rounded-full border border-gold/40 bg-white/90 px-5 py-2.5 text-xs sm:text-sm font-bold text-navy-deep shadow-sm hover:border-gold hover:bg-gold/10 hover:text-gold-dark transition-all duration-300"
+            className="inline-flex items-center justify-center gap-2 self-center sm:self-auto rounded-full border border-gold/40 bg-white/90 px-5 py-2.5 text-xs sm:text-sm font-bold text-navy-deep shadow-sm hover:border-gold hover:bg-gold/10 hover:text-gold-dark transition-all duration-300 shrink-0"
           >
             <span>دليل الأسئلة الشامل</span>
             <ArrowLeft size={16} />

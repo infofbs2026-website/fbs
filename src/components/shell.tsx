@@ -23,10 +23,12 @@ import {
   Search,
   ShieldCheck,
   Sparkles,
-  UserRound
+  UserRound,
+  X
 } from 'lucide-react';
 
 const primaryNav = [
+  ['/', 'الرئيسية'],
   ['/auctions', 'المزادات'],
   ['/plates', 'اللوحات المميزة'],
   ['/how-it-works', 'كيف نعمل'],
@@ -34,6 +36,7 @@ const primaryNav = [
 ];
 
 const allNav = [
+  ['/', 'الرئيسية'],
   ['/auctions', 'المزادات'],
   ['/plates', 'اللوحات المميزة'],
   ['/sell-your-plate', 'اعرض لوحتك'],
@@ -82,6 +85,7 @@ export function Brand({ variant = 'gold', className = '' }: { variant?: 'gold' |
 export function Header() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [heroRevealed, setHeroRevealed] = useState(() => {
     if (typeof window !== 'undefined') {
       if ((window as any).__fbsHeroRevealed) return true;
@@ -110,6 +114,23 @@ export function Header() {
     return () => window.removeEventListener('fbs-hero-revealed', onReveal);
   }, [pathname]);
 
+  // Close mobile drawer on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  // Prevent background scroll when mobile drawer is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
   const isAuthPage =
     pathname === '/login' ||
     pathname === '/register' ||
@@ -121,123 +142,170 @@ export function Header() {
   const isHiddenByIntro = pathname === '/' && !heroRevealed;
 
   return (
-    <header
-      className={`fixed top-0 start-0 end-0 z-50 transition-all duration-700 ease-out ${
-        isHiddenByIntro
-          ? 'opacity-0 -translate-y-8 pointer-events-none'
-          : 'opacity-100 translate-y-0'
-      } ${
-        isTransparent
-          ? 'border-b border-transparent bg-transparent text-white shadow-none backdrop-blur-none'
-          : 'border-b border-white/10 bg-[#060b17]/95 backdrop-blur-2xl text-white shadow-[0_10px_35px_-10px_rgba(0,0,0,0.8)]'
-      }`}
-    >
-      <div className="container-fbs flex h-20 items-center justify-between gap-4">
-        {/* Brand Logo */}
-        <Brand />
+    <>
+      <header
+        className={`fixed top-0 start-0 end-0 z-50 transition-all duration-700 ease-out ${
+          isHiddenByIntro
+            ? 'opacity-0 -translate-y-8 pointer-events-none'
+            : 'opacity-100 translate-y-0'
+        } ${
+          isTransparent
+            ? 'border-b border-transparent bg-transparent text-white shadow-none backdrop-blur-none'
+            : 'border-b border-white/10 bg-[#060b17]/95 backdrop-blur-2xl text-white shadow-[0_10px_35px_-10px_rgba(0,0,0,0.8)]'
+        }`}
+      >
+        <div className="container-fbs flex h-20 items-center justify-between gap-4">
+          {/* Brand Logo */}
+          <Brand />
 
-        {/* Clean Centered Desktop Navigation */}
-        <nav aria-label="التنقل الرئيسي" className="hidden items-center gap-7 lg:flex">
-          {primaryNav.map(([href, label]) => {
-            const isActive = pathname === href || (href !== '/' && pathname.startsWith(href));
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={`group relative py-1.5 text-sm font-semibold transition-colors duration-200 ${
-                  isActive ? 'text-gold font-bold' : 'text-slate-200 hover:text-gold'
-                }`}
-              >
-                <span>{label}</span>
-                <span
-                  className={`absolute bottom-0 start-0 h-0.5 rounded-full bg-gradient-to-r from-gold via-gold-light to-gold transition-all duration-300 ${
-                    isActive ? 'w-full' : 'w-0 group-hover:w-full'
+          {/* Clean Centered Desktop Navigation */}
+          <nav aria-label="التنقل الرئيسي" className="hidden items-center gap-7 lg:flex">
+            {primaryNav.map(([href, label]) => {
+              const isActive = href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`group relative py-1.5 text-sm font-semibold transition-colors duration-200 ${
+                    isActive ? 'text-gold font-bold' : 'text-slate-200 hover:text-gold'
                   }`}
-                />
-              </Link>
-            );
-          })}
-        </nav>
+                >
+                  <span>{label}</span>
+                  <span
+                    className={`absolute bottom-0 start-0 h-0.5 rounded-full bg-gradient-to-r from-gold via-gold-light to-gold transition-all duration-300 ${
+                      isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}
+                  />
+                </Link>
+              );
+            })}
+          </nav>
 
-        {/* Refined Luxury Action Controls - All Harmonized with rounded-full Capsule Styling */}
-        <div className="flex items-center gap-3">
-          {/* Minimal Search Trigger - Rounded Full */}
-          <Link
-            href="/plates/search"
-            aria-label="البحث عن لوحة"
-            title="البحث عن لوحة"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-slate-300 backdrop-blur-md transition-all hover:border-gold/50 hover:bg-gold/15 hover:text-gold active:scale-[0.98]"
-          >
-            <Search size={16} />
-          </Link>
+          {/* Refined Luxury Action Controls */}
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            {/* Minimal Search Trigger - Rounded Full */}
+            <Link
+              href="/plates/search"
+              aria-label="البحث عن لوحة"
+              title="البحث عن لوحة"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-slate-300 backdrop-blur-md transition-all hover:border-gold/50 hover:bg-gold/15 hover:text-gold active:scale-[0.98]"
+            >
+              <Search size={16} />
+            </Link>
 
-          {/* Concierge Plate Listing CTA - Rounded Full Capsule matching Login Button */}
-          <Link
-            href="/sell-your-plate"
-            className="group hidden sm:inline-flex h-10 items-center gap-2.5 rounded-full border border-gold/40 bg-gold/10 ps-2 pe-4 text-xs font-bold text-gold-light backdrop-blur-md transition-all duration-200 hover:border-gold hover:bg-gold/20 hover:text-white hover:shadow-[0_0_15px_rgba(217,184,127,0.25)] active:scale-[0.98]"
-          >
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-[#141d33] to-[#0a1020] border border-gold/40 text-gold shadow-xs group-hover:border-gold group-hover:shadow-[0_0_8px_rgba(217,184,127,0.4)] transition-all shrink-0">
-              <PlusCircle size={14} />
-            </span>
-            <span>اعرض لوحتك</span>
-          </Link>
+            {/* Concierge Plate Listing CTA - Visible from sm upwards */}
+            <Link
+              href="/sell-your-plate"
+              className="group hidden sm:inline-flex h-10 items-center gap-2.5 rounded-full border border-gold/40 bg-gold/10 ps-2 pe-4 text-xs font-bold text-gold-light backdrop-blur-md transition-all duration-200 hover:border-gold hover:bg-gold/20 hover:text-white hover:shadow-[0_0_15px_rgba(217,184,127,0.25)] active:scale-[0.98]"
+            >
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-[#141d33] to-[#0a1020] border border-gold/40 text-gold shadow-xs group-hover:border-gold group-hover:shadow-[0_0_8px_rgba(217,184,127,0.4)] transition-all shrink-0">
+                <PlusCircle size={14} />
+              </span>
+              <span>اعرض لوحتك</span>
+            </Link>
 
-          {/* Unified Luxury Member Pill Button with User Avatar - Rounded Full */}
-          <Link
-            href="/login"
-            className="group inline-flex h-10 items-center gap-2.5 rounded-full border border-white/15 bg-white/5 ps-2 pe-4 text-xs font-bold text-slate-100 backdrop-blur-md transition-all duration-200 hover:border-gold/50 hover:bg-gold/15 hover:text-white hover:shadow-[0_0_15px_rgba(217,184,127,0.25)] active:scale-[0.98]"
-            title="تسجيل الدخول إلى حسابك"
-          >
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-[#141d33] to-[#0a1020] border border-gold/40 text-gold shadow-xs group-hover:border-gold group-hover:shadow-[0_0_8px_rgba(217,184,127,0.4)] transition-all shrink-0">
-              <UserRound size={14} />
-            </span>
-            <span>تسجيل الدخول</span>
-          </Link>
+            {/* Unified Luxury Member Pill Button - Hidden on mobile per user instruction */}
+            <Link
+              href="/login"
+              className="group hidden sm:inline-flex h-10 items-center gap-2.5 rounded-full border border-white/15 bg-white/5 ps-2 pe-4 text-xs font-bold text-slate-100 backdrop-blur-md transition-all duration-200 hover:border-gold/50 hover:bg-gold/15 hover:text-white hover:shadow-[0_0_15px_rgba(217,184,127,0.25)] active:scale-[0.98]"
+              title="تسجيل الدخول إلى حسابك"
+            >
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-[#141d33] to-[#0a1020] border border-gold/40 text-gold shadow-xs group-hover:border-gold group-hover:shadow-[0_0_8px_rgba(217,184,127,0.4)] transition-all shrink-0">
+                <UserRound size={14} />
+              </span>
+              <span>تسجيل الدخول</span>
+            </Link>
 
-          {/* Mobile Navigation Toggle - Rounded Full */}
-          <details className="relative lg:hidden">
-            <summary
-              aria-label="فتح القائمة"
-              className="flex h-10 w-10 list-none items-center justify-center rounded-full border border-white/15 bg-white/5 text-slate-200 cursor-pointer transition-colors hover:border-gold/40 hover:text-gold"
+            {/* Mobile Navigation Toggle Button */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="فتح القائمة الرئيسية"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-slate-200 transition-colors hover:border-gold/40 hover:text-gold lg:hidden active:scale-95"
             >
               <Menu size={18} />
-            </summary>
-            <nav
-              className="absolute end-0 top-full mt-3 w-64 rounded-2xl border border-gold/30 bg-[#070c18]/98 p-4 shadow-2xl backdrop-blur-2xl"
-              aria-label="قائمة الجوال"
-            >
-              <div className="space-y-1">
-                {allNav.map(([href, label]) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    className="block rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-200 transition-colors hover:bg-white/10 hover:text-gold"
-                  >
-                    {label}
-                  </Link>
-                ))}
-              </div>
-              <div className="mt-4 border-t border-white/10 pt-4 space-y-2">
-                <Link
-                  href="/sell-your-plate"
-                  className="flex items-center justify-center gap-2 rounded-xl bg-gold/15 border border-gold/30 py-2.5 text-xs font-bold text-gold"
-                >
-                  <PlusCircle size={15} />
-                  اعرض لوحتك
-                </Link>
-                <Link
-                  href="/login"
-                  className="flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 py-2.5 text-center text-xs font-bold text-slate-200 hover:text-gold"
-                >
-                  <UserRound size={14} className="text-gold" />
-                  تسجيل الدخول
-                </Link>
-              </div>
-            </nav>
-          </details>
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Full-Height Mobile Slide-Over Side Drawer */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-[100] lg:hidden" aria-modal="true" role="dialog">
+          {/* Backdrop Overlay */}
+          <div
+            className="fixed inset-0 bg-black/75 backdrop-blur-sm transition-opacity"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+
+          {/* Full-Height Side Drawer (Slides in along height) */}
+          <div
+            className="fixed inset-y-0 start-0 w-[84vw] max-w-[340px] bg-[#070c18] border-e border-gold/30 shadow-2xl flex flex-col justify-between p-6 z-[101] overflow-y-auto"
+            style={{
+              backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(217,184,127,0.14) 0%, transparent 65%)'
+            }}
+          >
+            <div>
+              {/* Drawer Topbar: Logo + Close Button */}
+              <div className="flex items-center justify-between pb-5 border-b border-white/10">
+                <Brand />
+                <button
+                  type="button"
+                  onClick={() => setMobileMenuOpen(false)}
+                  aria-label="إغلاق القائمة"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5 text-slate-300 hover:text-white hover:border-gold/40 transition-colors active:scale-90"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Navigation Links with Home Link */}
+              <nav className="mt-6 space-y-1.5" aria-label="قائمة الجوال">
+                {allNav.map(([href, label]) => {
+                  const isActive = href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(href);
+                  return (
+                    <Link
+                      key={href}
+                      href={href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold transition-all duration-200 ${
+                        isActive
+                          ? 'bg-gold/15 text-gold border border-gold/30 shadow-xs'
+                          : 'text-slate-200 hover:bg-white/5 hover:text-white'
+                      }`}
+                    >
+                      <span>{label}</span>
+                      {isActive && <span className="h-2 w-2 rounded-full bg-gold shadow-[0_0_8px_#d9b87f]" />}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+
+            {/* Drawer Bottom Actions: Plate Listing & Login */}
+            <div className="mt-8 pt-6 border-t border-white/10 space-y-3">
+              <Link
+                href="/sell-your-plate"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center gap-2 w-full rounded-xl bg-gradient-to-r from-gold via-gold-light to-gold-dark text-navy font-black py-3 text-sm shadow-md shadow-gold/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+              >
+                <PlusCircle size={16} />
+                <span>اعرض لوحتك الآن</span>
+              </Link>
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center gap-2 w-full rounded-xl border border-white/15 bg-white/5 py-3 text-sm font-bold text-slate-200 hover:text-white hover:border-gold/40 transition-all"
+              >
+                <UserRound size={16} className="text-gold" />
+                <span>تسجيل الدخول</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

@@ -37,20 +37,20 @@ export function HomeWhyFbs() {
 
       <div className="container-fbs relative z-10 grid gap-10 lg:grid-cols-[1fr_1.26fr] lg:items-stretch xl:gap-14">
         <ScrollReveal direction="right" delay={80} className="flex flex-col justify-between h-full">
-          <div>
+          <div className="flex flex-col items-center lg:items-start text-center lg:text-start">
             {/* Prestige Eyebrow Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-white/95 px-4.5 py-1.5 text-xs sm:text-sm font-black text-navy-deep shadow-[0_2px_12px_rgba(217,184,127,0.18)] mb-4">
+            <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-white/95 px-4.5 py-1.5 text-xs sm:text-sm font-black text-navy-deep shadow-[0_2px_12px_rgba(217,184,127,0.18)] mb-4 mx-auto lg:mx-0">
               <BadgeCheck size={16} className="text-gold-dark shrink-0" />
               <span className="tracking-wide">لماذا فارس بن سعود؟</span>
             </div>
 
             {/* Commanding Luxury Headline - Unified Single Color */}
-            <h2 className="text-2xl font-black tracking-tight sm:text-3xl lg:text-[1.95rem] xl:text-[2.25rem] leading-tight text-navy-deep">
+            <h2 className="text-2xl font-black tracking-tight sm:text-3xl lg:text-[1.95rem] xl:text-[2.25rem] leading-tight text-navy-deep text-center lg:text-start">
               التميّز خيارك، والثقة هي ضماننا.
             </h2>
 
             {/* Subtitle Paragraph */}
-            <p className="mt-3.5 max-w-xl text-sm sm:text-base leading-relaxed text-slate-600 font-medium">
+            <p className="mt-3.5 max-w-xl text-sm sm:text-base leading-relaxed text-slate-600 font-medium text-center lg:text-start mx-auto lg:mx-0">
               صممنا منصة FBS لتكون الجسر الموثوق بين نخبة ملاك اللوحات والمزايدين الجادين في المملكة،
               وفق أعلى ضوابط الأمان المالي والتحقق القانوني.
             </p>
