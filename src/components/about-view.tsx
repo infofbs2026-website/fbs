@@ -265,40 +265,62 @@ export function AboutView() {
   return (
     <div className="w-full">
       {/* =================================================================== */}
-      {/* 1. FULL-BLEED CINEMATIC HERO (EDGE-TO-EDGE, FULL VIEWPORT HEIGHT)   */}
+      {/* 1. FULL-BLEED CINEMATIC HERO (EDGE-TO-EDGE, LUXURY ATMOSPHERE)     */}
       {/* =================================================================== */}
-      <section className="relative w-full min-h-[100dvh] lg:min-h-screen flex flex-col justify-between pt-28 sm:pt-36 pb-12 sm:pb-16 text-white overflow-hidden bg-gradient-to-b from-[#0b1426] via-[#101b34] to-[#162544] border-b border-gold/30 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]">
-        {/* Ambient Royal Lighting Orbs */}
-        <div className="pointer-events-none absolute -top-40 start-1/2 -translate-x-1/2 h-[450px] w-[900px] rounded-full bg-gold/15 blur-[140px]" />
-        <div className="pointer-events-none absolute top-1/3 -start-20 h-96 w-96 rounded-full bg-blue-600/15 blur-[120px]" />
-        <div className="pointer-events-none absolute bottom-0 end-0 h-[380px] w-[380px] rounded-full bg-indigo-900/25 blur-[110px]" />
+      <section className="relative w-full min-h-[100dvh] lg:min-h-screen flex flex-col justify-between pt-28 sm:pt-36 pb-10 sm:pb-14 text-white overflow-hidden bg-[#060a14] border-b border-gold/30 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)]">
+        
+        {/* ============================================================== */}
+        {/* CINEMATIC LUXURY BACKGROUND IMAGE & LIGHTING OVERLAYS          */}
+        {/* ============================================================== */}
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
+          {/* Bespoke Luxury Showroom Background */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/branding/about-hero-bg.jpg"
+            alt="صرح فارس بن سعود للوحات المميزة"
+            className="h-full w-full object-cover object-center scale-[1.03] transition-transform duration-1000 ease-out"
+          />
 
-        {/* Subtle Geometric Luxury Grid Texture */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.035]"
-          style={{
-            backgroundImage: 'radial-gradient(circle at 1px 1px, #d9b87f 1px, transparent 0)',
-            backgroundSize: '36px 36px'
-          }}
-        />
+          {/* Deep Royal Vignette & Darkening Gradients for 100% Typography Crispness */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(6,10,20,0.72)_0%,rgba(4,7,15,0.94)_100%)]" />
+
+          {/* Header Fade Scrim */}
+          <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-[#060a14]/95 via-[#060a14]/70 to-transparent" />
+
+          {/* Bottom Blend Gradient into next section */}
+          <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#060a14] via-[#0b1426]/80 to-transparent" />
+
+          {/* Subtle Ambient Royal Blue Tint */}
+          <div className="absolute inset-0 bg-blue-950/20 mix-blend-multiply" />
+        </div>
+
+        {/* Ambient Royal Gold Lighting Highlights */}
+        <div className="pointer-events-none absolute -top-32 start-1/2 -translate-x-1/2 h-[400px] w-[800px] rounded-full bg-gold/15 blur-[140px] z-[1]" />
+        <div className="pointer-events-none absolute top-1/3 -start-24 h-96 w-96 rounded-full bg-blue-600/10 blur-[130px] z-[1]" />
+        <div className="pointer-events-none absolute bottom-12 end-0 h-[360px] w-[360px] rounded-full bg-gold/10 blur-[120px] z-[1]" />
 
         {/* Minimal 1px Golden Horizon Line at the very bottom border */}
-        <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent z-10 pointer-events-none" />
 
         {/* Central Hero Content */}
-        <div className="container-fbs relative z-10 my-auto py-8 text-center max-w-5xl mx-auto space-y-7">
-          {/* Sovereign Eyebrow Badge: Generous padding, perfectly spaced */}
-          <div className="inline-flex items-center gap-3 rounded-full border border-gold/40 bg-gold/15 px-6 py-2.5 text-xs sm:text-sm font-black text-gold-light backdrop-blur-md shadow-md">
-            <SaudiCrestSvg className="w-5 h-5 text-gold shrink-0" />
+        <div className="container-fbs relative z-10 my-auto py-6 sm:py-8 text-center max-w-5xl mx-auto space-y-7 sm:space-y-8">
+          {/* Sovereign Eyebrow Badge: Regal styling with gold rim */}
+          <div className="inline-flex items-center gap-3 rounded-full border border-gold/45 bg-[#0b1426]/85 px-6 py-2.5 text-xs sm:text-sm font-black text-gold-light backdrop-blur-xl shadow-[0_4px_24px_rgba(217,184,127,0.18)]">
+            <SaudiCrestSvg className="w-5 h-5 text-gold shrink-0 drop-shadow-[0_0_8px_rgba(217,184,127,0.4)]" />
             <span>فارس بن سعود للوحات المميزة • الصرح السعودي الرائد</span>
           </div>
 
-          {/* Majestic Hero Headline */}
-          <h1 className="text-3xl font-black tracking-tight sm:text-5xl lg:text-6xl text-white leading-[1.25] sm:leading-[1.2]">
-            حيث تلتقي <span className="text-gradient-gold">الندرة بالهيبة</span>.. وسادتنا في عالم اللوحات السعودية الاستثنائية
+          {/* Majestic Hero Headline: Two Balanced Parts (White + Radiant Gold) */}
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.3] sm:leading-[1.22] max-w-4xl mx-auto">
+            <span className="block text-white mb-2 sm:mb-3 drop-shadow-md">
+              حيث تلتقي الندرة بالهيبة..
+            </span>
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#fae8c8] via-[#d9b87f] to-[#b3883b] drop-shadow-[0_4px_24px_rgba(217,184,127,0.32)]">
+              وسادتنا في عالم اللوحات السعودية الاستثنائية
+            </span>
           </h1>
 
-          <p className="max-w-3xl mx-auto text-sm sm:text-base lg:text-lg leading-relaxed text-slate-300 font-normal">
+          <p className="max-w-3xl mx-auto text-sm sm:text-base lg:text-lg leading-relaxed text-slate-200/90 font-normal drop-shadow-sm">
             تأسست منصة فارس بن سعود لتكون دار المزادات والوساطة الأولى بالمملكة المتخصصة في أندر لوحات المركبات الملكية والأحادية، مدعومة بحسابات مصرفية ضامنة وبنية تقنية فائقة تحمي حقوق النخبة وتصنع معياراً جديداً للثقة.
           </p>
 
@@ -306,56 +328,59 @@ export function AboutView() {
           <div className="pt-2 flex flex-wrap items-center justify-center gap-4">
             <Link
               href="/auctions"
-              className="btn btn-gold py-3.5 px-8 text-sm font-black shadow-xl hover:shadow-gold/25"
+              className="btn btn-gold py-3.5 px-8 text-sm font-black shadow-[0_8px_30px_rgba(217,184,127,0.35)] hover:shadow-[0_8px_35px_rgba(217,184,127,0.5)] transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               <Gavel size={18} />
               <span>استكشف المزادات الحية</span>
             </Link>
             <Link
               href="/sell-your-plate"
-              className="btn border-2 border-white/20 bg-white/10 text-white py-3.5 px-8 text-sm font-black hover:bg-white/20 backdrop-blur-sm transition-all"
+              className="btn border border-gold/40 bg-[#0e172a]/70 text-slate-100 hover:text-white hover:bg-gold/15 hover:border-gold py-3.5 px-8 text-sm font-black backdrop-blur-md shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
               <Award size={18} className="text-gold-light" />
               <span>اعرض لوحتك النادرة</span>
             </Link>
           </div>
 
-          {/* Key Metric Highlights Strip */}
-          <div className="pt-10 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 border-t border-white/10">
-            <div className="p-3">
-              <span className="font-norwester text-3xl sm:text-4xl lg:text-5xl font-black text-gold tracking-tight">
+          {/* Key Metric Highlights: Refined Frosted Glass Cards */}
+          <div className="pt-6 sm:pt-8 grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-5">
+            <div className="group rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5 backdrop-blur-xl transition-all duration-300 hover:border-gold/50 hover:bg-gold/[0.07] hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.45)]">
+              <span className="font-norwester text-3xl sm:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-[#fff6e0] via-[#d9b87f] to-[#b38838] tracking-tight block">
                 +10,000
               </span>
-              <p className="mt-1 text-xs sm:text-sm text-slate-200 font-bold">مقتنٍ ومستثمر معتمد</p>
-              <span className="text-[11px] text-slate-400">قاعدة نخبوية حصرية</span>
+              <p className="mt-1.5 text-xs sm:text-sm text-white font-bold">مقتنٍ ومستثمر معتمد</p>
+              <span className="text-[11px] text-slate-400 block mt-0.5">قاعدة نخبوية حصرية</span>
             </div>
-            <div className="p-3">
-              <span className="font-norwester text-3xl sm:text-4xl lg:text-5xl font-black text-gold tracking-tight">
+
+            <div className="group rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5 backdrop-blur-xl transition-all duration-300 hover:border-gold/50 hover:bg-gold/[0.07] hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.45)]">
+              <span className="font-norwester text-3xl sm:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-[#fff6e0] via-[#d9b87f] to-[#b38838] tracking-tight block">
                 100%
               </span>
-              <p className="mt-1 text-xs sm:text-sm text-slate-200 font-bold">حماية بنكية ضامنة</p>
-              <span className="text-[11px] text-slate-400">نظام Escrow المعتمد</span>
+              <p className="mt-1.5 text-xs sm:text-sm text-white font-bold">حماية بنكية ضامنة</p>
+              <span className="text-[11px] text-slate-400 block mt-0.5">نظام Escrow المعتمد</span>
             </div>
-            <div className="p-3">
-              <span className="font-norwester text-3xl sm:text-4xl lg:text-5xl font-black text-gold tracking-tight">
+
+            <div className="group rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5 backdrop-blur-xl transition-all duration-300 hover:border-gold/50 hover:bg-gold/[0.07] hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.45)]">
+              <span className="font-norwester text-3xl sm:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-[#fff6e0] via-[#d9b87f] to-[#b38838] tracking-tight block">
                 &lt; 24h
               </span>
-              <p className="mt-1 text-xs sm:text-sm text-slate-200 font-bold">متوسط دورة الفحص</p>
-              <span className="text-[11px] text-slate-400">مطابقة رخصة السير والمرور</span>
+              <p className="mt-1.5 text-xs sm:text-sm text-white font-bold">متوسط دورة الفحص</p>
+              <span className="text-[11px] text-slate-400 block mt-0.5">مطابقة رخصة السير والمرور</span>
             </div>
-            <div className="p-3">
-              <span className="font-norwester text-3xl sm:text-4xl lg:text-5xl font-black text-gold tracking-tight">
+
+            <div className="group rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5 backdrop-blur-xl transition-all duration-300 hover:border-gold/50 hover:bg-gold/[0.07] hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.45)]">
+              <span className="font-norwester text-3xl sm:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-[#fff6e0] via-[#d9b87f] to-[#b38838] tracking-tight block">
                 0%
               </span>
-              <p className="mt-1 text-xs sm:text-sm text-slate-200 font-bold">مخاطر على التأمين</p>
-              <span className="text-[11px] text-slate-400">استرداد فوري لغير الفائزين</span>
+              <p className="mt-1.5 text-xs sm:text-sm text-white font-bold">مخاطر على التأمين</p>
+              <span className="text-[11px] text-slate-400 block mt-0.5">استرداد فوري لغير الفائزين</span>
             </div>
           </div>
         </div>
 
         {/* Scroll Indicator at Bottom Center */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-slate-400 text-xs gap-1.5 opacity-80 hover:opacity-100 transition-opacity">
-          <span>استكشف تفاصيل المنصة</span>
+        <div className="relative z-10 flex flex-col items-center justify-center text-slate-400 text-xs gap-1.5 opacity-80 hover:opacity-100 transition-opacity pb-2">
+          <span className="font-medium tracking-wide">استكشف تفاصيل المنصة</span>
           <ArrowDown size={14} className="animate-bounce text-gold" />
         </div>
       </section>
