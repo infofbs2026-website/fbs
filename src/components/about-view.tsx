@@ -270,12 +270,15 @@ export function AboutView() {
       <section className="relative w-full min-h-[100dvh] lg:min-h-screen flex flex-col justify-between pt-28 sm:pt-36 pb-10 sm:pb-14 text-white overflow-hidden bg-[#060a14] border-b border-gold/30 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)]">
         
         {/* ============================================================== */}
-        {/* HERO BACKGROUND IMAGE: IDENTICAL TO HOME HERO POSTER (NO OVERLAYS) */}
+        {/* HERO BACKGROUND IMAGE: VIDEO POSTER WITH DELICATE SUBTLE OVERLAY */}
         {/* ============================================================== */}
         <div
           className="absolute inset-0 z-0 overflow-hidden bg-[#060a14] bg-cover bg-center select-none pointer-events-none"
           style={{ backgroundImage: 'url(/videos/fbs-hero-poster.webp)' }}
         >
+          {/* Very Subtle Contrast Veil: Keeps the car crisp while lifting text legibility */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#060a14]/50 via-[#060a14]/30 to-[#060a14]/65 pointer-events-none" />
+
           {/* Minimal 1px Golden Horizon Line at the very bottom border */}
           <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent pointer-events-none" />
         </div>
@@ -288,17 +291,17 @@ export function AboutView() {
             <span>فارس بن سعود للوحات المميزة • الصرح السعودي الرائد</span>
           </div>
 
-          {/* Majestic Hero Headline: Strictly Two Balanced Lines (Line 1: White, Line 2: Gold) */}
+          {/* Majestic Hero Headline: High-Sharpness White + Luminous Gold on 2 Clean Lines */}
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-black tracking-tight leading-snug sm:leading-tight max-w-5xl mx-auto">
-            <span className="block text-white mb-1.5 sm:mb-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
+            <span className="block text-white mb-1.5 sm:mb-2 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)] drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)]">
               حيث تلتقي الندرة بالهيبة..
             </span>
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#fae8c8] via-[#d9b87f] to-[#b3883b] drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#fff3db] via-[#e2bd78] to-[#be903e] drop-shadow-[0_2px_14px_rgba(0,0,0,0.95)]">
               وسادتنا في عالم اللوحات السعودية الاستثنائية
             </span>
           </h1>
 
-          <p className="max-w-3xl mx-auto text-sm sm:text-base lg:text-lg leading-relaxed text-slate-200/90 font-normal drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+          <p className="max-w-3xl mx-auto text-sm sm:text-base lg:text-lg leading-relaxed text-slate-100 font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
             تأسست منصة فارس بن سعود لتكون دار المزادات والوساطة الأولى بالمملكة المتخصصة في أندر لوحات المركبات الملكية والأحادية، مدعومة بحسابات مصرفية ضامنة وبنية تقنية فائقة تحمي حقوق النخبة وتصنع معياراً جديداً للثقة.
           </p>
 
