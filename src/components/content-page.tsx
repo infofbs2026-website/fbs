@@ -7,6 +7,7 @@ import {
   ContactInteractive,
   AboutInteractive
 } from './content-interactive';
+import { AboutView } from './about-view';
 import { ShieldCheck, FileText, Scale, Lock, ArrowLeft } from 'lucide-react';
 
 export const contentTitles: Record<string, string> = {
@@ -92,13 +93,15 @@ export async function ContentPage({ slug }: { slug: string }) {
 
   return (
     <>
-      <PageTitle
-        title={pageTitle}
-        eyebrow="فارس بن سعود للوحات المميزة"
-        description={pageDescription}
-      />
+      {slug !== 'about' && (
+        <PageTitle
+          title={pageTitle}
+          eyebrow="فارس بن سعود للوحات المميزة"
+          description={pageDescription}
+        />
+      )}
 
-      <div className="container-fbs py-12 sm:py-16">
+      <div className={slug === 'about' ? 'w-full' : 'container-fbs py-12 sm:py-16'}>
         {slug === 'how-it-works' ? (
           <HowItWorksInteractive />
         ) : slug === 'faq' ? (
@@ -110,9 +113,7 @@ export async function ContentPage({ slug }: { slug: string }) {
             <ContactInteractive />
           </div>
         ) : slug === 'about' ? (
-          <div className="mx-auto max-w-4xl">
-            <AboutInteractive />
-          </div>
+          <AboutView />
         ) : (
           /* Legal & Policy Pages (terms, privacy, auction-policy, deposit-policy) */
           <div className="mx-auto max-w-3xl">

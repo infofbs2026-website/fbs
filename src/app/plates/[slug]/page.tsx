@@ -14,7 +14,7 @@ import {
   Radio,
   Share2,
   ShieldCheck,
-  Sparkles,
+  Award,
   Trophy
 } from 'lucide-react';
 import { getPlateBySlug } from '@/modules/marketplace/service';
@@ -145,7 +145,7 @@ export default async function Detail({ params }: { params: Promise<{ slug: strin
             {/* Plate Description & Heritage */}
             <div className="luxury-card p-6 sm:p-8">
               <h2 className="flex items-center gap-2 text-base font-black text-navy mb-4">
-                <Sparkles size={18} className="text-gold-accent" />
+                <Award size={18} className="text-gold-accent" />
                 <span>عن هذه اللوحة الاستثنائية</span>
               </h2>
               <p className="whitespace-pre-wrap text-sm leading-8 text-slate-700">

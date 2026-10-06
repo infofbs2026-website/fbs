@@ -7,7 +7,7 @@ import {
   CheckCircle2,
   ChevronDown,
   ArrowLeft,
-  Sparkles,
+  Crown,
   Lock,
   BadgeCheck,
   TrendingUp,
@@ -441,7 +441,7 @@ export function HowItWorksView() {
       {/* =================================================================== */}
       {/* 1. PRESTIGE DARK HERO SECTION                                       */}
       {/* =================================================================== */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#060b17] via-[#091224] to-[#0f1d38] text-white pt-14 sm:pt-20 lg:pt-28 pb-24 sm:pb-32 lg:pb-40 min-h-[50vh] lg:min-h-[64vh] flex flex-col justify-center">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0b1426] via-[#101b34] to-[#162544] text-white pt-16 sm:pt-22 lg:pt-32 pb-28 sm:pb-36 lg:pb-48 min-h-[55vh] lg:min-h-[69vh] flex flex-col justify-center">
         {/* Subtle Ambient Gold Light Blobs */}
         <div className="pointer-events-none absolute -top-40 start-1/2 -translate-x-1/2 h-96 w-96 rounded-full bg-gold/15 blur-[120px]" />
         <div className="pointer-events-none absolute -bottom-24 start-10 h-72 w-72 rounded-full bg-gold/10 blur-[100px]" />
@@ -677,7 +677,7 @@ export function HowItWorksView() {
               <div>
                 <div className="flex items-center justify-between">
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/15 px-3 py-1 text-xs font-bold text-gold">
-                    <Sparkles size={14} />
+                    <Crown size={14} />
                     جاهز للبدء الآن؟
                   </span>
                   <IconOfficialSeal className="w-6 h-6 text-gold" />

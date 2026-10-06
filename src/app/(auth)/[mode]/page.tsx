@@ -8,7 +8,7 @@ import {
   Award,
   Gavel,
   Lock,
-  Sparkles,
+  Crown,
   Car,
   CheckCircle2
 } from 'lucide-react';
@@ -56,7 +56,7 @@ export default async function AuthPage({
           <div className="hidden lg:col-span-6 lg:block space-y-8 pe-6">
             <div>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold/10 px-3.5 py-1 text-xs font-bold text-gold-accent">
-                <Sparkles size={14} />
+                <Crown size={14} />
                 نادي نخبة المقتنين والمستثمرين
               </span>
               <h1 className="mt-4 text-3xl font-extrabold leading-tight text-navy xl:text-4xl">

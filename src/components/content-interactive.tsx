@@ -8,7 +8,7 @@ import {
   Award,
   Car,
   Clock,
-  Sparkles,
+  Crown,
   CheckCircle2,
   ChevronDown,
   Search,
@@ -27,6 +27,7 @@ import {
   CreditCard
 } from 'lucide-react';
 import { sendJson } from './forms';
+import { AboutView } from './about-view';
 
 /* ========================================================================= */
 /* 1. HOW IT WORKS: INTERACTIVE BUYER & SELLER JOURNEY                       */
@@ -180,7 +181,7 @@ export function HowItWorksInteractive() {
         <div className="flex flex-col justify-between rounded-2xl border border-gold/40 bg-gradient-to-br from-navy to-navy-dark p-6 text-white shadow-xl">
           <div>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1 text-xs font-bold text-gold">
-              <Sparkles size={14} />
+              <CheckCircle2 size={14} />
               جاهز للبدء؟
             </span>
             <h3 className="mt-4 text-lg font-black text-white">
@@ -404,7 +405,7 @@ export function FaqInteractive() {
       <div className="rounded-3xl border-2 border-gold/40 bg-gradient-to-br from-[#060b17] via-[#0d162a] to-[#101b33] p-7 text-white shadow-xl sm:flex sm:items-center sm:justify-between">
         <div>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1 text-xs font-bold text-gold">
-            <Sparkles size={14} />
+            <Crown size={14} />
             خدمة كبار الشخصيات VIP
           </span>
           <h4 className="mt-3 text-base sm:text-lg font-black text-white">لم تجد إجابة لاستفسارك؟</h4>
@@ -464,7 +465,7 @@ export function ContactInteractive() {
         <div className="rounded-3xl border-2 border-slate-200/90 bg-white p-6 sm:p-7 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-bold text-gold-accent">
-              <Sparkles size={14} />
+              <Building size={14} />
               المكتب الخاص
             </span>
             <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
@@ -698,197 +699,5 @@ export function ContactInteractive() {
 /* ========================================================================= */
 
 export function AboutInteractive() {
-  const pillars = [
-    {
-      step: '01',
-      title: 'النخبوية والندرة المطلقة',
-      description: 'نطبق معايير فرز دقيقة تقبل فقط اللوحات الأحادية والثنائية والنادرة التي تمثل تحفة اقتنائية وقيمة استثمارية متنامية في السوق السعودي.',
-      icon: Award,
-      badge: 'انتقائية 100%'
-    },
-    {
-      step: '02',
-      title: 'الموثوقية والشفافية القانونية',
-      description: 'جميع اللوحات المعروضة تخضع لتدقيق مروري صارم للتحقق من هوية المالك وسجل المركبة، بإشراف قانوني كامل وربط مع الأنظمة المعتمدة.',
-      icon: ShieldCheck,
-      badge: 'تدقيق نظامي'
-    },
-    {
-      step: '03',
-      title: 'الحماية المالية بنظام الضامن (Escrow)',
-      description: 'نظام مدفوعات وتأمين يحفظ أموال البائع والمشتري في حسابات مصرفية مخصصة، ولا يتم الإفراج عنها إلا بعد اكتمال نقل الملكية بنجاح.',
-      icon: Lock,
-      badge: 'حساب ضامن'
-    },
-    {
-      step: '04',
-      title: 'تقنية المزادات اللحظية العالمية',
-      description: 'بنية رقمية فائقة السرعة تتيح المزايدة الحية دون تأخير زمني، مع خوارزميات مضادة للقنص لحماية المنافسة النزيهة بين المقتنين.',
-      icon: Gavel,
-      badge: 'مكافحة القنص'
-    }
-  ];
-
-  return (
-    <div className="space-y-12">
-      {/* Vision & Mission Split Cards */}
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Vision Card */}
-        <div className="rounded-3xl border-2 border-slate-200/90 bg-white p-7 sm:p-9 shadow-sm hover:border-gold/60 transition-all">
-          <div className="flex items-center justify-between gap-4">
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100/60 border border-amber-200/60 text-gold-accent shadow-xs">
-              <Sparkles size={24} />
-            </span>
-            <span className="rounded-full bg-amber-50 px-3 py-1 text-[11px] font-bold text-gold-accent border border-amber-200/60">
-              رؤية المنصة
-            </span>
-          </div>
-          <h3 className="mt-5 text-xl font-black text-[#0f172a] sm:text-2xl">
-            الريادة في صياغة تجربة اقتناء اللوحات المميزة
-          </h3>
-          <p className="mt-3 text-sm leading-relaxed text-[#334155] font-medium">
-            تأسست منصة <strong className="font-bold text-[#0f172a]">فارس بن سعود للوحات المميزة</strong> لتكون الصرح الأكثر احترافية وموثوقية في المملكة العربية السعودية، حيث نجمع بين شغف التميز وأحدث التقنيات الرقمية المتقدمة لتقديم تجربة مزاد تضاهي كبرى دور المزادات العالمية.
-          </p>
-        </div>
-
-        {/* Mission Card */}
-        <div className="rounded-3xl border-2 border-slate-200/90 bg-white p-7 sm:p-9 shadow-sm hover:border-gold/60 transition-all">
-          <div className="flex items-center justify-between gap-4">
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100/60 border border-amber-200/60 text-gold-accent shadow-xs">
-              <TrendingUp size={24} />
-            </span>
-            <span className="rounded-full bg-amber-50 px-3 py-1 text-[11px] font-bold text-gold-accent border border-amber-200/60">
-              رسالتنا وقيمنا
-            </span>
-          </div>
-          <h3 className="mt-5 text-xl font-black text-[#0f172a] sm:text-2xl">
-            حفظ الحقوق وابتكار بيئة تداول آمنة وسرية
-          </h3>
-          <p className="mt-3 text-sm leading-relaxed text-[#334155] font-medium">
-            ندرك أن لوحة المركبة لم تعد مجرد أرقام تعريفية، بل هي رمز للهوية والوجاهة واستثمار طويل الأجل. نلتزم بتوفير بيئة تداول آمنة، تحفظ حقوق البائع والمشتري بكل سرية وشفافية، وفق الأنظمة والقوانين المعتمدة لوزارة الداخلية ومنصة أبشر.
-          </p>
-        </div>
-      </div>
-
-      {/* Prestige Stats Strip */}
-      <div className="rounded-3xl border-2 border-slate-200/90 bg-white p-6 sm:p-8 shadow-sm">
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x sm:divide-x-reverse divide-slate-100">
-          <div className="text-center pt-4 sm:pt-0">
-            <span className="font-norwester text-3xl font-black text-[#c59a3f] sm:text-4xl tracking-tight">
-              100%
-            </span>
-            <h4 className="mt-1.5 text-xs font-black text-[#0f172a]">نقل موثق ومعتمد</h4>
-            <p className="mt-0.5 text-[11px] text-[#475569] font-medium">عبر القنوات الرسمية لمنصة أبشر</p>
-          </div>
-          <div className="text-center pt-4 sm:pt-0">
-            <span className="font-norwester text-3xl font-black text-[#c59a3f] sm:text-4xl tracking-tight">
-              +10,000
-            </span>
-            <h4 className="mt-1.5 text-xs font-black text-[#0f172a]">مقتنٍ ومستثمر مسجل</h4>
-            <p className="mt-0.5 text-[11px] text-[#475569] font-medium">قاعدة عملاء حصرية ونخبوية</p>
-          </div>
-          <div className="text-center pt-4 sm:pt-0">
-            <span className="font-norwester text-3xl font-black text-[#c59a3f] sm:text-4xl tracking-tight">
-              &lt; 24h
-            </span>
-            <h4 className="mt-1.5 text-xs font-black text-[#0f172a]">اعتماد وفحص سريع</h4>
-            <p className="mt-0.5 text-[11px] text-[#475569] font-medium">مراجعة وثائق الملكية باحترافية</p>
-          </div>
-          <div className="text-center pt-4 sm:pt-0">
-            <span className="font-norwester text-3xl font-black text-[#c59a3f] sm:text-4xl tracking-tight">
-              24/7
-            </span>
-            <h4 className="mt-1.5 text-xs font-black text-[#0f172a]">مزادات حية ودعم مستمر</h4>
-            <p className="mt-0.5 text-[11px] text-[#475569] font-medium">مكتب خاص لخدمة كبار الشخصيات</p>
-          </div>
-        </div>
-      </div>
-
-      {/* 4 Core Pillars Grid */}
-      <div className="space-y-6">
-        <div className="text-center max-w-xl mx-auto">
-          <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/60 bg-amber-50/80 px-4 py-1.5 text-xs font-black text-gold-accent">
-            <BadgeCheck size={14} />
-            <span>معايير الجودة والضمان</span>
-          </span>
-          <h3 className="mt-3 text-2xl font-black text-[#0f172a]">ركائز التفرد في فارس بن سعود</h3>
-          <p className="mt-1.5 text-xs sm:text-sm text-[#475569] font-medium">
-            المبادئ الأساسية الأربعة التي تضمن لك تجربة اقتناء واستثمار نخبوية لا تضاهى
-          </p>
-        </div>
-
-        <div className="grid gap-6 sm:grid-cols-2">
-          {pillars.map((p) => {
-            const Icon = p.icon;
-            return (
-              <div
-                key={p.title}
-                className="group relative rounded-3xl border-2 border-slate-200/90 bg-white p-7 shadow-sm hover:border-gold/60 hover:shadow-md transition-all flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100/60 border border-amber-200/60 text-gold-accent shadow-xs group-hover:bg-gold/20 transition-colors">
-                      <Icon size={22} />
-                    </span>
-                    <span className="font-norwester text-xs font-black text-slate-400">
-                      {p.step}
-                    </span>
-                  </div>
-                  <h4 className="mt-4 text-base font-black text-[#0f172a] group-hover:text-gold-accent transition-colors">
-                    {p.title}
-                  </h4>
-                  <p className="mt-2 text-xs leading-relaxed text-[#334155] font-medium">
-                    {p.description}
-                  </p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-slate-100">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-bold text-[#0f172a]">
-                    <CheckCircle2 size={12} className="text-emerald-600" />
-                    <span>{p.badge}</span>
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Royal Seal Bottom Banner */}
-      <div className="relative overflow-hidden rounded-3xl border-2 border-gold/40 bg-gradient-to-r from-[#060b17] via-[#091224] to-[#0f1d38] p-8 sm:p-10 text-white shadow-2xl">
-        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-gold/15 blur-3xl" />
-        <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-start gap-4">
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold/20 border border-gold/40 text-gold shadow-md">
-              <ShieldCheck size={28} />
-            </span>
-            <div>
-              <span className="inline-block rounded-full bg-gold/20 px-3 py-1 text-[11px] font-bold text-gold border border-gold/30">
-                منصة وطنية مرخصة بمعايير نقدية
-              </span>
-              <h4 className="mt-2 text-lg sm:text-xl font-black text-white">
-                جميع التعاملات مطابقة للأنظمة المرورية المعتمدة في المملكة
-              </h4>
-              <p className="mt-1 text-xs text-slate-300 font-medium leading-relaxed max-w-xl">
-                نلتزم بأعلى معايير الحوكمة المالية ونظام الضامن المعتمد لضمان تسليم اللوحات ونقل الملكية رسمياً عبر منصة أبشر بأمان تام.
-              </p>
-            </div>
-          </div>
-          <div className="flex shrink-0 flex-wrap gap-3">
-            <Link
-              href="/"
-              className="btn btn-gold py-3 px-6 text-xs font-black shadow-lg"
-            >
-              استكشف المزادات الحية
-            </Link>
-            <Link
-              href="/contact"
-              className="btn border border-white/20 bg-white/10 text-white py-3 px-6 text-xs font-black hover:bg-white/20 backdrop-blur-xs transition-colors"
-            >
-              تواصل مع المكتب الخاص
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return <AboutView />;
 }

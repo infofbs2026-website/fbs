@@ -22,7 +22,6 @@ import {
   Radio,
   Search,
   ShieldCheck,
-  Sparkles,
   UserRound,
   X
 } from 'lucide-react';
@@ -204,10 +203,10 @@ export function Header() {
               <span>اعرض لوحتك</span>
             </Link>
 
-            {/* Unified Luxury Member Pill Button - Hidden on mobile per user instruction */}
+            {/* Unified Luxury Member Pill Button - Matching List Plate Button */}
             <Link
               href="/login"
-              className="group hidden sm:inline-flex h-10 items-center gap-2.5 rounded-full border border-white/15 bg-white/5 ps-2 pe-4 text-xs font-bold text-slate-100 backdrop-blur-md transition-all duration-200 hover:border-gold/50 hover:bg-gold/15 hover:text-white hover:shadow-[0_0_15px_rgba(217,184,127,0.25)] active:scale-[0.98]"
+              className="group hidden sm:inline-flex h-10 items-center gap-2.5 rounded-full border border-gold/40 bg-gold/10 ps-2 pe-4 text-xs font-bold text-gold-light backdrop-blur-md transition-all duration-200 hover:border-gold hover:bg-gold/20 hover:text-white hover:shadow-[0_0_15px_rgba(217,184,127,0.25)] active:scale-[0.98]"
               title="تسجيل الدخول إلى حسابك"
             >
               <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-[#141d33] to-[#0a1020] border border-gold/40 text-gold shadow-xs group-hover:border-gold group-hover:shadow-[0_0_8px_rgba(217,184,127,0.4)] transition-all shrink-0">
@@ -296,7 +295,7 @@ export function Header() {
               <Link
                 href="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 w-full rounded-xl border border-white/15 bg-white/5 py-3 text-sm font-bold text-slate-200 hover:text-white hover:border-gold/40 transition-all"
+                className="flex items-center justify-center gap-2 w-full rounded-xl border border-gold/40 bg-gold/10 py-3 text-sm font-bold text-gold-light hover:text-white hover:border-gold transition-all"
               >
                 <UserRound size={16} className="text-gold" />
                 <span>تسجيل الدخول</span>

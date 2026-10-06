@@ -12,7 +12,7 @@ import {
   ArrowLeft,
   AlertCircle,
   Clock,
-  Sparkles,
+  Eye,
   FileText,
   Car,
   Lock
@@ -247,7 +247,7 @@ export function SellerForm({
               {/* Header */}
               <div className="mb-4 flex items-center justify-between">
                 <span className="flex items-center gap-1.5 text-xs font-black text-gold">
-                  <Sparkles size={15} />
+                  <Eye size={15} />
                   <span>معاينة فورية حية للوحة</span>
                 </span>
                 {plateClassification && (

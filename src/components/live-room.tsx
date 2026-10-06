@@ -13,7 +13,7 @@ import {
   Radio,
   RefreshCw,
   ShieldCheck,
-  Sparkles,
+  Play,
   Trophy,
   UserCheck,
   Volume2,
@@ -404,7 +404,7 @@ export function LiveRoom({
               onClick={() => setDemoBiddingUnlocked(true)}
               className="btn btn-gold flex-1 text-xs font-black py-3 shadow-md flex items-center justify-center gap-1.5"
             >
-              <Sparkles size={14} />
+              <Play size={14} />
               <span>تجربة المزايدة (وضع المعاينة)</span>
             </button>
           </div>
@@ -464,7 +464,7 @@ export function LiveRoom({
           {demoBiddingUnlocked && (
             <div className="flex items-center justify-between rounded-xl bg-amber-500/10 border border-amber-500/30 px-3.5 py-2 text-xs font-bold text-amber-800">
               <span className="flex items-center gap-1.5">
-                <Sparkles size={13} className="text-amber-600" />
+                <Radio size={13} className="text-amber-600 animate-pulse" />
                 <span>وضع المحاكاة المباشر نشط للمعاينة</span>
               </span>
               <span className="text-[10px] text-amber-700 font-medium">مزايدات تجريبية فورية</span>
