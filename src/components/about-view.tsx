@@ -270,57 +270,35 @@ export function AboutView() {
       <section className="relative w-full min-h-[100dvh] lg:min-h-screen flex flex-col justify-between pt-28 sm:pt-36 pb-10 sm:pb-14 text-white overflow-hidden bg-[#060a14] border-b border-gold/30 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)]">
         
         {/* ============================================================== */}
-        {/* CINEMATIC LUXURY BACKGROUND IMAGE & LIGHTING OVERLAYS          */}
+        {/* HERO BACKGROUND IMAGE: IDENTICAL TO HOME HERO POSTER (NO OVERLAYS) */}
         {/* ============================================================== */}
-        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
-          {/* Bespoke Luxury Showroom Background */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/branding/about-hero-bg.jpg"
-            alt="صرح فارس بن سعود للوحات المميزة"
-            className="h-full w-full object-cover object-center scale-[1.03] transition-transform duration-1000 ease-out"
-          />
-
-          {/* Deep Royal Vignette & Darkening Gradients for 100% Typography Crispness */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(6,10,20,0.72)_0%,rgba(4,7,15,0.94)_100%)]" />
-
-          {/* Header Fade Scrim */}
-          <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-[#060a14]/95 via-[#060a14]/70 to-transparent" />
-
-          {/* Bottom Blend Gradient into next section */}
-          <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#060a14] via-[#0b1426]/80 to-transparent" />
-
-          {/* Subtle Ambient Royal Blue Tint */}
-          <div className="absolute inset-0 bg-blue-950/20 mix-blend-multiply" />
+        <div
+          className="absolute inset-0 z-0 overflow-hidden bg-[#060a14] bg-cover bg-center select-none pointer-events-none"
+          style={{ backgroundImage: 'url(/videos/fbs-hero-poster.webp)' }}
+        >
+          {/* Minimal 1px Golden Horizon Line at the very bottom border */}
+          <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent pointer-events-none" />
         </div>
 
-        {/* Ambient Royal Gold Lighting Highlights */}
-        <div className="pointer-events-none absolute -top-32 start-1/2 -translate-x-1/2 h-[400px] w-[800px] rounded-full bg-gold/15 blur-[140px] z-[1]" />
-        <div className="pointer-events-none absolute top-1/3 -start-24 h-96 w-96 rounded-full bg-blue-600/10 blur-[130px] z-[1]" />
-        <div className="pointer-events-none absolute bottom-12 end-0 h-[360px] w-[360px] rounded-full bg-gold/10 blur-[120px] z-[1]" />
-
-        {/* Minimal 1px Golden Horizon Line at the very bottom border */}
-        <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent z-10 pointer-events-none" />
-
         {/* Central Hero Content */}
-        <div className="container-fbs relative z-10 my-auto py-6 sm:py-8 text-center max-w-5xl mx-auto space-y-7 sm:space-y-8">
+        <div className="container-fbs relative z-10 my-auto py-6 sm:py-8 text-center max-w-5xl mx-auto space-y-6 sm:space-y-7">
           {/* Sovereign Eyebrow Badge: Regal styling with gold rim */}
           <div className="inline-flex items-center gap-3 rounded-full border border-gold/45 bg-[#0b1426]/85 px-6 py-2.5 text-xs sm:text-sm font-black text-gold-light backdrop-blur-xl shadow-[0_4px_24px_rgba(217,184,127,0.18)]">
             <SaudiCrestSvg className="w-5 h-5 text-gold shrink-0 drop-shadow-[0_0_8px_rgba(217,184,127,0.4)]" />
             <span>فارس بن سعود للوحات المميزة • الصرح السعودي الرائد</span>
           </div>
 
-          {/* Majestic Hero Headline: Two Balanced Parts (White + Radiant Gold) */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.3] sm:leading-[1.22] max-w-4xl mx-auto">
-            <span className="block text-white mb-2 sm:mb-3 drop-shadow-md">
+          {/* Majestic Hero Headline: Strictly Two Balanced Lines (Line 1: White, Line 2: Gold) */}
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-black tracking-tight leading-snug sm:leading-tight max-w-5xl mx-auto">
+            <span className="block text-white mb-1.5 sm:mb-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
               حيث تلتقي الندرة بالهيبة..
             </span>
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#fae8c8] via-[#d9b87f] to-[#b3883b] drop-shadow-[0_4px_24px_rgba(217,184,127,0.32)]">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#fae8c8] via-[#d9b87f] to-[#b3883b] drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
               وسادتنا في عالم اللوحات السعودية الاستثنائية
             </span>
           </h1>
 
-          <p className="max-w-3xl mx-auto text-sm sm:text-base lg:text-lg leading-relaxed text-slate-200/90 font-normal drop-shadow-sm">
+          <p className="max-w-3xl mx-auto text-sm sm:text-base lg:text-lg leading-relaxed text-slate-200/90 font-normal drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
             تأسست منصة فارس بن سعود لتكون دار المزادات والوساطة الأولى بالمملكة المتخصصة في أندر لوحات المركبات الملكية والأحادية، مدعومة بحسابات مصرفية ضامنة وبنية تقنية فائقة تحمي حقوق النخبة وتصنع معياراً جديداً للثقة.
           </p>
 
