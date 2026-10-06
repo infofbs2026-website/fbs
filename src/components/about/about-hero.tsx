@@ -44,118 +44,123 @@ export function AboutHero() {
 
   return (
     <section className="relative w-full min-h-[100dvh] lg:min-h-screen flex flex-col justify-between pt-28 sm:pt-36 pb-10 sm:pb-14 text-white overflow-hidden bg-[#060a14] border-b border-gold/30 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)]">
-      {/* Background Image Layer: Video poster with delicate subtle overlay */}
+      {/* Background Image Layer: 100% Pure Video Poster with ZERO Overlays */}
       <div
         className="absolute inset-0 z-0 overflow-hidden bg-[#060a14] bg-cover bg-center select-none pointer-events-none"
         style={{ backgroundImage: 'url(/videos/fbs-hero-poster.webp)' }}
       >
-        {/* Very Light Delicate Contrast Veil */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#060a14]/25 via-transparent to-[#060a14]/35 pointer-events-none" />
-
         {/* Minimal 1px Golden Horizon Line at the bottom border */}
         <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent pointer-events-none" />
       </div>
 
-      {/* Central Hero Content */}
-      <div className="container-fbs relative z-10 my-auto py-6 sm:py-8 text-center max-w-5xl mx-auto space-y-6 sm:space-y-7">
-        
-        {/* Stage 1: Sovereign Eyebrow Badge */}
-        <div
-          className={`transition-all duration-700 ease-out transform ${
-            stage >= 1 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
-          }`}
-        >
-          <div className="inline-flex items-center gap-3 rounded-full border border-gold/45 bg-[#0b1426]/85 px-6 py-2.5 text-xs sm:text-sm font-black text-gold-light backdrop-blur-xl shadow-[0_4px_24px_rgba(217,184,127,0.18)]">
-            <SaudiCrestSvg className="w-5 h-5 text-gold shrink-0 drop-shadow-[0_0_8px_rgba(217,184,127,0.4)]" />
-            <span>فارس بن سعود للوحات المميزة • الصرح السعودي الرائد</span>
-          </div>
-        </div>
+      {/* Central Hero Master Glass Card Container */}
+      <div className="container-fbs relative z-10 my-auto py-6 sm:py-8">
+        <div className="mx-auto max-w-5xl rounded-3xl sm:rounded-[32px] border border-gold/35 bg-gradient-to-b from-[#091122]/85 via-[#060b17]/90 to-[#0a1224]/85 p-6 sm:p-10 lg:p-12 text-center backdrop-blur-2xl shadow-[0_30px_90px_-20px_rgba(0,0,0,0.9),0_0_40px_rgba(217,184,127,0.12)] space-y-6 sm:space-y-7 relative overflow-hidden">
+          
+          {/* Subtle Golden Horizon Accent at the top of the master card */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-gold/70 to-transparent" />
+          
+          {/* Soft Ambient Gold Glow inside the master card */}
+          <div className="pointer-events-none absolute -top-20 start-1/2 -translate-x-1/2 h-44 w-96 rounded-full bg-gold/10 blur-[75px]" />
 
-        {/* Stage 2: Majestic Hero Headline (Strictly 2 Lines: Line 1 White, Line 2 Gold) */}
-        <div
-          className={`transition-all duration-700 ease-out transform ${
-            stage >= 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'
-          }`}
-        >
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-black tracking-tight leading-snug sm:leading-tight max-w-5xl mx-auto">
-            <span className="block text-white mb-1.5 sm:mb-2 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)] drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)]">
-              حيث تلتقي الندرة بالهيبة..
-            </span>
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#fff3db] via-[#e2bd78] to-[#be903e] drop-shadow-[0_2px_14px_rgba(0,0,0,0.95)]">
-              وسادتنا في عالم اللوحات السعودية الاستثنائية
-            </span>
-          </h1>
-        </div>
-
-        {/* Stage 3: Enlarged Subtitle Paragraph */}
-        <div
-          className={`transition-all duration-700 ease-out transform ${
-            stage >= 3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'
-          }`}
-        >
-          <p className="max-w-3xl mx-auto text-base sm:text-lg md:text-xl lg:text-[21px] leading-[1.8] sm:leading-[1.85] text-slate-100 font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
-            تأسست منصة فارس بن سعود لتكون دار المزادات والوساطة الأولى بالمملكة المتخصصة في أندر لوحات المركبات الملكية والأحادية، مدعومة بحسابات مصرفية ضامنة وبنية تقنية فائقة تحمي حقوق النخبة وتصنع معياراً جديداً للثقة.
-          </p>
-        </div>
-
-        {/* Stage 4: Quick Action CTA Buttons */}
-        <div
-          className={`pt-2 flex flex-wrap items-center justify-center gap-4 transition-all duration-700 ease-out transform ${
-            stage >= 4 ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95 pointer-events-none'
-          }`}
-        >
-          <Link
-            href="/auctions"
-            className="btn btn-gold py-3.5 px-8 text-sm font-black shadow-[0_8px_30px_rgba(217,184,127,0.35)] hover:shadow-[0_8px_35px_rgba(217,184,127,0.5)] transition-all hover:scale-[1.02] active:scale-[0.98]"
+          {/* Stage 1: Sovereign Eyebrow Badge */}
+          <div
+            className={`transition-all duration-700 ease-out transform ${
+              stage >= 1 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
+            }`}
           >
-            <Gavel size={18} />
-            <span>استكشف المزادات الحية</span>
-          </Link>
-          <Link
-            href="/sell-your-plate"
-            className="btn border border-gold/40 bg-[#0e172a]/70 text-slate-100 hover:text-white hover:bg-gold/15 hover:border-gold py-3.5 px-8 text-sm font-black backdrop-blur-md shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
+            <div className="inline-flex items-center gap-3 rounded-full border border-gold/45 bg-[#0b1426]/90 px-6 py-2.5 text-xs sm:text-sm font-black text-gold-light backdrop-blur-xl shadow-[0_4px_24px_rgba(217,184,127,0.18)]">
+              <SaudiCrestSvg className="w-5 h-5 text-gold shrink-0 drop-shadow-[0_0_8px_rgba(217,184,127,0.4)]" />
+              <span>فارس بن سعود للوحات المميزة • الصرح السعودي الرائد</span>
+            </div>
+          </div>
+
+          {/* Stage 2: Majestic Hero Headline (Strictly 2 Lines: Line 1 White, Line 2 Gold) */}
+          <div
+            className={`transition-all duration-700 ease-out transform ${
+              stage >= 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'
+            }`}
           >
-            <Award size={18} className="text-gold-light" />
-            <span>اعرض لوحتك النادرة</span>
-          </Link>
-        </div>
-
-        {/* Stage 5: Key Metric Highlights: Cascading Staggered Frosted Glass Cards */}
-        <div
-          className={`pt-6 sm:pt-8 grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-5 transition-all duration-700 ease-out transform ${
-            stage >= 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'
-          }`}
-        >
-          <div className="group rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5 backdrop-blur-xl transition-all duration-300 hover:border-gold/50 hover:bg-gold/[0.07] hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.45)]">
-            <span className="font-norwester text-3xl sm:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-[#fff6e0] via-[#d9b87f] to-[#b38838] tracking-tight block">
-              +10,000
-            </span>
-            <p className="mt-1.5 text-xs sm:text-sm text-white font-bold">مقتنٍ ومستثمر معتمد</p>
-            <span className="text-[11px] text-slate-400 block mt-0.5">قاعدة نخبوية حصرية</span>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[40px] font-black tracking-tight leading-snug sm:leading-tight max-w-4xl mx-auto">
+              <span className="block text-white mb-1.5 sm:mb-2 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
+                حيث تلتقي الندرة بالهيبة..
+              </span>
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#fff3db] via-[#e2bd78] to-[#be903e] drop-shadow-[0_2px_14px_rgba(0,0,0,0.95)]">
+                وسادتنا في عالم اللوحات السعودية الاستثنائية
+              </span>
+            </h1>
           </div>
 
-          <div className="group rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5 backdrop-blur-xl transition-all duration-300 hover:border-gold/50 hover:bg-gold/[0.07] hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.45)]">
-            <span className="font-norwester text-3xl sm:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-[#fff6e0] via-[#d9b87f] to-[#b38838] tracking-tight block">
-              100%
-            </span>
-            <p className="mt-1.5 text-xs sm:text-sm text-white font-bold">حماية بنكية ضامنة</p>
-            <span className="text-[11px] text-slate-400 block mt-0.5">نظام Escrow المعتمد</span>
+          {/* Stage 3: Enlarged Subtitle Paragraph */}
+          <div
+            className={`transition-all duration-700 ease-out transform ${
+              stage >= 3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'
+            }`}
+          >
+            <p className="max-w-3xl mx-auto text-base sm:text-lg md:text-xl lg:text-[21px] leading-[1.8] sm:leading-[1.85] text-slate-100 font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,0.95)]">
+              تأسست منصة فارس بن سعود لتكون دار المزادات والوساطة الأولى بالمملكة المتخصصة في أندر لوحات المركبات الملكية والأحادية، مدعومة بحسابات مصرفية ضامنة وبنية تقنية فائقة تحمي حقوق النخبة وتصنع معياراً جديداً للثقة.
+            </p>
           </div>
 
-          <div className="group rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5 backdrop-blur-xl transition-all duration-300 hover:border-gold/50 hover:bg-gold/[0.07] hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.45)]">
-            <span className="font-norwester text-3xl sm:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-[#fff6e0] via-[#d9b87f] to-[#b38838] tracking-tight block">
-              &lt; 24h
-            </span>
-            <p className="mt-1.5 text-xs sm:text-sm text-white font-bold">متوسط دورة الفحص</p>
-            <span className="text-[11px] text-slate-400 block mt-0.5">مطابقة رخصة السير والمرور</span>
+          {/* Stage 4: Quick Action CTA Buttons */}
+          <div
+            className={`pt-1 flex flex-wrap items-center justify-center gap-4 transition-all duration-700 ease-out transform ${
+              stage >= 4 ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95 pointer-events-none'
+            }`}
+          >
+            <Link
+              href="/auctions"
+              className="btn btn-gold py-3.5 px-8 text-sm font-black shadow-[0_8px_30px_rgba(217,184,127,0.35)] hover:shadow-[0_8px_35px_rgba(217,184,127,0.5)] transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <Gavel size={18} />
+              <span>استكشف المزادات الحية</span>
+            </Link>
+            <Link
+              href="/sell-your-plate"
+              className="btn border border-gold/40 bg-[#0e172a]/70 text-slate-100 hover:text-white hover:bg-gold/15 hover:border-gold py-3.5 px-8 text-sm font-black backdrop-blur-md shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <Award size={18} className="text-gold-light" />
+              <span>اعرض لوحتك النادرة</span>
+            </Link>
           </div>
 
-          <div className="group rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5 backdrop-blur-xl transition-all duration-300 hover:border-gold/50 hover:bg-gold/[0.07] hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.45)]">
-            <span className="font-norwester text-3xl sm:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-[#fff6e0] via-[#d9b87f] to-[#b38838] tracking-tight block">
-              0%
-            </span>
-            <p className="mt-1.5 text-xs sm:text-sm text-white font-bold">مخاطر على التأمين</p>
-            <span className="text-[11px] text-slate-400 block mt-0.5">استرداد فوري لغير الفائزين</span>
+          {/* Stage 5: Key Metric Highlights: Cascading Staggered Frosted Glass Cards */}
+          <div
+            className={`pt-4 sm:pt-6 grid grid-cols-2 sm:grid-cols-4 gap-3.5 sm:gap-5 transition-all duration-700 ease-out transform ${
+              stage >= 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'
+            }`}
+          >
+            <div className="group rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5 backdrop-blur-xl transition-all duration-300 hover:border-gold/50 hover:bg-gold/[0.07] hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.45)]">
+              <span className="font-norwester text-3xl sm:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-[#fff6e0] via-[#d9b87f] to-[#b38838] tracking-tight block">
+                +10,000
+              </span>
+              <p className="mt-1.5 text-xs sm:text-sm text-white font-bold">مقتنٍ ومستثمر معتمد</p>
+              <span className="text-[11px] text-slate-400 block mt-0.5">قاعدة نخبوية حصرية</span>
+            </div>
+
+            <div className="group rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5 backdrop-blur-xl transition-all duration-300 hover:border-gold/50 hover:bg-gold/[0.07] hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.45)]">
+              <span className="font-norwester text-3xl sm:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-[#fff6e0] via-[#d9b87f] to-[#b38838] tracking-tight block">
+                100%
+              </span>
+              <p className="mt-1.5 text-xs sm:text-sm text-white font-bold">حماية بنكية ضامنة</p>
+              <span className="text-[11px] text-slate-400 block mt-0.5">نظام Escrow المعتمد</span>
+            </div>
+
+            <div className="group rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5 backdrop-blur-xl transition-all duration-300 hover:border-gold/50 hover:bg-gold/[0.07] hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.45)]">
+              <span className="font-norwester text-3xl sm:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-[#fff6e0] via-[#d9b87f] to-[#b38838] tracking-tight block">
+                &lt; 24h
+              </span>
+              <p className="mt-1.5 text-xs sm:text-sm text-white font-bold">متوسط دورة الفحص</p>
+              <span className="text-[11px] text-slate-400 block mt-0.5">مطابقة رخصة السير والمرور</span>
+            </div>
+
+            <div className="group rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5 backdrop-blur-xl transition-all duration-300 hover:border-gold/50 hover:bg-gold/[0.07] hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.45)]">
+              <span className="font-norwester text-3xl sm:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-[#fff6e0] via-[#d9b87f] to-[#b38838] tracking-tight block">
+                0%
+              </span>
+              <p className="mt-1.5 text-xs sm:text-sm text-white font-bold">مخاطر على التأمين</p>
+              <span className="text-[11px] text-slate-400 block mt-0.5">استرداد فوري لغير الفائزين</span>
+            </div>
           </div>
         </div>
       </div>
