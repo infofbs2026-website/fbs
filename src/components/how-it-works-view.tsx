@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   ShieldCheck,
@@ -431,8 +431,22 @@ const faqs: FaqItem[] = [
 /* ========================================================================= */
 
 export function HowItWorksView() {
+  const [stage, setStage] = useState(0);
   const [activeTab, setActiveTab] = useState<'buyer' | 'seller'>('buyer');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setStage(1), 50);
+    const t2 = setTimeout(() => setStage(2), 180);
+    const t3 = setTimeout(() => setStage(3), 360);
+    const t4 = setTimeout(() => setStage(4), 540);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+    };
+  }, []);
 
   const steps = activeTab === 'buyer' ? buyerJourneySteps : sellerJourneySteps;
 
@@ -458,25 +472,34 @@ export function HowItWorksView() {
         />
 
         <div className="container-fbs relative z-10">
-          {/* Breadcrumb Navigation */}
-          <nav aria-label="مسار التصفح" className="mb-8 flex items-center gap-2 text-xs font-medium text-slate-400">
-            <Link href="/" className="hover:text-gold transition-colors">
-              الرئيسية
-            </Link>
-            <ChevronLeft size={13} className="text-slate-600" />
-            <span className="text-gold font-semibold">كيف نعمل</span>
-          </nav>
+          {/* Stage 1: Breadcrumb Navigation & Eyebrow Capsule */}
+          <div
+            className={`transition-all duration-700 ease-out transform ${
+              stage >= 1 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
+            }`}
+          >
+            <nav aria-label="مسار التصفح" className="mb-6 flex items-center gap-2 text-xs font-medium text-slate-400">
+              <Link href="/" className="hover:text-gold transition-colors">
+                الرئيسية
+              </Link>
+              <ChevronLeft size={13} className="text-slate-600" />
+              <span className="text-gold font-semibold">كيف نعمل</span>
+            </nav>
 
-          {/* Luxury Eyebrow Capsule */}
-          <div className="inline-flex items-center gap-2.5 rounded-full border border-gold/40 bg-gold/10 px-4 py-1.5 backdrop-blur-md">
-            <IconOfficialSeal className="w-4 h-4 text-gold" />
-            <span className="text-xs font-bold text-gold-light tracking-wide">
-              دليل الصفقات والمزادات المعتمدة في المملكة
-            </span>
+            <div className="inline-flex items-center gap-2.5 rounded-full border border-gold/40 bg-gold/10 px-4 py-1.5 backdrop-blur-md">
+              <IconOfficialSeal className="w-4 h-4 text-gold" />
+              <span className="text-xs font-bold text-gold-light tracking-wide">
+                دليل الصفقات والمزادات المعتمدة في المملكة
+              </span>
+            </div>
           </div>
 
-          {/* Hero Typography */}
-          <div className="mt-6 max-w-3xl">
+          {/* Stage 2: Hero Typography */}
+          <div
+            className={`mt-6 max-w-3xl transition-all duration-700 ease-out transform ${
+              stage >= 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'
+            }`}
+          >
             <h1 className="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-white leading-tight">
               آلية عمل صفقات ومزادات النخبة
               <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-gold-light via-gold to-gold-accent">
@@ -484,14 +507,18 @@ export function HowItWorksView() {
               </span>
             </h1>
 
-            <p className="mt-5 text-sm sm:text-base leading-relaxed text-slate-300 font-normal">
+            <p className="mt-5 text-sm sm:text-base lg:text-lg leading-relaxed text-slate-200 font-normal">
               رحلة رقمية متكاملة لامتلاك وبيع أندر لوحات المركبات السعودية، مدعومة بنظام الحساب الضامن (Escrow)
               والربط الرسمي مع بوابة أبشر وأنظمة وزارة الداخلية لضمان حقوق كافة الأطراف بأعلى معايير الحوكمة والسرية.
             </p>
           </div>
 
-          {/* Quick Assurance Badges Ribbon */}
-          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4 border-t border-gold/20 pt-8">
+          {/* Stage 3: Quick Assurance Badges Ribbon */}
+          <div
+            className={`mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4 border-t border-gold/20 pt-8 transition-all duration-700 ease-out transform ${
+              stage >= 3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'
+            }`}
+          >
             <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3.5 backdrop-blur-sm">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold/20 text-gold border border-gold/30">
                 <CreditCard size={18} />

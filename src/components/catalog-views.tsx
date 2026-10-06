@@ -525,21 +525,37 @@ export function CatalogStage({
             <>
               {viewMode === 'grid' && (
                 <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
-                  {plates.map((plate) => (
-                    <PlateCard key={plate.id} plate={plate} />
+                  {plates.map((plate, idx) => (
+                    <div
+                      key={plate.id}
+                      className="animate-fade-in-up"
+                      style={{ animationDelay: `${Math.min(idx * 50, 400)}ms` }}
+                    >
+                      <PlateCard plate={plate} />
+                    </div>
                   ))}
                 </div>
               )}
 
               {viewMode === 'wide' && (
                 <div className="space-y-4">
-                  {plates.map((plate) => (
-                    <PlateCardWide key={plate.id} plate={plate} />
+                  {plates.map((plate, idx) => (
+                    <div
+                      key={plate.id}
+                      className="animate-fade-in-up"
+                      style={{ animationDelay: `${Math.min(idx * 50, 400)}ms` }}
+                    >
+                      <PlateCardWide plate={plate} />
+                    </div>
                   ))}
                 </div>
               )}
 
-              {viewMode === 'table' && <PlateTableView plates={plates} />}
+              {viewMode === 'table' && (
+                <div className="animate-fade-in-up">
+                  <PlateTableView plates={plates} />
+                </div>
+              )}
             </>
           ) : (
             <EmptyState
