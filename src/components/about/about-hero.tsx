@@ -49,8 +49,8 @@ export function AboutHero() {
         className="absolute inset-0 z-0 overflow-hidden bg-[#060a14] bg-cover bg-center select-none pointer-events-none"
         style={{ backgroundImage: 'url(/videos/fbs-hero-poster.webp)' }}
       >
-        {/* Very Subtle Contrast Veil */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#060a14]/50 via-[#060a14]/30 to-[#060a14]/65 pointer-events-none" />
+        {/* Very Light Delicate Contrast Veil */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#060a14]/25 via-transparent to-[#060a14]/35 pointer-events-none" />
 
         {/* Minimal 1px Golden Horizon Line at the bottom border */}
         <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent pointer-events-none" />
