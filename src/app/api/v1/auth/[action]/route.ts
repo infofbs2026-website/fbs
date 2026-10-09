@@ -4,7 +4,19 @@ import { assertOrigin,readJson,success,failure } from '@/lib/api';
 import { rateLimit } from '@/lib/rate-limit';
 import { siteOrigin } from '@/lib/env';
 import { DomainError } from '@/lib/errors';
+import { getViewer } from '@/lib/auth';
 const credentials=z.object({email:z.email().max(254),password:z.string().min(12).max(128),displayName:z.string().min(2).max(120).optional()});
+
+export async function GET(request:Request,{params}:{params:Promise<{action:string}>}){
+  try{
+    const {action}=await params;
+    if(action==='session'){
+      const viewer=await getViewer();
+      return success({user:viewer});
+    }
+    return new Response(null,{status:404});
+  }catch(e){return failure(e);}
+}
 export async function POST(request:Request,{params}:{params:Promise<{action:string}>}){try{
   assertOrigin(request);const {action}=await params;const client=await createSessionClient();
   if(!client){

@@ -23,6 +23,12 @@ import {
   Search,
   ShieldCheck,
   UserRound,
+  ChevronDown,
+  LogOut,
+  LayoutDashboard,
+  Gavel,
+  Bookmark,
+  Crown,
   X
 } from 'lucide-react';
 
@@ -85,6 +91,8 @@ export function Header() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<{ id: string; email: string; displayName?: string; role?: string } | null>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [heroRevealed, setHeroRevealed] = useState(() => {
     if (typeof window !== 'undefined') {
       if ((window as any).__fbsHeroRevealed) return true;
@@ -92,6 +100,45 @@ export function Header() {
     }
     return false;
   });
+
+  useEffect(() => {
+    let active = true;
+    fetch('/api/v1/auth/session')
+      .then((r) => r.json())
+      .then((d) => {
+        if (active && d?.data?.user) {
+          setUser(d.data.user);
+        } else if (active) {
+          setUser(null);
+        }
+      })
+      .catch(() => {
+        if (active) setUser(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [pathname]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('#header-user-menu-root')) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/v1/auth/logout', { method: 'POST' });
+    } catch {}
+    setUser(null);
+    setUserMenuOpen(false);
+    window.location.href = '/';
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -203,17 +250,112 @@ export function Header() {
               <span>اعرض لوحتك</span>
             </Link>
 
-            {/* Unified Luxury Member Pill Button - Matching List Plate Button */}
-            <Link
-              href="/login"
-              className="group hidden sm:inline-flex h-10 items-center gap-2.5 rounded-full border border-gold/40 bg-gold/10 ps-2 pe-4 text-xs font-bold text-gold-light backdrop-blur-md transition-all duration-200 hover:border-gold hover:bg-gold/20 hover:text-white hover:shadow-[0_0_15px_rgba(217,184,127,0.25)] active:scale-[0.98]"
-              title="تسجيل الدخول إلى حسابك"
-            >
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-[#141d33] to-[#0a1020] border border-gold/40 text-gold shadow-xs group-hover:border-gold group-hover:shadow-[0_0_8px_rgba(217,184,127,0.4)] transition-all shrink-0">
-                <UserRound size={14} />
-              </span>
-              <span>تسجيل الدخول</span>
-            </Link>
+            {/* User State: If Signed In -> Royal Avatar Dropdown, Else -> Sign In Button */}
+            {user ? (
+              <div id="header-user-menu-root" className="relative hidden sm:block">
+                <button
+                  type="button"
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="group flex h-10 items-center gap-2 rounded-full border border-gold/50 bg-[#0d1629]/90 ps-1.5 pe-3 text-xs font-bold text-gold-light backdrop-blur-md transition-all duration-200 hover:border-gold hover:bg-gold/15 hover:text-white hover:shadow-[0_0_20px_rgba(217,184,127,0.35)] active:scale-[0.98] cursor-pointer"
+                  title="حسابك المسجل"
+                >
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-[#9e7838] via-[#e6c587] to-[#d9b87f] text-navy font-black text-xs shadow-sm ring-1 ring-gold/60 shrink-0">
+                    {user.displayName ? user.displayName.trim().charAt(0) : <UserRound size={13} className="text-navy" />}
+                  </span>
+                  <span className="max-w-[120px] truncate text-slate-100 font-bold">
+                    {user.displayName || 'عضو معتمد'}
+                  </span>
+                  <ChevronDown
+                    size={14}
+                    className={`text-gold transition-transform duration-200 ${
+                      userMenuOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+
+                {/* Luxury Floating Glass Dropdown Menu */}
+                {userMenuOpen && (
+                  <div className="absolute end-0 top-12 z-50 w-64 rounded-2xl border border-gold/40 bg-[#070d1a]/95 p-2 shadow-2xl backdrop-blur-2xl animate-fade-in text-start">
+                    <div className="border-b border-white/10 p-3 pb-3.5 mb-1.5">
+                      <div className="flex items-center gap-2.5">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-gold via-gold-light to-gold-dark text-navy font-black text-sm shadow-md ring-2 ring-gold/40">
+                          {user.displayName ? user.displayName.trim().charAt(0) : 'VIP'}
+                        </span>
+                        <div className="min-w-0">
+                          <div className="truncate text-xs font-black text-white">
+                            {user.displayName || 'عضو النخبة'}
+                          </div>
+                          <div className="truncate text-[11px] text-slate-400 font-medium" dir="ltr">
+                            {user.email}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400">
+                        <ShieldCheck size={11} />
+                        <span>عضو موثق · صالة النخبة</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-0.5 text-xs font-bold text-slate-200">
+                      <Link
+                        href="/account"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 hover:bg-gold/15 hover:text-gold transition-colors"
+                      >
+                        <LayoutDashboard size={15} className="text-gold" />
+                        <span>لوحة التحكم الرئيسية</span>
+                      </Link>
+                      <Link
+                        href="/account/bids"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 hover:bg-gold/15 hover:text-gold transition-colors"
+                      >
+                        <Gavel size={15} className="text-gold" />
+                        <span>مزايداتي النشطة</span>
+                      </Link>
+                      <Link
+                        href="/account/plates"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 hover:bg-gold/15 hover:text-gold transition-colors"
+                      >
+                        <Bookmark size={15} className="text-gold" />
+                        <span>لوحاتي المعروضة</span>
+                      </Link>
+                      <Link
+                        href="/account/security"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 hover:bg-gold/15 hover:text-gold transition-colors"
+                      >
+                        <ShieldCheck size={15} className="text-gold" />
+                        <span>الأمان وتوثيق الهوية</span>
+                      </Link>
+                    </div>
+
+                    <div className="border-t border-white/10 pt-1.5 mt-1.5">
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-bold text-rose-400 hover:bg-rose-500/15 transition-colors cursor-pointer"
+                      >
+                        <LogOut size={15} />
+                        <span>تسجيل الخروج</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="group hidden sm:inline-flex h-10 items-center gap-2.5 rounded-full border border-gold/40 bg-gold/10 ps-2 pe-4 text-xs font-bold text-gold-light backdrop-blur-md transition-all duration-200 hover:border-gold hover:bg-gold/20 hover:text-white hover:shadow-[0_0_15px_rgba(217,184,127,0.25)] active:scale-[0.98]"
+                title="تسجيل الدخول إلى حسابك"
+              >
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-[#141d33] to-[#0a1020] border border-gold/40 text-gold shadow-xs group-hover:border-gold group-hover:shadow-[0_0_8px_rgba(217,184,127,0.4)] transition-all shrink-0">
+                  <UserRound size={14} />
+                </span>
+                <span>تسجيل الدخول</span>
+              </Link>
+            )}
 
             {/* Mobile Navigation Toggle Button */}
             <button
@@ -282,7 +424,7 @@ export function Header() {
               </nav>
             </div>
 
-            {/* Drawer Bottom Actions: Plate Listing & Login */}
+            {/* Drawer Bottom Actions: Plate Listing & Login or User Profile */}
             <div className="mt-8 pt-6 border-t border-white/10 space-y-3">
               <Link
                 href="/sell-your-plate"
@@ -292,14 +434,48 @@ export function Header() {
                 <PlusCircle size={16} />
                 <span>اعرض لوحتك الآن</span>
               </Link>
-              <Link
-                href="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 w-full rounded-xl border border-gold/40 bg-gold/10 py-3 text-sm font-bold text-gold-light hover:text-white hover:border-gold transition-all"
-              >
-                <UserRound size={16} className="text-gold" />
-                <span>تسجيل الدخول</span>
-              </Link>
+
+              {user ? (
+                <div className="rounded-2xl border border-gold/30 bg-white/5 p-3.5 space-y-3 backdrop-blur-md">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-tr from-gold via-gold-light to-gold-dark text-navy font-black text-sm shadow-md ring-2 ring-gold/40">
+                      {user.displayName ? user.displayName.trim().charAt(0) : 'VIP'}
+                    </span>
+                    <div className="min-w-0">
+                      <div className="truncate text-xs font-black text-white">{user.displayName || 'عضو النخبة'}</div>
+                      <div className="truncate text-[10px] text-slate-400" dir="ltr">{user.email}</div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 pt-1 border-t border-white/10 text-xs font-bold">
+                    <Link
+                      href="/account"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-center gap-1.5 rounded-xl border border-gold/40 bg-gold/15 py-2.5 text-gold-light hover:bg-gold/25 transition-colors"
+                    >
+                      <LayoutDashboard size={14} />
+                      <span>لوحة التحكم</span>
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 py-2.5 text-rose-300 hover:bg-rose-500/20 transition-colors"
+                    >
+                      <LogOut size={14} />
+                      <span>خروج</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 w-full rounded-xl border border-gold/40 bg-gold/10 py-3 text-sm font-bold text-gold-light hover:text-white hover:border-gold transition-all"
+                >
+                  <UserRound size={16} className="text-gold" />
+                  <span>تسجيل الدخول</span>
+                </Link>
+              )}
             </div>
           </div>
         </div>
