@@ -14,7 +14,15 @@ export function backendConfigured() {
 
 export function siteOrigin() {
   const configured = process.env.NEXT_PUBLIC_SITE_URL;
-  if (configured) return new URL(configured).origin;
+  if (configured) {
+    try {
+      return new URL(configured).origin;
+    } catch {
+      return configured.startsWith('http') ? configured : `https://${configured}`;
+    }
+  }
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+  if (vercel) return `https://${vercel}`;
   if (process.env.NODE_ENV !== 'production') return 'http://localhost:3000';
   return null;
 }
