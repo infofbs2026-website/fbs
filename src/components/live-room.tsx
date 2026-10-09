@@ -181,7 +181,7 @@ export function LiveRoom({
     };
 
     void refresh();
-    const polling = setInterval(() => void refresh(), 5000);
+    const polling = setInterval(() => void refresh(), 1500);
     const tick = setInterval(() => {
       setSeconds(
         Math.ceil(
@@ -199,53 +199,27 @@ export function LiveRoom({
     };
   }, [auctionId]);
 
-  // Periodic Competing Bidders Simulation in Demo Mode
+  // Synchronize incoming bids from server across all connected browsers
+  const prevBidRef = useRef<string | null>(null);
   useEffect(() => {
-    if (!snapshot || snapshot.status !== 'LIVE' || seconds <= 0) return;
-
-    const competitors = [
-      'المزايد ر*** 3',
-      'المزايد ك*** 8',
-      'المزايد م*** 1',
-      'المزايد خ*** 7'
-    ];
-
-    const interval = setInterval(() => {
-      setSnapshot((prev) => {
-        if (!prev || prev.status !== 'LIVE') return prev;
-        const inc = 500000n; // 5,000 SAR
-        const newBid = (BigInt(prev.currentBid) + inc).toString();
-        const nextMin = (BigInt(newBid) + inc).toString();
-        const randomBidder = competitors[Math.floor(Math.random() * competitors.length)];
-
-        setBidHistory((old) => [
-          {
-            id: `b-${Date.now()}`,
-            bidder: randomBidder,
-            amount: newBid,
-            timeAgo: 'الآن'
-          },
-          ...old.slice(0, 4)
-        ]);
-
-        setPriceFlash(true);
-        setTimeout(() => setPriceFlash(false), 2000);
-        playChime();
-
-        return {
-          ...prev,
-          currentBid: newBid,
-          minimumNextBid: nextMin,
-          sequence: prev.sequence + 1,
-          version: prev.version + 1,
-          bidCount: prev.bidCount + 1,
-          highestBidderMasked: randomBidder
-        };
-      });
-    }, 28000);
-
-    return () => clearInterval(interval);
-  }, [snapshot?.status, soundEnabled, seconds]);
+    if (!snapshot) return;
+    if (prevBidRef.current && prevBidRef.current !== snapshot.currentBid) {
+      setPriceFlash(true);
+      setTimeout(() => setPriceFlash(false), 2000);
+      playChime();
+      setBidHistory((old) => [
+        {
+          id: `b-${snapshot.version || Date.now()}`,
+          bidder: snapshot.highestBidderMasked || 'مزايد معتمد',
+          amount: snapshot.currentBid,
+          timeAgo: 'الآن',
+          isYou: snapshot.highestBidderMasked?.includes('أنت')
+        },
+        ...old.filter((b) => b.amount !== snapshot.currentBid).slice(0, 4)
+      ]);
+    }
+    prevBidRef.current = snapshot.currentBid;
+  }, [snapshot?.currentBid, snapshot?.version, snapshot?.highestBidderMasked, soundEnabled]);
 
   async function submit(command: Pending) {
     setBusy(true);

@@ -6,6 +6,8 @@ import { DomainError,errorMessages,type ErrorCode } from '@/lib/errors';
 import { rateLimit } from '@/lib/rate-limit';
 import { getMarketplace,getPlateBySlug,getReferenceData } from '@/modules/marketplace/service';
 import { fallbackPlates } from '@/modules/marketplace/mock-data';
+import { projectToRedis, getAuctionStateFromRedis, realtimeProvider } from '@/modules/realtime/provider';
+import type { AuctionSnapshot } from '@/modules/realtime/types';
 const uuid=z.uuid();
 const amount=z.string().regex(/^(0|[1-9]\d*)$/).refine(v=>BigInt(v)<=9007199254740991n);
 function database(){const db=createAdminClient();if(!db)throw new DomainError('SYSTEM_DEGRADED','الخدمة غير مفعّلة بعد.',{},503);return db;}
@@ -34,15 +36,19 @@ export async function GET(request:Request,{params}:{params:Promise<{path:string[
  if(resource==='plates'&&!id){const p=Object.fromEntries(new URL(request.url).searchParams);return success(await getMarketplace(p));}
  if(resource==='plates'&&id)return success(await getPlateBySlug(id));
  if(resource==='auctions'&&id&&action==='snapshot'){
+  const cached=await getAuctionStateFromRedis(id);
+  if(cached)return success(cached);
   if(z.uuid().safeParse(id).success){
-    try{const db=createAdminClient();if(db){const {data,error}=await db.rpc('fbs_snapshot',{p_auction_id:id});if(!error&&data)return success(data);}}catch{}
+    try{const db=createAdminClient();if(db){const {data,error}=await db.rpc('fbs_snapshot',{p_auction_id:id});if(!error&&data){await projectToRedis(data).catch(()=>{});return success(data);}}}catch{}
   }
   const target=fallbackPlates.find(p=>p.auction?.id===id||p.auction?.slug===id||p.slug===id||p.id===id)||fallbackPlates[0];
   const auc=target?.auction;
   const cur=auc?.currentPriceHalalas||'75000000';
   const inc=auc?.minimumIncrementHalalas||'500000';
   const nxt=(BigInt(cur)+BigInt(inc)).toString();
-  return success({auctionId:id,status:auc?.status||'LIVE',currentBid:cur,minimumNextBid:nxt,sequence:Number(auc?.sequence||28),version:Number(auc?.version||28),bidCount:auc?.bidCount||28,serverTime:new Date().toISOString(),effectiveEndAt:auc?.endsAt||new Date(Date.now()+14400000).toISOString(),startAt:auc?.startsAt||new Date(Date.now()-3600000).toISOString(),highestBidderMasked:'المزايد س*** 9',termsVersion:'demo-terms-v1'});
+  const initialSnapshot:AuctionSnapshot={auctionId:id,status:auc?.status||'LIVE',currentBid:cur,minimumNextBid:nxt,sequence:Number(auc?.sequence||28),version:Number(auc?.version||28),bidCount:auc?.bidCount||28,serverTime:new Date().toISOString(),effectiveEndAt:auc?.endsAt||new Date(Date.now()+14400000).toISOString(),startAt:auc?.startsAt||new Date(Date.now()-3600000).toISOString(),highestBidderMasked:'المزايد س*** 9',termsVersion:'demo-terms-v1'};
+  await projectToRedis(initialSnapshot).catch(()=>{});
+  return success(initialSnapshot);
  }
  if(resource==='bids'&&id){try{const user=await requireViewer();const db=createAdminClient();if(db&&z.uuid().safeParse(id).success){const {data}=await db.from('bid_requests').select('response').eq('bid_request_id',id).eq('user_id',user.id).maybeSingle();if(data)return success({resolved:true,result:data.response});}}catch{}return success({resolved:true,result:null});}
  if(resource==='account'){const user=await requireViewer();const client=await createSessionClient();if(client&&id){const sections:Record<string,[string,string]>={plates:['plates','owner_id'],bids:['bids','user_id'],auctions:['auction_registrations','user_id'],favorites:['favorites','user_id'],deposits:['payment_authorizations','user_id'],payments:['payment_authorizations','user_id'],notifications:['notifications','user_id']};const section=sections[id];if(section){const {data,error}=await client.from(section[0]).select('*').eq(section[1],user.id).limit(100);if(!error&&data)return success({rows:data});}}return success({user,rows:[]});}
@@ -56,7 +62,30 @@ export async function POST(request:Request,{params}:{params:Promise<{path:string
  if(resource==='plates'&&action==='upload'){uuid.parse(id);const value=z.object({mimeType:z.enum(['application/pdf','image/jpeg','image/png']),size:z.number().int().positive().max(10485760)}).parse(body);if(!db)return success({signedUrl:'/demo-upload',path:`${user.id}/${id}/demo.pdf`});const {data:plate}=await db.from('plates').select('id,verification_status').eq('id',id).eq('owner_id',user.id).single();if(!plate||!['DRAFT','CHANGES_REQUIRED','DOCUMENTS_PENDING'].includes(plate.verification_status))throw new DomainError('FORBIDDEN',undefined,{},403);const extension={'application/pdf':'pdf','image/jpeg':'jpg','image/png':'png'}[value.mimeType];const objectPath=`${user.id}/${id}/${crypto.randomUUID()}.${extension}`;const {data,error}=await db.storage.from('ownership-documents').createSignedUploadUrl(objectPath);check(error);return success({signedUrl:data?.signedUrl,path:objectPath});}
  if(resource==='plates'&&action==='document'){return success({message:'تم رفع مستند الملكية.'});}
  if(resource==='favorites'){const v=z.object({plateId:z.string(),remove:z.boolean().optional()}).parse(body);if(db){try{const client=await createSessionClient();if(client){const result=v.remove?await client.from('favorites').delete().eq('user_id',user.id).eq('plate_id',v.plateId):await client.from('favorites').upsert({user_id:user.id,plate_id:v.plateId},{onConflict:'user_id,plate_id',ignoreDuplicates:true});check(result.error);}}catch{}}return success({message:v.remove?'أزيلت اللوحة من المفضلة.':'أضيفت اللوحة إلى المفضلة.'});}
- if(resource==='auctions'&&action==='bids'){if(db&&z.uuid().safeParse(id).success){try{const v=z.object({amount,bidRequestId:uuid,expectedSequence:z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER)}).parse(body);const {data,error}=await db.rpc('fbs_bid',{p_auction_id:id,p_user_id:user.id,p_amount:v.amount,p_request_id:v.bidRequestId,p_expected_sequence:v.expectedSequence});if(!error&&data)return success(data);}catch(err){if(err instanceof DomainError && err.status !== 503) throw err;}}const bidAmount=typeof body?.amount==='string'?body.amount:String(body?.amount||'75500000');const nextBid=(BigInt(bidAmount)+500000n).toString();const seq=(Number(body?.expectedSequence)||28)+1;return success({auctionId:id,status:'LIVE',currentBid:bidAmount,minimumNextBid:nextBid,sequence:seq,version:seq,bidCount:seq,serverTime:new Date().toISOString(),effectiveEndAt:new Date(Date.now()+600000).toISOString(),startAt:new Date(Date.now()-3600000).toISOString(),highestBidderMasked:user?.displayName||'أنت (مزايد معتمد)',termsVersion:'demo-terms-v1',bidId:crypto.randomUUID(),bidRequestId:body?.bidRequestId||crypto.randomUUID(),accepted:true,extended:true});}
+ if(resource==='auctions'&&action==='bids'){
+  if(db&&z.uuid().safeParse(id).success){
+    try{
+      const v=z.object({amount,bidRequestId:uuid,expectedSequence:z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER)}).parse(body);
+      const {data,error}=await db.rpc('fbs_bid',{p_auction_id:id,p_user_id:user.id,p_amount:v.amount,p_request_id:v.bidRequestId,p_expected_sequence:v.expectedSequence});
+      if(!error&&data){
+        await projectToRedis(data).catch(()=>{});
+        try{await realtimeProvider().publish(id,'auction.bid',data);}catch{}
+        return success(data);
+      }
+    }catch(err){if(err instanceof DomainError && err.status !== 503) throw err;}
+  }
+  const current=(await getAuctionStateFromRedis(id))||{auctionId:id,status:'LIVE',currentBid:'75000000',minimumNextBid:'75500000',sequence:28,version:28,bidCount:28,serverTime:new Date().toISOString(),effectiveEndAt:new Date(Date.now()+14400000).toISOString(),startAt:new Date(Date.now()-3600000).toISOString(),highestBidderMasked:'المزايد س*** 9',termsVersion:'demo-terms-v1'};
+  const bidAmount=typeof body?.amount==='string'?body.amount:String(body?.amount||current.minimumNextBid);
+  const nextBid=(BigInt(bidAmount)+500000n).toString();
+  const seq=Number(current.sequence)+1;
+  const ver=Number(current.version)+1;
+  const count=Number(current.bidCount)+1;
+  const bidderMask=user?.displayName?`المزايد ${user.displayName}`:(user?.id?`المزايد ${user.id.slice(0,3)}***`:'أنت (مزايد معتمد)');
+  const updatedSnapshot:AuctionSnapshot={...current,currentBid:bidAmount,minimumNextBid:nextBid,sequence:seq,version:ver,bidCount:count,serverTime:new Date().toISOString(),highestBidderMasked:bidderMask};
+  await projectToRedis(updatedSnapshot).catch(()=>{});
+  try{await realtimeProvider().publish(id,'auction.bid',updatedSnapshot);}catch{}
+  return success({...updatedSnapshot,bidId:crypto.randomUUID(),bidRequestId:body?.bidRequestId||crypto.randomUUID(),accepted:true,extended:true});
+ }
  if(resource==='auctions'&&action==='register'){if(db&&z.uuid().safeParse(id).success){try{const v=z.object({termsVersion:z.string().length(32)}).parse(body);const {data,error}=await db.rpc('fbs_register',{p_auction_id:id,p_user_id:user.id,p_terms_version:v.termsVersion});if(!error&&data)return success(data);}catch{}}return success({id:'demo-reg',status:'QUALIFIED',requiredDeposit:'0'});}
  if(resource==='payments'||resource==='webhooks')return success({message:'تم تسجيل عملية الدفع التجريبية بنجاح.',transactionId:'demo-txn-'+Date.now()});
  if(resource==='contact'){const v=z.object({name:z.string().min(2).max(120),email:z.string().email(),subject:z.string().min(3).max(200),message:z.string().min(10).max(5000)}).parse(body);if(db){const {error}=await db.from('contact_messages').insert({...v,user_id:user.id});check(error);}return success({message:'تم استلام رسالتك بنجاح.'});}
