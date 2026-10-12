@@ -84,7 +84,7 @@ export function AboutPillars() {
           return (
             <div
               key={pillar.num}
-              className={`group relative flex flex-col justify-between rounded-3xl border-2 border-slate-200/90 bg-white p-7 sm:p-8 shadow-sm hover:border-gold/70 hover:shadow-lg transition-all ${
+              className={`luxury-card group relative flex flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-7 shadow-xs hover:border-gold/60 hover:shadow-[0_12px_35px_rgba(217,184,127,0.15)] hover:-translate-y-1 transition-all duration-300 overflow-hidden ${
                 isTopThree
                   ? 'lg:col-span-2'
                   : idx === 4
@@ -92,35 +92,42 @@ export function AboutPillars() {
                     : 'lg:col-span-3'
               }`}
             >
+              {/* Subtle top golden accent shimmer line */}
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-gold/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
               <div>
-                <div className="flex items-center justify-between gap-4">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100/70 border border-amber-200/70 text-navy shadow-xs group-hover:bg-gold/20 transition-colors">
-                    <Icon className="w-6 h-6 text-navy" />
-                  </span>
-                  <span className="font-norwester text-sm font-black text-slate-400 group-hover:text-navy transition-colors">
+                {/* 1. Unified Card Header: Integrated Tag with Icon on Start, Number on End */}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="inline-flex items-center gap-2 rounded-xl border border-gold/40 bg-gold/10 px-2.5 py-1.5 text-xs font-bold text-[#5c3810] shadow-2xs group-hover:border-gold/60 group-hover:bg-gold/15 transition-all">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-gold/30 to-gold/10 text-gold-dark border border-gold/40 shadow-xs">
+                      <Icon className="w-4 h-4 text-[#5c3810]" />
+                    </span>
+                    <span className="leading-snug">{pillar.subtitle}</span>
+                  </div>
+
+                  <span className="font-norwester text-base sm:text-lg font-black text-slate-300 group-hover:text-gold-dark transition-colors shrink-0" dir="ltr">
                     {pillar.num}
                   </span>
                 </div>
 
-                <span className="mt-4 inline-block text-[11px] font-black text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200">
-                  {pillar.subtitle}
-                </span>
-
-                <h3 className="mt-2 text-lg font-black text-[#0f172a] group-hover:text-navy transition-colors">
+                {/* 2. Direct Prestigious Headline */}
+                <h3 className="mt-4 text-base sm:text-lg font-black text-navy-deep group-hover:text-gold-dark transition-colors leading-snug">
                   {pillar.title}
                 </h3>
 
-                <p className="mt-3 text-xs sm:text-sm leading-relaxed text-[#334155] font-medium">
+                {/* 3. Detailed Body Text */}
+                <p className="mt-2.5 text-xs sm:text-[13px] leading-relaxed text-[#334155] font-medium">
                   {pillar.desc}
                 </p>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 text-navy border border-slate-200 px-3.5 py-1.5 font-bold shadow-xs">
-                  <CheckCircle2 size={13} className="text-emerald-600" />
+              {/* 4. Balanced Footer Strip */}
+              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between gap-2 text-xs">
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200/80 px-2.5 py-1 text-[11px] font-bold shadow-2xs">
+                  <CheckCircle2 size={13} className="text-emerald-600 shrink-0" />
                   <span>{pillar.badge}</span>
                 </span>
-                <span className="font-norwester text-[11px] font-bold text-slate-500">
+                <span className="font-norwester text-[11px] font-bold text-slate-500 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200/80">
                   {pillar.stats}
                 </span>
               </div>

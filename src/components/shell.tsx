@@ -184,7 +184,11 @@ export function Header() {
     pathname === '/reset-password' ||
     pathname === '/verify';
 
-  const isTransparent = !isAuthPage && !scrolled;
+  if (isAuthPage) {
+    return null;
+  }
+
+  const isTransparent = !scrolled;
   const isHiddenByIntro = pathname === '/' && !heroRevealed;
 
   return (
@@ -485,6 +489,18 @@ export function Header() {
 }
 
 export function Footer() {
+  const pathname = usePathname();
+  const isAuthPage =
+    pathname === '/login' ||
+    pathname === '/register' ||
+    pathname === '/forgot-password' ||
+    pathname === '/reset-password' ||
+    pathname === '/verify';
+
+  if (isAuthPage) {
+    return null;
+  }
+
   return (
     <footer className="relative overflow-hidden border-t border-gold/30 bg-[#050914] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(217,184,127,0.12),rgba(5,9,20,1))] text-white">
       {/* Top Gold Luxury Accent Line */}

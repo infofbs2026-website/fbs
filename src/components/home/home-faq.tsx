@@ -167,11 +167,15 @@ export function HomeFaq() {
               >
                 <summary className="flex cursor-pointer select-none list-none items-center justify-between gap-3 text-start [&::-webkit-details-marker]:hidden">
                   <div className="flex-1 min-w-0 space-y-1.5">
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center rounded-md border border-gold/30 bg-gold/10 px-2 py-0.5 text-[10.5px] font-bold text-gold-dark">
-                        {item.category}
+                    <div className="flex items-center">
+                      <span
+                        style={{ width: '175px' }}
+                        className="inline-flex items-center gap-1.5 rounded-md border border-gold/40 bg-gold/12 px-2 py-0.5 text-xs font-bold text-[#5c3810] shadow-2xs w-[175px] max-w-full"
+                      >
+                        <span className="font-norwester font-black text-xs sm:text-[13px] tracking-wide text-[#482907] shrink-0" dir="ltr">{item.id}</span>
+                        <span className="h-3 w-px bg-gold/50 shrink-0" />
+                        <span className="whitespace-nowrap truncate">{item.category}</span>
                       </span>
-                      <span className="text-[10.5px] font-mono text-slate-400 font-semibold">#{item.id}</span>
                     </div>
                     <h3 className="text-xs sm:text-[13px] md:text-sm font-black text-navy-deep leading-normal truncate group-hover:text-gold-dark transition-colors">
                       {item.q}
@@ -203,11 +207,15 @@ export function HomeFaq() {
               >
                 <summary className="flex cursor-pointer select-none list-none items-center justify-between gap-3 text-start [&::-webkit-details-marker]:hidden">
                   <div className="flex-1 min-w-0 space-y-1.5">
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center rounded-md border border-gold/30 bg-gold/10 px-2 py-0.5 text-[10.5px] font-bold text-gold-dark">
-                        {item.category}
+                    <div className="flex items-center">
+                      <span
+                        style={{ width: '185px' }}
+                        className="inline-flex items-center gap-1.5 rounded-md border border-gold/40 bg-gold/12 px-2 py-0.5 text-xs font-bold text-[#5c3810] shadow-2xs w-[185px] max-w-full"
+                      >
+                        <span className="font-norwester font-black text-xs sm:text-[13px] tracking-wide text-[#482907] shrink-0" dir="ltr">{item.id}</span>
+                        <span className="h-3 w-px bg-gold/50 shrink-0" />
+                        <span className="whitespace-nowrap truncate">{item.category}</span>
                       </span>
-                      <span className="text-[10.5px] font-mono text-slate-400 font-semibold">#{item.id}</span>
                     </div>
                     <h3 className="text-xs sm:text-[13px] md:text-sm font-black text-navy-deep leading-normal truncate group-hover:text-gold-dark transition-colors">
                       {item.q}

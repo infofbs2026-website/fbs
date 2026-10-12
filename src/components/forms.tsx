@@ -35,41 +35,98 @@ export async function sendJson(path: string, body: unknown, method = 'POST') {
   return result.data;
 }
 
+function getPasswordStrength(password: string): {
+  score: number;
+  label: string;
+  color: string;
+  isAcceptable: boolean;
+} {
+  if (!password) {
+    return { score: 0, label: 'أدخل كلمة المرور', color: 'bg-white/10', isAcceptable: false };
+  }
+
+  let score = 0;
+  if (password.length >= 8) score++;
+  if (password.length >= 10 && /[0-9]/.test(password)) score++;
+  if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password) || (password.length >= 12 && /[0-9]/.test(password))) score++;
+
+  if (score <= 1) {
+    return { score: 1, label: 'ضعيفة', color: 'bg-rose-500', isAcceptable: false };
+  } else if (score === 2) {
+    return { score: 2, label: 'متوسطة', color: 'bg-amber-500', isAcceptable: false };
+  } else if (score === 3) {
+    return { score: 3, label: 'قوية', color: 'bg-emerald-500', isAcceptable: true };
+  } else {
+    return { score: 4, label: 'استثنائية', color: 'bg-gradient-to-r from-emerald-400 to-[#d9b87f]', isAcceptable: true };
+  }
+}
+
 export function AuthForm({
-  mode
+  mode,
+  theme = 'light'
 }: {
   mode: 'login' | 'register' | 'forgot-password' | 'reset-password' | 'verify';
+  theme?: 'light' | 'dark';
 }) {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();
+
+  const isLight = theme === 'light';
+  const isRegisterOrReset = mode === 'register' || mode === 'reset-password';
+  const strength = getPasswordStrength(password);
+  const passwordsMatch = !confirmPassword || confirmPassword === password;
 
   const titles = {
     login: 'تسجيل الدخول إلى حسابك',
     register: 'إنشاء حساب عضوية جديد',
-    'forgot-password': 'إرسال رابط الاستعادة',
-    'reset-password': 'حفظ كلمة المرور الجديدة',
+    'forgot-password': 'استعادة كلمة المرور',
+    'reset-password': 'تعيين كلمة المرور الجديدة',
     verify: 'إعادة إرسال رمز التفعيل'
   };
 
   const ctaSubtitles = {
-    login: 'أدخل بياناتك المعتمدة للمتابعة',
+    login: 'أدخل بياناتك المعتمدة للمتابعة الفورية',
     register: 'سجّل الآن لتتمكن من المزايدة وحفظ اللوحات',
     'forgot-password': 'سنرسل لك رابطًا آمنًا لتعيين كلمة مرور جديدة',
-    'reset-password': 'اختر كلمة مرور قوية لا تقل عن 12 حرفًا',
+    'reset-password': 'اختر كلمة مرور قوية لا تقل عن 8 أحرف',
     verify: 'أدخل بريدك الإلكتروني لإعادة إرسال رابط التوثيق'
   };
 
   return (
     <form
+      style={{ colorScheme: 'dark' }}
       onSubmit={async (e) => {
         e.preventDefault();
-        const data = Object.fromEntries(new FormData(e.currentTarget));
-        setBusy(true);
         setMessage('');
         setError(false);
+
+        // Enforce password length and match on register / reset
+        if (isRegisterOrReset) {
+          if (password.length < 8) {
+            setError(true);
+            setMessage('يجب ألا تقل كلمة المرور عن 8 أحرف.');
+            return;
+          }
+          if (password !== confirmPassword) {
+            setError(true);
+            setMessage('كلمتا المرور غير متطابقتين، يرجى التأكد من التطابق.');
+            return;
+          }
+        }
+
+        const formData = new FormData(e.currentTarget);
+        // Exclude confirmPassword from backend payload
+        formData.delete('confirmPassword');
+        const data = Object.fromEntries(formData);
+
+        setBusy(true);
         try {
           const result = await sendJson(`/api/v1/auth/${mode}`, data);
           if (result?.redirect) {
@@ -85,120 +142,214 @@ export function AuthForm({
           setBusy(false);
         }
       }}
-      className="space-y-5"
+      className={`flex-1 flex flex-col ${
+        mode === 'register'
+          ? 'justify-between space-y-3 sm:space-y-3.5'
+          : 'justify-center space-y-4 my-auto'
+      }`}
     >
-      {/* Mode Description */}
-      <div className="border-b border-white/10 pb-4">
-        <h2 className="text-xl font-black text-white sm:text-2xl">{titles[mode]}</h2>
-        <p className="mt-1 text-xs text-slate-300 leading-relaxed font-medium">{ctaSubtitles[mode]}</p>
-      </div>
+      <div className="space-y-3 sm:space-y-3.5">
+        {/* Mode Header (shown only for recovery / non-tab modes) */}
+        {mode !== 'login' && mode !== 'register' && (
+          <div className="border-b border-white/10 pb-2">
+            <h2 className="text-base font-black text-white sm:text-lg">
+              {titles[mode]}
+            </h2>
+            <p className="mt-0.5 text-xs font-medium text-slate-300">
+              {ctaSubtitles[mode]}
+            </p>
+          </div>
+        )}
 
-      {/* Register: Display Name */}
-      {mode === 'register' && (
-        <div>
-          <label htmlFor="displayName" className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
-            <User size={14} className="text-gold" />
-            <span>الاسم الكامل (كما في الهوية الرسمية)</span>
-          </label>
-          <input
-            id="displayName"
-            name="displayName"
-            autoComplete="name"
-            required
-            minLength={2}
-            maxLength={120}
-            placeholder="مثال: فهد عبد الله السعيد"
-            className="w-full rounded-xl border border-white/15 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-gold focus:bg-white/[0.1] focus:outline-none focus:ring-1 focus:ring-gold transition-all"
-          />
-        </div>
-      )}
+        {/* Register: Full Name */}
+        {mode === 'register' && (
+          <div>
+            <label
+              htmlFor="displayName"
+              className="mb-1 block text-right text-xs font-bold text-slate-200"
+            >
+              الاسم الكامل
+            </label>
+            <div className="relative flex items-center">
+              <input
+                id="displayName"
+                name="displayName"
+                type="text"
+                dir="rtl"
+                autoComplete="name"
+                required
+                minLength={2}
+                maxLength={120}
+                placeholder="مثال: محمد عبدالله"
+                style={{ colorScheme: 'dark' }}
+                className="w-full rounded-xl border border-white/20 bg-black/35 backdrop-blur-md py-2.5 sm:py-3 pr-10 pl-3.5 text-xs sm:text-sm text-white placeholder:text-slate-400 text-right focus:border-gold/80 focus:bg-black/50 focus:outline-none focus:ring-1 focus:ring-gold/50 transition-all shadow-inner"
+              />
+              <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center text-slate-300">
+                <User size={16} />
+              </div>
+            </div>
+          </div>
+        )}
 
-      {/* Email input for all modes except reset-password */}
-      {mode !== 'reset-password' && (
-        <div>
-          <label htmlFor="email" className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
-            <Mail size={14} className="text-gold" />
-            <span>البريد الإلكتروني</span>
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            dir="ltr"
-            autoComplete="email"
-            required
-            maxLength={254}
-            placeholder="name@example.com"
-            className="w-full rounded-xl border border-white/15 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-gold focus:bg-white/[0.1] focus:outline-none focus:ring-1 focus:ring-gold transition-all"
-          />
-        </div>
-      )}
+        {/* Email Input */}
+        {mode !== 'reset-password' && (
+          <div>
+            <label
+              htmlFor="email"
+              className="mb-1 block text-right text-xs font-bold text-slate-200"
+            >
+              البريد الإلكتروني
+            </label>
+            <div className="relative flex items-center">
+              <input
+                id="email"
+                name="email"
+                type="email"
+                dir="rtl"
+                autoComplete={mode === 'login' ? 'username' : 'email'}
+                required
+                maxLength={254}
+                placeholder="name@example.com"
+                style={{ colorScheme: 'dark' }}
+                className="w-full rounded-xl border border-white/20 bg-black/35 backdrop-blur-md py-2.5 sm:py-3 pr-10 pl-3.5 text-xs sm:text-sm text-white placeholder:text-slate-400 text-right focus:border-gold/80 focus:bg-black/50 focus:outline-none focus:ring-1 focus:ring-gold/50 transition-all shadow-inner"
+              />
+              <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center text-slate-300">
+                <Mail size={16} />
+              </div>
+            </div>
+          </div>
+        )}
 
-      {/* Password input for login, register, reset-password */}
+      {/* Password Input */}
       {['login', 'register', 'reset-password'].includes(mode) && (
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
-              <Lock size={14} className="text-gold" />
-              <span>كلمة المرور</span>
+          <div className="flex items-center justify-between mb-1">
+            <label
+              htmlFor="password"
+              className="text-right text-xs font-bold text-slate-200"
+            >
+              كلمة المرور
             </label>
             {mode === 'login' && (
               <Link
                 href="/forgot-password"
-                className="text-xs font-semibold text-gold hover:text-gold-light hover:underline"
+                className="text-[11px] font-semibold text-gold hover:text-gold-light hover:underline transition-colors"
               >
                 نسيت كلمة المرور؟
               </Link>
             )}
           </div>
-          <div className="relative">
+          <div className="relative flex items-center">
             <input
               id="password"
               name="password"
               type={showPassword ? 'text' : 'password'}
-              dir="ltr"
+              dir="rtl"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-              minLength={mode === 'login' ? 1 : 12}
+              minLength={mode === 'login' ? 1 : 8}
               maxLength={128}
               required
-              placeholder="••••••••••••"
-              className="w-full rounded-xl border border-white/15 bg-white/[0.06] px-4 py-3 pe-11 text-sm text-white tracking-wider placeholder:text-slate-500 focus:border-gold focus:bg-white/[0.1] focus:outline-none focus:ring-1 focus:ring-gold transition-all"
+              placeholder={mode === 'register' ? '8 أحرف على الأقل مع رموز قوية' : 'أدخل كلمة المرور'}
+              style={{ colorScheme: 'dark' }}
+              className="w-full rounded-xl border border-white/20 bg-black/35 backdrop-blur-md py-2.5 sm:py-3 pr-10 pl-10 text-xs sm:text-sm text-white placeholder:text-slate-400 text-right focus:border-gold/80 focus:bg-black/50 focus:outline-none focus:ring-1 focus:ring-gold/50 transition-all shadow-inner tracking-wider"
             />
+            {/* Lock icon on the right */}
+            <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center text-slate-300">
+              <Lock size={16} />
+            </div>
+            {/* Eye toggle on the left */}
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               aria-label={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
-              className="absolute end-3.5 top-3.5 text-slate-400 hover:text-gold transition-colors"
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-gold transition-colors cursor-pointer"
             >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
-          {mode !== 'login' && (
-            <p className="mt-1.5 text-[11px] text-slate-400 font-medium">
-              يجب أن تحتوي كلمة المرور على 12 حرفًا على الأقل لضمان أمان حسابك.
-            </p>
-          )}
         </div>
       )}
 
-      {/* Register Terms Consent */}
+      {/* Confirm Password Input (Register & Reset Password) */}
+      {isRegisterOrReset && (
+        <div>
+          <label
+            htmlFor="confirmPassword"
+            className="mb-1 block text-right text-xs font-bold text-slate-200"
+          >
+            تأكيد كلمة المرور
+          </label>
+          <div className="relative flex items-center">
+            <input
+              id="confirmPassword"
+              name="confirmPassword"
+              type={showConfirmPassword ? 'text' : 'password'}
+              dir="rtl"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={8}
+              maxLength={128}
+              placeholder="أعد إدخال كلمة المرور"
+              style={{ colorScheme: 'dark' }}
+              className={`w-full rounded-xl border bg-black/35 backdrop-blur-md py-2.5 sm:py-3 pr-10 pl-10 text-xs sm:text-sm text-white placeholder:text-slate-400 text-right focus:outline-none focus:ring-1 transition-all shadow-inner tracking-wider ${
+                confirmPassword && !passwordsMatch
+                  ? 'border-rose-500/70 focus:border-rose-500 focus:ring-rose-500'
+                  : 'border-white/20 focus:border-gold/80 focus:bg-black/50 focus:ring-gold/50'
+              }`}
+            />
+            {/* Lock icon on the right */}
+            <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center text-slate-300">
+              <Lock size={16} />
+            </div>
+            {/* Eye toggle on the left */}
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              aria-label={showConfirmPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-gold transition-colors cursor-pointer"
+            >
+              {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Register Terms Consent Checkbox */}
       {mode === 'register' && (
-        <label className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 text-xs leading-5 cursor-pointer hover:bg-white/[0.05] transition-colors">
+        <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-300 select-none pt-0.5">
           <input
             type="checkbox"
             required
-            className="mt-0.5 h-4 w-4 rounded border-white/20 bg-white/10 text-gold accent-[#d9b87f] focus:ring-gold"
+            className="h-4 w-4 rounded border-white/20 bg-black/40 text-gold accent-[#d9b87f] focus:ring-gold/50 shrink-0 cursor-pointer"
           />
-          <span className="text-slate-300">
-            أقر بأنني اطلعت وأوافق على{' '}
-            <Link href="/terms" className="font-bold text-gold hover:underline">
+          <span className="text-[11px] leading-tight text-slate-300">
+            أوافق على{' '}
+            <Link href="/terms" className="text-white hover:text-gold font-bold underline decoration-white/30">
               الشروط والأحكام
             </Link>{' '}
             و
-            <Link href="/privacy" className="font-bold text-gold hover:underline">
+            <Link href="/privacy" className="text-white hover:text-gold font-bold underline decoration-white/30">
               سياسة الخصوصية
             </Link>{' '}
-            الخاصة بمنصة فارس بن سعود.
+            لمنصة FBS
+          </span>
+        </label>
+      )}
+
+      {/* Login Remember Me Checkbox */}
+      {mode === 'login' && (
+        <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-300 select-none pt-0.5">
+          <input
+            type="checkbox"
+            name="remember"
+            defaultChecked
+            className="h-4 w-4 rounded border-white/20 bg-black/40 text-gold accent-[#d9b87f] focus:ring-gold/50 shrink-0 cursor-pointer"
+          />
+          <span className="text-[11px] text-slate-300">
+            تذكرني على هذا الجهاز
           </span>
         </label>
       )}
@@ -207,67 +358,80 @@ export function AuthForm({
       {message && (
         <div
           role={error ? 'alert' : 'status'}
-          className={`flex items-start gap-2.5 rounded-xl border p-4 text-xs sm:text-sm leading-relaxed backdrop-blur-md ${
+          className={`flex items-start gap-2 rounded-xl border p-2.5 text-xs leading-relaxed backdrop-blur-md ${
             error
-              ? 'border-red-500/30 bg-red-950/50 text-red-200'
-              : 'border-emerald-500/30 bg-emerald-950/50 text-emerald-200'
+              ? 'border-rose-500/30 bg-rose-950/70 text-rose-200'
+              : 'border-emerald-500/30 bg-emerald-950/70 text-emerald-200'
           }`}
         >
           {error ? (
-            <AlertCircle size={18} className="mt-0.5 shrink-0 text-red-400" />
+            <AlertCircle size={15} className="mt-0.5 shrink-0 text-rose-400" />
           ) : (
-            <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-emerald-400" />
+            <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-emerald-400" />
           )}
           <span>{message}</span>
         </div>
       )}
+      </div>
 
-      {/* Submit Button */}
-      <button
-        disabled={busy}
-        className="btn btn-gold w-full py-3.5 text-sm font-black shadow-lg shadow-gold/20 hover:shadow-gold/35 transition-all active:scale-[0.98]"
-      >
+      {/* Action Footer (Submit Button + Links) */}
+      <div className="space-y-2 pt-2">
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={busy || (isRegisterOrReset && (password.length < 8 || !passwordsMatch))}
+          className="w-full rounded-xl bg-gradient-to-r from-[#e8c888] via-[#d9b87f] to-[#b88c3a] py-2.5 sm:py-3 text-xs sm:text-sm font-black text-[#070e1e] shadow-lg shadow-gold/25 hover:shadow-gold/35 hover:brightness-105 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+
         {busy ? (
           <span className="flex items-center justify-center gap-2">
-            <LoaderCircle size={18} className="animate-spin text-navy" />
+            <LoaderCircle size={16} className="animate-spin text-[#070e1e]" />
             <span>جارٍ المعالجة…</span>
           </span>
         ) : (
           <span className="flex items-center justify-center gap-2">
-            <span>{titles[mode]}</span>
+            <span>{mode === 'register' ? 'إنشاء حساب جديد' : mode === 'login' ? 'تسجيل الدخول' : titles[mode]}</span>
             <ArrowLeft size={16} />
           </span>
         )}
       </button>
 
-      {/* Secondary Bottom Links */}
-      <div className="pt-2 text-center text-xs text-slate-400 font-medium">
+      {/* Bottom Switcher Links */}
+      <div className="pt-0.5 text-center text-xs font-medium text-slate-300">
         {mode === 'login' ? (
           <p>
             ليس لديك حساب بعد؟{' '}
-            <Link href="/register" className="font-bold text-gold hover:text-gold-light hover:underline">
+            <Link
+              href="/register"
+              className="text-gold font-bold hover:underline transition-colors"
+            >
               إنشاء حساب جديد
             </Link>
           </p>
         ) : mode === 'register' ? (
           <p>
-            لديك حساب مسجل بالفعل؟{' '}
-            <Link href="/login" className="font-bold text-gold hover:text-gold-light hover:underline">
+            لديك حساب بالفعل؟{' '}
+            <Link
+              href="/login"
+              className="text-gold font-bold hover:underline transition-colors"
+            >
               تسجيل الدخول
             </Link>
           </p>
         ) : (
           <Link
             href="/login"
-            className="inline-flex items-center gap-1 font-bold text-gold hover:text-gold-light hover:underline"
+            className="inline-flex items-center gap-1 font-bold text-gold hover:underline transition-colors"
           >
             <span>العودة لصفحة تسجيل الدخول</span>
           </Link>
         )}
       </div>
+      </div>
     </form>
   );
 }
+
 
 export function ActionButton({
   endpoint,

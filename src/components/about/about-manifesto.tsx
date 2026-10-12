@@ -22,86 +22,107 @@ function SaudiCrestSvg({ className = 'w-7 h-7' }: { className?: string }) {
 
 export function AboutManifesto() {
   return (
-    <section className="grid gap-10 lg:grid-cols-12 items-center">
-      <div className="lg:col-span-7 space-y-6">
-        {/* High-contrast crisp badge on light background */}
-        <div className="inline-flex items-center gap-2.5 rounded-full border border-gold/40 bg-[#131c31] text-[#faebd0] px-5 py-2 text-xs sm:text-sm font-bold shadow-xs">
-          <Compass size={16} className="text-gold" />
-          <span>بيان الهوية وفلسفة التميز</span>
+    <section className="space-y-10 sm:space-y-12">
+      {/* 1. Centered Prestigious Header Block */}
+      <div className="text-center max-w-4xl mx-auto space-y-4">
+        {/* Big Prestigious Centered Badge with Breathing Room */}
+        <div className="inline-flex items-center gap-2.5 rounded-full border border-gold/45 bg-[#101b33] text-[#faebd0] px-6 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-sm font-black shadow-[0_4px_20px_rgba(217,184,127,0.18)]">
+          <Compass size={18} className="text-gold shrink-0" />
+          <span className="tracking-wide">بيان الهوية وفلسفة التميز</span>
         </div>
 
-        <h2 className="text-2xl sm:text-4xl font-black text-[#0f172a] leading-tight">
-          اللوحة المميزة ليست مجرد معدن، بل بصمة سيادية وأصل تاريخي يورّث
+        {/* Section Headline (Harmonious 2 Lines, Unified Balanced Scale) */}
+        <h2 className="flex flex-col items-center gap-1 sm:gap-2 text-xl sm:text-2xl md:text-3xl lg:text-[32px] font-black text-[#0f172a] tracking-tight leading-snug">
+          <span>اللوحة المميزة ليست مجرد معدن،</span>
+          <span>بل بصمة سيادية وأصل تاريخي يورّث</span>
         </h2>
 
-        <p className="text-sm sm:text-base leading-relaxed text-[#334155] font-medium">
-          في ثقافة المجتمع السعودي الرفيعة، شكلت لوحات المركبات النادرة دائماً عنواناً للمكانة والهيبة والذوق الرفيع. ومع نضوج السوق، تحولت اللوحات الأحادية والثنائية إلى فئة أصول نادرة (Scarce Luxury Assets) تحظى بإقبال متزايد وتتفوق في عوائدها على العديد من الأدوات الاستثمارية التقليدية.
-        </p>
-
-        <p className="text-sm sm:text-base leading-relaxed text-[#334155] font-medium">
-          جاءت منصة <strong className="font-black text-[#0f172a]">فارس بن سعود (FBS)</strong> لتنهي عهد التداول العشوائي وغير الموثق في المنصات العامة، ولتؤسس بيئة ذات طابع مصرفي نخبوي تليق بعشاق التفرد، وتضمن لكافة الأطراف إتمام صفقاتهم بكرامة وسرية واطمئنان مطلق.
-        </p>
-
-        {/* Key Checklist Badges */}
-        <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs sm:text-sm font-bold text-[#0f172a]">
-          <div className="flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
-              <Check size={16} strokeWidth={3} />
-            </span>
-            <span>انتقاء دقيق لا يقبل إلا التحف الحقيقية</span>
-          </div>
-          <div className="flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
-              <Check size={16} strokeWidth={3} />
-            </span>
-            <span>حفظ أموال بنكي مستقل بنظام الضامن</span>
-          </div>
-          <div className="flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
-              <Check size={16} strokeWidth={3} />
-            </span>
-            <span>نقل ملكية رسمي عبر القنوات الحكومية المعتمدة</span>
-          </div>
-          <div className="flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
-              <Check size={16} strokeWidth={3} />
-            </span>
-            <span>سرية تامة لحسابات كبار الشخصيات والملاك</span>
-          </div>
+        {/* Luxury Aesthetic Gold Divider */}
+        <div className="flex items-center justify-center gap-3 pt-2">
+          <span className="h-px w-16 sm:w-28 bg-gradient-to-r from-transparent via-gold/60 to-gold" />
+          <span className="flex h-2 w-2 rounded-full bg-gold shadow-[0_0_10px_rgba(217,184,127,0.9)]" />
+          <span className="h-px w-16 sm:w-28 bg-gradient-to-l from-transparent via-gold/60 to-gold" />
         </div>
       </div>
 
-      {/* Right: Curated Royal Emblem Pedestal */}
-      <div className="lg:col-span-5">
-        <div className="relative rounded-3xl border-2 border-gold/40 bg-gradient-to-br from-[#1c2c4d] via-[#15223c] to-[#0e172a] p-8 sm:p-9 text-white shadow-xl overflow-hidden">
-          <div className="pointer-events-none absolute -top-12 -end-12 h-44 w-44 rounded-full bg-gold/20 blur-3xl" />
+      {/* 2. Symmetrical Two-Column Content with Balanced Equal Height */}
+      <div className="grid gap-8 lg:grid-cols-12 items-stretch">
+        {/* Right Column: Editorial Paragraphs and Key Checklist Cards */}
+        <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
+          <div className="space-y-4 text-sm sm:text-base leading-relaxed text-[#334155] font-medium">
+            <p className="leading-relaxed">
+              في ثقافة المجتمع السعودي الرفيعة، شكلت لوحات المركبات النادرة دائماً عنواناً للمكانة والهيبة والذوق الرفيع. ومع نضوج السوق، تحولت اللوحات الأحادية والثنائية إلى فئة أصول نادرة (<span className="text-[#0f172a] font-bold">Scarce Luxury Assets</span>) تحظى بإقبال متزايد وتتفوق في عوائدها على العديد من الأدوات الاستثمارية التقليدية.
+            </p>
+            <p className="leading-relaxed">
+              جاءت منصة <strong className="font-black text-[#0f172a]">فارس بن سعود (FBS)</strong> لتنهي عهد التداول العشوائي وغير الموثق في المنصات العامة، ولتؤسس بيئة ذات طابع مصرفي نخبوي تليق بعشاق التفرد، وتضمن لكافة الأطراف إتمام صفقاتهم بكرامة وسرية واطمئنان مطلق.
+            </p>
+          </div>
 
-          <div className="flex items-center justify-between border-b border-white/10 pb-5">
-            <div className="flex items-center gap-3">
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gold/20 text-gold border border-gold/40">
-                <Crown size={24} />
+          {/* Key Checklist Badges */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5 pt-2 mt-auto">
+            <div className="flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs hover:border-gold/50 hover:shadow-sm transition-all">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
+                <Check size={16} strokeWidth={3} />
               </span>
-              <div>
-                <h3 className="text-sm font-black text-white">ختم الاعتماد المؤسسي</h3>
-                <p className="text-[11px] text-slate-300">منظومة دار مزادات فارس بن سعود</p>
+              <span className="text-xs sm:text-[13px] font-bold text-[#0f172a]">انتقاء دقيق لا يقبل إلا التحف الحقيقية</span>
+            </div>
+            <div className="flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs hover:border-gold/50 hover:shadow-sm transition-all">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
+                <Check size={16} strokeWidth={3} />
+              </span>
+              <span className="text-xs sm:text-[13px] font-bold text-[#0f172a]">حفظ أموال بنكي مستقل بنظام الضامن</span>
+            </div>
+            <div className="flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs hover:border-gold/50 hover:shadow-sm transition-all">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
+                <Check size={16} strokeWidth={3} />
+              </span>
+              <span className="text-xs sm:text-[13px] font-bold text-[#0f172a]">نقل ملكية رسمي عبر القنوات الحكومية المعتمدة</span>
+            </div>
+            <div className="flex items-center gap-3 rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-xs hover:border-gold/50 hover:shadow-sm transition-all">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
+                <Check size={16} strokeWidth={3} />
+              </span>
+              <span className="text-xs sm:text-[13px] font-bold text-[#0f172a]">سرية تامة لحسابات كبار الشخصيات والملاك</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Left Column: Curated Royal Emblem Pedestal (Equal-Height Stretch) */}
+        <div className="lg:col-span-5 flex flex-col">
+          <div className="relative rounded-3xl border-2 border-gold/45 bg-gradient-to-br from-[#1c2c4d] via-[#14213a] to-[#0d162a] p-7 sm:p-8 text-white shadow-xl overflow-hidden h-full flex flex-col justify-between">
+            {/* Ambient Corner Lighting */}
+            <div className="pointer-events-none absolute -top-12 -end-12 h-44 w-44 rounded-full bg-gold/20 blur-3xl" />
+
+            {/* Crest Header */}
+            <div className="flex items-center justify-between border-b border-white/10 pb-5">
+              <div className="flex items-center gap-3">
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gold/20 text-gold border border-gold/40 shadow-inner">
+                  <Crown size={24} />
+                </span>
+                <div>
+                  <h3 className="text-sm font-black text-white">ختم الاعتماد المؤسسي</h3>
+                  <p className="text-[11px] text-slate-300">منظومة دار مزادات فارس بن سعود</p>
+                </div>
+              </div>
+              <SaudiCrestSvg className="w-8 h-8 text-gold/80" />
+            </div>
+
+            {/* Quote Body */}
+            <div className="my-6 space-y-4 text-xs sm:text-sm leading-relaxed text-slate-200">
+              <p className="italic font-medium leading-relaxed">
+                «نحن لا نبيع أرقاماً.. بل نوثق تاريخاً ونمكّن مقتني اللوحات من حيازة تحف لا تتكرر، بإشراف قانوني ومالي يضاهي أرقى بيوت المزادات العالمية في لندن وجنيف ونيويورك.»
+              </p>
+              <div className="pt-3.5 flex items-center justify-between text-xs text-gold border-t border-white/10">
+                <span className="font-bold">المكتب التنفيذي واللجنة الاستشارية</span>
+                <span className="font-norwester tracking-wider font-bold">FBS PRIVATE DESK</span>
               </div>
             </div>
-            <SaudiCrestSvg className="w-8 h-8 text-gold/80" />
-          </div>
 
-          <div className="my-6 space-y-4 text-xs sm:text-sm leading-relaxed text-slate-200">
-            <p className="italic font-medium">
-              «نحن لا نبيع أرقاماً.. بل نوثق تاريخاً ونمكن مقتني اللوحات من حيازة تحف لا تتكرر، بإشراف قانوني ومالي يضاهي أرقى بيوت المزادات العالمية في لندن وجنيف ونيويورك.»
-            </p>
-            <div className="pt-3 flex items-center justify-between text-xs text-gold border-t border-white/10">
-              <span className="font-bold">المكتب التنفيذي واللجنة الاستشارية</span>
-              <span className="font-norwester">FBS PRIVATE DESK</span>
+            {/* Official Licensing Footer */}
+            <div className="rounded-2xl border border-gold/35 bg-gold/15 p-4 flex items-center gap-3 text-xs text-gold-light backdrop-blur-xs">
+              <ShieldCheck size={22} className="shrink-0 text-gold" />
+              <span className="font-semibold">مرخصة ومطابقة للأنظمة التجارية وأنظمة المرور السعودية</span>
             </div>
-          </div>
-
-          <div className="rounded-2xl border border-gold/30 bg-gold/15 p-4 flex items-center gap-3 text-xs text-gold-light">
-            <ShieldCheck size={22} className="shrink-0 text-gold" />
-            <span>مرخصة ومطابقة للأنظمة التجارية وأنظمة المرور السعودية</span>
           </div>
         </div>
       </div>

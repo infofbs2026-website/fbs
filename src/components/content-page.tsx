@@ -3,11 +3,11 @@ import { PageTitle, EmptyState } from './ui';
 import { createAdminClient } from '@/lib/supabase/server';
 import {
   HowItWorksInteractive,
-  FaqInteractive,
   ContactInteractive,
   AboutInteractive
 } from './content-interactive';
 import { AboutView } from './about-view';
+import { FaqView } from './faq-view';
 import { ShieldCheck, FileText, Scale, Lock, ArrowLeft } from 'lucide-react';
 
 export const contentTitles: Record<string, string> = {
@@ -91,9 +91,11 @@ export async function ContentPage({ slug }: { slug: string }) {
   const pageDescription = pageDescriptions[slug];
   const customBody = result?.data?.body_ar;
 
+  const isFullWidthPage = slug === 'about' || slug === 'faq';
+
   return (
     <>
-      {slug !== 'about' && (
+      {!isFullWidthPage && (
         <PageTitle
           title={pageTitle}
           eyebrow="فارس بن سعود للوحات المميزة"
@@ -101,13 +103,11 @@ export async function ContentPage({ slug }: { slug: string }) {
         />
       )}
 
-      <div className={slug === 'about' ? 'w-full' : 'container-fbs py-12 sm:py-16'}>
+      <div className={isFullWidthPage ? 'w-full' : 'container-fbs py-12 sm:py-16'}>
         {slug === 'how-it-works' ? (
           <HowItWorksInteractive />
         ) : slug === 'faq' ? (
-          <div className="mx-auto max-w-4xl">
-            <FaqInteractive />
-          </div>
+          <FaqView />
         ) : slug === 'contact' ? (
           <div className="mx-auto max-w-5xl">
             <ContactInteractive />
