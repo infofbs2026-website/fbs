@@ -87,6 +87,19 @@ export function Brand({ variant = 'gold', className = '' }: { variant?: 'gold' |
   );
 }
 
+function getHeaderFirstName(fullName?: string): string {
+  if (!fullName) return 'عضو معتمد';
+  const trimmed = fullName.trim();
+  if (!trimmed) return 'عضو معتمد';
+  const parts = trimmed.split(/\s+/);
+  if (parts.length === 0) return 'عضو معتمد';
+  // Handle compound Arabic names like "عبد الله" or "أبو فهد"
+  if (parts.length >= 2 && ['عبد', 'أبو', 'ابو', 'أم', 'ام', 'آل', 'بن'].includes(parts[0])) {
+    return `${parts[0]} ${parts[1]}`;
+  }
+  return parts[0];
+}
+
 export function Header() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
@@ -261,13 +274,13 @@ export function Header() {
                   type="button"
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   className="group flex h-10 items-center gap-2 rounded-full border border-gold/50 bg-[#0d1629]/90 ps-1.5 pe-3 text-xs font-bold text-gold-light backdrop-blur-md transition-all duration-200 hover:border-gold hover:bg-gold/15 hover:text-white hover:shadow-[0_0_20px_rgba(217,184,127,0.35)] active:scale-[0.98] cursor-pointer"
-                  title="حسابك المسجل"
+                  title={`حسابك: ${user.displayName || user.email}`}
                 >
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-[#9e7838] via-[#e6c587] to-[#d9b87f] text-navy font-black text-xs shadow-sm ring-1 ring-gold/60 shrink-0">
                     {user.displayName ? user.displayName.trim().charAt(0) : <UserRound size={13} className="text-navy" />}
                   </span>
-                  <span className="max-w-[120px] truncate text-slate-100 font-bold">
-                    {user.displayName || 'عضو معتمد'}
+                  <span className="max-w-[140px] truncate text-slate-100 font-bold">
+                    {getHeaderFirstName(user.displayName)}
                   </span>
                   <ChevronDown
                     size={14}
