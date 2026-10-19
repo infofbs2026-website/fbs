@@ -109,10 +109,12 @@ export function ScrollReveal({
 export function StaggerGrid({
   children,
   className = '',
+  itemClassName = '',
   baseDelay = 80
 }: {
   children: React.ReactNode;
   className?: string;
+  itemClassName?: string;
   baseDelay?: number;
 }) {
   const { ref, inView } = useInView({ threshold: 0.1 });
@@ -123,7 +125,7 @@ export function StaggerGrid({
         if (!React.isValidElement(child)) return child;
         return (
           <div
-            className="will-change-[transform,opacity] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+            className={`will-change-[transform,opacity] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${itemClassName}`}
             style={{
               opacity: inView ? 1 : 0,
               transform: inView ? 'translate3d(0, 0, 0)' : 'translate3d(0, 24px, 0)',

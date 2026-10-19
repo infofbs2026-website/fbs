@@ -3,15 +3,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import {
-  Trophy,
   Radio,
   ArrowLeft,
   CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  TrendingUp,
   Clock,
-  Pause
+  Pause,
+  Play
 } from 'lucide-react';
 import { PlateVisualizer } from '@/components/ui';
 import { SarSymbol, formatEnglishAmount } from '@/components/sar-symbol';
@@ -59,26 +56,21 @@ export function HeroAuctionCard({
   const [currentPriceHalalas, setCurrentPriceHalalas] = useState<string>(
     currentPlate.auction?.currentPriceHalalas || '75000000'
   );
-  const [bidCount, setBidCount] = useState<number>(
-    currentPlate.auction?.bidCount || 28
-  );
   const [priceFlash, setPriceFlash] = useState(false);
-  const [newBidAlert, setNewBidAlert] = useState<string | null>(null);
 
-  // Auto-Slideshow & Hover-to-Pause States
+  // Manual Pause & Hover-to-Pause States
+  const [isManualPaused, setIsManualPaused] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [progress, setProgress] = useState(0); // 0 to 100%
 
-  const ROTATE_INTERVAL_MS = 5500; // 5.5 seconds per live auction
-  const TICK_INTERVAL_MS = 100;
+  const ROTATE_INTERVAL_MS = 3200; // 3.2 seconds per live auction (brisk and comfortable)
+  const TICK_INTERVAL_MS = 50; // Smooth progress updates
 
   // When changing current plate, reset timer, price, and progress bar
   useEffect(() => {
     setTimeLeft(calculateInitialSeconds(currentPlate));
     setCurrentPriceHalalas(currentPlate.auction?.currentPriceHalalas || '75000000');
-    setBidCount(currentPlate.auction?.bidCount || 28);
     setPriceFlash(false);
-    setNewBidAlert(null);
     setProgress(0);
   }, [currentIndex, currentPlate]);
 
@@ -116,21 +108,21 @@ export function HeroAuctionCard({
         }
       });
 
-      setBidCount((prev) => prev + 1);
       setPriceFlash(true);
-      const incInRiyals = (Number(randomInc) / 100).toLocaleString('en-US');
-      setNewBidAlert(`+${incInRiyals} ر.س مزايدة جديدة`);
-
       setTimeout(() => setPriceFlash(false), 2000);
-      setTimeout(() => setNewBidAlert(null), 3800);
     }, intervalTime);
 
     return () => clearInterval(bidInterval);
   }, [isEnded, currentPlate.id]);
 
-  // 3. Automated Carousel Rotation with Progress Bar (Paused when Hovered)
+  // Touch Swiping & Gesture States for Mobile
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  const [isTouching, setIsTouching] = useState(false);
+
+  // Automated Carousel Rotation with Progress Bar (Paused when Hovered, Touched, or Manually Paused)
   useEffect(() => {
-    if (platesPool.length <= 1 || isHovered || isEnded) return;
+    if (platesPool.length <= 1 || isHovered || isTouching || isManualPaused || isEnded) return;
 
     const progressStep = (TICK_INTERVAL_MS / ROTATE_INTERVAL_MS) * 100;
 
@@ -145,9 +137,57 @@ export function HeroAuctionCard({
     }, TICK_INTERVAL_MS);
 
     return () => clearInterval(timer);
-  }, [platesPool.length, isHovered, isEnded]);
+  }, [platesPool.length, isHovered, isTouching, isManualPaused, isEnded]);
 
-  // 4. Format HH:MM:SS
+  // Touch Gesture Handlers for Mobile Swiping
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (platesPool.length <= 1) return;
+    const touch = e.touches[0];
+    setTouchStartX(touch.clientX);
+    setTouchStartY(touch.clientY);
+    setIsTouching(true);
+  };
+
+  const handleTouchMove = (_e: React.TouchEvent) => {
+    // Keep touch-pan-y active so page scroll continues naturally
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    setIsTouching(false);
+    if (touchStartX === null || touchStartY === null || platesPool.length <= 1) {
+      setTouchStartX(null);
+      setTouchStartY(null);
+      return;
+    }
+
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - touchStartX;
+    const deltaY = touch.clientY - touchStartY;
+
+    // Minimum swipe threshold (35px) and primarily horizontal
+    if (Math.abs(deltaX) > 35 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX < 0) {
+        // Swiped Left: advance to next plate
+        setCurrentIndex((prev) => (prev + 1) % platesPool.length);
+        setProgress(0);
+      } else {
+        // Swiped Right: go to previous plate
+        setCurrentIndex((prev) => (prev - 1 + platesPool.length) % platesPool.length);
+        setProgress(0);
+      }
+    }
+
+    setTouchStartX(null);
+    setTouchStartY(null);
+  };
+
+  const handleTouchCancel = () => {
+    setIsTouching(false);
+    setTouchStartX(null);
+    setTouchStartY(null);
+  };
+
+  // Format HH:MM:SS
   const formatTime = (totalSeconds: number) => {
     if (totalSeconds <= 0) return '00:00:00';
     const hours = Math.floor(totalSeconds / 3600);
@@ -156,54 +196,41 @@ export function HeroAuctionCard({
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  // 5. Navigation Handlers
-  const handleNextAuction = () => {
-    if (platesPool.length > 1) {
-      setCurrentIndex((prev) => (prev + 1) % platesPool.length);
-      setProgress(0);
-    }
-  };
-
-  const handlePrevAuction = () => {
-    if (platesPool.length > 1) {
-      setCurrentIndex((prev) => (prev - 1 + platesPool.length) % platesPool.length);
-      setProgress(0);
-    }
-  };
-
-  const handleSelectAuction = (index: number) => {
-    setCurrentIndex(index);
-    setProgress(0);
-  };
-
   // Direct destination URL for the active auction
   const auctionUrl =
     currentPlate.auction?.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(currentPlate.auction.id)
       ? `/auction-room/${currentPlate.auction.id}`
       : `/plates/${currentPlate.slug}`;
 
-  // Plate letters string (e.g. "ف ب س 1")
-  const plateTitleAr = `${currentPlate.lettersAr.join(' ')} ${currentPlate.numbers}`;
+  // Plate letters & numbers formatting for titles
+  const arabicLetters = Array.isArray(currentPlate.lettersAr) ? currentPlate.lettersAr.join(' ') : currentPlate.lettersAr;
+  const plateTitleAr = `${arabicLetters} ${currentPlate.numbers}`;
+
+  const isPausedState = isManualPaused || isHovered || isTouching;
 
   return (
     <div
-      className="relative flex items-start justify-center lg:justify-end pt-0 pb-2 w-full max-w-full overflow-hidden sm:overflow-visible"
+      className="relative flex items-stretch justify-center lg:justify-end pt-0 pb-0 w-full h-full max-w-full overflow-hidden sm:overflow-visible touch-pan-y"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchCancel}
     >
       {/* Glowing Ambient Aura */}
       <div className="absolute h-80 w-80 rounded-full bg-gradient-to-tr from-gold/30 via-indigo-600/20 to-transparent blur-3xl pointer-events-none lg:end-12" />
 
-      {/* Main Glassmorphic Auction Card (Rich Depth with Golden Accents) */}
-      <div className="relative w-full max-w-[540px] xl:max-w-[550px] mx-auto lg:ms-auto lg:mx-0 rounded-3xl border border-gold/35 bg-gradient-to-b from-[#141f38]/95 via-[#0e172a]/95 to-[#080e1c]/98 backdrop-blur-2xl p-4 sm:p-5 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65),0_10px_25px_-5px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.14)] transition-all duration-300">
+      {/* Main Glassmorphic Auction Card (Narrower width: max-w-[420px], full height matching right column) */}
+      <div className="relative w-full max-w-[420px] xl:max-w-[430px] mx-auto lg:ms-auto lg:mx-0 rounded-3xl border border-gold/35 bg-gradient-to-b from-[#141f38]/95 via-[#0e172a]/95 to-[#080e1c]/98 backdrop-blur-2xl p-4 sm:p-5 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65),0_10px_25px_-5px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.14)] transition-all duration-300 flex flex-col justify-between h-full">
         
-        {/* Top Slim Golden Progress Line (Visual Rotation Bar, Freezes on Hover) */}
+        {/* Top Slim Golden Progress Line (Visual Rotation Bar, Turns Amber When Paused) */}
         {platesPool.length > 1 && !isEnded && (
           <div className="absolute top-0 inset-x-5 h-[2px] bg-white/10 overflow-hidden rounded-t-3xl">
             <div
               className={`h-full transition-all duration-100 ease-linear ${
-                isHovered
-                  ? 'bg-amber-400 opacity-95'
+                isPausedState
+                  ? 'bg-amber-400 opacity-95 shadow-[0_0_8px_rgba(251,191,36,0.8)]'
                   : 'bg-gradient-to-r from-gold via-gold-light to-gold shadow-[0_0_8px_rgba(217,184,127,0.8)]'
               }`}
               style={{ width: `${progress}%` }}
@@ -211,202 +238,144 @@ export function HeroAuctionCard({
           </div>
         )}
 
-        {/* Header Ticker, Status & Plate Identifier (Clean with Subtle Gold Divider) */}
-        <div className="mb-3 flex items-center justify-between border-b border-gold/20 pb-2.5">
-          <div className="flex items-center gap-2">
-            {!isEnded ? (
-              <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/15 px-2.5 py-1 text-[11px] font-bold text-emerald-400 border border-emerald-500/30 backdrop-blur-md">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse-live shadow-[0_0_6px_#34d399]" />
-                <span>مزاد نخبة مباشر</span>
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-bold text-slate-200 border border-white/15">
-                <CheckCircle2 size={13} className="text-emerald-400" />
-                <span>اكتمل المزاد - تم الرسو</span>
-              </span>
-            )}
-
-            {/* Hover Pause Status Indicator */}
-            {isHovered && platesPool.length > 1 && !isEnded ? (
-              <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-500/35">
-                <Pause size={10} className="text-amber-400 fill-amber-400" />
-                <span>معلّق للمعاينة</span>
-              </span>
-            ) : newBidAlert ? (
-              <span className="hidden sm:inline-flex items-center gap-1 rounded-md bg-gold/20 px-2 py-0.5 text-[10px] font-bold text-gold-light border border-gold/40 animate-pulse">
-                <TrendingUp size={11} className="text-gold" />
-                <span>{newBidAlert}</span>
-              </span>
-            ) : null}
-          </div>
-
-          {/* Plate Identifier Badge with Gold Border */}
-          <span
-            className="font-norwester text-xs font-bold tracking-wider text-gold-light bg-[#1d2d4d]/90 border border-gold/35 px-2.5 py-1 rounded-md shadow-xs backdrop-blur-md"
-            dir="ltr"
-          >
-            FBS-{currentPlate.slug.toUpperCase()}
-          </span>
-        </div>
-
-        {/* 3D Skeuomorphic Plate Pedestal with Light Platinum Background & Gold Border (Clear Contrast with Saudi Plate's Black Frame) */}
-        <div className="rounded-xl p-3 sm:p-3.5 flex items-center justify-center bg-gradient-to-b from-[#f1f4f9] via-[#e2e8f0] to-[#d6dfea] border border-gold/40 shadow-[inset_0_3px_8px_rgba(15,23,42,0.18),inset_0_1px_3px_rgba(15,23,42,0.1),0_4px_16px_rgba(0,0,0,0.35)]">
-          <div
-            key={currentPlate.id}
-            className="w-full animate-plate-switch transition-transform duration-300 hover:scale-[1.01]"
-          >
-            <PlateVisualizer
-              lettersAr={currentPlate.lettersAr}
-              lettersEn={currentPlate.lettersEn}
-              numbers={currentPlate.numbers}
-              plateType={currentPlate.type}
-              large
-            />
-          </div>
-        </div>
-
-        {/* Elevated Lighter Ticker Card with Gold Border & Rich Depth (No Murky Darkness) */}
-        <div className="mt-3 rounded-xl border border-gold/35 bg-gradient-to-b from-[#213354]/95 via-[#192742]/95 to-[#131f36]/95 backdrop-blur-xl p-3 sm:p-3.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_6px_20px_rgba(0,0,0,0.35)]">
-          <div className="flex items-center justify-between">
-            {/* Price section with live pulse flash */}
-            <div>
-              <span className="block text-[11px] font-bold text-slate-200">
-                {!isEnded ? 'أعلى مزايدة مسجلة' : 'سعر الترسية النهائي'}
-              </span>
-              <div
-                className={`mt-1 flex items-baseline gap-1.5 text-xl font-bold transition-all duration-300 rounded-lg px-1 -ms-1 ${
-                  priceFlash ? 'bg-gold/25 text-gold-light ring-2 ring-gold/40' : 'text-white'
-                }`}
-                dir="ltr"
-              >
-                <span suppressHydrationWarning className="tabular-nums tracking-tight font-norwester text-2xl font-black text-white drop-shadow-xs">
-                  {formatEnglishAmount(currentPriceHalalas)}
+        {/* Top Section: Header (Live Badge, Play/Pause Control, & Plate Identifier) */}
+        <div className="w-full">
+          <div className="mb-2.5 flex items-center justify-between border-b border-gold/20 pb-2.5">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {!isEnded ? (
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/15 px-2 py-1 text-[10.5px] font-bold text-emerald-400 border border-emerald-500/30 backdrop-blur-md">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#34d399]" />
+                  <span>مزاد نخبة مباشر</span>
                 </span>
-                <SarSymbol className="w-4 h-4 text-gold inline-block self-center drop-shadow-xs" />
-              </div>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-2 py-1 text-[10.5px] font-bold text-slate-200 border border-white/15">
+                  <CheckCircle2 size={12} className="text-emerald-400" />
+                  <span>اكتمل المزاد</span>
+                </span>
+              )}
+
+              {/* Interactive Play/Pause Toggle Pill */}
+              {!isEnded && platesPool.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => setIsManualPaused((prev) => !prev)}
+                  className={`inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10.5px] font-bold border transition-all cursor-pointer backdrop-blur-md active:scale-95 ${
+                    isManualPaused
+                      ? 'bg-amber-500/25 border-amber-400/60 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.35)]'
+                      : isHovered
+                        ? 'bg-amber-500/15 border-amber-500/35 text-amber-300/90'
+                        : 'bg-white/10 border-white/20 text-slate-200 hover:border-gold/50 hover:text-gold-light'
+                  }`}
+                  title={isManualPaused ? 'المعاينة معلّقة - اضغط للاستئناف' : 'اضغط لإيقاف التبديل وتثبيت هذه اللوحة'}
+                  aria-pressed={isManualPaused}
+                >
+                  {isManualPaused ? (
+                    <>
+                      <Play size={10} className="text-amber-400 fill-amber-400" />
+                      <span>معلّق للمعاينة</span>
+                    </>
+                  ) : (
+                    <>
+                      <Pause size={10} className="text-slate-300 fill-slate-300" />
+                      <span>معاينة تلقائية</span>
+                    </>
+                  )}
+                </button>
+              )}
             </div>
 
-            {/* Countdown timer section */}
-            <div className="text-end">
-              <span className="block text-[11px] font-bold text-slate-200 flex items-center justify-end gap-1.5">
-                <Clock size={12} className={!isEnded ? 'text-emerald-400' : 'text-slate-400'} />
-                <span>{!isEnded ? 'الوقت المتبقي' : 'حالة المزاد'}</span>
-              </span>
-              <span
-                suppressHydrationWarning
-                className={`font-norwester text-base font-bold tracking-widest mt-1 block drop-shadow-xs ${
-                  !isEnded
-                    ? timeLeft < 600
-                      ? 'text-red-400 animate-pulse'
-                      : 'text-gold-light'
-                    : 'text-emerald-400 text-xs font-sans font-bold'
-                }`}
-                dir="ltr"
-              >
-                {!isEnded ? formatTime(timeLeft) : 'منتهي (تم الرسو)'}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Specifications & Bid Count as Elevated Badges */}
-        <div className="mt-2.5 flex items-center justify-between gap-2 px-0.5">
-          <div className="flex items-center gap-1.5 rounded-lg bg-[#1a2844]/90 border border-gold/25 px-2.5 py-1 text-[11px] font-bold text-slate-100 shadow-xs backdrop-blur-md">
-            <Trophy size={13} className="text-gold" />
-            <span>
-              {currentPlate.numbers.length === 1
-                ? 'لوحة أحادية ملكية'
-                : currentPlate.numbers.length === 2
-                  ? 'لوحة ثنائية نادرة'
-                  : currentPlate.type === 'نقل'
-                    ? 'لوحة نقل مميزة'
-                    : 'لوحة مميزة خاصة'}
+            {/* Plate Identifier Badge */}
+            <span
+              className="font-norwester text-[11px] font-bold tracking-wider text-gold-light bg-[#1d2d4d]/90 border border-gold/35 px-2 py-0.5 rounded-md shadow-xs backdrop-blur-md"
+              dir="ltr"
+            >
+              FBS-{currentPlate.slug.toUpperCase()}
             </span>
           </div>
-          <span
-            className={`font-norwester text-[11px] px-3 py-1 rounded-lg font-bold transition-colors shadow-xs backdrop-blur-md ${
-              priceFlash
-                ? 'bg-gold/30 text-gold-light font-black ring-1 ring-gold/40'
-                : 'text-gold-light bg-gold/15 border border-gold/35'
-            }`}
-            dir="ltr"
-          >
-            {bidCount} BIDS ACTIVE
-          </span>
         </div>
 
-        {/* Dedicated Bottom Carousel Controls with Lighter Surface & Gold Border */}
-        {platesPool.length > 1 && (
-          <div className="mt-2.5 flex items-center justify-between rounded-xl bg-gradient-to-b from-[#213354]/95 via-[#192742]/95 to-[#131f36]/95 backdrop-blur-xl border border-gold/30 px-3 py-2 shadow-[inset_0_1px_1px_rgba(255,255,255,0.18),0_4px_16px_rgba(0,0,0,0.35)]">
-            {/* Previous Auction Button */}
-            <button
-              type="button"
-              onClick={handlePrevAuction}
-              className="group flex h-8 items-center gap-1 rounded-lg bg-[#16233d] hover:bg-gold/25 border border-gold/40 px-3 text-xs font-bold text-slate-100 shadow-xs hover:border-gold hover:text-gold-light active:scale-95 transition-all cursor-pointer"
-              title="المزاد السابق"
-              aria-label="المزاد السابق"
-            >
-              <ChevronRight size={14} className="text-gold transition-transform group-hover:translate-x-0.5" />
-              <span className="text-[11px]">السابق</span>
-            </button>
+        {/* Middle Section: Authentic Saudi Plate Frontal View (Centered & fills vertical space gracefully) */}
+        <div className="my-auto py-1.5 w-full flex flex-col justify-center">
+          <div className="rounded-2xl p-2.5 sm:p-3 flex items-center justify-center bg-gradient-to-b from-[#0b1324] via-[#070d18] to-[#040812] border border-gold/30 shadow-[inset_0_2px_10px_rgba(0,0,0,0.7),0_8px_24px_rgba(0,0,0,0.4)] relative overflow-visible">
+            {/* Subtle Ambient Gold Glow behind Plate */}
+            <div className="absolute h-32 w-64 rounded-full bg-gold/15 blur-2xl pointer-events-none" />
 
-            {/* Deep Recessed Indicator Track with 3D Depth */}
-            <div className="flex items-center gap-1.5 rounded-full bg-[#0c1427]/90 p-1 px-3 shadow-[inset_0_2px_4px_rgba(0,0,0,0.7)] border border-gold/25">
-              {platesPool.map((p, idx) => {
-                const isActive = idx === currentIndex;
-                return (
-                  <button
-                    key={p.id}
-                    type="button"
-                    onClick={() => handleSelectAuction(idx)}
-                    className={`group relative transition-all duration-300 rounded-full cursor-pointer focus:outline-none ${
-                      isActive
-                        ? 'h-3.5 w-8 bg-gradient-to-r from-[#faebd0] via-[#d9b87f] to-[#d0ad67] shadow-[0_0_12px_rgba(217,184,127,0.85),0_2px_4px_rgba(0,0,0,0.4)] border border-amber-400/50 flex items-center justify-center'
-                        : 'h-2 w-2 bg-slate-500 hover:bg-slate-300 border border-white/10 hover:scale-125'
-                    }`}
-                    aria-label={`المزاد ${idx + 1}`}
-                    title={`لوحة ${p.lettersAr.join(' ')} ${p.numbers}`}
-                  >
-                    {isActive && (
-                      <span className="text-[9px] font-black text-navy font-norwester tracking-tight drop-shadow-xs">
-                        {idx + 1}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+            <div
+              key={currentPlate.id}
+              className="relative z-10 w-full flex justify-center animate-plate-switch transition-transform duration-300 hover:scale-[1.01]"
+            >
+              <PlateVisualizer
+                lettersAr={currentPlate.lettersAr}
+                lettersEn={currentPlate.lettersEn}
+                numbers={currentPlate.numbers}
+                plateType={currentPlate.type}
+                className="w-full max-w-[365px]"
+              />
             </div>
-
-            {/* Next Auction Button */}
-            <button
-              type="button"
-              onClick={handleNextAuction}
-              className="group flex h-8 items-center gap-1 rounded-lg bg-[#16233d] hover:bg-gold/25 border border-gold/40 px-3 text-xs font-bold text-slate-100 shadow-xs hover:border-gold hover:text-gold-light active:scale-95 transition-all cursor-pointer"
-              title="المزاد التالي"
-              aria-label="المزاد التالي"
-            >
-              <span className="text-[11px]">التالي</span>
-              <ChevronLeft size={14} className="text-gold transition-transform group-hover:-translate-x-0.5" />
-            </button>
           </div>
-        )}
+        </div>
 
-        {/* Direct CTA Button Bound 100% to this Specific Auction */}
-        <div className="mt-3">
-          {!isEnded ? (
-            <Link
-              href={auctionUrl}
-              className="group btn btn-gold w-full h-[46px] rounded-xl flex items-center justify-center gap-2 text-sm sm:text-base font-black shadow-lg shadow-gold/25 hover:shadow-gold/45 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer"
-            >
-              <Radio className="w-4 h-4 text-navy animate-pulse" />
-              <span>دخول مزاد اللوحة الآن</span>
-              <span className="text-xs font-bold text-navy/70 ps-1" dir="rtl">
-                ({plateTitleAr})
-              </span>
-              <ArrowLeft className="w-4 h-4 text-navy/80 transition-transform duration-300 group-hover:-translate-x-1" />
-            </Link>
-          ) : (
-            <div className="flex flex-col gap-1.5">
+        {/* Bottom Section: Elevated Price/Timer Ticker + Direct Auction CTA */}
+        <div className="w-full space-y-3">
+          {/* Elevated Price & Countdown Ticker Card */}
+          <div className="rounded-xl border border-gold/35 bg-gradient-to-b from-[#213354]/95 via-[#192742]/95 to-[#131f36]/95 backdrop-blur-xl p-3 sm:p-3.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_6px_20px_rgba(0,0,0,0.35)]">
+            <div className="flex items-center justify-between">
+              {/* Price section with live pulse flash */}
+              <div>
+                <span className="block text-[11px] font-bold text-slate-200">
+                  {!isEnded ? 'أعلى مزايدة مسجلة' : 'سعر الترسية النهائي'}
+                </span>
+                <div
+                  className={`mt-0.5 flex items-baseline gap-1.5 text-xl font-bold transition-all duration-300 rounded-lg px-1 -ms-1 ${
+                    priceFlash ? 'bg-gold/25 text-gold-light ring-2 ring-gold/40' : 'text-white'
+                  }`}
+                  dir="ltr"
+                >
+                  <span suppressHydrationWarning className="tabular-nums tracking-tight font-norwester text-2xl font-black text-white drop-shadow-xs">
+                    {formatEnglishAmount(currentPriceHalalas)}
+                  </span>
+                  <SarSymbol className="w-4 h-4 text-gold inline-block self-center drop-shadow-xs" />
+                </div>
+              </div>
+
+              {/* Countdown timer section */}
+              <div className="text-end">
+                <span className="block text-[11px] font-bold text-slate-200 flex items-center justify-end gap-1.5">
+                  <Clock size={12} className={!isEnded ? 'text-emerald-400' : 'text-slate-400'} />
+                  <span>{!isEnded ? 'الوقت المتبقي' : 'حالة المزاد'}</span>
+                </span>
+                <span
+                  suppressHydrationWarning
+                  className={`font-norwester text-base font-bold tracking-widest mt-0.5 block drop-shadow-xs ${
+                    !isEnded
+                      ? timeLeft < 600
+                        ? 'text-red-400 animate-pulse'
+                        : 'text-gold-light'
+                      : 'text-emerald-400 text-xs font-sans font-bold'
+                  }`}
+                  dir="ltr"
+                >
+                  {!isEnded ? formatTime(timeLeft) : 'منتهي (تم الرسو)'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Direct CTA Button Bound to this Specific Auction */}
+          <div>
+            {!isEnded ? (
+              <Link
+                href={auctionUrl}
+                className="group btn btn-gold w-full h-[46px] rounded-xl flex items-center justify-center gap-2 text-sm sm:text-base font-black shadow-lg shadow-gold/25 hover:shadow-gold/45 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer"
+              >
+                <Radio className="w-4 h-4 text-navy animate-pulse" />
+                <span>دخول مزاد اللوحة الآن</span>
+                <span className="text-xs font-bold text-navy/70 ps-1" dir="rtl">
+                  ({plateTitleAr})
+                </span>
+                <ArrowLeft className="w-4 h-4 text-navy/80 transition-transform duration-300 group-hover:-translate-x-1" />
+              </Link>
+            ) : (
               <Link
                 href={auctionUrl}
                 className="group w-full h-[46px] rounded-xl bg-white/10 hover:bg-white/15 text-white border border-white/20 flex items-center justify-center gap-2 text-xs sm:text-sm font-black transition-all cursor-pointer shadow-xs"
@@ -415,20 +384,10 @@ export function HeroAuctionCard({
                 <span>تفاصيل اللوحة وترسية المزاد ({plateTitleAr})</span>
                 <ArrowLeft className="w-4 h-4 text-slate-400 transition-transform duration-300 group-hover:-translate-x-1" />
               </Link>
-              {platesPool.length > 1 && (
-                <button
-                  type="button"
-                  onClick={handleNextAuction}
-                  className="w-full py-1 text-center text-xs font-bold text-gold hover:underline cursor-pointer"
-                >
-                  الانتقال إلى المزاد الحي التالي &larr;
-                </button>
-              )}
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 }
-

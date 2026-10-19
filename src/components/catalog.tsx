@@ -390,152 +390,116 @@ export async function Catalog({
             </div>
           </div>
 
-          {/* 3 Visual Cards */}
-          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 items-stretch">
+          {/* 3 Visual Cards - Compact Sleek Interactive Filter Tiles */}
+          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-5 items-stretch">
             {/* Card 1: خصوصي (Private) */}
             <Link
               href={makeTypeUrl('خصوصي')}
-              className={`group relative flex flex-col justify-between rounded-2xl border-2 p-4 sm:p-5 transition-all duration-300 text-center h-full overflow-hidden ${clean.type === 'خصوصي'
-                  ? 'border-gold bg-gradient-to-b from-[#fffbf2] via-white to-[#fbf6ea] shadow-[0_16px_35px_-8px_rgba(217,184,127,0.4)] ring-2 ring-gold/40'
-                  : 'border-slate-200/90 bg-white hover:border-gold/60 hover:bg-gradient-to-b hover:from-white hover:to-[#fcfbf9] hover:shadow-[0_14px_30px_-6px_rgba(217,184,127,0.25)] hover:-translate-y-1'
+              className={`group relative flex flex-col justify-between rounded-2xl border-2 p-3.5 sm:p-4 transition-all duration-300 text-center overflow-hidden cursor-pointer ${clean.type === 'خصوصي'
+                  ? 'border-gold bg-gradient-to-b from-[#fffbf2] via-white to-[#fbf6ea] shadow-[0_12px_28px_-6px_rgba(217,184,127,0.4)] ring-2 ring-gold/40'
+                  : 'border-slate-200/90 bg-white hover:border-gold/60 hover:bg-gradient-to-b hover:from-white hover:to-[#fcfbf9] hover:shadow-[0_10px_24px_-6px_rgba(217,184,127,0.2)] hover:-translate-y-1'
                 }`}
             >
               {clean.type === 'خصوصي' && (
-                <span className="absolute top-3 end-3 flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-700 px-3 py-1 text-[11px] font-black text-white shadow-md z-10 animate-in fade-in zoom-in-95">
-                  <Check size={12} strokeWidth={3} />
-                  <span>مُفعّل الآن</span>
+                <span className="absolute top-2.5 end-2.5 flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10.5px] font-black text-white shadow-md z-10 animate-in fade-in zoom-in-95">
+                  <Check size={11} strokeWidth={3} />
+                  <span>مُفعّل</span>
                 </span>
               )}
 
               {/* Authentic Private Plate Representation */}
-              <div className="rounded-xl p-3 flex items-center justify-center w-full h-[135px] mb-3 relative overflow-hidden transition-all duration-300 bg-gradient-to-b from-[#f1f5f9] via-[#e2e8f0] to-[#cbd5e1] border border-slate-300/80 shadow-[inset_0_2px_8px_rgba(15,23,42,0.1),0_1px_2px_rgba(255,255,255,0.8)] group-hover:border-gold/50 group-hover:shadow-[inset_0_2px_10px_rgba(217,184,127,0.2)]">
-                <div className="w-full transition-transform duration-300 group-hover:scale-[1.03] filter drop-shadow-[0_6px_14px_rgba(0,0,0,0.15)]">
+              <div className="rounded-xl p-2 sm:p-2.5 flex items-center justify-center w-full h-[110px] sm:h-[115px] mb-2 relative overflow-hidden transition-all duration-300 bg-gradient-to-b from-[#f1f5f9] via-[#e2e8f0] to-[#cbd5e1] border border-slate-300/80 shadow-[inset_0_2px_8px_rgba(15,23,42,0.1),0_1px_2px_rgba(255,255,255,0.8)] group-hover:border-gold/50 group-hover:shadow-[inset_0_2px_10px_rgba(217,184,127,0.2)]">
+                <div className="w-full transition-transform duration-300 group-hover:scale-[1.03] filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.12)]">
                   <PlateVisualizer
-                    lettersAr={['ف', 'ب', 'س']}
-                    lettersEn={['F', 'B', 'S']}
-                    numbers="1"
+                    lettersAr={['ب', 'ط', 'ل']}
+                    lettersEn={['L', 'T', 'B']}
+                    numbers="8888"
                     plateType="خصوصي"
                     compact
                   />
                 </div>
               </div>
 
-              <div className="flex flex-col items-center w-full mt-auto">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-base font-black text-navy group-hover:text-gold-dark transition-colors">
-                    خصوصي
-                  </span>
-                  <span className="text-[11px] font-bold text-slate-400 font-mono">(Private)</span>
-                </div>
-                <span className="text-xs text-slate-500 font-medium mt-0.5">ملاكي وشخصي قياسي (الأكثر طلباً)</span>
-
-                <span
-                  className={`text-xs font-bold mt-3.5 rounded-full px-4 py-1.5 transition-all duration-300 flex items-center justify-center gap-1.5 w-full ${clean.type === 'خصوصي'
-                      ? 'bg-emerald-600 text-white shadow-sm'
-                      : 'bg-slate-100 text-slate-700 group-hover:bg-gradient-to-r group-hover:from-gold group-hover:via-gold-light group-hover:to-gold group-hover:text-navy group-hover:shadow-[0_4px_14px_rgba(217,184,127,0.35)]'
-                    }`}
-                >
-                  <span>{clean.type === 'خصوصي' ? 'الفئة المحددة (إلغاء التحديد ✕)' : 'تصفية اللوحات الخصوصية'}</span>
-                  {clean.type !== 'خصوصي' && <ArrowLeft size={13} className="transition-transform group-hover:-translate-x-1" />}
-                </span>
+              {/* Single-Line Classification & Subtitle */}
+              <div className="flex items-center justify-center gap-1.5 text-xs sm:text-[13px] font-black text-navy group-hover:text-gold-dark transition-colors flex-wrap py-0.5">
+                <span>خصوصي</span>
+                <span className="text-[11px] font-mono text-slate-400 font-normal">(Private)</span>
+                <span className="text-slate-300 font-normal">·</span>
+                <span className="text-[11px] sm:text-xs text-slate-500 font-bold">ملاكي وشخصي قياسي</span>
               </div>
             </Link>
 
             {/* Card 2: صغيرة (للسيارات الرياضية) (Small / Sports) */}
             <Link
               href={makeTypeUrl('صغيرة')}
-              className={`group relative flex flex-col justify-between rounded-2xl border-2 p-4 sm:p-5 transition-all duration-300 text-center h-full overflow-hidden ${clean.type === 'صغيرة'
-                  ? 'border-emerald-600 bg-gradient-to-b from-[#f0fdf4] via-white to-[#e8fbf0] shadow-[0_16px_35px_-8px_rgba(16,185,129,0.35)] ring-2 ring-emerald-500/40'
-                  : 'border-slate-200/90 bg-white hover:border-emerald-500/60 hover:bg-gradient-to-b hover:from-white hover:to-[#fcfbf9] hover:shadow-[0_14px_30px_-6px_rgba(16,185,129,0.2)] hover:-translate-y-1'
+              className={`group relative flex flex-col justify-between rounded-2xl border-2 p-3.5 sm:p-4 transition-all duration-300 text-center overflow-hidden cursor-pointer ${clean.type === 'صغيرة'
+                  ? 'border-emerald-600 bg-gradient-to-b from-[#f0fdf4] via-white to-[#e8fbf0] shadow-[0_12px_28px_-6px_rgba(16,185,129,0.35)] ring-2 ring-emerald-500/40'
+                  : 'border-slate-200/90 bg-white hover:border-emerald-500/60 hover:bg-gradient-to-b hover:from-white hover:to-[#fcfbf9] hover:shadow-[0_10px_24px_-6px_rgba(16,185,129,0.18)] hover:-translate-y-1'
                 }`}
             >
               {clean.type === 'صغيرة' && (
-                <span className="absolute top-3 end-3 flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-700 px-3 py-1 text-[11px] font-black text-white shadow-md z-10 animate-in fade-in zoom-in-95">
-                  <Check size={12} strokeWidth={3} />
-                  <span>مُفعّل الآن</span>
+                <span className="absolute top-2.5 end-2.5 flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10.5px] font-black text-white shadow-md z-10 animate-in fade-in zoom-in-95">
+                  <Check size={11} strokeWidth={3} />
+                  <span>مُفعّل</span>
                 </span>
               )}
 
               {/* Authentic Sports Plate Representation */}
-              <div className="rounded-xl p-3 flex items-center justify-center w-full h-[135px] mb-3 relative overflow-hidden transition-all duration-300 bg-gradient-to-b from-[#f1f5f9] via-[#e2e8f0] to-[#cbd5e1] border border-slate-300/80 shadow-[inset_0_2px_8px_rgba(15,23,42,0.1),0_1px_2px_rgba(255,255,255,0.8)] group-hover:border-emerald-500/50 group-hover:shadow-[inset_0_2px_10px_rgba(16,185,129,0.18)]">
-                <div className="w-full transition-transform duration-300 group-hover:scale-[1.03] filter drop-shadow-[0_6px_14px_rgba(0,0,0,0.15)]">
+              <div className="rounded-xl p-2 sm:p-2.5 flex items-center justify-center w-full h-[110px] sm:h-[115px] mb-2 relative overflow-hidden transition-all duration-300 bg-gradient-to-b from-[#f1f5f9] via-[#e2e8f0] to-[#cbd5e1] border border-slate-300/80 shadow-[inset_0_2px_8px_rgba(15,23,42,0.1),0_1px_2px_rgba(255,255,255,0.8)] group-hover:border-emerald-500/50 group-hover:shadow-[inset_0_2px_10px_rgba(16,185,129,0.18)]">
+                <div className="w-full transition-transform duration-300 group-hover:scale-[1.03] filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.12)]">
                   <PlateVisualizer
-                    lettersAr={['ط', 'ي', 'ا']}
-                    lettersEn={['T', 'E', 'A']}
-                    numbers="300"
+                    lettersAr={['ك', 'د', 'س']}
+                    lettersEn={['K', 'D', 'S']}
+                    numbers="3471"
                     plateType="صغيرة"
                     compact
                   />
                 </div>
               </div>
 
-              <div className="flex flex-col items-center w-full mt-auto">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-base font-black text-navy group-hover:text-emerald-700 transition-colors">
-                    صغيرة (رياضية)
-                  </span>
-                  <span className="text-[11px] font-bold text-slate-400 font-mono">(US Size)</span>
-                </div>
-                <span className="text-xs text-slate-500 font-medium mt-0.5">نسق أمريكي مخصص للسيارات الرياضية</span>
-
-                <span
-                  className={`text-xs font-bold mt-3.5 rounded-full px-4 py-1.5 transition-all duration-300 flex items-center justify-center gap-1.5 w-full ${clean.type === 'صغيرة'
-                      ? 'bg-emerald-600 text-white shadow-sm'
-                      : 'bg-slate-100 text-slate-700 group-hover:bg-gradient-to-r group-hover:from-emerald-600 group-hover:to-emerald-500 group-hover:text-white group-hover:shadow-[0_4px_14px_rgba(16,185,129,0.35)]'
-                    }`}
-                >
-                  <span>{clean.type === 'صغيرة' ? 'الفئة المحددة (إلغاء التحديد ✕)' : 'تصفية اللوحات الرياضية'}</span>
-                  {clean.type !== 'صغيرة' && <ArrowLeft size={13} className="transition-transform group-hover:-translate-x-1" />}
-                </span>
+              {/* Single-Line Classification & Subtitle */}
+              <div className="flex items-center justify-center gap-1.5 text-xs sm:text-[13px] font-black text-navy group-hover:text-emerald-700 transition-colors flex-wrap py-0.5">
+                <span>صغيرة (رياضية)</span>
+                <span className="text-[11px] font-mono text-slate-400 font-normal">(US Size)</span>
+                <span className="text-slate-300 font-normal">·</span>
+                <span className="text-[11px] sm:text-xs text-slate-500 font-bold">نسق أمريكي مخصص للسيارات الرياضية</span>
               </div>
             </Link>
 
             {/* Card 3: نقل (Transport / Commercial) */}
             <Link
               href={makeTypeUrl('نقل')}
-              className={`group relative flex flex-col justify-between rounded-2xl border-2 p-4 sm:p-5 transition-all duration-300 text-center h-full overflow-hidden ${clean.type === 'نقل'
-                  ? 'border-sky-600 bg-gradient-to-b from-[#f0f9ff] via-white to-[#e6f4fe] shadow-[0_16px_35px_-8px_rgba(2,132,199,0.35)] ring-2 ring-sky-500/40'
-                  : 'border-slate-200/90 bg-white hover:border-sky-500/60 hover:bg-gradient-to-b hover:from-white hover:to-[#fcfbf9] hover:shadow-[0_14px_30px_-6px_rgba(2,132,199,0.2)] hover:-translate-y-1'
+              className={`group relative flex flex-col justify-between rounded-2xl border-2 p-3.5 sm:p-4 transition-all duration-300 text-center overflow-hidden cursor-pointer ${clean.type === 'نقل'
+                  ? 'border-amber-600 bg-gradient-to-b from-[#fffbeb] via-white to-[#fef3c7] shadow-[0_12px_28px_-6px_rgba(217,119,6,0.35)] ring-2 ring-amber-500/40'
+                  : 'border-slate-200/90 bg-white hover:border-amber-500/60 hover:bg-gradient-to-b hover:from-white hover:to-[#fcfbf9] hover:shadow-[0_10px_24px_-6px_rgba(217,119,6,0.18)] hover:-translate-y-1'
                 }`}
             >
               {clean.type === 'نقل' && (
-                <span className="absolute top-3 end-3 flex items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-700 px-3 py-1 text-[11px] font-black text-white shadow-md z-10 animate-in fade-in zoom-in-95">
-                  <Check size={12} strokeWidth={3} />
-                  <span>مُفعّل الآن</span>
+                <span className="absolute top-2.5 end-2.5 flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10.5px] font-black text-white shadow-md z-10 animate-in fade-in zoom-in-95">
+                  <Check size={11} strokeWidth={3} />
+                  <span>مُفعّل</span>
                 </span>
               )}
 
-              {/* Authentic Transport Plate Representation (Blue Stripe + White ▼) */}
-              <div className="rounded-xl p-3 flex items-center justify-center w-full h-[135px] mb-3 relative overflow-hidden transition-all duration-300 bg-gradient-to-b from-[#f1f5f9] via-[#e2e8f0] to-[#cbd5e1] border border-slate-300/80 shadow-[inset_0_2px_8px_rgba(15,23,42,0.1),0_1px_2px_rgba(255,255,255,0.8)] group-hover:border-sky-500/50 group-hover:shadow-[inset_0_2px_10px_rgba(2,132,199,0.18)]">
-                <div className="w-full transition-transform duration-300 group-hover:scale-[1.03] filter drop-shadow-[0_6px_14px_rgba(0,0,0,0.15)]">
+              {/* Authentic Transport Plate Representation */}
+              <div className="rounded-xl p-2 sm:p-2.5 flex items-center justify-center w-full h-[110px] sm:h-[115px] mb-2 relative overflow-hidden transition-all duration-300 bg-gradient-to-b from-[#f1f5f9] via-[#e2e8f0] to-[#cbd5e1] border border-slate-300/80 shadow-[inset_0_2px_8px_rgba(15,23,42,0.1),0_1px_2px_rgba(255,255,255,0.8)] group-hover:border-amber-500/50 group-hover:shadow-[inset_0_2px_10px_rgba(217,119,6,0.18)]">
+                <div className="w-full transition-transform duration-300 group-hover:scale-[1.03] filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.12)]">
                   <PlateVisualizer
-                    lettersAr={['ط', 'ع', 'م']}
-                    lettersEn={['Z', 'T', 'A']}
-                    numbers="966"
+                    lettersAr={['ن', 'ق', 'ل']}
+                    lettersEn={['N', 'Q', 'L']}
+                    numbers="7341"
                     plateType="نقل"
                     compact
                   />
                 </div>
               </div>
 
-              <div className="flex flex-col items-center w-full mt-auto">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-base font-black text-navy group-hover:text-sky-700 transition-colors">
-                    نقل خاص وتجاري
-                  </span>
-                  <span className="text-[11px] font-bold text-slate-400 font-mono">(Transport)</span>
-                </div>
-                <span className="text-xs text-slate-500 font-medium mt-0.5">شريط أزرق ومثلث أمني رسمي للمرور</span>
-
-                <span
-                  className={`text-xs font-bold mt-3.5 rounded-full px-4 py-1.5 transition-all duration-300 flex items-center justify-center gap-1.5 w-full ${clean.type === 'نقل'
-                      ? 'bg-emerald-600 text-white shadow-sm'
-                      : 'bg-slate-100 text-slate-700 group-hover:bg-gradient-to-r group-hover:from-sky-600 group-hover:to-sky-500 group-hover:text-white group-hover:shadow-[0_4px_14px_rgba(2,132,199,0.35)]'
-                    }`}
-                >
-                  <span>{clean.type === 'نقل' ? 'الفئة المحددة (إلغاء التحديد ✕)' : 'تصفية لوحات النقل'}</span>
-                  {clean.type !== 'نقل' && <ArrowLeft size={13} className="transition-transform group-hover:-translate-x-1" />}
-                </span>
+              {/* Single-Line Classification & Subtitle */}
+              <div className="flex items-center justify-center gap-1.5 text-xs sm:text-[13px] font-black text-navy group-hover:text-amber-700 transition-colors flex-wrap py-0.5">
+                <span>نقل خاص وتجاري</span>
+                <span className="text-[11px] font-mono text-slate-400 font-normal">(Transport)</span>
+                <span className="text-slate-300 font-normal">·</span>
+                <span className="text-[11px] sm:text-xs text-slate-500 font-bold">شريط أصفر كهرماني رسمي</span>
               </div>
             </Link>
           </div>

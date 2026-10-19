@@ -20,9 +20,22 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={ibmPlexSansArabic.variable}>
+    <html lang="ar" dir="rtl" className={ibmPlexSansArabic.variable} suppressHydrationWarning>
       <head>
         <link rel="preload" as="image" href="/videos/fbs-hero-poster.webp" type="image/webp" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){
+  try {
+    var m = document.cookie.match(/(?:^|; )fbs_signature_theme=([^;]+)/);
+    var t = (m && m[1]) || localStorage.getItem('fbs_signature_theme') || 'light';
+    if (t === 'dark' || t === 'light') {
+      document.documentElement.setAttribute('data-theme', t);
+    }
+  } catch(e) {}
+})();`,
+          }}
+        />
       </head>
       <body className="font-sans antialiased text-slate-900 bg-white overflow-x-clip">
         <a href="#main" className="fixed start-4 top-2 z-50 -translate-y-24 rounded bg-gold p-3 text-navy focus:translate-y-0">

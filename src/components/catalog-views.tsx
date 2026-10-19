@@ -127,10 +127,10 @@ export function PlateCardWide({ plate }: { plate: MarketplacePlate }) {
           </Link>
 
           {/* Specs & classification */}
-          <div className="flex flex-wrap items-center gap-2 mt-2.5">
+          <div className="flex flex-wrap items-center gap-2 mt-2">
             {isTransport ? (
-              <span className="inline-flex items-center gap-1 rounded-xl bg-sky-500/10 px-3 py-1 text-xs font-black text-sky-800 border border-sky-500/30">
-                <span className="text-[9px]">▼</span>
+              <span className="inline-flex items-center gap-1 rounded-xl bg-amber-500/10 px-3 py-1 text-xs font-black text-amber-800 border border-amber-500/30">
+                <span className="h-2 w-2 rounded-sm bg-amber-500" />
                 <span>نقل خاص وتجاري</span>
               </span>
             ) : isSmall ? (
@@ -151,33 +151,23 @@ export function PlateCardWide({ plate }: { plate: MarketplacePlate }) {
         </div>
 
         {/* Small subtitle notice */}
-        <p className="text-xs text-slate-400 font-medium mt-2 hidden sm:block">
+        <p className="text-xs text-slate-400 font-medium mt-3 hidden sm:block">
           لوحة معتمدة رسمياً ومسجلة في قواعد بيانات المرور السعودي.
         </p>
       </div>
 
-      {/* Left: Price, Bids & CTA Button */}
+      {/* Left: Price & CTA Button (Uncluttered, No Redundant Bids Badge) */}
       <div className="flex flex-col justify-between items-start md:items-end border-t md:border-t-0 md:border-s border-slate-100 pt-4 md:pt-0 md:ps-6 md:min-w-[210px] shrink-0">
         <div>
           <span className="text-xs font-black text-slate-500 block text-start md:text-end">
             {plate.auction ? 'المزايدة الحالية' : 'السعر المطلوب'}
           </span>
-          <div className="mt-1 flex items-baseline gap-1.5 text-navy" dir="ltr">
+          <div className="mt-1 flex items-baseline gap-1.5 text-navy justify-start md:justify-end" dir="ltr">
             <span className="tabular-nums tracking-tight font-norwester text-3xl sm:text-4xl font-black text-slate-900 leading-none">
               {formatEnglishAmount(rawPrice)}
             </span>
             <SarSymbol className="w-4.5 h-4.5 text-gold-accent inline-block self-center" />
           </div>
-
-          {plate.auction?.bidCount !== undefined && plate.auction.bidCount > 0 && (
-            <div className="mt-2 text-start md:text-end">
-              <span className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-b from-[#0c162d] to-navy text-gold-accent px-3.5 py-1 text-xs font-black shadow-xs border border-gold/30">
-                <Gavel size={12} className="text-gold" />
-                <span className="font-norwester text-sm font-black">{plate.auction.bidCount}</span>
-                <span className="text-[11px] text-slate-300">مزايدة</span>
-              </span>
-            </div>
-          )}
         </div>
 
         <div className="w-full mt-4">
@@ -206,12 +196,12 @@ export function PlateTableView({ plates }: { plates: MarketplacePlate[] }) {
     <div className="rounded-3xl border-2 border-[#0c162d]/25 hover:border-[#0c162d]/50 bg-white shadow-sm overflow-hidden flex flex-col lg:h-[calc(100vh-7.5rem)] transition-all">
       {/* Outer Horizontal Scroller for smaller displays */}
       <div className="flex-1 flex flex-col min-h-0 overflow-x-auto">
-        <div className="min-w-[860px] flex-1 flex flex-col min-h-0">
+        <div className="min-w-[1040px] flex-1 flex flex-col min-h-0">
           {/* 1. TABLE HEADER: Fixed at the very top of the card, completely above the vertical scrollbar */}
           <div className="bg-gradient-to-r from-[#070e1c] via-[#0c162d] to-[#070e1c] text-white border-b border-slate-700/60 shrink-0 select-none z-10">
             <div
               dir="rtl"
-              className="grid grid-cols-[280px_1.1fr_1fr_1.3fr_90px_130px] items-center text-xs font-black"
+              className="grid grid-cols-[360px_1fr_1fr_1.25fr_85px_130px] items-center text-xs font-black"
               style={{ paddingInlineStart: '6px' }}
             >
               <div className="py-4 px-5 text-start">لوحة المركبة</div>
@@ -253,13 +243,13 @@ export function PlateTableView({ plates }: { plates: MarketplacePlate[] }) {
                   return (
                     <div
                       key={plate.id}
-                      className="grid grid-cols-[280px_1.1fr_1fr_1.3fr_90px_130px] items-center hover:bg-slate-50/90 transition-colors group/row py-3 text-xs"
+                      className="grid grid-cols-[360px_1fr_1fr_1.25fr_85px_130px] items-center hover:bg-slate-50/90 transition-colors group/row py-3 text-xs"
                     >
-                      {/* Column 1: Wide Authentic Plate Visualizer */}
-                      <div className="py-1 px-5 w-[280px]">
+                      {/* Column 1: Wide Authentic Plate Visualizer (Uncompressed 310px width) */}
+                      <div className="py-1 px-4 w-[360px]">
                         <Link
                           href={`/plates/${plate.slug}`}
-                          className="block w-full max-w-[265px] rounded-2xl p-2.5 bg-gradient-to-b from-[#f1f4f9] via-[#e8edf5] to-[#dde4ee] border border-slate-200/90 shadow-2xs group-hover/row:border-[#0c162d]/40 group-hover/row:shadow-xs transition-all"
+                          className="block w-full max-w-[330px] rounded-2xl p-2 bg-gradient-to-b from-[#f1f4f9] via-[#e8edf5] to-[#dde4ee] border border-slate-200/90 shadow-2xs group-hover/row:border-[#0c162d]/40 group-hover/row:shadow-xs transition-all"
                         >
                           <div className="w-full transition-transform duration-200 group-hover/row:scale-[1.02] filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
                             <PlateVisualizer

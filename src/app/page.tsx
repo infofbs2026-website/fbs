@@ -6,11 +6,6 @@ import { fallbackPlates } from '@/modules/marketplace/mock-data';
 // Dynamic lazy imports for below-the-fold sections:
 // Strips all below-the-fold JS out of the initial entry bundle so Header + Hero have 100% thread priority.
 // SSR remains enabled so search engines & users get instant semantic HTML with 0 layout shift (CLS = 0).
-const HomeLiveAuctions = dynamic(
-  () => import('@/components/home/home-live-auctions').then((m) => m.HomeLiveAuctions),
-  { ssr: true }
-);
-
 const HomeEndingSoon = dynamic(
   () => import('@/components/home/home-ending-soon').then((m) => m.HomeEndingSoon),
   { ssr: true }
@@ -28,11 +23,6 @@ const HomeHowItWorks = dynamic(
 
 const HomeWhyFbs = dynamic(
   () => import('@/components/home/home-why-fbs').then((m) => m.HomeWhyFbs),
-  { ssr: true }
-);
-
-const HomeFaq = dynamic(
-  () => import('@/components/home/home-faq').then((m) => m.HomeFaq),
   { ssr: true }
 );
 
@@ -61,7 +51,7 @@ export default async function Home() {
   return (
     <>
       {/* ============================================================== */}
-      {/* 1 & 2. HERO CINEMATIC (IMMEDIATE CRITICAL PATH - ZERO LATENCY) */}
+      {/* 1. HERO CINEMATIC (IMMEDIATE CRITICAL PATH - ZERO LATENCY)     */}
       {/* ============================================================== */}
       <HeroCinematic
         initialPlate={liveAuctions[0] || displayPlates[0]}
@@ -69,14 +59,12 @@ export default async function Home() {
       />
 
       {/* ============================================================== */}
-      {/* BELOW THE FOLD SECTIONS: LAZY-HYDRATED, ZERO HERO COMPETITION  */}
+      {/* BELOW THE FOLD SECTIONS: STREAMLINED & LUXURIOUS ARCHITECTURE  */}
       {/* ============================================================== */}
-      <HomeLiveAuctions liveAuctions={liveAuctions} />
       <HomeEndingSoon endingSoonAuctions={carouselAuctions} />
-      <HomeStats />
       <HomeHowItWorks />
+      <HomeStats />
       <HomeWhyFbs />
-      <HomeFaq />
       <HomeConciergeCta />
     </>
   );

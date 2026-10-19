@@ -12,7 +12,6 @@ import {
   Crown,
   MessageCircle,
   Phone,
-  Sparkles,
   X,
   FileCheck2,
   Lock,

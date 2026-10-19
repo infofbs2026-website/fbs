@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowLeft, Clock, Crown, Gavel, MapPin, SearchX, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Clock, Crown, Gavel, MapPin, Palmtree, SearchX, ShieldCheck } from 'lucide-react';
 import type { MarketplacePlate } from '@/modules/marketplace/types';
 
 export function PageTitle({
@@ -74,22 +74,26 @@ export function EmptyState({
   );
 }
 
-function SaudiEmblem({
-  className = 'w-7 h-7',
-  white = false
+export function SaudiEmblem({
+  className = '',
+  size = 20,
+  fillColor = '#0b0f17',
+  strokeColor = '#0b0f17'
 }: {
   className?: string;
-  white?: boolean;
+  size?: number;
+  fillColor?: string;
+  strokeColor?: string;
 }) {
-  const strokeColor = white ? '#005a9e' : '#ffffff';
-  const fillColor = white ? '#ffffff' : 'currentColor';
-
   return (
     <svg
       viewBox="0 0 610 665"
+      width={size}
+      height={size}
       className={className}
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
+      style={{ display: 'block', flexShrink: 0 }}
     >
       {/* Right Curved Scimitar Blade */}
       <path
@@ -147,29 +151,12 @@ function SaudiEmblem({
   );
 }
 
-function PlateBolt({
-  className = '',
-  large = false,
-  compact = false
-}: {
-  className?: string;
-  large?: boolean;
-  compact?: boolean;
-}) {
-  return (
-    <div
-      className={`plate-bolt flex items-center justify-center ${
-        large ? 'h-3.5 w-3.5 sm:h-4 sm:w-4' : compact ? 'h-2.5 w-2.5' : 'h-3 w-3'
-      } ${className}`}
-      aria-hidden="true"
-      title="مسمار تثبيت اللوحة"
-    >
-      {/* 3D Phillips Head Recessed Cross Slot with Metallic Shadow & Bevel Highlight */}
-      <span className="absolute h-[1.5px] w-[62%] rounded-full bg-slate-950/90 shadow-[0_0.5px_0_rgba(255,255,255,0.7)]" />
-      <span className="absolute w-[1.5px] h-[62%] rounded-full bg-slate-950/90 shadow-[0.5px_0_0_rgba(255,255,255,0.7)]" />
-      <span className="absolute h-1 w-1 rounded-full bg-slate-900/90" />
-    </div>
-  );
+function PlateMountDimple({ className = '' }: { className?: string }) {
+  return <span className={`q-mount-dimple ${className}`} aria-hidden="true" />;
+}
+
+function PlateSlot({ className = '' }: { className?: string }) {
+  return <span className={`q-oval-slot ${className}`} aria-hidden="true" />;
 }
 
 export type SaudiPlateType = 'private' | 'transport' | 'small';
@@ -192,10 +179,64 @@ export function normalizePlateType(type?: string): SaudiPlateType {
   return 'private';
 }
 
+function parsePlateData(
+  lettersAr: string[] | string,
+  lettersEn: string[] | string,
+  numbers: string
+) {
+  const rawDigits = (numbers || '').replace(/\s+/g, '');
+  const standardDigits: string[] = [];
+  for (const ch of rawDigits) {
+    const arIdx = '٠١٢٣٤٥٦٧٨٩'.indexOf(ch);
+    if (arIdx !== -1) {
+      standardDigits.push(String(arIdx));
+    } else if (/\d/.test(ch)) {
+      standardDigits.push(ch);
+    }
+  }
+  const digitPairs = standardDigits.map((d) => ({
+    ar: '٠١٢٣٤٥٦٧٨٩'[Number(d)] ?? d,
+    en: d
+  }));
+
+  const rawAr = Array.isArray(lettersAr) ? lettersAr.join('') : (lettersAr || '');
+  const cleanAr = rawAr.replace(/[\s\-_]/g, '').split('');
+
+  const rawEn = Array.isArray(lettersEn) ? lettersEn.join('') : (lettersEn || '');
+  const cleanEn = rawEn.replace(/[\s\-_]/g, '').toUpperCase().split('');
+
+  const maxLen = Math.max(cleanAr.length, cleanEn.length);
+  const letterPairs: { ar: string; en: string }[] = [];
+  for (let i = 0; i < maxLen; i++) {
+    letterPairs.push({
+      ar: cleanAr[i] || '',
+      en: cleanEn[i] || ''
+    });
+  }
+
+  return {
+    digitPairs,
+    letterPairs
+  };
+}
+
+export interface PlateVisualizerProps {
+  lettersAr: string[] | string;
+  lettersEn: string[] | string;
+  numbers: string;
+  large?: boolean;
+  compact?: boolean;
+  dark?: boolean;
+  plateType?: string;
+  className?: string;
+}
+
 /**
- * Photorealistic Skeuomorphic Saudi Vehicle Plate
- * Die-stamped aluminum plate with 3D embossed relief characters, chrome bolts outside black frame, and KSA security emblem.
- * Supports Private (خصوصي), Transport (نقل - blue stripe + white ▼), and Small/Sports (صغيرة - single-row).
+ * Authentic Skeuomorphic Saudi Vehicle License Plate
+ * Exact 1:1 photorealistic simulation of Saudi Arabian license plate specifications:
+ * 1. خصوصي (Private) - Long plate with Center Kingdom Pillar: Left Digits | Center Pillar (KSA & Emblem) | Right Letters
+ * 2. نقل (Transport / Commercial) - Long plate with Golden Amber Center Pillar + Hologram Seal & 'نقل'
+ * 3. صغيرة (Small / Sports / US Size) - 3 columns separated by 2 vertical lines (NO horizontal divider line anywhere)
  */
 export function PlateVisualizer({
   lettersAr,
@@ -204,267 +245,282 @@ export function PlateVisualizer({
   large = false,
   compact = false,
   dark = false,
-  plateType = 'private'
-}: {
-  lettersAr: string[];
-  lettersEn: string[];
-  numbers: string;
-  large?: boolean;
-  compact?: boolean;
-  dark?: boolean;
-  plateType?: string;
-}) {
+  plateType = 'private',
+  className = ''
+}: PlateVisualizerProps) {
   const normType = normalizePlateType(plateType);
   const isTransport = normType === 'transport';
   const isSmall = normType === 'small';
-  const arabicNumbers = numbers.replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[Number(d)]);
 
-  // ==============================================================
-  // 1. VARIANT: SMALL / SPORTS CAR (صغيرة - نسق أحادي مفرد)
-  // ==============================================================
-  if (isSmall) {
-    return (
-      <div
-        className={`relative mx-auto select-none ${
-          dark ? 'plate-skeuomorphic-dark' : 'plate-skeuomorphic'
-        } ${
-          large
-            ? 'w-full max-w-[520px] p-3.5 sm:p-4.5'
-            : compact
-              ? 'w-full max-w-[270px] p-1.5 sm:p-2'
-              : 'w-full max-w-[360px] p-2.5 sm:p-3'
-        }`}
-        dir="ltr"
-        role="img"
-        aria-label={`لوحة مركبة سعودية مميزة (صغيرة / سيارات رياضية): ${lettersAr.join(' ')} - ${numbers}`}
-      >
-        {/* Specular Light Reflection */}
-        <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-tr from-transparent via-white/35 to-transparent opacity-80 z-10" />
+  const { digitPairs, letterPairs } = parsePlateData(
+    lettersAr,
+    lettersEn,
+    numbers
+  );
 
-        {/* 4 Corner Bolts Outside Black Border */}
-        <PlateBolt large={large} compact={compact} className="start-1.5 top-1.5 sm:start-2 sm:top-2" />
-        <PlateBolt large={large} compact={compact} className="end-1.5 top-1.5 sm:end-2 sm:top-2" />
-        <PlateBolt large={large} compact={compact} className="start-1.5 bottom-1.5 sm:start-2 sm:bottom-2" />
-        <PlateBolt large={large} compact={compact} className="end-1.5 bottom-1.5 sm:end-2 sm:bottom-2" />
+  const emblemSize = large ? 24 : compact ? 16 : 19;
+  const digitCount = digitPairs.length || 1;
+  const letterCount = letterPairs.length || 1;
 
-        {/* Stamped Inner Perimeter Channel (Authentic Saudi Black Border) */}
-        <div className="relative rounded-[8px] sm:rounded-[10px] border-[2px] sm:border-[2.5px] border-slate-950 overflow-hidden bg-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_1px_2px_rgba(0,0,0,0.15)]">
-          <div
-            className={`grid ${
-              compact
-                ? 'grid-cols-[1.1fr_52px_1.3fr] min-h-[92px]'
-                : large
-                  ? 'grid-cols-[1.1fr_84px_1.3fr] min-h-[156px]'
-                  : 'grid-cols-[1.1fr_68px_1.3fr] min-h-[116px]'
-            } items-stretch`}
-          >
-            {/* Column 1: Numbers (Arabic Top, English Bottom - Exactly Sized like Standard) */}
-            <div className="grid grid-rows-2 border-e-[2px] sm:border-e-[2.5px] border-slate-950 shadow-[1px_0_0_rgba(255,255,255,0.7)] text-center font-bold">
-              <div className="flex items-center justify-center border-b-[2px] sm:border-b-[2.5px] border-slate-950 shadow-[0_1px_0_rgba(255,255,255,0.7)] px-1 sm:px-2 overflow-hidden">
-                <span
-                  className={`plate-char-emboss font-black whitespace-nowrap inline-block tracking-widest leading-none ${
-                    large ? 'text-3xl sm:text-4xl' : compact ? 'text-lg sm:text-xl' : 'text-xl sm:text-2xl'
-                  }`}
-                >
-                  {arabicNumbers}
-                </span>
-              </div>
-              <div className="flex items-center justify-center px-1 sm:px-2 overflow-hidden">
-                <span
-                  className={`plate-char-emboss font-norwester font-black whitespace-nowrap inline-block tracking-[0.2em] leading-none ${
-                    large ? 'text-2xl sm:text-3xl' : compact ? 'text-base sm:text-lg' : 'text-lg sm:text-xl'
-                  }`}
-                >
-                  {numbers}
-                </span>
-              </div>
-            </div>
-
-            {/* Column 2: Center Kingdom Column (شعار المملكة وسيفين ونخلة) */}
-            <div className="flex flex-col items-center justify-between border-e-[2px] sm:border-e-[2.5px] border-slate-950 shadow-[1px_0_0_rgba(255,255,255,0.7)] bg-gradient-to-b from-slate-100/95 via-slate-200/75 to-slate-100/95 py-1 text-[8px] font-black text-slate-900">
-              <div className="flex flex-col items-center pt-0.5 text-slate-950">
-                <SaudiEmblem className={large ? 'w-7 h-7 sm:w-8 sm:h-8' : compact ? 'w-4 h-4' : 'w-5 h-5 sm:w-6 sm:h-6'} />
-              </div>
-              <div className="flex flex-col items-center leading-none">
-                <span className={`plate-char-emboss font-black ${compact ? 'text-[7px]' : 'text-[9px]'}`}>السعودية</span>
-                <span className={`plate-char-emboss font-norwester font-black tracking-widest mt-0.5 ${compact ? 'text-[7px]' : 'text-[9px]'}`}>
-                  KSA
-                </span>
-              </div>
-              <div
-                className={`plate-hologram ${compact ? 'h-2 w-2' : large ? 'h-3 w-3' : 'h-2.5 w-2.5'}`}
-                title="ختم التوثيق الأمني المعتمد"
-              />
-            </div>
-
-            {/* Column 3: Letters (Arabic Top, English Bottom - Exactly Sized like Standard) */}
-            <div className="grid grid-rows-2 text-center font-bold">
-              <div
-                className="flex items-center justify-center border-b-[2px] sm:border-b-[2.5px] border-slate-950 shadow-[0_1px_0_rgba(255,255,255,0.7)] px-1 sm:px-2 overflow-hidden"
-                dir="rtl"
-              >
-                <span
-                  className={`plate-char-emboss font-black whitespace-nowrap inline-block tracking-[0.22em] leading-none ${
-                    large ? 'text-2xl sm:text-3xl' : compact ? 'text-base sm:text-lg' : 'text-lg sm:text-xl'
-                  }`}
-                >
-                  {lettersAr.join(' ')}
-                </span>
-              </div>
-              <div className="flex items-center justify-center px-1 sm:px-2 overflow-hidden">
-                <span
-                  className={`plate-char-emboss font-norwester font-black whitespace-nowrap inline-block tracking-[0.22em] leading-none ${
-                    large ? 'text-lg sm:text-xl' : compact ? 'text-xs sm:text-sm' : 'text-sm sm:text-base'
-                  }`}
-                >
-                  {lettersEn.join(' ')}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ==============================================================
-  // 2. VARIANT: STANDARD 2-ROW (خصوصي / نقل)
-  // ==============================================================
   return (
     <div
-      className={`relative mx-auto select-none ${
-        dark ? 'plate-skeuomorphic-dark' : 'plate-skeuomorphic'
-      } ${
-        large
-          ? 'w-full max-w-[520px] p-3.5 sm:p-4.5'
-          : compact
-            ? 'w-full max-w-[270px] p-1.5 sm:p-2'
-            : 'w-full max-w-[360px] p-2.5 sm:p-3'
-      }`}
-      dir="ltr"
+      className={`hero-saudi-plate ${isTransport ? 'is-transport' : ''} ${
+        isSmall ? 'is-small' : ''
+      } ${compact ? 'compact' : ''} ${large ? 'large' : ''} ${
+        dark ? 'plate-dark-pedestal' : ''
+      } ${className}`}
+      style={{
+        ['--digit-count' as any]: digitCount,
+        ['--letter-count' as any]: letterCount
+      }}
       role="img"
-      aria-label={`لوحة مركبة سعودية مميزة (${isTransport ? 'نقل' : 'خصوصي'}): ${lettersAr.join(' ')} - ${numbers}`}
+      aria-label={`لوحة مركبة سعودية (${
+        isTransport ? 'نقل' : isSmall ? 'صغيرة' : 'خصوصي'
+      }): ${letterPairs.map((p) => p.ar).join(' ')} ${digitPairs.map((p) => p.ar).join('')}`}
+      dir="ltr"
     >
-      {/* Specular Light Reflection Across Stamped Metal */}
-      <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-tr from-transparent via-white/35 to-transparent opacity-80 z-10" />
+      {/* Subtle Silver Recessed Mounting Dimples (No black crosshead screws) */}
+      {isTransport ? (
+        <>
+          <PlateSlot className="q-slot-top-a" />
+          <PlateSlot className="q-slot-top-b" />
+          <PlateSlot className="q-slot-bot-a" />
+          <PlateSlot className="q-slot-bot-b" />
+        </>
+      ) : (
+        <>
+          <PlateMountDimple className="q-dimple-tl" />
+          <PlateMountDimple className="q-dimple-tr" />
+          <PlateMountDimple className="q-dimple-bl" />
+          <PlateMountDimple className="q-dimple-br" />
+        </>
+      )}
 
-      {/* 4 Realistic 3D Chrome Mounting Bolts with Inset Sockets — Placed CLEARLY OUTSIDE the black border */}
-      <PlateBolt large={large} compact={compact} className="start-1.5 top-1.5 sm:start-2 sm:top-2" />
-      <PlateBolt large={large} compact={compact} className="end-1.5 top-1.5 sm:end-2 sm:top-2" />
-      <PlateBolt large={large} compact={compact} className="start-1.5 bottom-1.5 sm:start-2 sm:bottom-2" />
-      <PlateBolt large={large} compact={compact} className="end-1.5 bottom-1.5 sm:end-2 sm:bottom-2" />
+      {/* Surface light reflection sweep */}
+      <span className="q-sheen-highlight" aria-hidden="true" />
 
-      {/* Stamped Inner Perimeter Channel (Authentic Saudi Black Border) */}
-      <div className="relative rounded-[8px] sm:rounded-[10px] border-[2px] sm:border-[2.5px] border-slate-950 overflow-hidden bg-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_1px_2px_rgba(0,0,0,0.15)]">
-        <div
-          className={`grid ${
-            compact
-              ? 'grid-cols-[1.1fr_1.3fr_52px] min-h-[92px]'
-              : large
-                ? 'grid-cols-[1.05fr_1.4fr_84px] min-h-[156px]'
-                : 'grid-cols-[1.1fr_1.3fr_68px] min-h-[116px]'
-          } items-stretch`}
-        >
-          {/* Column 1: Numbers (Arabic Top, English Bottom) */}
-          <div className="grid grid-rows-2 border-e-[2px] sm:border-e-[2.5px] border-slate-950 shadow-[1px_0_0_rgba(255,255,255,0.7)] text-center font-bold">
-            <div className="flex items-center justify-center border-b-[2px] sm:border-b-[2.5px] border-slate-950 shadow-[0_1px_0_rgba(255,255,255,0.7)] px-1 sm:px-2 overflow-hidden">
-              <span
-                className={`plate-char-emboss font-black whitespace-nowrap inline-block tracking-widest leading-none ${
-                  large ? 'text-3xl sm:text-4xl' : compact ? 'text-lg sm:text-xl' : 'text-xl sm:text-2xl'
-                }`}
-              >
-                {arabicNumbers}
-              </span>
-            </div>
-            <div className="flex items-center justify-center px-1 sm:px-2 overflow-hidden">
-              <span
-                className={`plate-char-emboss font-norwester font-black whitespace-nowrap inline-block tracking-[0.2em] leading-none ${
-                  large ? 'text-2xl sm:text-3xl' : compact ? 'text-base sm:text-lg' : 'text-lg sm:text-xl'
-                }`}
-              >
-                {numbers}
-              </span>
-            </div>
-          </div>
-
-          {/* Column 2: Letters (Arabic Top, English Bottom - Guaranteed Single Row Without Wrapping) */}
-          <div className="grid grid-rows-2 text-center font-bold">
+      {isSmall ? (
+        /* ================= 3-COLUMN LAYOUT FOR صغيرة ================= */
+        <div className="plate-inner-frame plate-layout-small">
+          {/* Column 1: Numbers (Arabic top, English bottom - NO horizontal line, perfectly aligned) */}
+          <div className="q-small-col q-small-numbers">
             <div
-              className="flex items-center justify-center border-b-[2px] sm:border-b-[2.5px] border-slate-950 shadow-[0_1px_0_rgba(255,255,255,0.7)] px-1 sm:px-2 overflow-hidden"
-              dir="rtl"
+              className="q-digits-block"
+              style={{ gridTemplateColumns: `repeat(${digitCount}, minmax(0, 1fr))` }}
+              dir="ltr"
+              aria-label={`أرقام عربية: ${digitPairs.map((p) => p.ar).join('')}`}
             >
-              <span
-                className={`plate-char-emboss font-black whitespace-nowrap inline-block tracking-[0.16em] sm:tracking-[0.22em] leading-none ${
-                  large ? 'text-2xl sm:text-3xl' : compact ? 'text-base sm:text-lg' : 'text-lg sm:text-xl'
-                }`}
-              >
-                {lettersAr.join(' ')}
-              </span>
+              {digitPairs.map((pair, idx) => (
+                <span key={`s-ar-d-${idx}`} className="q-char-cell q-char-digit q-arabic-char">
+                  {pair.ar}
+                </span>
+              ))}
             </div>
-            <div className="flex items-center justify-center px-1 sm:px-2 overflow-hidden">
-              <span
-                className={`plate-char-emboss font-norwester font-black whitespace-nowrap inline-block tracking-[0.22em] leading-none ${
-                  large ? 'text-xl sm:text-2xl' : compact ? 'text-xs sm:text-sm' : 'text-base sm:text-lg'
-                }`}
-              >
-                {lettersEn.join(' ')}
-              </span>
+            <div
+              className="q-digits-block"
+              style={{ gridTemplateColumns: `repeat(${digitCount}, minmax(0, 1fr))` }}
+              dir="ltr"
+              aria-label={`أرقام إنجليزية: ${digitPairs.map((p) => p.en).join('')}`}
+            >
+              {digitPairs.map((pair, idx) => (
+                <span key={`s-en-d-${idx}`} className="q-char-cell q-char-digit q-latin-char">
+                  {pair.en}
+                </span>
+              ))}
             </div>
           </div>
 
-          {/* Column 3: Authentic KSA Kingdom Security Stripe (Private: Silver / Transport: Royal Blue + White ▼) */}
-          {isTransport ? (
-            <div className="plate-transport-stripe flex flex-col items-center justify-between border-s-[2px] sm:border-s-[2.5px] border-slate-950 shadow-[-1px_0_0_rgba(255,255,255,0.4)] py-1.5 text-[8px] font-black text-white">
-              {/* White Saudi Emblem */}
-              <div className="flex flex-col items-center pt-0.5 text-white">
-                <SaudiEmblem
-                  white
-                  className={large ? 'w-10 h-10 sm:w-11 sm:h-11' : compact ? 'w-5 h-5 sm:w-6 sm:h-6' : 'w-7 h-7 sm:w-8 sm:h-8'}
-                />
-              </div>
-
-              {/* Official White Kingdom Typography */}
-              <div className="flex flex-col items-center gap-0.5 leading-none">
-                <span className={`plate-transport-char-emboss font-black ${compact ? 'text-[8px]' : 'text-[10px]'}`}>السعودية</span>
-                <span className="h-0.5 w-0.5 rounded-full bg-white my-0.5 shadow-xs" />
-                <span className={`plate-transport-char-emboss font-norwester font-black tracking-widest ${compact ? 'text-[9px]' : 'text-[11px]'}`}>
-                  KSA
+          {/* Column 2: Letters (Arabic top, English bottom - NO horizontal line, perfectly aligned) */}
+          <div className="q-small-col q-small-letters">
+            <div
+              className="q-letters-block"
+              style={{ gridTemplateColumns: `repeat(${letterCount}, minmax(0, 1fr))` }}
+              dir="ltr"
+              aria-label={`حروف عربية: ${letterPairs.map((p) => p.ar).join(' ')}`}
+            >
+              {letterPairs.map((pair, idx) => (
+                <span key={`s-ar-l-${idx}`} className="q-char-cell q-char-letter q-arabic-char">
+                  {pair.ar}
                 </span>
-              </div>
-
-              {/* Official Saudi Transport Triangle Indicator (مثلث النقل المعتمد) */}
-              <div
-                className="flex items-center justify-center pb-0.5 pt-0.5"
-                title="علامة فئة النقل الرسمية (مثلث المرور السعودي المعتمد)"
-              >
-                <div className={`plate-transport-triangle ${compact ? 'scale-75' : ''}`} />
-              </div>
+              ))}
             </div>
-          ) : (
-            <div className="flex flex-col items-center justify-between border-s-[2px] sm:border-s-[2.5px] border-slate-950 shadow-[-1px_0_0_rgba(255,255,255,0.7)] bg-gradient-to-b from-slate-100/95 via-slate-200/75 to-slate-100/95 py-1.5 text-[8px] font-black text-slate-900">
-              {/* Official KSA Palm & Swords Emblem (Black / Dark Slate) */}
-              <div className="flex flex-col items-center pt-0.5 text-slate-950">
-                <SaudiEmblem className={large ? 'w-10 h-10 sm:w-11 sm:h-11' : compact ? 'w-5 h-5 sm:w-6 sm:h-6' : 'w-7 h-7 sm:w-8 sm:h-8'} />
-              </div>
-
-              {/* Official Kingdom Typography */}
-              <div className="flex flex-col items-center gap-0.5 leading-none">
-                <span className={`plate-char-emboss font-black ${compact ? 'text-[8px]' : 'text-[10px]'}`}>السعودية</span>
-                <span className="h-0.5 w-0.5 rounded-full bg-slate-900 my-0.5" />
-                <span className={`plate-char-emboss font-norwester font-black tracking-widest ${compact ? 'text-[9px]' : 'text-[11px]'}`}>
-                  KSA
+            <div
+              className="q-letters-block"
+              style={{ gridTemplateColumns: `repeat(${letterCount}, minmax(0, 1fr))` }}
+              dir="ltr"
+              aria-label={`حروف إنجليزية: ${letterPairs.map((p) => p.en).join(' ')}`}
+            >
+              {letterPairs.map((pair, idx) => (
+                <span key={`s-en-l-${idx}`} className="q-char-cell q-char-letter q-latin-char">
+                  {pair.en}
                 </span>
-              </div>
-
-              {/* Holographic Security Laser Stamp (ختم الليزر الأمني) */}
-              <div
-                className={`plate-hologram ${compact ? 'h-2.5 w-2.5' : large ? 'h-4 w-4' : 'h-3.5 w-3.5'}`}
-                title="علامة التوثيق الأمنية المعتمدة"
-              />
+              ))}
             </div>
-          )}
+          </div>
+
+          {/* Column 3: Kingdom Pillar (Stacked Vertically: Palm/Swords -> السعودية -> KSA -> Black Seal) */}
+          <div className="q-kingdom-pillar">
+            <SaudiEmblem size={emblemSize} strokeColor="#0b0f17" fillColor="#0b0f17" />
+            <span className="q-saudi-text">السعودية</span>
+            <span className="q-ksa-text">KSA</span>
+            <span className="q-black-seal" title="الختم الأمني المعتمد" />
+          </div>
         </div>
-      </div>
+      ) : isTransport ? (
+        /* ================= 2-ROW + RIGHT YELLOW PILLAR FOR نقل ================= */
+        <div className="plate-inner-frame plate-layout-transport is-transport">
+          <div className="q-main-section">
+            {/* Top Row: Arabic Numbers & Arabic Letters */}
+            <div className="q-plate-row q-row-arabic">
+              <div
+                className="q-digits-block"
+                style={{ gridTemplateColumns: `repeat(${digitCount}, minmax(0, 1fr))` }}
+                dir="ltr"
+                aria-label={`أرقام عربية: ${digitPairs.map((p) => p.ar).join('')}`}
+              >
+                {digitPairs.map((pair, idx) => (
+                  <span key={`t-ar-d-${idx}`} className="q-char-cell q-char-digit q-arabic-char">
+                    {pair.ar}
+                  </span>
+                ))}
+              </div>
+              <div
+                className="q-letters-block"
+                style={{ gridTemplateColumns: `repeat(${letterCount}, minmax(0, 1fr))` }}
+                dir="ltr"
+                aria-label={`حروف عربية: ${letterPairs.map((p) => p.ar).join(' ')}`}
+              >
+                {letterPairs.map((pair, idx) => (
+                  <span key={`t-ar-l-${idx}`} className="q-char-cell q-char-letter q-arabic-char">
+                    {pair.ar}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Bottom Row: English Numbers & English Letters */}
+            <div className="q-plate-row q-row-latin">
+              <div
+                className="q-digits-block"
+                style={{ gridTemplateColumns: `repeat(${digitCount}, minmax(0, 1fr))` }}
+                dir="ltr"
+                aria-label={`أرقام إنجليزية: ${digitPairs.map((p) => p.en).join('')}`}
+              >
+                {digitPairs.map((pair, idx) => (
+                  <span key={`t-en-d-${idx}`} className="q-char-cell q-char-digit q-latin-char">
+                    {pair.en}
+                  </span>
+                ))}
+              </div>
+              <div
+                className="q-letters-block"
+                style={{ gridTemplateColumns: `repeat(${letterCount}, minmax(0, 1fr))` }}
+                dir="ltr"
+                aria-label={`حروف إنجليزية: ${letterPairs.map((p) => p.en).join(' ')}`}
+              >
+                {letterPairs.map((pair, idx) => (
+                  <span key={`t-en-l-${idx}`} className="q-char-cell q-char-letter q-latin-char">
+                    {pair.en}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Golden Amber Kingdom Pillar */}
+          <div className="q-kingdom-pillar q-pillar-right-transport">
+            <SaudiEmblem size={emblemSize} strokeColor="#0b0f17" fillColor="#0b0f17" />
+            <span className="q-saudi-text">السعودية</span>
+            <span className="q-ksa-text">KSA</span>
+            <span className="q-transport-hologram-seal" title="الختم الأمني الفضي المعتمد">
+              <span className="q-hologram-shimmer" />
+              <SaudiEmblem size={large ? 10 : compact ? 7 : 8} strokeColor="#ffffff" fillColor="#ffffff" />
+            </span>
+            <span className="q-transport-word">نقل</span>
+          </div>
+        </div>
+      ) : (
+        /* ================= CENTER PILLAR LAYOUT FOR خصوصي ================= */
+        <div className="plate-inner-frame plate-layout-center is-private">
+          {/* Left: Digits Section (Arabic top row, Latin bottom row) */}
+          <div className="q-plate-section q-digits-section">
+            <div className="q-plate-cell q-row-arabic">
+              <div
+                className="q-digits-block"
+                style={{ gridTemplateColumns: `repeat(${digitCount}, minmax(0, 1fr))` }}
+                dir="ltr"
+                aria-label={`أرقام عربية: ${digitPairs.map((p) => p.ar).join('')}`}
+              >
+                {digitPairs.map((pair, idx) => (
+                  <span key={`ar-d-${idx}`} className="q-char-cell q-char-digit q-arabic-char">
+                    {pair.ar}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="q-plate-cell q-row-latin">
+              <div
+                className="q-digits-block"
+                style={{ gridTemplateColumns: `repeat(${digitCount}, minmax(0, 1fr))` }}
+                dir="ltr"
+                aria-label={`أرقام إنجليزية: ${digitPairs.map((p) => p.en).join('')}`}
+              >
+                {digitPairs.map((pair, idx) => (
+                  <span key={`en-d-${idx}`} className="q-char-cell q-char-digit q-latin-char">
+                    {pair.en}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Center: Kingdom Pillar (Saudi Emblem, السعودية, KSA in the middle) */}
+          <div className="q-kingdom-pillar q-pillar-center">
+            <SaudiEmblem size={emblemSize} strokeColor="#0b0f17" fillColor="#0b0f17" />
+            <span className="q-saudi-text">السعودية</span>
+            <span className="q-ksa-text">KSA</span>
+            <div className="q-pillar-bottom-private">
+              <span className="q-hologram-strip" title="شريط الهولوغرام الفضي الأمني">
+                <span className="q-hologram-shimmer" />
+                <span className="q-hologram-bars" />
+              </span>
+              <span className="q-black-seal" title="الختم الأمني الدائري المعتمد" />
+            </div>
+          </div>
+
+          {/* Right: Letters Section (Arabic top row, Latin bottom row) */}
+          <div className="q-plate-section q-letters-section">
+            <div className="q-plate-cell q-row-arabic">
+              <div
+                className="q-letters-block"
+                style={{ gridTemplateColumns: `repeat(${letterCount}, minmax(0, 1fr))` }}
+                dir="ltr"
+                aria-label={`حروف عربية: ${letterPairs.map((p) => p.ar).join(' ')}`}
+              >
+                {letterPairs.map((pair, idx) => (
+                  <span key={`ar-l-${idx}`} className="q-char-cell q-char-letter q-arabic-char">
+                    {pair.ar}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="q-plate-cell q-row-latin">
+              <div
+                className="q-letters-block"
+                style={{ gridTemplateColumns: `repeat(${letterCount}, minmax(0, 1fr))` }}
+                dir="ltr"
+                aria-label={`حروف إنجليزية: ${letterPairs.map((p) => p.en).join(' ')}`}
+              >
+                {letterPairs.map((pair, idx) => (
+                  <span key={`en-l-${idx}`} className="q-char-cell q-char-letter q-latin-char">
+                    {pair.en}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -572,12 +628,11 @@ export function PlateCard({
         <div>
           <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
             {isTransport ? (
-              <span className="inline-flex items-center gap-1.5 rounded-xl bg-sky-500/10 px-3 py-1 text-xs font-black text-sky-800 border border-sky-500/30">
-                <span className="text-[9px]">▼</span>
+              <span className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500/15 px-3 py-1 text-xs font-black text-amber-900 border border-amber-500/35">
                 <span>نقل خاص وتجاري</span>
               </span>
             ) : isSmall ? (
-              <span className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500/10 px-3 py-1 text-xs font-black text-emerald-800 border border-emerald-500/30">
+              <span className="inline-flex items-center gap-1.5 rounded-xl bg-slate-800/10 px-3 py-1 text-xs font-black text-slate-800 border border-slate-700/25">
                 <span>صغيرة (رياضية)</span>
               </span>
             ) : (

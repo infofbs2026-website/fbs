@@ -7,7 +7,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
-  Crown,
   Flame,
   Gavel,
   ShieldCheck
@@ -90,7 +89,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
         return measured;
       }
     }
-    const estimated = plates.length * 664;
+    const estimated = plates.length * 444;
     singleSetWidthRef.current = estimated;
     return estimated;
   }, [plates.length]);
@@ -176,13 +175,13 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
   }, []);
 
   // Manual Nudge (Prev / Next Buttons)
-  const nudge = (direction: 'prev' | 'next') => {
+  const nudge = useCallback((direction: 'prev' | 'next') => {
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
     isPausedRef.current = true;
 
     const step = singleSetWidthRef.current > 0
       ? singleSetWidthRef.current / plates.length
-      : 664;
+      : 444;
 
     const delta = direction === 'next' ? step : -step;
     offsetRef.current += delta;
@@ -208,9 +207,13 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
       isPausedRef.current = false;
       lastTimeRef.current = performance.now();
     }, 2000);
-  };
+  }, [plates.length]);
 
-  // Drag & Swipe Handling
+  // Touch & Pointer Drag / Swipe Handling for Mobile & Desktop
+  const touchStartXRef = useRef<number>(0);
+  const touchStartYRef = useRef<number>(0);
+  const isSwipingRef = useRef<boolean>(false);
+
   const handlePointerDown = (e: React.PointerEvent) => {
     if ((e.target as HTMLElement).closest('a, button')) return;
 
@@ -247,6 +250,62 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
     handleCardMouseLeave();
   };
 
+  // Dedicated Mobile Touch Gestures
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if ((e.target as HTMLElement).closest('a, button')) return;
+    const touch = e.touches[0];
+    touchStartXRef.current = touch.clientX;
+    touchStartYRef.current = touch.clientY;
+    dragStartOffsetRef.current = offsetRef.current;
+    isPausedRef.current = true;
+    isSwipingRef.current = false;
+
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    if (trackRef.current) {
+      trackRef.current.style.transition = 'none';
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - touchStartXRef.current;
+    const deltaY = touch.clientY - touchStartYRef.current;
+
+    // Detect horizontal swipe intent vs vertical page scroll
+    if (!isSwipingRef.current) {
+      if (Math.abs(deltaX) > 10 && Math.abs(deltaX) > Math.abs(deltaY)) {
+        isSwipingRef.current = true;
+      } else if (Math.abs(deltaY) > 10) {
+        return; // Allow vertical scrolling smoothly
+      }
+    }
+
+    if (isSwipingRef.current) {
+      offsetRef.current = dragStartOffsetRef.current + deltaX;
+      const setWidth = singleSetWidthRef.current;
+      if (setWidth > 0) {
+        while (offsetRef.current >= 0) offsetRef.current -= setWidth;
+        while (offsetRef.current < -setWidth * 2) offsetRef.current += setWidth;
+      }
+      if (trackRef.current) {
+        trackRef.current.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+      }
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (isSwipingRef.current) {
+      isSwipingRef.current = false;
+      const touch = e.changedTouches[0];
+      const deltaX = touch.clientX - touchStartXRef.current;
+      if (Math.abs(deltaX) > 50) {
+        nudge(deltaX > 0 ? 'prev' : 'next');
+        return;
+      }
+    }
+    handleCardMouseLeave();
+  };
+
   if (plates.length === 0) return null;
 
   return (
@@ -278,21 +337,21 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
           <div className="mb-8 sm:mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-end text-center lg:text-start">
             <div className="flex flex-col items-center lg:items-start">
               {/* Prestige Golden Stage Badge */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-gold/55 bg-gradient-to-r from-gold/30 via-gold/15 to-amber-500/20 px-4.5 py-1.5 text-xs sm:text-sm font-black text-gold-light backdrop-blur-md shadow-[0_0_25px_rgba(217,184,127,0.3)] mb-3.5 mx-auto lg:mx-0">
+              <div className="inline-flex items-center gap-2 rounded-full border border-gold/55 bg-gradient-to-r from-gold/30 via-gold/15 to-amber-500/20 px-4.5 py-1.5 text-xs sm:text-sm font-black text-gold-light backdrop-blur-md shadow-[0_0_25px_rgba(217,184,127,0.3)] mb-5 mx-auto lg:mx-0">
                 <Flame size={16} className="text-amber-400 shrink-0 animate-bounce" />
                 <span className="tracking-wide">المسرح الماسي · فرص اللحظات الأخيرة</span>
               </div>
 
-              <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-[2.65rem] leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] text-center lg:text-start">
-                مزادات اللحظات الأخيرة والفرص النادرة
+              <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-[2.75rem] leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] text-center lg:text-start">
+                مزادات <span className="bg-gradient-to-r from-gold via-gold-light to-amber-300 bg-clip-text text-transparent">اللحظات الأخيرة</span> والفرص النادرة
               </h2>
 
-              <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-slate-200 font-medium text-center lg:text-start mx-auto lg:mx-0">
-                لوحات استثنائية في حركة انسيابية مستمرة. قف بالماوس على أي لوحة لمعاينتها فوراً، أو استكشف المزادات المتاحة.
+              <p className="mt-3.5 max-w-3xl text-base sm:text-lg leading-relaxed text-slate-200 font-medium text-center lg:text-start mx-auto lg:mx-0">
+                فرص استثنائية في دقائقها الأخيرة للمزايدة الحية واقتناء أندر اللوحات الملكية بالمملكة.
               </p>
             </div>
 
-            {/* Desktop Controls (Hidden on mobile, positioned below carousel on mobile) */}
+            {/* Desktop Controls */}
             <div className="hidden lg:flex items-center gap-3 self-end">
               <div className="flex items-center gap-2" dir="ltr">
                 <button
@@ -327,15 +386,20 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
         </ScrollReveal>
 
         {/* ============================================================== */}
-        {/* CAROUSEL TRACK: Clean & Frameless, Cards Float Free (بدون أي ظلال) */}
+        {/* CAROUSEL TRACK: Clean & Frameless, Cards Float Free             */}
         {/* ============================================================== */}
         <div
-          className="relative w-full overflow-hidden py-4 cursor-grab active:cursor-grabbing select-none"
+          className="relative w-full overflow-hidden py-4 cursor-grab active:cursor-grabbing select-none touch-pan-y"
           dir="ltr"
+          style={{ touchAction: 'pan-y' }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchEnd}
         >
           {/* Continuous Gliding Track: Hardware GPU Accelerated */}
           <div
@@ -350,7 +414,6 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
             {loopedPlates.map((plate, idx) => {
               const rawPrice = plate.auction?.currentPriceHalalas ?? plate.priceHalalas ?? '0';
               const lotNum = (idx % plates.length) + 1;
-              const bidsCount = plate.auction?.bidCount ?? 18 + (lotNum * 5);
 
               return (
                 <article
@@ -361,9 +424,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
                   dir="rtl"
                   onMouseEnter={handleCardMouseEnter}
                   onMouseLeave={handleCardMouseLeave}
-                  onTouchStart={handleCardMouseEnter}
-                  onTouchEnd={handleCardMouseLeave}
-                  className="relative shrink-0 w-[calc(100vw-2.5rem)] max-w-[440px] sm:w-[500px] md:w-[560px] lg:w-[620px] xl:w-[640px] rounded-2xl overflow-hidden border border-white/15 hover:border-gold shadow-[0_15px_35px_rgba(0,0,0,0.6)] hover:shadow-[0_20px_45px_rgba(217,184,127,0.3)] transition-colors duration-150 bg-gradient-to-br from-[#121e36] via-[#0d1628] to-[#070e1a] p-5 sm:p-7 flex flex-col justify-between"
+                  className="relative shrink-0 w-[calc(100vw-2.5rem)] max-w-[420px] sm:w-[420px] rounded-3xl overflow-hidden border border-gold/35 hover:border-gold shadow-[0_20px_50px_rgba(0,0,0,0.65)] hover:shadow-[0_25px_60px_rgba(217,184,127,0.35)] transition-all duration-200 bg-gradient-to-b from-[#141f38]/95 via-[#0e172a]/95 to-[#080e1c]/98 backdrop-blur-2xl p-5 sm:p-6 flex flex-col justify-between"
                   style={{
                     contain: 'layout paint',
                     transform: 'translateZ(0)',
@@ -375,93 +436,83 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
                   <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-gold to-transparent" />
 
                   {/* -------------------------------------------------------- */}
-                  {/* POSTER HEADER: LOT NUMBER, STATUS & LIVE COUNTDOWN       */}
+                  {/* POSTER HEADER: LOT NUMBER & LIVE STATUS (ENLARGED)       */}
                   {/* -------------------------------------------------------- */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10">
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 rounded-xl border border-gold/40 bg-gold/15 px-2.5 py-1 text-xs font-black text-gold-light">
-                        <Gavel size={12} className="text-gold" />
+                  <div className="flex items-center justify-between pb-3.5 border-b border-gold/20">
+                    <div className="flex items-center gap-2.5">
+                      <span className="inline-flex items-center gap-2 rounded-xl border border-gold/45 bg-gold/20 px-3.5 py-1.5 text-xs sm:text-sm font-black text-gold-light shadow-sm">
+                        <Gavel size={14} className="text-gold" />
                         <span>لوط #{String(lotNum).padStart(2, '0')}</span>
                       </span>
 
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-2.5 py-1 text-xs font-black text-emerald-300 border border-emerald-500/40">
-                        <span className="relative flex h-2 w-2">
+                      <span className="inline-flex items-center gap-2 rounded-full bg-emerald-500/20 px-3.5 py-1.5 text-xs sm:text-sm font-black text-emerald-300 border border-emerald-500/40 shadow-sm">
+                        <span className="relative flex h-2.5 w-2.5">
                           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
+                          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
                         </span>
                         <span>مزايدة حية</span>
                       </span>
-
-                      {plate.featured && (
-                        <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-amber-400/20 px-2.5 py-1 text-xs font-black text-amber-300 border border-amber-400/40">
-                          <Crown size={12} className="text-amber-300" />
-                          <span>نخبة</span>
-                        </span>
-                      )}
                     </div>
 
-                    {/* Isolated Zero-Lag Countdown */}
-                    <LiveAuctionCountdown />
+                    <span className="font-norwester text-xs sm:text-sm font-bold tracking-wider text-gold-light bg-[#1d2d4d]/90 border border-gold/35 px-2.5 py-1 rounded-md shadow-xs backdrop-blur-md" dir="ltr">
+                      LOT-{String(lotNum).padStart(2, '0')}
+                    </span>
                   </div>
 
                   {/* -------------------------------------------------------- */}
-                  {/* POSTER CENTER: MAJESTIC PLATE SHOWCASE CANVAS            */}
+                  {/* POSTER CENTER: AUTHENTIC SAUDI PLATE SHOWCASE PEDESTAL   */}
                   {/* -------------------------------------------------------- */}
-                  <div className="py-6 sm:py-8 flex flex-col items-center justify-center">
-                    <div className="w-full max-w-[420px] sm:max-w-[480px]">
-                      <PlateVisualizer
-                        lettersAr={plate.lettersAr}
-                        lettersEn={plate.lettersEn}
-                        numbers={plate.numbers}
-                        plateType={plate.type}
-                        large
-                      />
-                    </div>
+                  <div className="my-auto py-3 w-full flex flex-col justify-center">
+                    <div className="rounded-2xl p-3.5 sm:p-4 flex items-center justify-center bg-gradient-to-b from-[#0b1324] via-[#070d18] to-[#040812] border border-gold/30 shadow-[inset_0_2px_10px_rgba(0,0,0,0.7),0_8px_24px_rgba(0,0,0,0.4)] relative overflow-hidden">
+                      {/* Subtle Ambient Gold Glow behind Plate */}
+                      <div className="absolute h-32 w-64 rounded-full bg-gold/15 blur-2xl pointer-events-none" />
 
-                    <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5 text-xs sm:text-sm font-bold text-slate-300">
-                      <span className="font-norwester text-gold-light tracking-wider" dir="ltr">
-                        {plate.lettersEn.join('')} {plate.numbers}
-                      </span>
-                      <span className="text-white/30">•</span>
-                      <span className="text-slate-200">
-                        {plate.type || 'خصوصي سعودي فاخر'}
-                      </span>
-                      <span className="text-white/30">•</span>
-                      <span className="text-gold-light font-black flex items-center gap-1">
-                        <ShieldCheck size={14} className="text-gold" />
-                        <span>{plate.city || 'الرياض'} · فحص معتمد 100%</span>
-                      </span>
+                      <div className="relative z-10 w-full flex justify-center">
+                        <PlateVisualizer
+                          lettersAr={plate.lettersAr}
+                          lettersEn={plate.lettersEn}
+                          numbers={plate.numbers}
+                          plateType={plate.type}
+                        />
+                      </div>
                     </div>
                   </div>
 
                   {/* -------------------------------------------------------- */}
-                  {/* POSTER FOOTER: CURRENT PRICE, BIDS & ACTION BUTTON       */}
+                  {/* POSTER FOOTER: PRICE (RIGHT), TIMER (LEFT) & FULL CTA    */}
                   {/* -------------------------------------------------------- */}
-                  <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-                    <div>
-                      <span className="text-xs font-bold text-slate-400 block mb-0.5">
-                        المزايدة الحالية (أعلى عرض)
-                      </span>
-                      <div className="flex items-baseline gap-2 text-white" dir="ltr">
-                        <span className="font-norwester text-2xl sm:text-3xl lg:text-[34px] font-black tracking-tight text-white leading-none drop-shadow-md">
-                          {formatSar(rawPrice)}
+                  <div className="pt-4 border-t border-gold/20 flex flex-col gap-3.5">
+                    {/* Upper row: Current Bid on Right (RTL start), Countdown on Left (RTL end) */}
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <span className="text-xs font-bold text-slate-300 block mb-1">
+                          المزايدة الحالية (أعلى عرض)
                         </span>
-                        <SarSymbol className="w-4.5 h-4.5 text-gold-accent inline-block self-center" />
+                        <div className="flex items-baseline gap-2 text-white" dir="ltr">
+                          <span className="font-norwester text-2xl sm:text-3xl font-black tracking-tight text-white leading-none drop-shadow-md">
+                            {formatSar(rawPrice)}
+                          </span>
+                          <SarSymbol className="w-4.5 h-4.5 text-gold-accent inline-block self-center" />
+                        </div>
                       </div>
-                      <div className="mt-1 flex items-center gap-2 text-xs font-semibold text-slate-400">
-                        <span className="text-emerald-400 font-black">{bidsCount} مزايدة نشطة</span>
-                        <span>•</span>
-                        <span>تمديد تلقائي ضد القنص</span>
+
+                      <div className="flex flex-col items-end">
+                        <span className="text-xs font-bold text-slate-300 block mb-1 flex items-center gap-1.5">
+                          <Clock size={13} className="text-amber-400" />
+                          <span>الوقت المتبقي</span>
+                        </span>
+                        <LiveAuctionCountdown />
                       </div>
                     </div>
 
+                    {/* Direct Auction CTA: Full Width underneath */}
                     <Link
                       href={`/plates/${plate.slug}`}
-                      className="group btn btn-gold h-12 sm:h-13 px-7 text-xs sm:text-sm font-black shadow-lg hover:shadow-[0_0_25px_rgba(217,184,127,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 shrink-0"
+                      className="group btn btn-gold w-full h-12 sm:h-12.5 text-xs sm:text-sm font-black shadow-lg hover:shadow-[0_0_25px_rgba(217,184,127,0.45)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 mt-1"
                     >
                       <Gavel size={16} className="text-navy transition-transform duration-300 group-hover:-rotate-12" />
                       <span>دخول المزاد والمزايدة</span>
-                      <ArrowLeft size={15} className="text-navy transition-transform duration-300 group-hover:-translate-x-1" />
+                      <ArrowLeft size={16} className="text-navy transition-transform duration-300 group-hover:-translate-x-1" />
                     </Link>
                   </div>
                 </article>
@@ -470,7 +521,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
           </div>
         </div>
 
-        {/* Mobile Carousel Controls Bar: Positioned Below Carousel as requested */}
+        {/* Mobile Carousel Controls Bar: Positioned Below Carousel */}
         <div className="mt-4 mb-2 flex lg:hidden items-center justify-between gap-3 px-1">
           <div className="flex items-center gap-2" dir="ltr">
             <button
