@@ -515,19 +515,19 @@
 .hero-saudi-plate.large .q-dimple-bl { bottom: 11px; left: 15px; }
 .hero-saudi-plate.large .q-dimple-br { bottom: 11px; right: 15px; }
 
-/* Stamped Oval Mounting Slots for Transport / Commercial - High Depth Die-Stamped Cavity */
+/* Stamped Oval Mounting Slots for Transport / Commercial - Refined Metallic Silver with Stamped Depth */
 .hero-saudi-plate .q-oval-slot {
   position: absolute;
   width: 19px;
   height: 6.5px;
   border-radius: 4px;
-  background: radial-gradient(ellipse at 50% 45%, #b8c1cc 0%, #828d9c 60%, #3e4854 100%);
-  border: 1px solid #4a5568;
+  background: radial-gradient(ellipse at 50% 30%, #ffffff 0%, #e8edf3 35%, #d1d9e2 70%, #9aa8b8 100%);
+  border: 0.75px solid #a3b0c0;
   box-shadow:
-    inset 0 2px 3px rgba(0, 0, 0, 0.75),
-    inset 0 -1px 1px rgba(255, 255, 255, 0.8),
-    0 1.5px 1px rgba(255, 255, 255, 0.95),
-    0 -0.5px 0.5px rgba(0, 0, 0, 0.25);
+    inset 0 1.2px 1.8px rgba(30, 41, 59, 0.45),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.95),
+    0 1px 1px rgba(255, 255, 255, 0.9),
+    0 0.5px 1px rgba(15, 23, 42, 0.12);
   z-index: 5;
   pointer-events: none;
 }
@@ -538,9 +538,15 @@
 .hero-saudi-plate .q-slot-bot-b { bottom: 6px; right: 22%; }
 
 .hero-saudi-plate.compact .q-oval-slot {
-  width: 15px;
-  height: 5px;
+  width: 14px;
+  height: 4.5px;
   border-radius: 3px;
+  border-width: 0.75px;
+  border-color: #a3b0c0;
+  box-shadow:
+    inset 0 0.8px 1.2px rgba(30, 41, 59, 0.4),
+    inset 0 -0.5px 0.75px rgba(255, 255, 255, 0.95),
+    0 0.5px 0.5px rgba(255, 255, 255, 0.85);
 }
 .hero-saudi-plate.compact .q-slot-top-a { top: 4.5px; left: 21%; }
 .hero-saudi-plate.compact .q-slot-top-b { top: 4.5px; right: 22%; }
@@ -551,6 +557,13 @@
   width: 25px;
   height: 8px;
   border-radius: 5px;
+  border-width: 1px;
+  border-color: #9aa8b8;
+  box-shadow:
+    inset 0 1.5px 2.5px rgba(30, 41, 59, 0.45),
+    inset 0 -1px 1.5px rgba(255, 255, 255, 0.95),
+    0 1.2px 1.2px rgba(255, 255, 255, 0.9),
+    0 0.5px 1px rgba(15, 23, 42, 0.15);
 }
 .hero-saudi-plate.large .q-slot-top-a { top: 7.5px; left: 21%; }
 .hero-saudi-plate.large .q-slot-top-b { top: 7.5px; right: 22%; }
