@@ -63,7 +63,7 @@ export function HeroAuctionCard({
   const [isHovered, setIsHovered] = useState(false);
   const [progress, setProgress] = useState(0); // 0 to 100%
 
-  const ROTATE_INTERVAL_MS = 3200; // 3.2 seconds per live auction (brisk and comfortable)
+  const ROTATE_INTERVAL_MS = 6500; // Keep the plate readable before rotating
   const TICK_INTERVAL_MS = 50; // Smooth progress updates
 
   // When changing current plate, reset timer, price, and progress bar
@@ -122,6 +122,7 @@ export function HeroAuctionCard({
 
   // Automated Carousel Rotation with Progress Bar (Paused when Hovered, Touched, or Manually Paused)
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (platesPool.length <= 1 || isHovered || isTouching || isManualPaused || isEnded) return;
 
     const progressStep = (TICK_INTERVAL_MS / ROTATE_INTERVAL_MS) * 100;
@@ -210,9 +211,13 @@ export function HeroAuctionCard({
 
   return (
     <div
-      className="relative flex items-stretch justify-center lg:justify-end pt-0 pb-0 w-full h-full max-w-full overflow-hidden sm:overflow-visible touch-pan-y"
+      className="relative flex items-stretch justify-center pt-0 pb-0 w-full max-w-full overflow-hidden sm:overflow-visible touch-pan-y"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onFocusCapture={() => setIsHovered(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsHovered(false);
+      }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -222,7 +227,7 @@ export function HeroAuctionCard({
       <div className="absolute h-80 w-80 rounded-full bg-gradient-to-tr from-gold/30 via-indigo-600/20 to-transparent blur-3xl pointer-events-none lg:end-12" />
 
       {/* Main Glassmorphic Auction Card (Narrower width: max-w-[420px], full height matching right column) */}
-      <div className="relative w-full max-w-[27rem] mx-auto lg:ms-auto lg:mx-0 rounded-3xl border border-gold/35 bg-gradient-to-b from-[#141f38]/95 via-[#0e172a]/95 to-[#080e1c]/98 backdrop-blur-2xl p-4 sm:p-5 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65),0_10px_25px_-5px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.14)] transition-all duration-300 flex flex-col justify-between h-full">
+      <div className="relative w-full max-w-[30rem] mx-auto rounded-3xl border border-gold/35 bg-gradient-to-b from-[#141f38]/95 via-[#0e172a]/95 to-[#080e1c]/98 backdrop-blur-2xl p-4 sm:p-5 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65),0_10px_25px_-5px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.14)] transition-all duration-300 flex flex-col justify-start gap-3.5">
         
         {/* Top Slim Golden Progress Line (Visual Rotation Bar, Turns Amber When Paused) */}
         {platesPool.length > 1 && !isEnded && (
@@ -295,7 +300,7 @@ export function HeroAuctionCard({
         </div>
 
         {/* Middle Section: Authentic Saudi Plate Frontal View (Centered & fills vertical space gracefully) */}
-        <div className="my-auto py-1.5 w-full flex flex-col justify-center">
+        <div className="py-1.5 w-full flex flex-col justify-center">
           <div className="rounded-2xl p-2.5 sm:p-3 flex items-center justify-center bg-gradient-to-b from-[#0b1324] via-[#070d18] to-[#040812] border border-gold/30 shadow-[inset_0_2px_10px_rgba(0,0,0,0.7),0_8px_24px_rgba(0,0,0,0.4)] relative overflow-visible">
             {/* Subtle Ambient Gold Glow behind Plate */}
             <div className="absolute h-32 w-64 rounded-full bg-gold/15 blur-2xl pointer-events-none" />
