@@ -1520,3 +1520,34 @@ select:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0 1000px rgba(10, 21, 44, 0.98) inset !important;
   box-shadow: 0 0 0 1000px rgba(10, 21, 44, 0.98) inset !important;
 }
+
+/* FBS TYPOGRAPHY EXPERIMENT — unified luxury scale
+ * This is intentionally limited to the experiment branch.
+ * Change only these tokens to iterate on the proposed site-wide visual signature.
+ * 1440px desktop: H1 ~42, H2 ~26, H3 ~19; narrow mobile: 32/22/18.
+ * Long body copy: 14. Small labels, prices, inputs and CTAs keep role-specific sizes.
+ * clamp() respects available CSS viewport; it does NOT disable browser zoom.
+ */
+:root {
+  --fbs-type-h1: clamp(2rem, calc(1.45rem + 1.3vw), 2.625rem);
+  --fbs-type-h2: clamp(1.375rem, calc(1.1rem + .55vw), 1.625rem);
+  --fbs-type-h3: clamp(1.125rem, calc(1rem + .2vw), 1.1875rem);
+  --fbs-type-body: .875rem;
+  --fbs-type-caption: .8125rem;
+}
+
+/* Tailwind projects frequently assign explicit text sizes to headings.
+ * This deliberately overrides those existing sizes for a *visual trial*
+ * throughout page content, while preserving color, weights, spacing and hierarchy.
+ * Scope excludes site navigation, fixed chrome and unrelated dialogs.
+ */
+#main h1 { font-size: var(--fbs-type-h1); }
+#main h2 { font-size: var(--fbs-type-h2); }
+#main h3 { font-size: var(--fbs-type-h3); }
+
+/* Avoid making existing micro-labels (text-xs, 10–13px) larger.
+ * Everything else authored as a paragraph uses the agreed body size.
+ */
+#main p:not(.text-xs):not([class*="text-[10px]"]):not([class*="text-[11px]"]):not([class*="text-[12px]"]):not([class*="text-[13px]"]) {
+  font-size: var(--fbs-type-body);
+}
