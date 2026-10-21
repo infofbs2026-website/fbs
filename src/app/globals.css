@@ -1525,14 +1525,14 @@ select:-webkit-autofill:focus {
  * This is intentionally limited to the experiment branch.
  * Change only these tokens to iterate on the proposed site-wide visual signature.
  * 1440px desktop: H1 ~42, H2 ~26, H3 ~19; narrow mobile: 32/22/18.
- * Long body copy: 14. Small labels, prices, inputs and CTAs keep role-specific sizes.
+ * Long body copy: 15. Small labels, prices, inputs and CTAs keep role-specific sizes.
  * clamp() respects available CSS viewport; it does NOT disable browser zoom.
  */
 :root {
   --fbs-type-h1: clamp(2rem, calc(1.45rem + 1.3vw), 2.625rem);
   --fbs-type-h2: clamp(1.375rem, calc(1.1rem + .55vw), 1.625rem);
   --fbs-type-h3: clamp(1.125rem, calc(1rem + .2vw), 1.1875rem);
-  --fbs-type-body: .875rem;
+  --fbs-type-body: .9375rem;
   --fbs-type-caption: .8125rem;
 }
 
