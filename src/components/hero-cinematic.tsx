@@ -197,7 +197,7 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
         <div className="container-fbs relative z-10 hero-grid-layout my-auto py-[clamp(1rem,2vw,2.25rem)]">
           
           {/* Right Column (RTL start): Headline, Subtitle, CTAs, Search Bar */}
-          <div className="hero-copy flex flex-col justify-center gap-[clamp(1.5rem,3cqi,3rem)] min-w-0 w-full py-1">
+          <div className="hero-copy flex flex-col justify-center gap-4 lg:gap-[clamp(1.5rem,3cqi,3rem)] min-w-0 w-full py-1">
             <div>
               {/* STAGE 1: Eyebrow Badge (Card top aligns with this) */}
               <div
@@ -207,11 +207,11 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
                     : 'opacity-0 -translate-y-4 pointer-events-none'
                 }`}
               >
-                <div className="inline-flex items-center gap-1.5 sm:gap-2.5 rounded-xl sm:rounded-2xl border border-gold/45 bg-gradient-to-r from-gold/15 via-[#091124]/90 to-gold/10 px-3 py-1.5 sm:px-5 sm:py-2 text-[10.5px] xs:text-[11px] sm:text-sm font-bold text-gold-light backdrop-blur-2xl shadow-[0_4px_20px_rgba(217,184,127,0.18)] ring-1 ring-gold/25 hover:border-gold/60 transition-all duration-300 text-center max-w-full">
-                  <span className="flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-lg bg-gold/20 border border-gold/50 text-gold shrink-0 shadow-[0_0_10px_rgba(217,184,127,0.35)]">
+                <div className="inline-flex items-center gap-1.5 sm:gap-2.5 rounded-lg sm:rounded-2xl border border-gold/25 sm:border-gold/45 bg-[#091124]/80 sm:bg-gradient-to-r sm:from-gold/15 sm:via-[#091124]/90 sm:to-gold/10 px-2.5 py-1 sm:px-5 sm:py-2 text-[0.7rem] sm:text-sm leading-snug font-bold text-gold-light backdrop-blur-2xl shadow-[0_4px_20px_rgba(217,184,127,0.12)] sm:ring-1 sm:ring-gold/25 hover:border-gold/60 transition-all duration-300 text-center max-w-full">
+                  <span className="flex h-4 w-4 sm:h-6 sm:w-6 items-center justify-center rounded-md sm:rounded-lg bg-gold/15 sm:bg-gold/20 border border-gold/35 sm:border-gold/50 text-gold shrink-0 sm:shadow-[0_0_10px_rgba(217,184,127,0.35)]">
                     <SvgRoyalCrownCrest className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gold-light" />
                   </span>
-                  <span className="tracking-normal sm:tracking-wide text-gold-light">المزاد الرسمي الأول للوحات النخبة في المملكة العربية السعودية</span>
+                  <span className="tracking-normal sm:tracking-wide text-gold-light"><span className="lg:hidden">مزادات لوحات النخبة في السعودية</span><span className="hidden lg:inline">المزاد الرسمي الأول للوحات النخبة في المملكة العربية السعودية</span></span>
                 </div>
               </div>
 
@@ -223,7 +223,7 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
                     : 'opacity-0 translate-y-6 pointer-events-none'
                 }`}
               >
-                <h1 className="mt-[clamp(1rem,2vw,1.5rem)] max-w-2xl text-[clamp(2.25rem,4.2vw,4.5rem)] font-black leading-[1.14] tracking-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] text-center sm:text-start mx-auto sm:mx-0 w-full">
+                <h1 className="mt-3 lg:mt-[clamp(1rem,2vw,1.5rem)] max-w-2xl text-[clamp(2.25rem,4.2vw,4.5rem)] font-black leading-[1.14] tracking-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] text-center sm:text-start mx-auto sm:mx-0 w-full">
                   لوحتك الاستثنائية
                   <br />
                   <span className="gold-gradient-text drop-shadow-[0_2px_14px_rgba(0,0,0,0.85)]">تبدأ من هنا.</span>
@@ -276,7 +276,7 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
                 </Link>
                 <Link
                   href="/sell-your-plate"
-                  className="group btn btn-outline-gold text-sm sm:text-base font-black min-h-12 h-auto py-3 flex-[1_1_15rem] min-w-0 justify-center gap-2.5 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-gold/55 bg-[#0a1224]/85 text-white hover:border-gold hover:bg-gold/20 px-4 sm:px-6 shadow-xl w-full"
+                  className="hidden lg:inline-flex group btn btn-outline-gold text-sm sm:text-base font-black min-h-12 h-auto py-3 flex-[1_1_15rem] min-w-0 justify-center gap-2.5 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-gold/55 bg-[#0a1224]/85 text-white hover:border-gold hover:bg-gold/20 px-4 sm:px-6 shadow-xl w-full"
                 >
                   <SvgPlatePlus className="w-5 h-5 text-gold shrink-0 transition-transform duration-300 group-hover:scale-110" />
                   <span className="min-w-0 text-center">اعرض لوحتك الآن</span>
@@ -287,7 +287,7 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
               {/* Streamlined Quick Search Bar: Positioned below buttons, max-w-[42rem] */}
               <form
                 onSubmit={handleSearchSubmit}
-                className="mt-3.5 sm:mt-4 w-full max-w-[42rem] mx-auto sm:mx-0"
+                className="hidden lg:block mt-3.5 sm:mt-4 w-full max-w-[42rem] mx-auto sm:mx-0"
               >
                 <div className="relative flex items-center rounded-xl sm:rounded-2xl border border-gold/40 bg-gradient-to-b from-[#111c33]/90 via-[#0b1324]/90 to-[#070d1a]/95 p-1.5 sm:p-2 backdrop-blur-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.18)] transition-all focus-within:border-gold focus-within:ring-2 focus-within:ring-gold/30">
                   <div className="ps-3 pe-2 text-gold flex items-center justify-center shrink-0">
