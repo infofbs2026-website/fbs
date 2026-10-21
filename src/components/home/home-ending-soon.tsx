@@ -338,7 +338,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
             <div className="flex flex-col items-center xl:items-start">
               {/* Prestige Golden Stage Badge */}
               <div className="inline-flex items-center gap-2 rounded-full border border-gold/55 bg-gradient-to-r from-gold/30 via-gold/15 to-amber-500/20 px-4.5 py-1.5 text-xs sm:text-sm font-black text-gold-light backdrop-blur-md shadow-[0_0_25px_rgba(217,184,127,0.3)] mb-5 mx-auto xl:mx-0">
-                <Flame size={16} className="text-amber-400 shrink-0 animate-bounce" />
+                <Flame size={16} className="text-amber-400 shrink-0" />
                 <span className="tracking-wide">المسرح الماسي · فرص اللحظات الأخيرة</span>
               </div>
 
@@ -389,7 +389,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
         {/* CAROUSEL TRACK: Clean & Frameless, Cards Float Free             */}
         {/* ============================================================== */}
         <div
-          className="relative w-full overflow-hidden py-4 cursor-grab active:cursor-grabbing select-none touch-pan-y"
+          className="ending-soon-viewport relative w-full overflow-hidden py-4 cursor-grab active:cursor-grabbing select-none touch-pan-y"
           dir="ltr"
           style={{ touchAction: 'pan-y' }}
           onPointerDown={handlePointerDown}
@@ -424,7 +424,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
                   dir="rtl"
                   onMouseEnter={handleCardMouseEnter}
                   onMouseLeave={handleCardMouseLeave}
-                  className="relative shrink-0 w-[min(26.25rem,calc(100dvw_-_3rem))] max-w-full rounded-3xl overflow-hidden border border-gold/35 hover:border-gold shadow-[0_20px_50px_rgba(0,0,0,0.65)] hover:shadow-[0_25px_60px_rgba(217,184,127,0.35)] transition-all duration-200 bg-gradient-to-b from-[#141f38]/95 via-[#0e172a]/95 to-[#080e1c]/98 backdrop-blur-2xl p-5 sm:p-6 flex flex-col justify-between"
+                  className="ending-soon-card relative shrink-0 max-w-full rounded-3xl overflow-hidden border border-gold/35 hover:border-gold shadow-[0_20px_50px_rgba(0,0,0,0.65)] hover:shadow-[0_25px_60px_rgba(217,184,127,0.35)] transition-all duration-200 bg-gradient-to-b from-[#141f38]/95 via-[#0e172a]/95 to-[#080e1c]/98 backdrop-blur-2xl p-5 sm:p-6 flex flex-col justify-between"
                   style={{
                     contain: 'layout paint',
                     transform: 'translateZ(0)',
@@ -454,7 +454,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
                       </span>
                     </div>
 
-                    <span className="font-norwester text-xs sm:text-sm font-bold tracking-wider text-gold-light bg-[#1d2d4d]/90 border border-gold/35 px-2.5 py-1 rounded-md shadow-xs backdrop-blur-md" dir="ltr">
+                    <span className="hidden sm:inline-flex font-norwester text-xs sm:text-sm font-bold tracking-wider text-gold-light bg-[#1d2d4d]/90 border border-gold/35 px-2.5 py-1 rounded-md shadow-xs backdrop-blur-md" dir="ltr">
                       LOT-{String(lotNum).padStart(2, '0')}
                     </span>
                   </div>
