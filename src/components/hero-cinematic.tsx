@@ -150,7 +150,7 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
       {/* ============================================================== */}
       {/* 1. HERO SECTION: FULL-BLEED CINEMATIC 1080p BACKGROUND VIDEO    */}
       {/* ============================================================== */}
-      <section className="hero-fluid-shell relative w-full min-h-[100svh] flex flex-col justify-center items-center pt-[clamp(6rem,9vw,8rem)] pb-[clamp(2.5rem,5vw,5rem)] text-white overflow-hidden bg-[#060a14]">
+      <section className="hero-fluid-shell relative w-full min-h-[100svh] flex flex-col justify-center items-center pt-[5.25rem] lg:pt-[clamp(6rem,9vw,8rem)] pb-[clamp(2.5rem,5vw,5rem)] text-white overflow-hidden bg-[#060a14]">
         
         {/* Background Video Layer: 100% full bleed, edge-to-edge */}
         <div
