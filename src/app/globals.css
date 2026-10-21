@@ -110,13 +110,80 @@
     @apply mx-auto w-full max-w-[1400px] px-4 sm:px-8 xl:px-10;
   }
 
-  /* Premium Fluid UI experiment: intrinsic grid responding to usable CSS space. */
+  /* Premium Fluid UI: actual container space, with a deliberate reflow threshold. */
+  .hero-fluid-shell {
+    container: fbs-hero / inline-size;
+  }
+
   .hero-grid-layout {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 32rem), 1fr));
-    align-items: stretch;
-    gap: clamp(1.5rem, 3.5vw, 3.5rem);
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(1.75rem, 4cqi, 3.75rem);
     inline-size: 100%;
+  }
+
+  .hero-copy {
+    inline-size: 100%;
+    min-inline-size: 0;
+    max-inline-size: 42rem;
+    margin-inline: auto;
+  }
+
+  .hero-auction-shell {
+    inline-size: 100%;
+    min-inline-size: 0;
+    max-inline-size: 32rem;
+    margin-inline: auto;
+  }
+
+  /* A changing video frame must not reduce headline and control contrast. */
+  .hero-cinematic-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg,
+      rgba(5, 11, 25, .66) 0%,
+      rgba(5, 11, 25, .36) 50%,
+      rgba(5, 11, 25, .68) 100%);
+  }
+
+  @container fbs-hero (min-width: 74rem) {
+    .hero-grid-layout {
+      grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr);
+    }
+
+    .hero-copy,
+    .hero-auction-shell {
+      margin-inline: 0;
+      max-inline-size: none;
+    }
+
+    .hero-auction-shell {
+      justify-content: flex-end;
+    }
+
+    .hero-cinematic-overlay {
+      background: linear-gradient(270deg,
+        rgba(5, 11, 25, .82) 0%,
+        rgba(5, 11, 25, .48) 58%,
+        rgba(5, 11, 25, .68) 100%);
+    }
+  }
+
+  .ending-soon-viewport {
+    container: fbs-ending-cards / inline-size;
+  }
+
+  .ending-soon-card {
+    inline-size: min(26.25rem, calc(100cqi - 1.5rem));
+    min-inline-size: 0;
+  }
+
+  @container fbs-ending-cards (min-width: 48rem) and (max-width: 72rem) {
+    .ending-soon-card {
+      inline-size: clamp(19rem, 40cqi, 26.25rem);
+    }
   }
 
   .hero-video-cover {
