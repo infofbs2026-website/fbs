@@ -227,7 +227,7 @@ export function HeroAuctionCard({
       <div className="absolute h-80 w-80 rounded-full bg-gradient-to-tr from-gold/30 via-indigo-600/20 to-transparent blur-3xl pointer-events-none lg:end-12" />
 
       {/* Main Glassmorphic Auction Card (Narrower width: max-w-[420px], full height matching right column) */}
-      <div className="relative w-full max-w-[30rem] mx-auto rounded-3xl border border-gold/35 bg-gradient-to-b from-[#141f38]/95 via-[#0e172a]/95 to-[#080e1c]/98 backdrop-blur-2xl p-4 sm:p-5 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65),0_10px_25px_-5px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.14)] transition-all duration-300 flex flex-col justify-start gap-3.5">
+      <div className="relative w-full max-w-[30rem] mx-auto rounded-3xl border border-gold/35 bg-gradient-to-b from-[#141f38]/95 via-[#0e172a]/95 to-[#080e1c]/98 backdrop-blur-2xl p-3.5 sm:p-5 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65),0_10px_25px_-5px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.14)] transition-all duration-300 flex flex-col justify-start gap-2.5 sm:gap-3.5">
         
         {/* Top Slim Golden Progress Line (Visual Rotation Bar, Turns Amber When Paused) */}
         {platesPool.length > 1 && !isEnded && (
@@ -245,7 +245,7 @@ export function HeroAuctionCard({
 
         {/* Top Section: Header (Live Badge, Play/Pause Control, & Plate Identifier) */}
         <div className="w-full">
-          <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2 border-b border-gold/20 pb-2.5">
+          <div className="mb-1.5 sm:mb-2.5 flex flex-wrap items-center justify-between gap-2 border-b border-gold/20 pb-1.5 sm:pb-2.5">
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               {!isEnded ? (
                 <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/15 px-2 py-1 text-[0.72rem] font-bold text-emerald-400 border border-emerald-500/30 backdrop-blur-md">
@@ -300,8 +300,8 @@ export function HeroAuctionCard({
         </div>
 
         {/* Middle Section: Authentic Saudi Plate Frontal View (Centered & fills vertical space gracefully) */}
-        <div className="py-1.5 w-full flex flex-col justify-center">
-          <div className="rounded-2xl p-2.5 sm:p-3 flex items-center justify-center bg-gradient-to-b from-[#0b1324] via-[#070d18] to-[#040812] border border-gold/30 shadow-[inset_0_2px_10px_rgba(0,0,0,0.7),0_8px_24px_rgba(0,0,0,0.4)] relative overflow-visible">
+        <div className="py-0.5 sm:py-1.5 w-full flex flex-col justify-center">
+          <div className="rounded-2xl p-2 sm:p-3 flex items-center justify-center bg-gradient-to-b from-[#0b1324] via-[#070d18] to-[#040812] border border-gold/30 shadow-[inset_0_2px_10px_rgba(0,0,0,0.7),0_8px_24px_rgba(0,0,0,0.4)] relative overflow-visible">
             {/* Subtle Ambient Gold Glow behind Plate */}
             <div className="absolute h-32 w-64 rounded-full bg-gold/15 blur-2xl pointer-events-none" />
 
@@ -321,9 +321,9 @@ export function HeroAuctionCard({
         </div>
 
         {/* Bottom Section: Elevated Price/Timer Ticker + Direct Auction CTA */}
-        <div className="w-full space-y-3">
+        <div className="w-full space-y-2.5 sm:space-y-3">
           {/* Elevated Price & Countdown Ticker Card */}
-          <div className="rounded-xl border border-gold/35 bg-gradient-to-b from-[#213354]/95 via-[#192742]/95 to-[#131f36]/95 backdrop-blur-xl p-3 sm:p-3.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_6px_20px_rgba(0,0,0,0.35)]">
+          <div className="rounded-xl border border-gold/35 bg-gradient-to-b from-[#213354]/95 via-[#192742]/95 to-[#131f36]/95 backdrop-blur-xl p-2.5 sm:p-3.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_6px_20px_rgba(0,0,0,0.35)]">
             <div className="flex flex-wrap items-center justify-between gap-3">
               {/* Price section with live pulse flash */}
               <div>
