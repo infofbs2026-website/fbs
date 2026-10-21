@@ -92,8 +92,13 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
     }
   }, []);
 
-  // Choreographed Staggered Timers
+  // Respect reduced motion and reveal key calls to action immediately.
   useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      skipToRevealed();
+      return;
+    }
+
     const t1 = setTimeout(() => {
       setStage((prev) => (prev < 1 ? 1 : prev));
       if (typeof window !== 'undefined') {
@@ -145,7 +150,7 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
       {/* ============================================================== */}
       {/* 1. HERO SECTION: FULL-BLEED CINEMATIC 1080p BACKGROUND VIDEO    */}
       {/* ============================================================== */}
-      <section className="relative w-full min-h-[100svh] lg:min-h-[100dvh] flex flex-col justify-center items-center pt-24 pb-14 sm:pt-28 sm:pb-20 lg:py-24 text-white overflow-hidden bg-[#060a14]">
+      <section className="hero-fluid-shell relative w-full min-h-[100svh] flex flex-col justify-center items-center pt-[clamp(6rem,9vw,8rem)] pb-[clamp(2.5rem,5vw,5rem)] text-white overflow-hidden bg-[#060a14]">
         
         {/* Background Video Layer: 100% full bleed, edge-to-edge */}
         <div
@@ -166,6 +171,7 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
             <source src="/videos/fbs-hero-realistic-no-text.webm" type="video/webm" />
             <source src="/videos/fbs-hero-realistic-no-text.mp4" type="video/mp4" />
           </video>
+          <div className="hero-cinematic-overlay" aria-hidden="true" />
 
           {/* Minimal 1px Golden Horizon Line at bottom border */}
           <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent pointer-events-none" />
@@ -188,10 +194,10 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
         {/* ============================================================== */}
         {/* 3. HERO CONTENT GRID: Vertically & Horizontally Aligned       */}
         {/* ============================================================== */}
-        <div className="container-fbs relative z-10 hero-grid-layout my-auto lg:items-stretch">
+        <div className="container-fbs relative z-10 hero-grid-layout my-auto py-[clamp(1rem,2vw,2.25rem)]">
           
           {/* Right Column (RTL start): Headline, Subtitle, CTAs, Search Bar */}
-          <div className="flex flex-col justify-between min-w-0 w-full h-full py-0.5">
+          <div className="hero-copy flex flex-col justify-center gap-[clamp(1.5rem,3cqi,3rem)] min-w-0 w-full py-1">
             <div>
               {/* STAGE 1: Eyebrow Badge (Card top aligns with this) */}
               <div
@@ -217,7 +223,7 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
                     : 'opacity-0 translate-y-6 pointer-events-none'
                 }`}
               >
-                <h1 className="mt-[clamp(1rem,2vw,1.25rem)] max-w-2xl text-[clamp(2.2rem,4vw,4.25rem)] font-black leading-[1.08] tracking-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] text-center sm:text-start mx-auto sm:mx-0 w-full">
+                <h1 className="mt-[clamp(1rem,2vw,1.5rem)] max-w-2xl text-[clamp(2.25rem,4.2vw,4.5rem)] font-black leading-[1.14] tracking-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] text-center sm:text-start mx-auto sm:mx-0 w-full">
                   لوحتك الاستثنائية
                   <br />
                   <span className="gold-gradient-text drop-shadow-[0_2px_14px_rgba(0,0,0,0.85)]">تبدأ من هنا.</span>
@@ -238,7 +244,7 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
                     aria-hidden="true"
                   />
                   <p
-                    className="relative text-[clamp(0.9rem,1.15vw,1.0625rem)] font-medium text-slate-200 leading-relaxed"
+                    className="relative text-[clamp(1rem,1.25vw,1.125rem)] font-medium text-slate-100 leading-[1.85] max-w-[58ch]"
                     style={{
                       textShadow:
                         '0 1px 3px rgba(0, 0, 0, 0.95), 0 3px 10px rgba(0, 0, 0, 0.9), 0 6px 20px rgba(0, 0, 0, 0.85)'
@@ -252,7 +258,7 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
 
             {/* STAGE 3: Action Buttons & Streamlined Search Bar (Card bottom aligns with Search Bar) */}
             <div
-              className={`transition-all duration-700 ease-out w-full mt-3.5 sm:mt-6 lg:mt-auto pt-1 sm:pt-4 ${
+              className={`transition-all duration-700 ease-out w-full pt-0 ${
                 stage >= 3
                   ? 'opacity-100 translate-y-0'
                   : 'opacity-0 translate-y-6 pointer-events-none'
@@ -319,7 +325,7 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
 
           {/* STAGE 4: Interactive Live Auction Card (Glides in from the side, full height matching right column) */}
           <div
-            className={`relative flex items-stretch justify-center lg:justify-end transition-all duration-800 ease-out min-w-0 w-full h-full ${
+            className={`hero-auction-shell relative flex items-center justify-center transition-all duration-800 ease-out min-w-0 w-full ${
               stage >= 4
                 ? 'opacity-100 translate-x-0 scale-100'
                 : 'opacity-0 lg:-translate-x-8 translate-y-4 scale-95 pointer-events-none'
