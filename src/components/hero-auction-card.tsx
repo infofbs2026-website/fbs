@@ -222,7 +222,7 @@ export function HeroAuctionCard({
       <div className="absolute h-80 w-80 rounded-full bg-gradient-to-tr from-gold/30 via-indigo-600/20 to-transparent blur-3xl pointer-events-none lg:end-12" />
 
       {/* Main Glassmorphic Auction Card (Narrower width: max-w-[420px], full height matching right column) */}
-      <div className="relative w-full max-w-[420px] xl:max-w-[430px] mx-auto lg:ms-auto lg:mx-0 rounded-3xl border border-gold/35 bg-gradient-to-b from-[#141f38]/95 via-[#0e172a]/95 to-[#080e1c]/98 backdrop-blur-2xl p-4 sm:p-5 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65),0_10px_25px_-5px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.14)] transition-all duration-300 flex flex-col justify-between h-full">
+      <div className="relative w-full max-w-[27rem] mx-auto lg:ms-auto lg:mx-0 rounded-3xl border border-gold/35 bg-gradient-to-b from-[#141f38]/95 via-[#0e172a]/95 to-[#080e1c]/98 backdrop-blur-2xl p-4 sm:p-5 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65),0_10px_25px_-5px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.14)] transition-all duration-300 flex flex-col justify-between h-full">
         
         {/* Top Slim Golden Progress Line (Visual Rotation Bar, Turns Amber When Paused) */}
         {platesPool.length > 1 && !isEnded && (
@@ -240,15 +240,15 @@ export function HeroAuctionCard({
 
         {/* Top Section: Header (Live Badge, Play/Pause Control, & Plate Identifier) */}
         <div className="w-full">
-          <div className="mb-2.5 flex items-center justify-between border-b border-gold/20 pb-2.5">
-            <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2 border-b border-gold/20 pb-2.5">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               {!isEnded ? (
-                <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/15 px-2 py-1 text-[10.5px] font-bold text-emerald-400 border border-emerald-500/30 backdrop-blur-md">
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/15 px-2 py-1 text-[0.72rem] font-bold text-emerald-400 border border-emerald-500/30 backdrop-blur-md">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#34d399]" />
                   <span>مزاد نخبة مباشر</span>
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-2 py-1 text-[10.5px] font-bold text-slate-200 border border-white/15">
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-2 py-1 text-[0.72rem] font-bold text-slate-200 border border-white/15">
                   <CheckCircle2 size={12} className="text-emerald-400" />
                   <span>اكتمل المزاد</span>
                 </span>
@@ -259,7 +259,7 @@ export function HeroAuctionCard({
                 <button
                   type="button"
                   onClick={() => setIsManualPaused((prev) => !prev)}
-                  className={`inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10.5px] font-bold border transition-all cursor-pointer backdrop-blur-md active:scale-95 ${
+                  className={`inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[0.72rem] font-bold border transition-all cursor-pointer backdrop-blur-md active:scale-95 ${
                     isManualPaused
                       ? 'bg-amber-500/25 border-amber-400/60 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.35)]'
                       : isHovered
@@ -319,7 +319,7 @@ export function HeroAuctionCard({
         <div className="w-full space-y-3">
           {/* Elevated Price & Countdown Ticker Card */}
           <div className="rounded-xl border border-gold/35 bg-gradient-to-b from-[#213354]/95 via-[#192742]/95 to-[#131f36]/95 backdrop-blur-xl p-3 sm:p-3.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_6px_20px_rgba(0,0,0,0.35)]">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               {/* Price section with live pulse flash */}
               <div>
                 <span className="block text-[11px] font-bold text-slate-200">
@@ -366,7 +366,7 @@ export function HeroAuctionCard({
             {!isEnded ? (
               <Link
                 href={auctionUrl}
-                className="group btn btn-gold w-full h-[46px] rounded-xl flex items-center justify-center gap-2 text-sm sm:text-base font-black shadow-lg shadow-gold/25 hover:shadow-gold/45 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer"
+                className="group btn btn-gold w-full min-h-[2.875rem] h-auto py-2.5 text-center flex-wrap rounded-xl flex items-center justify-center gap-2 text-sm sm:text-base font-black shadow-lg shadow-gold/25 hover:shadow-gold/45 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer"
               >
                 <Radio className="w-4 h-4 text-navy animate-pulse" />
                 <span>دخول مزاد اللوحة الآن</span>
@@ -378,7 +378,7 @@ export function HeroAuctionCard({
             ) : (
               <Link
                 href={auctionUrl}
-                className="group w-full h-[46px] rounded-xl bg-white/10 hover:bg-white/15 text-white border border-white/20 flex items-center justify-center gap-2 text-xs sm:text-sm font-black transition-all cursor-pointer shadow-xs"
+                className="group w-full min-h-[2.875rem] h-auto py-2.5 text-center flex-wrap rounded-xl bg-white/10 hover:bg-white/15 text-white border border-white/20 flex items-center justify-center gap-2 text-xs sm:text-sm font-black transition-all cursor-pointer shadow-xs"
               >
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 <span>تفاصيل اللوحة وترسية المزاد ({plateTitleAr})</span>

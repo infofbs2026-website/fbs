@@ -110,28 +110,13 @@
     @apply mx-auto w-full max-w-[1400px] px-4 sm:px-8 xl:px-10;
   }
 
+  /* Premium Fluid UI experiment: intrinsic grid responding to usable CSS space. */
   .hero-grid-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    align-items: center;
-    gap: 2rem;
-    width: 100%;
-  }
-
-  @media (min-width: 1024px) {
-    .hero-grid-layout {
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 3rem;
-      align-items: stretch;
-    }
-  }
-
-  @media (min-width: 1280px) {
-    .hero-grid-layout {
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 3.5rem;
-      align-items: stretch;
-    }
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 32rem), 1fr));
+    align-items: stretch;
+    gap: clamp(1.5rem, 3.5vw, 3.5rem);
+    inline-size: 100%;
   }
 
   .hero-video-cover {

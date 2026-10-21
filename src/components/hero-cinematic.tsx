@@ -145,7 +145,7 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
       {/* ============================================================== */}
       {/* 1. HERO SECTION: FULL-BLEED CINEMATIC 1080p BACKGROUND VIDEO    */}
       {/* ============================================================== */}
-      <section className="relative w-full min-h-[100dvh] flex flex-col justify-center items-center pt-24 pb-14 sm:pt-28 sm:pb-20 lg:py-24 text-white overflow-hidden bg-[#060a14]">
+      <section className="relative w-full min-h-[100svh] lg:min-h-[100dvh] flex flex-col justify-center items-center pt-24 pb-14 sm:pt-28 sm:pb-20 lg:py-24 text-white overflow-hidden bg-[#060a14]">
         
         {/* Background Video Layer: 100% full bleed, edge-to-edge */}
         <div
@@ -217,7 +217,7 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
                     : 'opacity-0 translate-y-6 pointer-events-none'
                 }`}
               >
-                <h1 className="mt-4 sm:mt-5 max-w-2xl text-4xl sm:text-5xl lg:text-[3.9rem] xl:text-[4.5rem] font-black leading-[1.08] tracking-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] text-center sm:text-start mx-auto sm:mx-0 w-full">
+                <h1 className="mt-[clamp(1rem,2vw,1.25rem)] max-w-2xl text-[clamp(2.2rem,4vw,4.25rem)] font-black leading-[1.08] tracking-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)] text-center sm:text-start mx-auto sm:mx-0 w-full">
                   لوحتك الاستثنائية
                   <br />
                   <span className="gold-gradient-text drop-shadow-[0_2px_14px_rgba(0,0,0,0.85)]">تبدأ من هنا.</span>
@@ -232,13 +232,13 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
                 }`}
               >
                 {/* Single-line punchy subtitle spanning the full width */}
-                <div className="relative mt-2.5 sm:mt-4 w-full max-w-[660px] mx-auto sm:mx-0 text-center sm:text-start">
+                <div className="relative mt-2.5 sm:mt-4 w-full max-w-[42rem] mx-auto sm:mx-0 text-center sm:text-start">
                   <div
                     className="absolute inset-0 -inset-y-2 rounded-2xl bg-[#040814]/40 blur-md pointer-events-none"
                     aria-hidden="true"
                   />
                   <p
-                    className="relative text-xs sm:text-base lg:text-[16.5px] font-medium text-slate-200 leading-relaxed"
+                    className="relative text-[clamp(0.9rem,1.15vw,1.0625rem)] font-medium text-slate-200 leading-relaxed"
                     style={{
                       textShadow:
                         '0 1px 3px rgba(0, 0, 0, 0.95), 0 3px 10px rgba(0, 0, 0, 0.9), 0 6px 20px rgba(0, 0, 0, 0.85)'
@@ -259,29 +259,29 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
               }`}
             >
               {/* Action Buttons Row */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 max-w-[660px] mx-auto sm:mx-0 w-full">
+              <div className="flex flex-wrap items-stretch gap-[clamp(.75rem,1.5vw,1rem)] max-w-[42rem] mx-auto sm:mx-0 w-full">
                 <Link
                   href="/auctions"
-                  className="group btn btn-gold text-sm sm:text-base font-black h-12 sm:h-[50px] flex-1 justify-center gap-2.5 shadow-2xl transition-all duration-300 hover:shadow-[0_0_25px_rgba(217,184,127,0.5)] hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap px-6 w-full sm:w-auto"
+                  className="group btn btn-gold text-sm sm:text-base font-black min-h-12 h-auto py-3 flex-[1_1_15rem] min-w-0 justify-center gap-2.5 shadow-2xl transition-all duration-300 hover:shadow-[0_0_25px_rgba(217,184,127,0.5)] hover:scale-[1.02] active:scale-[0.98] px-4 sm:px-6 w-full"
                 >
                   <Gavel className="w-5 h-5 text-navy shrink-0 transition-transform duration-300 group-hover:-rotate-12" />
-                  <span className="whitespace-nowrap">استكشف المزادات الحية</span>
+                  <span className="min-w-0 text-center">استكشف المزادات الحية</span>
                   <ArrowLeft className="w-4 h-4 text-navy/80 shrink-0 transition-transform duration-300 group-hover:-translate-x-1" />
                 </Link>
                 <Link
                   href="/sell-your-plate"
-                  className="group btn btn-outline-gold text-sm sm:text-base font-black h-12 sm:h-[50px] flex-1 justify-center gap-2.5 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-gold/55 bg-[#0a1224]/85 text-white hover:border-gold hover:bg-gold/20 whitespace-nowrap px-6 shadow-xl w-full sm:w-auto"
+                  className="group btn btn-outline-gold text-sm sm:text-base font-black min-h-12 h-auto py-3 flex-[1_1_15rem] min-w-0 justify-center gap-2.5 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-gold/55 bg-[#0a1224]/85 text-white hover:border-gold hover:bg-gold/20 px-4 sm:px-6 shadow-xl w-full"
                 >
                   <SvgPlatePlus className="w-5 h-5 text-gold shrink-0 transition-transform duration-300 group-hover:scale-110" />
-                  <span className="whitespace-nowrap">اعرض لوحتك الآن</span>
+                  <span className="min-w-0 text-center">اعرض لوحتك الآن</span>
                   <ArrowUpLeft className="w-4 h-4 text-gold/80 shrink-0 transition-transform duration-300 group-hover:-translate-x-0.5 group-hover:-translate-y-0.5" />
                 </Link>
               </div>
 
-              {/* Streamlined Quick Search Bar: Positioned below buttons, max-w-[660px] */}
+              {/* Streamlined Quick Search Bar: Positioned below buttons, max-w-[42rem] */}
               <form
                 onSubmit={handleSearchSubmit}
-                className="mt-3.5 sm:mt-4 w-full max-w-[660px] mx-auto sm:mx-0"
+                className="mt-3.5 sm:mt-4 w-full max-w-[42rem] mx-auto sm:mx-0"
               >
                 <div className="relative flex items-center rounded-xl sm:rounded-2xl border border-gold/40 bg-gradient-to-b from-[#111c33]/90 via-[#0b1324]/90 to-[#070d1a]/95 p-1.5 sm:p-2 backdrop-blur-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.18)] transition-all focus-within:border-gold focus-within:ring-2 focus-within:ring-gold/30">
                   <div className="ps-3 pe-2 text-gold flex items-center justify-center shrink-0">
@@ -292,7 +292,7 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="ابحث برقم أو حرف..."
-                    className="w-full bg-transparent text-xs sm:text-sm font-bold text-white placeholder:text-slate-400 focus:outline-none px-2 h-10 sm:h-11"
+                    className="w-full min-w-0 flex-1 bg-transparent text-xs sm:text-sm font-bold text-white placeholder:text-slate-400 focus:outline-none px-2 h-10 sm:h-11"
                     aria-label="ابحث برقم أو حرف"
                   />
                   {searchQuery && (

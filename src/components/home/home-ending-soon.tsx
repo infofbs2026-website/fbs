@@ -310,7 +310,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
 
   return (
     <section
-      className="relative overflow-hidden py-16 sm:py-24 text-white select-none border-y border-[#d9b87f]/35"
+      className="relative overflow-hidden py-[clamp(3rem,6vw,6rem)] text-white select-none border-y border-[#d9b87f]/35"
       style={{
         background: 'linear-gradient(180deg, #091222 0%, #111f38 35%, #152646 65%, #0a1324 100%)'
       }}
@@ -331,28 +331,28 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
       </div>
 
       {/* Main Container: Strictly Constrained to Max 1400px */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="w-full max-w-[87.5rem] mx-auto px-[clamp(1rem,3vw,2.5rem)] relative z-10">
         <ScrollReveal direction="up" delay={30}>
           {/* Header Bar */}
-          <div className="mb-8 sm:mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-end text-center lg:text-start">
-            <div className="flex flex-col items-center lg:items-start">
+          <div className="mb-[clamp(1.5rem,3vw,2.5rem)] flex flex-col justify-between gap-6 xl:flex-row xl:items-end text-center xl:text-start">
+            <div className="flex flex-col items-center xl:items-start">
               {/* Prestige Golden Stage Badge */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-gold/55 bg-gradient-to-r from-gold/30 via-gold/15 to-amber-500/20 px-4.5 py-1.5 text-xs sm:text-sm font-black text-gold-light backdrop-blur-md shadow-[0_0_25px_rgba(217,184,127,0.3)] mb-5 mx-auto lg:mx-0">
+              <div className="inline-flex items-center gap-2 rounded-full border border-gold/55 bg-gradient-to-r from-gold/30 via-gold/15 to-amber-500/20 px-4.5 py-1.5 text-xs sm:text-sm font-black text-gold-light backdrop-blur-md shadow-[0_0_25px_rgba(217,184,127,0.3)] mb-5 mx-auto xl:mx-0">
                 <Flame size={16} className="text-amber-400 shrink-0 animate-bounce" />
                 <span className="tracking-wide">المسرح الماسي · فرص اللحظات الأخيرة</span>
               </div>
 
-              <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-[2.75rem] leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] text-center lg:text-start">
+              <h2 className="text-[clamp(1.75rem,3.2vw,2.75rem)] font-black tracking-tight text-white leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] text-center xl:text-start">
                 مزادات <span className="bg-gradient-to-r from-gold via-gold-light to-amber-300 bg-clip-text text-transparent">اللحظات الأخيرة</span> والفرص النادرة
               </h2>
 
-              <p className="mt-3.5 max-w-3xl text-base sm:text-lg leading-relaxed text-slate-200 font-medium text-center lg:text-start mx-auto lg:mx-0">
+              <p className="mt-3.5 max-w-3xl text-[clamp(1rem,1.3vw,1.125rem)] leading-relaxed text-slate-200 font-medium text-center xl:text-start mx-auto xl:mx-0">
                 فرص استثنائية في دقائقها الأخيرة للمزايدة الحية واقتناء أندر اللوحات الملكية بالمملكة.
               </p>
             </div>
 
             {/* Desktop Controls */}
-            <div className="hidden lg:flex items-center gap-3 self-end">
+            <div className="hidden xl:flex items-center gap-3 self-end">
               <div className="flex items-center gap-2" dir="ltr">
                 <button
                   type="button"
@@ -404,7 +404,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
           {/* Continuous Gliding Track: Hardware GPU Accelerated */}
           <div
             ref={trackRef}
-            className="flex gap-6 will-change-transform"
+            className="flex gap-[clamp(1rem,2vw,1.5rem)] will-change-transform"
             style={{
               backfaceVisibility: 'hidden',
               WebkitBackfaceVisibility: 'hidden',
@@ -424,7 +424,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
                   dir="rtl"
                   onMouseEnter={handleCardMouseEnter}
                   onMouseLeave={handleCardMouseLeave}
-                  className="relative shrink-0 w-[calc(100vw-2.5rem)] max-w-[420px] sm:w-[420px] rounded-3xl overflow-hidden border border-gold/35 hover:border-gold shadow-[0_20px_50px_rgba(0,0,0,0.65)] hover:shadow-[0_25px_60px_rgba(217,184,127,0.35)] transition-all duration-200 bg-gradient-to-b from-[#141f38]/95 via-[#0e172a]/95 to-[#080e1c]/98 backdrop-blur-2xl p-5 sm:p-6 flex flex-col justify-between"
+                  className="relative shrink-0 w-[min(26.25rem,calc(100dvw_-_3rem))] max-w-full rounded-3xl overflow-hidden border border-gold/35 hover:border-gold shadow-[0_20px_50px_rgba(0,0,0,0.65)] hover:shadow-[0_25px_60px_rgba(217,184,127,0.35)] transition-all duration-200 bg-gradient-to-b from-[#141f38]/95 via-[#0e172a]/95 to-[#080e1c]/98 backdrop-blur-2xl p-5 sm:p-6 flex flex-col justify-between"
                   style={{
                     contain: 'layout paint',
                     transform: 'translateZ(0)',
@@ -438,7 +438,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
                   {/* -------------------------------------------------------- */}
                   {/* POSTER HEADER: LOT NUMBER & LIVE STATUS (ENLARGED)       */}
                   {/* -------------------------------------------------------- */}
-                  <div className="flex items-center justify-between pb-3.5 border-b border-gold/20">
+                  <div className="flex flex-wrap items-center justify-between gap-2 pb-3.5 border-b border-gold/20">
                     <div className="flex items-center gap-2.5">
                       <span className="inline-flex items-center gap-2 rounded-xl border border-gold/45 bg-gold/20 px-3.5 py-1.5 text-xs sm:text-sm font-black text-gold-light shadow-sm">
                         <Gavel size={14} className="text-gold" />
@@ -483,7 +483,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
                   {/* -------------------------------------------------------- */}
                   <div className="pt-4 border-t border-gold/20 flex flex-col gap-3.5">
                     {/* Upper row: Current Bid on Right (RTL start), Countdown on Left (RTL end) */}
-                    <div className="flex items-center justify-between gap-3">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
                       <div>
                         <span className="text-xs font-bold text-slate-300 block mb-1">
                           المزايدة الحالية (أعلى عرض)
@@ -522,7 +522,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
         </div>
 
         {/* Mobile Carousel Controls Bar: Positioned Below Carousel */}
-        <div className="mt-4 mb-2 flex lg:hidden items-center justify-between gap-3 px-1">
+        <div className="mt-4 mb-2 flex xl:hidden items-center justify-between gap-3 px-1">
           <div className="flex items-center gap-2" dir="ltr">
             <button
               type="button"
@@ -555,7 +555,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
 
         {/* Bottom Trust & Guarantee Strip */}
         <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10 pt-5">
-          <div className="flex items-center gap-3 text-xs font-bold text-slate-300">
+          <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-300">
             <span className="flex items-center gap-1.5 text-gold-light">
               <ShieldCheck size={15} className="text-gold" />
               <span>حساب ضمان Escrow رسمي معتمد بنكياً</span>
