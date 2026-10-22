@@ -156,8 +156,8 @@ const EndingSoonCard = memo(function EndingSoonCard({
 export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
   const plates = endingSoonAuctions && endingSoonAuctions.length > 0 ? endingSoonAuctions : [];
 
-  // Duplicated set for seamless infinite desktop GPU marquee
-  const desktopLoopedPlates = plates.length > 0 ? [...plates, ...plates] : [];
+  // Duplicated set for seamless infinite continuous GPU glide across all screen sizes
+  const loopedPlates = plates.length > 0 ? [...plates, ...plates] : [];
 
   // 30-Second Calm Clock: zero CPU drain
   const [, setTimeTick] = useState<number>(0);
@@ -168,33 +168,47 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
     return () => clearInterval(timer);
   }, []);
 
-  // Desktop Manual Nudge Support
-  const [desktopShift, setDesktopShift] = useState(0);
-  const [isManualDesktop, setIsManualDesktop] = useState(false);
+  // Unified Manual Nudge Support (Desktop + Mobile)
+  const [shift, setShift] = useState(0);
+  const [isManual, setIsManual] = useState(false);
   const manualTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const nudgeDesktop = (direction: 'next' | 'prev') => {
-    setIsManualDesktop(true);
-    const step = 315;
-    setDesktopShift((prev) => (direction === 'next' ? prev - step : prev + step));
+  const nudge = (direction: 'next' | 'prev') => {
+    setIsManual(true);
+    const step = typeof window !== 'undefined' && window.innerWidth < 640 ? 275 : 315;
+    setShift((prev) => (direction === 'next' ? prev - step : prev + step));
 
     if (manualTimerRef.current) clearTimeout(manualTimerRef.current);
     manualTimerRef.current = setTimeout(() => {
-      setIsManualDesktop(false);
-      setDesktopShift(0);
+      setIsManual(false);
+      setShift(0);
     }, 4500);
   };
 
-  // Mobile Native Touch Scroll Container
-  const mobileScrollRef = useRef<HTMLDivElement | null>(null);
+  // Mobile Touch Swipe Gesture Support (Without blocking vertical page scrolling)
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
 
-  const nudgeMobile = (direction: 'next' | 'prev') => {
-    if (!mobileScrollRef.current) return;
-    const step = 300;
-    mobileScrollRef.current.scrollBy({
-      left: direction === 'next' ? -step : step,
-      behavior: 'smooth'
-    });
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null || touchStartYRef.current === null) return;
+    const diffX = e.changedTouches[0].clientX - touchStartXRef.current;
+    const diffY = e.changedTouches[0].clientY - touchStartYRef.current;
+
+    // Detect horizontal swipe (horizontal distance > 35px and greater than vertical scroll)
+    if (Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY)) {
+      if (diffX < 0) {
+        nudge('next');
+      } else {
+        nudge('prev');
+      }
+    }
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
   };
 
   if (plates.length === 0) return null;
@@ -204,9 +218,9 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
       {/* Top 1px Accent Line */}
       <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#D9BB81]/40 to-transparent pointer-events-none" />
 
-      {/* Main Container: Constrained to ~1220px (giving ~80% width with generous breathing side margins) */}
+      {/* Main Container: Constrained to ~1220px with zero vertical layout jumping */}
       <div className="max-w-[1220px] mx-auto px-6 sm:px-8 lg:px-10 relative z-10">
-        <ScrollReveal direction="up" delay={30}>
+        <ScrollReveal direction="none" delay={0}>
           {/* Header Bar */}
           <div className="mb-6 sm:mb-8 md:mb-9 flex flex-col justify-between gap-5 sm:gap-6 lg:flex-row lg:items-end text-center lg:text-start">
             <div className="flex flex-col items-center lg:items-start">
@@ -232,7 +246,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
               <div className="flex items-center gap-2" dir="ltr">
                 <button
                   type="button"
-                  onClick={() => nudgeDesktop('prev')}
+                  onClick={() => nudge('prev')}
                   aria-label="السابق"
                   className="group flex h-10 w-10 items-center justify-center rounded-xl border border-[#E2E0D8] bg-[#F7F6F3] text-[#14243C] shadow-xs transition-all duration-200 hover:border-[#D9BB81] hover:scale-105 active:scale-95"
                   title="اللوحة السابقة"
@@ -241,7 +255,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
                 </button>
                 <button
                   type="button"
-                  onClick={() => nudgeDesktop('next')}
+                  onClick={() => nudge('next')}
                   aria-label="التالي"
                   className="group flex h-10 w-10 items-center justify-center rounded-xl border border-[#E2E0D8] bg-[#F7F6F3] text-[#14243C] shadow-xs transition-all duration-200 hover:border-[#D9BB81] hover:scale-105 active:scale-95"
                   title="اللوحة التالية"
@@ -262,22 +276,27 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
         </ScrollReveal>
 
         {/* ============================================================== */}
-        {/* DESKTOP VIEW (lg+): Hardware GPU Infinite Glide (Zero-Jank)    */}
+        {/* UNIFIED CONTINUOUS GLIDE CAROUSEL (Mobile + Desktop Smoothness) */}
         {/* ============================================================== */}
-        <div className="hidden lg:block relative w-full overflow-hidden py-3" dir="ltr">
+        <div
+          className="relative w-full overflow-hidden py-3"
+          dir="ltr"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           <div
-            className={`flex gap-5 will-change-transform ${
-              isManualDesktop ? 'transition-transform duration-400 ease-out' : 'animate-fbs-carousel-glide'
+            className={`flex gap-3.5 sm:gap-5 will-change-transform ${
+              isManual ? 'transition-transform duration-400 ease-out' : 'animate-fbs-carousel-glide'
             }`}
             style={
-              isManualDesktop
-                ? { transform: `translate3d(${desktopShift}px, 0, 0)` }
+              isManual
+                ? { transform: `translate3d(${shift}px, 0, 0)` }
                 : undefined
             }
           >
-            {desktopLoopedPlates.map((plate, idx) => (
+            {loopedPlates.map((plate, idx) => (
               <EndingSoonCard
-                key={`desktop-${plate.id || 'plate'}-${idx}`}
+                key={`carousel-${plate.id || 'plate'}-${idx}`}
                 plate={plate}
                 lotNum={(idx % plates.length) + 1}
                 timeInfo={getAuctionTime((idx % plates.length) + 1)}
@@ -286,42 +305,23 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
           </div>
         </div>
 
-        {/* ============================================================== */}
-        {/* MOBILE VIEW (<lg): Native Touch Scroll-Snap (120Hz Smoothness) */}
-        {/* ============================================================== */}
-        <div
-          ref={mobileScrollRef}
-          className="flex lg:hidden overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar gap-3.5 sm:gap-4 py-3 px-1 touch-pan-x"
-          dir="rtl"
-        >
-          {plates.map((plate, idx) => (
-            <div key={`mob-${plate.id || 'plate'}-${idx}`} className="shrink-0 snap-center">
-              <EndingSoonCard
-                plate={plate}
-                lotNum={idx + 1}
-                timeInfo={getAuctionTime(idx + 1)}
-              />
-            </div>
-          ))}
-        </div>
-
         {/* Mobile Carousel Controls Bar: Positioned Below Carousel */}
         <div className="mt-4 mb-2 flex lg:hidden items-center justify-between gap-3 px-1">
           <div className="flex items-center gap-2" dir="ltr">
             <button
               type="button"
-              onClick={() => nudgeMobile('prev')}
+              onClick={() => nudge('prev')}
               aria-label="السابق"
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#E2E0D8] bg-white text-[#14243C] shadow-xs transition-all active:scale-95"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#E2E0D8] bg-white text-[#14243C] shadow-xs transition-all active:scale-95 cursor-pointer"
               title="اللوحة السابقة"
             >
               <ChevronLeft size={18} />
             </button>
             <button
               type="button"
-              onClick={() => nudgeMobile('next')}
+              onClick={() => nudge('next')}
               aria-label="التالي"
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#E2E0D8] bg-white text-[#14243C] shadow-xs transition-all active:scale-95"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#E2E0D8] bg-white text-[#14243C] shadow-xs transition-all active:scale-95 cursor-pointer"
               title="اللوحة التالية"
             >
               <ChevronRight size={18} />

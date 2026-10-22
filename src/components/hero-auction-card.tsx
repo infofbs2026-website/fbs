@@ -309,7 +309,7 @@ export function HeroAuctionCard({
         <div className="w-full space-y-2 sm:space-y-2.5 mt-auto">
           {/* Elevated Frosted Price & Countdown Shelf */}
           <div className="rounded-xl border border-white/15 bg-white/[0.06] backdrop-blur-xl p-2 sm:p-2.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_8px_20px_rgba(0,0,0,0.35)]">
-            <div className="grid grid-cols-2 divide-x divide-x-reverse divide-white/10 items-center">
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-1">
               {/* Price Column: Centered with Icon & Label */}
               <div className="flex flex-col items-center justify-center text-center px-1">
                 <div className="flex items-center justify-center gap-1.5 text-[10.5px] sm:text-[11px] font-bold text-slate-300">
@@ -328,6 +328,9 @@ export function HeroAuctionCard({
                   <SarSymbol className="w-3.5 h-3.5 text-gold inline-block self-center drop-shadow-xs" />
                 </div>
               </div>
+
+              {/* Centered Vertical Divider: Perfectly centered between Price & Timer */}
+              <div className="h-7 sm:h-8 w-[1px] bg-white/20 shrink-0 self-center" aria-hidden="true" />
 
               {/* Countdown Timer Column: Centered with Icon & Label */}
               <div className="flex flex-col items-center justify-center text-center px-1">
