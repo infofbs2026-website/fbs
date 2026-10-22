@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { IBM_Plex_Sans_Arabic } from 'next/font/google';
+import Script from 'next/script';
 import { Header, Footer } from '@/components/shell';
+import { GlobalAtmosphere } from '@/components/global-atmosphere';
 import './globals.css';
 
 const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
@@ -23,26 +25,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ar" dir="rtl" className={ibmPlexSansArabic.variable} suppressHydrationWarning>
       <head>
         <link rel="preload" as="image" href="/videos/fbs-hero-poster.webp" type="image/webp" />
-        <script
+        <Script
+          id="fbs-theme-init"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `(function(){
   try {
     var m = document.cookie.match(/(?:^|; )fbs_signature_theme=([^;]+)/);
-    var t = (m && m[1]) || localStorage.getItem('fbs_signature_theme') || 'light';
-    if (t === 'dark' || t === 'light') {
-      document.documentElement.setAttribute('data-theme', t);
-    }
+    var t = (m && m[1]) || localStorage.getItem('fbs_signature_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', 'dark');
   } catch(e) {}
 })();`,
           }}
         />
       </head>
-      <body className="font-sans antialiased text-slate-900 bg-white overflow-x-clip">
+      <body className="font-sans antialiased text-[#14243C] bg-[#F7F6F3] overflow-x-clip selection:bg-gold/30 selection:text-[#14243C]">
+        <GlobalAtmosphere />
         <a href="#main" className="fixed start-4 top-2 z-50 -translate-y-24 rounded bg-gold p-3 text-navy focus:translate-y-0">
           تخطي إلى المحتوى
         </a>
         <Header />
-        <main id="main" className="min-h-[65vh] bg-[#fcfcfd] overflow-x-clip">
+        <main id="main" className="relative z-10 min-h-[65vh] bg-transparent overflow-x-clip">
           {children}
         </main>
         <Footer />

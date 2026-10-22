@@ -14,4 +14,10 @@ dist/
 # Sensitive or large private files
 *سجل تجاري*
 scratch/
+scripts/*.png
+scripts/audit-results/
+scripts/quick-verify/
+.agents/
+skills-lock.json
+
 

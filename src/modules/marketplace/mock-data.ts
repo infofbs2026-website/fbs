@@ -154,7 +154,7 @@ export const fallbackPlates: MarketplacePlate[] = [
   {
     id: 'sample-6',
     slug: 'hba-5333',
-    lettersAr: ['ا', 'ب', 'هـ'],
+    lettersAr: ['هـ', 'ب', 'أ'],
     lettersEn: ['H', 'B', 'A'],
     numbers: '5333',
     city: 'قلوة',

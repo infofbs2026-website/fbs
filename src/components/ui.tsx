@@ -199,11 +199,47 @@ function parsePlateData(
     en: d
   }));
 
-  const rawAr = Array.isArray(lettersAr) ? lettersAr.join('') : (lettersAr || '');
-  const cleanAr = rawAr.replace(/[\s\-_]/g, '').split('');
+  // Clean Arabic letters: treat 'هـ' as 1 grapheme, strip rogue dots/commas/punctuation
+  let cleanAr: string[] = [];
+  if (Array.isArray(lettersAr)) {
+    cleanAr = lettersAr
+      .map((l) => {
+        const s = String(l || '').replace(/[\s\-_,\/\\\.،\*\#]/g, '');
+        if (s.startsWith('ه') && (s.includes('ـ') || s.includes('\u0640'))) {
+          return 'هـ';
+        }
+        return s.replace(/[\u0640ـ]/g, '');
+      })
+      .filter(Boolean);
+  } else {
+    const raw = String(lettersAr || '').trim();
+    const tokens = raw.includes(' ')
+      ? raw.split(/\s+/)
+      : raw.match(/(هـ|[\u0600-\u06FF])/g) || [];
+    cleanAr = tokens
+      .map((l) => {
+        const s = l.replace(/[\s\-_,\/\\\.،\*\#]/g, '');
+        if (s.startsWith('ه') && (s.includes('ـ') || s.includes('\u0640'))) {
+          return 'هـ';
+        }
+        return s.replace(/[\u0640ـ]/g, '');
+      })
+      .filter(Boolean);
+  }
 
-  const rawEn = Array.isArray(lettersEn) ? lettersEn.join('') : (lettersEn || '');
-  const cleanEn = rawEn.replace(/[\s\-_]/g, '').toUpperCase().split('');
+  // Clean Latin letters: strict uppercase A-Z only, discard punctuation and stray characters
+  let cleanEn: string[] = [];
+  if (Array.isArray(lettersEn)) {
+    cleanEn = lettersEn
+      .map((l) => String(l || '').replace(/[^A-Za-z]/g, '').toUpperCase())
+      .filter(Boolean);
+  } else {
+    cleanEn = String(lettersEn || '')
+      .replace(/[^A-Za-z]/g, '')
+      .toUpperCase()
+      .split('')
+      .filter(Boolean);
+  }
 
   const maxLen = Math.max(cleanAr.length, cleanEn.length);
   const letterPairs: { ar: string; en: string }[] = [];
@@ -258,7 +294,7 @@ export function PlateVisualizer({
     numbers
   );
 
-  const emblemSize = large ? 24 : compact ? 16 : 19;
+  const emblemSize = large ? 24 : compact ? 13 : 19;
   const digitCount = digitPairs.length || 1;
   const letterCount = letterPairs.length || 1;
 
@@ -268,7 +304,7 @@ export function PlateVisualizer({
         isSmall ? 'is-small' : ''
       } ${compact ? 'compact' : ''} ${large ? 'large' : ''} ${
         dark ? 'plate-dark-pedestal' : ''
-      } ${className}`}
+      } digits-${digitCount} letters-${letterCount} ${className}`}
       style={{
         ['--digit-count' as any]: digitCount,
         ['--letter-count' as any]: letterCount
@@ -360,7 +396,7 @@ export function PlateVisualizer({
 
           {/* Column 3: Kingdom Pillar (Stacked Vertically: Palm/Swords -> السعودية -> KSA -> Black Seal) */}
           <div className="q-kingdom-pillar">
-            <SaudiEmblem size={emblemSize} strokeColor="#0b0f17" fillColor="#0b0f17" />
+            <SaudiEmblem size={emblemSize} strokeColor="#0b0f17" fillColor="#0b0f17" className="q-saudi-emblem shrink-0" />
             <span className="q-saudi-text">السعودية</span>
             <span className="q-ksa-text">KSA</span>
             <span className="q-black-seal" title="الختم الأمني المعتمد" />
@@ -429,7 +465,7 @@ export function PlateVisualizer({
 
           {/* Right Golden Amber Kingdom Pillar */}
           <div className="q-kingdom-pillar q-pillar-right-transport">
-            <SaudiEmblem size={emblemSize} strokeColor="#0b0f17" fillColor="#0b0f17" />
+            <SaudiEmblem size={emblemSize} strokeColor="#0b0f17" fillColor="#0b0f17" className="q-saudi-emblem shrink-0" />
             <span className="q-saudi-text">السعودية</span>
             <span className="q-ksa-text">KSA</span>
             <span className="q-transport-hologram-seal" title="الختم الأمني الفضي المعتمد">
@@ -476,7 +512,7 @@ export function PlateVisualizer({
 
           {/* Center: Kingdom Pillar (Saudi Emblem, السعودية, KSA in the middle) */}
           <div className="q-kingdom-pillar q-pillar-center">
-            <SaudiEmblem size={emblemSize} strokeColor="#0b0f17" fillColor="#0b0f17" />
+            <SaudiEmblem size={emblemSize} strokeColor="#0b0f17" fillColor="#0b0f17" className="q-saudi-emblem shrink-0" />
             <span className="q-saudi-text">السعودية</span>
             <span className="q-ksa-text">KSA</span>
             <div className="q-pillar-bottom-private">

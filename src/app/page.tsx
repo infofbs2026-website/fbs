@@ -11,13 +11,18 @@ const HomeEndingSoon = dynamic(
   { ssr: true }
 );
 
-const HomeStats = dynamic(
-  () => import('@/components/home/home-stats').then((m) => m.HomeStats),
+const HomeLiveAuctions = dynamic(
+  () => import('@/components/home/home-live-auctions').then((m) => m.HomeLiveAuctions),
   { ssr: true }
 );
 
 const HomeHowItWorks = dynamic(
   () => import('@/components/home/home-how-it-works').then((m) => m.HomeHowItWorks),
+  { ssr: true }
+);
+
+const HomeStats = dynamic(
+  () => import('@/components/home/home-stats').then((m) => m.HomeStats),
   { ssr: true }
 );
 
@@ -51,7 +56,7 @@ export default async function Home() {
   return (
     <>
       {/* ============================================================== */}
-      {/* 1. HERO CINEMATIC (IMMEDIATE CRITICAL PATH - ZERO LATENCY)     */}
+      {/* 01. HERO CINEMATIC (MIDNIGHT NAVY #08162B)                     */}
       {/* ============================================================== */}
       <HeroCinematic
         initialPlate={liveAuctions[0] || displayPlates[0]}
@@ -59,12 +64,33 @@ export default async function Home() {
       />
 
       {/* ============================================================== */}
-      {/* BELOW THE FOLD SECTIONS: STREAMLINED & LUXURIOUS ARCHITECTURE  */}
+      {/* 02. مزادات اللحظات الأخيرة (PURE WHITE #FFFFFF)                */}
       {/* ============================================================== */}
       <HomeEndingSoon endingSoonAuctions={carouselAuctions} />
+
+      {/* ============================================================== */}
+      {/* 03. كيف تعمل المنصة (SOFT GRAY #F0F1F2 + CALM ICONS)           */}
+      {/* ============================================================== */}
       <HomeHowItWorks />
+
+      {/* ============================================================== */}
+      {/* 04. اللوحات المميزة (WARM IVORY #F7F6F3 + 2x4 COMPACT CARDS)   */}
+      {/* ============================================================== */}
+      <HomeLiveAuctions liveAuctions={displayPlates.slice(0, 8)} />
+
+      {/* ============================================================== */}
+      {/* 05. مزادات حصرية / الإحصائيات (MIDNIGHT NAVY #08162B + GOLD)   */}
+      {/* ============================================================== */}
       <HomeStats />
+
+      {/* ============================================================== */}
+      {/* 06. الثقة والمميزات (WARM IVORY #F7F6F3 + WHITE CARDS)         */}
+      {/* ============================================================== */}
       <HomeWhyFbs />
+
+      {/* ============================================================== */}
+      {/* EXECUTIVE CONCIERGE BANNER                                     */}
+      {/* ============================================================== */}
       <HomeConciergeCta />
     </>
   );

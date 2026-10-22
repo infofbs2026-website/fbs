@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   CheckCircle2,
   Clock,
+  TrendingUp,
   Pause,
   Play
 } from 'lucide-react';
@@ -210,7 +211,7 @@ export function HeroAuctionCard({
 
   return (
     <div
-      className="relative flex items-stretch justify-center lg:justify-end pt-0 pb-0 w-full h-full max-w-full overflow-hidden sm:overflow-visible touch-pan-y"
+      className="@container relative flex flex-col items-center justify-center w-full max-w-full lg:h-full overflow-hidden sm:overflow-visible touch-pan-y"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onTouchStart={handleTouchStart}
@@ -218,11 +219,11 @@ export function HeroAuctionCard({
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchCancel}
     >
-      {/* Glowing Ambient Aura */}
-      <div className="absolute h-80 w-80 rounded-full bg-gradient-to-tr from-gold/30 via-indigo-600/20 to-transparent blur-3xl pointer-events-none lg:end-12" />
+      {/* Subtle Ambient Gold Horizon Glow */}
+      <div className="absolute h-64 w-64 rounded-full bg-gold/10 blur-3xl pointer-events-none lg:end-4 -top-8" />
 
-      {/* Main Glassmorphic Auction Card (Narrower width: max-w-[420px], full height matching right column) */}
-      <div className="relative w-full max-w-[420px] xl:max-w-[430px] mx-auto lg:ms-auto lg:mx-0 rounded-3xl border border-gold/35 bg-gradient-to-b from-[#141f38]/95 via-[#0e172a]/95 to-[#080e1c]/98 backdrop-blur-2xl p-4 sm:p-5 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65),0_10px_25px_-5px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.14)] transition-all duration-300 flex flex-col justify-between h-full">
+      {/* Main Glassmorphic Auction Card (Authentic Apple visionOS Frosted Glass) */}
+      <div id="hero-auction-card" className="relative w-full max-w-[21.5rem] xl:max-w-[22rem] lg:h-full mx-auto rounded-2xl sm:rounded-3xl border border-white/20 bg-gradient-to-b from-white/[0.09] via-white/[0.03] to-slate-950/45 backdrop-blur-2xl p-3 sm:p-3.5 xl:p-4 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.28)] transition-all duration-300 flex flex-col justify-between hover:border-white/30">
         
         {/* Top Slim Golden Progress Line (Visual Rotation Bar, Turns Amber When Paused) */}
         {platesPool.length > 1 && !isEnded && (
@@ -238,125 +239,117 @@ export function HeroAuctionCard({
           </div>
         )}
 
-        {/* Top Section: Header (Live Badge, Play/Pause Control, & Plate Identifier) */}
+        {/* Top Section: Clean Header (Live Badge on Right + Play/Pause Control on Left) */}
         <div className="w-full">
-          <div className="mb-2.5 flex items-center justify-between border-b border-gold/20 pb-2.5">
-            <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="mb-2 flex items-center justify-between border-b border-white/10 pb-2">
+            {/* 1. Live Badge: Direct and unadorned "مزاد مباشر" */}
+            <div>
               {!isEnded ? (
-                <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/15 px-2 py-1 text-[10.5px] font-bold text-emerald-400 border border-emerald-500/30 backdrop-blur-md">
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/20 px-2.5 py-1 text-[10.5px] sm:text-[11px] font-bold text-emerald-300 border border-emerald-400/35 backdrop-blur-md shadow-xs">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_#34d399]" />
-                  <span>مزاد نخبة مباشر</span>
+                  <span>مزاد مباشر</span>
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-2 py-1 text-[10.5px] font-bold text-slate-200 border border-white/15">
-                  <CheckCircle2 size={12} className="text-emerald-400" />
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1 text-[10.5px] sm:text-[11px] font-bold text-slate-200 border border-white/15">
+                  <CheckCircle2 size={11} className="text-emerald-400" />
                   <span>اكتمل المزاد</span>
                 </span>
               )}
-
-              {/* Interactive Play/Pause Toggle Pill */}
-              {!isEnded && platesPool.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => setIsManualPaused((prev) => !prev)}
-                  className={`inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10.5px] font-bold border transition-all cursor-pointer backdrop-blur-md active:scale-95 ${
-                    isManualPaused
-                      ? 'bg-amber-500/25 border-amber-400/60 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.35)]'
-                      : isHovered
-                        ? 'bg-amber-500/15 border-amber-500/35 text-amber-300/90'
-                        : 'bg-white/10 border-white/20 text-slate-200 hover:border-gold/50 hover:text-gold-light'
-                  }`}
-                  title={isManualPaused ? 'المعاينة معلّقة - اضغط للاستئناف' : 'اضغط لإيقاف التبديل وتثبيت هذه اللوحة'}
-                  aria-pressed={isManualPaused}
-                >
-                  {isManualPaused ? (
-                    <>
-                      <Play size={10} className="text-amber-400 fill-amber-400" />
-                      <span>معلّق للمعاينة</span>
-                    </>
-                  ) : (
-                    <>
-                      <Pause size={10} className="text-slate-300 fill-slate-300" />
-                      <span>معاينة تلقائية</span>
-                    </>
-                  )}
-                </button>
-              )}
             </div>
 
-            {/* Plate Identifier Badge */}
-            <span
-              className="font-norwester text-[11px] font-bold tracking-wider text-gold-light bg-[#1d2d4d]/90 border border-gold/35 px-2 py-0.5 rounded-md shadow-xs backdrop-blur-md"
-              dir="ltr"
-            >
-              FBS-{currentPlate.slug.toUpperCase()}
-            </span>
+            {/* 2. Repositioned Play/Pause Control (Replaces old FBS tag at the end) */}
+            {!isEnded && platesPool.length > 1 && (
+              <button
+                type="button"
+                onClick={() => setIsManualPaused((prev) => !prev)}
+                className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[10.5px] sm:text-[11px] font-bold border transition-all cursor-pointer backdrop-blur-md active:scale-95 ${
+                  isManualPaused
+                    ? 'bg-amber-500/30 border-amber-400/70 text-amber-200 shadow-[0_0_10px_rgba(245,158,11,0.35)]'
+                    : isHovered
+                      ? 'bg-white/15 border-white/30 text-amber-300'
+                      : 'bg-white/10 border-white/15 text-slate-200 hover:border-gold/50 hover:text-gold-light'
+                }`}
+                title={isManualPaused ? 'المعاينة معلّقة - اضغط للاستئناف' : 'اضغط لإيقاف التبديل وتثبيت هذه اللوحة'}
+                aria-pressed={isManualPaused}
+              >
+                {isManualPaused ? (
+                  <>
+                    <Play size={10} className="text-amber-400 fill-amber-400" />
+                    <span>معلّق</span>
+                  </>
+                ) : (
+                  <>
+                    <Pause size={10} className="text-slate-300 fill-slate-300" />
+                    <span>معاينة تلقائية</span>
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Middle Section: Authentic Saudi Plate Frontal View (Centered & fills vertical space gracefully) */}
-        <div className="my-auto py-1.5 w-full flex flex-col justify-center">
-          <div className="rounded-2xl p-2.5 sm:p-3 flex items-center justify-center bg-gradient-to-b from-[#0b1324] via-[#070d18] to-[#040812] border border-gold/30 shadow-[inset_0_2px_10px_rgba(0,0,0,0.7),0_8px_24px_rgba(0,0,0,0.4)] relative overflow-visible">
-            {/* Subtle Ambient Gold Glow behind Plate */}
-            <div className="absolute h-32 w-64 rounded-full bg-gold/15 blur-2xl pointer-events-none" />
-
-            <div
-              key={currentPlate.id}
-              className="relative z-10 w-full flex justify-center animate-plate-switch transition-transform duration-300 hover:scale-[1.01]"
-            >
-              <PlateVisualizer
-                lettersAr={currentPlate.lettersAr}
-                lettersEn={currentPlate.lettersEn}
-                numbers={currentPlate.numbers}
-                plateType={currentPlate.type}
-                className="w-full max-w-[365px]"
-              />
-            </div>
+        {/* Middle Section: Authentic Saudi Plate Floating Directly on VisionOS Glass (Un-nested) */}
+        <div className="flex-1 my-auto py-2.5 sm:py-3.5 xl:py-4.5 w-full flex flex-col justify-center items-center relative">
+          <div
+            key={currentPlate.id}
+            className="relative z-10 w-full flex justify-center animate-plate-switch transition-transform duration-300 hover:scale-[1.02]"
+          >
+            <PlateVisualizer
+              lettersAr={currentPlate.lettersAr}
+              lettersEn={currentPlate.lettersEn}
+              numbers={currentPlate.numbers}
+              plateType={currentPlate.type}
+              compact
+              className="w-full max-w-[270px] sm:max-w-[280px] xl:max-w-[290px] drop-shadow-[0_12px_28px_rgba(0,0,0,0.65)]"
+            />
           </div>
         </div>
 
-        {/* Bottom Section: Elevated Price/Timer Ticker + Direct Auction CTA */}
-        <div className="w-full space-y-3">
-          {/* Elevated Price & Countdown Ticker Card */}
-          <div className="rounded-xl border border-gold/35 bg-gradient-to-b from-[#213354]/95 via-[#192742]/95 to-[#131f36]/95 backdrop-blur-xl p-3 sm:p-3.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_6px_20px_rgba(0,0,0,0.35)]">
-            <div className="flex items-center justify-between">
-              {/* Price section with live pulse flash */}
-              <div>
-                <span className="block text-[11px] font-bold text-slate-200">
-                  {!isEnded ? 'أعلى مزايدة مسجلة' : 'سعر الترسية النهائي'}
-                </span>
+        {/* Bottom Section: Elevated Frosted Price/Timer Ticker + Direct Auction CTA */}
+        <div className="w-full space-y-2 sm:space-y-2.5 mt-auto">
+          {/* Elevated Frosted Price & Countdown Shelf */}
+          <div className="rounded-xl border border-white/15 bg-white/[0.06] backdrop-blur-xl p-2 sm:p-2.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_8px_20px_rgba(0,0,0,0.35)]">
+            <div className="grid grid-cols-2 divide-x divide-x-reverse divide-white/10 items-center">
+              {/* Price Column: Centered with Icon & Label */}
+              <div className="flex flex-col items-center justify-center text-center px-1">
+                <div className="flex items-center justify-center gap-1.5 text-[10.5px] sm:text-[11px] font-bold text-slate-300">
+                  <TrendingUp size={11.5} className="text-gold shrink-0" />
+                  <span>{!isEnded ? 'أعلى مزايدة' : 'سعر الترسية'}</span>
+                </div>
                 <div
-                  className={`mt-0.5 flex items-baseline gap-1.5 text-xl font-bold transition-all duration-300 rounded-lg px-1 -ms-1 ${
+                  className={`mt-0.5 flex items-baseline justify-center gap-1 font-bold transition-all duration-300 rounded-lg px-1 ${
                     priceFlash ? 'bg-gold/25 text-gold-light ring-2 ring-gold/40' : 'text-white'
                   }`}
-                  dir="ltr"
+                  dir="rtl"
                 >
-                  <span suppressHydrationWarning className="tabular-nums tracking-tight font-norwester text-2xl font-black text-white drop-shadow-xs">
+                  <span suppressHydrationWarning className="tabular-nums tracking-tight font-norwester text-base sm:text-lg xl:text-[20px] font-black text-white drop-shadow-xs" dir="ltr">
                     {formatEnglishAmount(currentPriceHalalas)}
                   </span>
-                  <SarSymbol className="w-4 h-4 text-gold inline-block self-center drop-shadow-xs" />
+                  <SarSymbol className="w-3.5 h-3.5 text-gold inline-block self-center drop-shadow-xs" />
                 </div>
               </div>
 
-              {/* Countdown timer section */}
-              <div className="text-end">
-                <span className="block text-[11px] font-bold text-slate-200 flex items-center justify-end gap-1.5">
-                  <Clock size={12} className={!isEnded ? 'text-emerald-400' : 'text-slate-400'} />
+              {/* Countdown Timer Column: Centered with Icon & Label */}
+              <div className="flex flex-col items-center justify-center text-center px-1">
+                <div className="flex items-center justify-center gap-1.5 text-[10.5px] sm:text-[11px] font-bold text-slate-300">
+                  <Clock size={11.5} className={`shrink-0 ${!isEnded ? 'text-emerald-400' : 'text-slate-400'}`} />
                   <span>{!isEnded ? 'الوقت المتبقي' : 'حالة المزاد'}</span>
-                </span>
-                <span
-                  suppressHydrationWarning
-                  className={`font-norwester text-base font-bold tracking-widest mt-0.5 block drop-shadow-xs ${
-                    !isEnded
-                      ? timeLeft < 600
-                        ? 'text-red-400 animate-pulse'
-                        : 'text-gold-light'
-                      : 'text-emerald-400 text-xs font-sans font-bold'
-                  }`}
-                  dir="ltr"
-                >
-                  {!isEnded ? formatTime(timeLeft) : 'منتهي (تم الرسو)'}
-                </span>
+                </div>
+                <div className="mt-0.5 flex items-baseline justify-center">
+                  <span
+                    suppressHydrationWarning
+                    className={`font-norwester text-xs sm:text-[13px] font-bold tracking-widest block drop-shadow-xs ${
+                      !isEnded
+                        ? timeLeft < 600
+                          ? 'text-red-400 animate-pulse'
+                          : 'text-gold-light'
+                        : 'text-emerald-400 text-xs font-sans font-bold'
+                    }`}
+                    dir="ltr"
+                  >
+                    {!isEnded ? formatTime(timeLeft) : 'منتهي (تم الرسو)'}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -366,23 +359,23 @@ export function HeroAuctionCard({
             {!isEnded ? (
               <Link
                 href={auctionUrl}
-                className="group btn btn-gold w-full h-[46px] rounded-xl flex items-center justify-center gap-2 text-sm sm:text-base font-black shadow-lg shadow-gold/25 hover:shadow-gold/45 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer"
+                className="group btn btn-gold w-full h-[40px] sm:h-[44px] rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-[13px] font-black shadow-lg shadow-gold/25 hover:shadow-gold/45 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer px-2"
               >
-                <Radio className="w-4 h-4 text-navy animate-pulse" />
-                <span>دخول مزاد اللوحة الآن</span>
-                <span className="text-xs font-bold text-navy/70 ps-1" dir="rtl">
+                <Radio className="w-3.5 h-3.5 text-navy animate-pulse shrink-0" />
+                <span className="whitespace-nowrap">دخول مزاد اللوحة الآن</span>
+                <span className="text-[10.5px] font-bold text-navy/80 ps-0.5 truncate max-w-[90px] sm:max-w-none" dir="rtl">
                   ({plateTitleAr})
                 </span>
-                <ArrowLeft className="w-4 h-4 text-navy/80 transition-transform duration-300 group-hover:-translate-x-1" />
+                <ArrowLeft className="w-3.5 h-3.5 text-navy/90 transition-transform duration-300 group-hover:-translate-x-1 shrink-0" />
               </Link>
             ) : (
               <Link
                 href={auctionUrl}
-                className="group w-full h-[46px] rounded-xl bg-white/10 hover:bg-white/15 text-white border border-white/20 flex items-center justify-center gap-2 text-xs sm:text-sm font-black transition-all cursor-pointer shadow-xs"
+                className="group w-full h-[40px] sm:h-[44px] rounded-xl bg-white/10 hover:bg-white/15 text-white border border-white/20 flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer shadow-xs px-2"
               >
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>تفاصيل اللوحة وترسية المزاد ({plateTitleAr})</span>
-                <ArrowLeft className="w-4 h-4 text-slate-400 transition-transform duration-300 group-hover:-translate-x-1" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span className="truncate">تفاصيل اللوحة وترسية المزاد ({plateTitleAr})</span>
+                <ArrowLeft className="w-3.5 h-3.5 text-slate-400 transition-transform duration-300 group-hover:-translate-x-1 shrink-0" />
               </Link>
             )}
           </div>
