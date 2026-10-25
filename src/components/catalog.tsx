@@ -19,6 +19,7 @@ import {
 import { EmptyState, PlateCard, PlateCardSkeletonGrid, PlateVisualizer, Skeleton } from './ui';
 import { CatalogFilters } from './catalog-filters';
 import { CatalogStage } from './catalog-views';
+import { StoreHeaderActions } from './store-header-actions';
 import { getMarketplace, getReferenceData } from '@/modules/marketplace/service';
 import type { MarketplaceQuery } from '@/modules/marketplace/types';
 
@@ -125,30 +126,35 @@ export async function Catalog({
       ...clean,
       page: Number(clean.page) || 1,
       sort: clean.sort as MarketplaceQuery['sort'],
-      auctionStatus: auctionFilter
+      auctionStatus: auctionFilter ?? 'DIRECT'
     } as MarketplaceQuery),
     getReferenceData()
   ]);
 
+  const isStoreMode = !auctionFilter;
   const isLive = auctionFilter === 'LIVE';
   const isUpcoming = auctionFilter === 'UPCOMING';
   const isCompleted = auctionFilter === 'COMPLETED';
 
-  const title = isLive
-    ? 'المزادات المباشرة'
-    : isUpcoming
-      ? 'المزادات القادمة'
-      : isCompleted
-        ? 'المزادات المنتهية'
-        : 'اللوحات المميزة والمزادات';
+  const title = isStoreMode
+    ? 'متجر اللوحات المميزة للبيع المباشر'
+    : isLive
+      ? 'المزادات المباشرة'
+      : isUpcoming
+        ? 'المزادات القادمة'
+        : isCompleted
+          ? 'المزادات المنتهية'
+          : 'اللوحات المميزة والمزادات';
 
-  const subtitle = isLive
-    ? 'مزايدة آنية ونظامية في الوقت الفعلي مع تمديد عادل وتوثيق رسمي للملكية.'
-    : isUpcoming
-      ? 'استكشف اللوحات الاستثنائية القادمة وجّهز تأمينك لدخول المزاد فور افتتاحه.'
-      : isCompleted
-        ? 'أرشيف الصفقات والمزادات التي تمت تسويتها بنجاح عبر المنصة.'
-        : 'حروف لها معنى، وأرقام تترك أثرًا. استكشف نخبة لوحات المركبات السعودية المعتمدة.';
+  const subtitle = isStoreMode
+    ? 'اقتنِ لوحتك المميزة فوراً بالسعر المطلوب دون انتظار المزادات، مع ضمان نقل الملكية الرسمي عبر منصة أبشر وحماية حساب الضمان.'
+    : isLive
+      ? 'مزايدة آنية ونظامية في الوقت الفعلي مع تمديد عادل وتوثيق رسمي للملكية.'
+      : isUpcoming
+        ? 'استكشف اللوحات الاستثنائية القادمة وجّهز تأمينك لدخول المزاد فور افتتاحه.'
+        : isCompleted
+          ? 'أرشيف الصفقات والمزادات التي تمت تسويتها بنجاح عبر المنصة.'
+          : 'حروف لها معنى، وأرقام تترك أثرًا. استكشف نخبة لوحات المركبات السعودية المعتمدة.';
 
   const currentPath =
     auctionFilter && auctionFilter !== 'ALL'
@@ -208,12 +214,60 @@ export async function Catalog({
     return qs ? `${currentPath}?${qs}` : currentPath;
   }
 
+  const heroTabs = isStoreMode
+    ? [
+        {
+          href: '/plates',
+          label: 'كل المعروض بالمتجر',
+          active: !clean.featured && !clean.digitsCount,
+          icon: TabIconAllPlates,
+          isLive: false
+        },
+        {
+          href: '/plates?featured=true',
+          label: 'لوحات النخبة VIP',
+          active: clean.featured === 'true',
+          icon: TabIconElite,
+          isLive: false
+        },
+        {
+          href: '/plates?digitsCount=1',
+          label: 'الأرقام الأحادية النادرة',
+          active: clean.digitsCount === '1',
+          icon: TabIconSingleDigit,
+          isLive: false
+        }
+      ]
+    : [
+        {
+          href: '/auctions',
+          label: 'كل اللوحات',
+          active: !auctionFilter || auctionFilter === 'ALL',
+          icon: TabIconAllPlates,
+          isLive: false
+        },
+        {
+          href: '/auctions/live',
+          label: 'مباشر الآن',
+          active: isLive,
+          icon: TabIconLive,
+          isLive: true
+        },
+        {
+          href: '/auctions/upcoming',
+          label: 'مزادات قادمة',
+          active: isUpcoming,
+          icon: TabIconUpcoming,
+          isLive: false
+        }
+      ];
+
   return (
     <>
       {/* ============================================================== */}
       {/* 1. LUXURY PAGE HEADER HERO BANNER                              */}
       {/* ============================================================== */}
-      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#d9b87f]/25 bg-gradient-to-b from-[#091224] via-[#070d1a] to-[#040810] pt-24 sm:pt-28 lg:pt-30 pb-40 sm:pb-52 lg:pb-60 text-white">
+      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#d9b87f]/25 bg-gradient-to-b from-[#091224] via-[#070d1a] to-[#040810] pt-22 sm:pt-26 lg:pt-28 pb-24 sm:pb-28 lg:pb-32 text-white">
 
         {/* Ambient background glows */}
         <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
@@ -222,104 +276,70 @@ export async function Catalog({
           <div className="absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 h-80 w-[700px] rounded-full bg-amber-500/5 blur-[120px] pointer-events-none" />
         </div>
 
+        {/* Light Hero Contrast Overlay: Preserves ambient background glow & grid */}
+        <div
+          className="absolute inset-0 pointer-events-none select-none bg-gradient-to-b from-[#040811]/15 via-transparent to-[#040811]/20"
+          aria-hidden="true"
+        />
+
         <div className="container-fbs relative z-10">
-          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-gold-light mb-2.5">
+          <div className="flex flex-wrap items-center gap-2 pf-type-micro font-semibold text-gold-light mb-2">
             <Link href="/" className="hover:text-white transition-colors">الرئيسية</Link>
             <span className="text-gold/50">/</span>
             <span className="text-white font-bold">{title}</span>
           </div>
 
-          <div className="max-w-4xl pb-1">
-            {/* Tuned Luxury Badge: Replaced Star with Gavel / Single Cohesive Gold Tone */}
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-gold/45 bg-gradient-to-r from-gold/25 via-gold/15 to-transparent px-4.5 py-1.5 text-xs sm:text-sm font-black text-gold-light backdrop-blur-md shadow-[0_2px_14px_rgba(217,184,127,0.25)] mb-3">
-              <Gavel size={15} className="text-gold shrink-0" />
-              <span className="tracking-wide">منصة المزادات الرسمية المعتمدة</span>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="max-w-3xl">
+              <h1 className="pf-type-h1 font-black tracking-tight text-white">
+                {isStoreMode ? (
+                  <>
+                    متجر اللوحات المميزة{' '}
+                    <span className="bg-gradient-to-r from-[#e7cb97] via-[#f7e6c4] to-[#cb9b48] bg-clip-text text-transparent">
+                      للبيع المباشر
+                    </span>
+                  </>
+                ) : title === 'اللوحات المميزة والمزادات' ? (
+                  <>
+                    اللوحات المميزة{' '}
+                    <span className="bg-gradient-to-r from-[#e7cb97] via-[#f7e6c4] to-[#cb9b48] bg-clip-text text-transparent">
+                      والمزادات الرسمية
+                    </span>
+                  </>
+                ) : (
+                  title
+                )}
+              </h1>
+
+              <p className="mt-2 pf-type-body text-slate-200 font-normal max-w-[65ch]">
+                {subtitle}
+              </p>
             </div>
 
-            <h1 className="text-2xl font-black tracking-tight sm:text-3xl lg:text-4xl text-white leading-tight">
-              {title === 'اللوحات المميزة والمزادات' ? (
-                <>
-                  اللوحات المميزة{' '}
-                  <span className="bg-gradient-to-r from-[#e7cb97] via-[#f7e6c4] to-[#cb9b48] bg-clip-text text-transparent">
-                    والمزادات الرسمية
-                  </span>
-                </>
-              ) : (
-                title
-              )}
-            </h1>
-
-            <p className="mt-2 text-xs sm:text-sm leading-relaxed text-slate-200 font-normal max-w-3xl">
-              {subtitle}
-            </p>
+            {/* Left side opposite title: Prominent Luxury Action Icons (المفضلة & سلة الشراء) */}
+            {isStoreMode && (
+              <div className="self-start md:self-center shrink-0">
+                <StoreHeaderActions />
+              </div>
+            )}
           </div>
 
-          {/* Quick Category Navigation Card (Full-Width High-Definition 8-Column Architecture) */}
+          {/* Quick Category Navigation Tabs */}
           <div className="mt-5 sm:mt-6 pt-4 border-t border-white/10">
-            <div className="relative overflow-hidden rounded-2xl border-2 border-gold/35 bg-gradient-to-r from-[#0c162d]/95 via-[#101e3d]/90 to-[#0c162d]/95 p-2 sm:p-2.5 backdrop-blur-2xl shadow-[0_10px_35px_rgba(0,0,0,0.5)]">
+            <div className="relative inline-block w-full max-w-xl overflow-hidden rounded-2xl border border-gold/35 bg-gradient-to-r from-[#0c162d]/95 via-[#101e3d]/90 to-[#0c162d]/95 p-1.5 backdrop-blur-2xl shadow-[0_10px_30px_rgba(0,0,0,0.45)]">
               {/* Top Luxury Gold Accent Line */}
-              <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-[#d9b87f]/80 to-transparent pointer-events-none" />
+              <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#d9b87f]/80 to-transparent pointer-events-none" />
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 w-full">
-                {[
-                  {
-                    href: '/plates',
-                    label: 'كل اللوحات',
-                    active: !auctionFilter && !clean.featured && !clean.digitsCount && !clean.type,
-                    icon: TabIconAllPlates
-                  },
-                  {
-                    href: '/auctions/live',
-                    label: 'مباشرة الآن',
-                    active: isLive,
-                    icon: TabIconLive,
-                    isLive: true
-                  },
-                  {
-                    href: '/auctions/upcoming',
-                    label: 'مزادات قادمة',
-                    active: isUpcoming,
-                    icon: TabIconUpcoming
-                  },
-                  {
-                    href: '/plates?featured=true',
-                    label: 'لوحات النخبة',
-                    active: clean.featured === 'true',
-                    icon: TabIconElite
-                  },
-                  {
-                    href: '/plates?digitsCount=1',
-                    label: 'لوحات أحادية (1)',
-                    active: clean.digitsCount === '1',
-                    icon: TabIconSingleDigit
-                  },
-                  {
-                    href: '/plates?digitsCount=2',
-                    label: 'لوحات ثنائية (22)',
-                    active: clean.digitsCount === '2',
-                    icon: TabIconDoubleDigit
-                  },
-                  {
-                    href: '/plates?digitsCount=3',
-                    label: 'لوحات ثلاثية (333)',
-                    active: clean.digitsCount === '3',
-                    icon: TabIconTripleDigit
-                  },
-                  {
-                    href: '/auctions/completed',
-                    label: 'مزادات منتهية',
-                    active: isCompleted,
-                    icon: TabIconCompleted
-                  }
-                ].map((tab) => {
+              <div className="grid grid-cols-3 gap-1.5 w-full">
+                {heroTabs.map((tab) => {
                   const Icon = tab.icon;
                   return (
                     <Link
                       key={tab.href}
                       href={tab.href}
-                      className={`group relative flex items-center justify-center gap-1.5 rounded-xl px-2 py-2.5 text-center text-xs font-bold transition-all duration-200 w-full ${tab.active
-                          ? 'bg-gradient-to-r from-[#d9b87f] via-[#ecd5a5] to-[#cb9b48] text-navy-deep font-black shadow-[0_4px_16px_rgba(217,184,127,0.4)] border border-white/40 scale-[1.02]'
-                          : 'text-slate-100 hover:text-white bg-white/[0.06] hover:bg-white/[0.14] border border-white/15 hover:border-gold/50 shadow-xs hover:scale-[1.01]'
+                      className={`group relative flex items-center justify-center gap-1.5 rounded-xl px-2.5 py-2.5 text-center pf-type-micro font-bold transition-all duration-200 w-full ${tab.active
+                          ? 'bg-gradient-to-r from-[#d9b87f] via-[#ecd5a5] to-[#cb9b48] text-navy-deep font-black shadow-[0_4px_14px_rgba(217,184,127,0.35)] border border-white/40'
+                          : 'text-slate-100 hover:text-white bg-white/[0.05] hover:bg-white/[0.12] border border-white/10 hover:border-gold/40'
                         }`}
                     >
                       <Icon
@@ -354,152 +374,124 @@ export async function Catalog({
         </div>
 
         {/* 2. AUTHENTIC SAUDI PLATE TYPE VISUAL SELECTOR (نوع اللوحة)      */}
-        <section aria-label="نوع اللوحة المعتمدة" className="container-fbs relative z-30 -mt-24 sm:-mt-32 lg:-mt-40 mb-10 sm:mb-12">
-        <div className="relative overflow-hidden rounded-3xl border-2 border-gold/35 bg-gradient-to-b from-[#0c162c]/95 via-[#080f1e]/98 to-[#050a14]/95 p-5 sm:p-7 sm:px-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.65),0_0_35px_rgba(217,184,127,0.12)] backdrop-blur-2xl">
+        <section aria-label="نوع اللوحة المعتمدة" className="container-fbs relative z-30 -mt-14 sm:-mt-16 lg:-mt-20 mb-7 sm:mb-9">
+        <div className="relative overflow-hidden rounded-3xl border border-gold/35 bg-gradient-to-b from-[#0c162c]/95 via-[#080f1e]/98 to-[#050a14]/95 px-4 py-4 sm:px-6 sm:py-5 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.6),0_0_30px_rgba(217,184,127,0.1)] backdrop-blur-2xl">
           {/* Top Luxury Gold Accent Line */}
-          <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-[#d9b87f]/80 to-transparent pointer-events-none" />
+          <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#d9b87f]/80 to-transparent pointer-events-none" />
 
           {/* Ambient Subtle Radial Glow */}
-          <div className="pointer-events-none absolute -top-24 start-1/2 -translate-x-1/2 h-48 w-full max-w-2xl rounded-full bg-gold/10 blur-[85px]" />
+          <div className="pointer-events-none absolute -top-24 start-1/2 -translate-x-1/2 h-40 w-full max-w-xl rounded-full bg-gold/10 blur-[80px]" />
 
-          <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4 mb-5 sm:mb-6">
-            <div className="flex items-center gap-3.5">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/5 border border-gold/40 text-gold shadow-sm">
-                <Layers size={22} className="text-gold" />
-              </div>
-              <div>
-                <h2 className="text-lg sm:text-xl font-black text-white tracking-tight">
-                  نوع اللوحة المعتمدة
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-300 font-medium mt-0.5">
-                  تصفح اللوحات الفاخرة والمزادات حسب تصنيفها المعتمد لدى الإدارة العامة للمرور
-                </p>
-              </div>
+          {clean.type && (
+            <div className="relative z-10 flex items-center justify-end mb-2">
+              <Link
+                href={removeFilterUrl('type')}
+                className="group inline-flex items-center gap-1.5 rounded-xl border border-rose-400/40 bg-rose-500/15 px-3 py-1 pf-type-micro font-bold text-rose-300 hover:bg-rose-500/25 transition-colors shadow-xs"
+              >
+                <RotateCcw size={12} className="transition-transform group-hover:-rotate-90" />
+                <span>عرض جميع الفئات</span>
+              </Link>
             </div>
+          )}
 
-            <div className="flex items-center gap-3">
-              {clean.type && (
-                <Link
-                  href={removeFilterUrl('type')}
-                  className="group inline-flex items-center gap-1.5 rounded-xl border border-rose-400/40 bg-rose-500/15 px-3.5 py-1.5 text-xs font-bold text-rose-300 hover:bg-rose-500/25 transition-colors shadow-xs"
-                >
-                  <RotateCcw size={13} className="transition-transform group-hover:-rotate-90" />
-                  <span>عرض جميع الفئات</span>
-                </Link>
-              )}
-            </div>
-          </div>
-
-          {/* 3 Visual Cards - Compact Sleek Interactive Filter Tiles */}
-          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-5 items-stretch">
-            {/* Card 1: خصوصي (Private) */}
+          {/* 3 Frameless Plate Selectors - Direct Plate + Concise Label Underneath */}
+          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 items-center">
+            {/* Plate 1: خصوصي */}
             <Link
               href={makeTypeUrl('خصوصي')}
-              className={`group relative flex flex-col justify-between rounded-2xl border-2 p-3.5 sm:p-4 transition-all duration-300 text-center overflow-hidden cursor-pointer ${clean.type === 'خصوصي'
-                  ? 'border-gold bg-gradient-to-b from-[#fffbf2] via-white to-[#fbf6ea] shadow-[0_12px_28px_-6px_rgba(217,184,127,0.4)] ring-2 ring-gold/40'
-                  : 'border-slate-200/90 bg-white hover:border-gold/60 hover:bg-gradient-to-b hover:from-white hover:to-[#fcfbf9] hover:shadow-[0_10px_24px_-6px_rgba(217,184,127,0.2)] hover:-translate-y-1'
-                }`}
+              className="group relative flex flex-col items-center justify-center py-1.5 transition-all duration-300 cursor-pointer"
             >
-              {clean.type === 'خصوصي' && (
-                <span className="absolute top-2.5 end-2.5 flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10.5px] font-black text-white shadow-md z-10 animate-in fade-in zoom-in-95">
-                  <Check size={11} strokeWidth={3} />
-                  <span>مُفعّل</span>
-                </span>
-              )}
-
-              {/* Authentic Private Plate Representation */}
-              <div className="rounded-xl p-2 sm:p-2.5 flex items-center justify-center w-full h-[110px] sm:h-[115px] mb-2 relative overflow-hidden transition-all duration-300 bg-gradient-to-b from-[#f1f5f9] via-[#e2e8f0] to-[#cbd5e1] border border-slate-300/80 shadow-[inset_0_2px_8px_rgba(15,23,42,0.1),0_1px_2px_rgba(255,255,255,0.8)] group-hover:border-gold/50 group-hover:shadow-[inset_0_2px_10px_rgba(217,184,127,0.2)]">
-                <div className="w-full transition-transform duration-300 group-hover:scale-[1.03] filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.12)]">
-                  <PlateVisualizer
-                    lettersAr={['ب', 'ط', 'ل']}
-                    lettersEn={['L', 'T', 'B']}
-                    numbers="8888"
-                    plateType="خصوصي"
-                    compact
-                  />
-                </div>
+              <div
+                className={`w-full max-w-[272px] sm:max-w-[286px] transition-all duration-300 group-hover:-translate-y-1 ${
+                  clean.type === 'خصوصي'
+                    ? 'scale-[1.03] drop-shadow-[0_0_18px_rgba(217,184,127,0.55)]'
+                    : 'opacity-92 group-hover:opacity-100 drop-shadow-[0_10px_20px_rgba(0,0,0,0.38)]'
+                }`}
+              >
+                <PlateVisualizer
+                  lettersAr={['ب', 'ط', 'ل']}
+                  lettersEn={['L', 'T', 'B']}
+                  numbers="8888"
+                  plateType="خصوصي"
+                  compact
+                />
               </div>
 
-              {/* Single-Line Classification & Subtitle */}
-              <div className="flex items-center justify-center gap-1.5 text-xs sm:text-[13px] font-black text-navy group-hover:text-gold-dark transition-colors flex-wrap py-0.5">
+              <div
+                className={`mt-2.5 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 pf-type-caption font-bold transition-all ${
+                  clean.type === 'خصوصي'
+                    ? 'bg-gradient-to-r from-[#d9b87f] via-[#ecd5a5] to-[#cb9b48] text-navy-deep font-black shadow-sm'
+                    : 'text-slate-200 group-hover:text-gold-light'
+                }`}
+              >
+                {clean.type === 'خصوصي' && <Check size={13} strokeWidth={3} />}
                 <span>خصوصي</span>
-                <span className="text-[11px] font-mono text-slate-400 font-normal">(Private)</span>
-                <span className="text-slate-300 font-normal">·</span>
-                <span className="text-[11px] sm:text-xs text-slate-500 font-bold">ملاكي وشخصي قياسي</span>
               </div>
             </Link>
 
-            {/* Card 2: صغيرة (للسيارات الرياضية) (Small / Sports) */}
+            {/* Plate 2: صغيرة رياضية */}
             <Link
               href={makeTypeUrl('صغيرة')}
-              className={`group relative flex flex-col justify-between rounded-2xl border-2 p-3.5 sm:p-4 transition-all duration-300 text-center overflow-hidden cursor-pointer ${clean.type === 'صغيرة'
-                  ? 'border-emerald-600 bg-gradient-to-b from-[#f0fdf4] via-white to-[#e8fbf0] shadow-[0_12px_28px_-6px_rgba(16,185,129,0.35)] ring-2 ring-emerald-500/40'
-                  : 'border-slate-200/90 bg-white hover:border-emerald-500/60 hover:bg-gradient-to-b hover:from-white hover:to-[#fcfbf9] hover:shadow-[0_10px_24px_-6px_rgba(16,185,129,0.18)] hover:-translate-y-1'
-                }`}
+              className="group relative flex flex-col items-center justify-center py-1.5 transition-all duration-300 cursor-pointer"
             >
-              {clean.type === 'صغيرة' && (
-                <span className="absolute top-2.5 end-2.5 flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10.5px] font-black text-white shadow-md z-10 animate-in fade-in zoom-in-95">
-                  <Check size={11} strokeWidth={3} />
-                  <span>مُفعّل</span>
-                </span>
-              )}
-
-              {/* Authentic Sports Plate Representation */}
-              <div className="rounded-xl p-2 sm:p-2.5 flex items-center justify-center w-full h-[110px] sm:h-[115px] mb-2 relative overflow-hidden transition-all duration-300 bg-gradient-to-b from-[#f1f5f9] via-[#e2e8f0] to-[#cbd5e1] border border-slate-300/80 shadow-[inset_0_2px_8px_rgba(15,23,42,0.1),0_1px_2px_rgba(255,255,255,0.8)] group-hover:border-emerald-500/50 group-hover:shadow-[inset_0_2px_10px_rgba(16,185,129,0.18)]">
-                <div className="w-full transition-transform duration-300 group-hover:scale-[1.03] filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.12)]">
-                  <PlateVisualizer
-                    lettersAr={['ك', 'د', 'س']}
-                    lettersEn={['K', 'D', 'S']}
-                    numbers="3471"
-                    plateType="صغيرة"
-                    compact
-                  />
-                </div>
+              <div
+                className={`w-full max-w-[260px] sm:max-w-[274px] transition-all duration-300 group-hover:-translate-y-1 ${
+                  clean.type === 'صغيرة'
+                    ? 'scale-[1.03] drop-shadow-[0_0_18px_rgba(217,184,127,0.55)]'
+                    : 'opacity-92 group-hover:opacity-100 drop-shadow-[0_10px_20px_rgba(0,0,0,0.38)]'
+                }`}
+              >
+                <PlateVisualizer
+                  lettersAr={['ك', 'د', 'س']}
+                  lettersEn={['K', 'D', 'S']}
+                  numbers="3471"
+                  plateType="صغيرة"
+                  compact
+                />
               </div>
 
-              {/* Single-Line Classification & Subtitle */}
-              <div className="flex items-center justify-center gap-1.5 text-xs sm:text-[13px] font-black text-navy group-hover:text-emerald-700 transition-colors flex-wrap py-0.5">
-                <span>صغيرة (رياضية)</span>
-                <span className="text-[11px] font-mono text-slate-400 font-normal">(US Size)</span>
-                <span className="text-slate-300 font-normal">·</span>
-                <span className="text-[11px] sm:text-xs text-slate-500 font-bold">نسق أمريكي مخصص للسيارات الرياضية</span>
+              <div
+                className={`mt-2.5 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 pf-type-caption font-bold transition-all ${
+                  clean.type === 'صغيرة'
+                    ? 'bg-gradient-to-r from-[#d9b87f] via-[#ecd5a5] to-[#cb9b48] text-navy-deep font-black shadow-sm'
+                    : 'text-slate-200 group-hover:text-gold-light'
+                }`}
+              >
+                {clean.type === 'صغيرة' && <Check size={13} strokeWidth={3} />}
+                <span>صغيرة رياضية</span>
               </div>
             </Link>
 
-            {/* Card 3: نقل (Transport / Commercial) */}
+            {/* Plate 3: نقل خاص */}
             <Link
               href={makeTypeUrl('نقل')}
-              className={`group relative flex flex-col justify-between rounded-2xl border-2 p-3.5 sm:p-4 transition-all duration-300 text-center overflow-hidden cursor-pointer ${clean.type === 'نقل'
-                  ? 'border-amber-600 bg-gradient-to-b from-[#fffbeb] via-white to-[#fef3c7] shadow-[0_12px_28px_-6px_rgba(217,119,6,0.35)] ring-2 ring-amber-500/40'
-                  : 'border-slate-200/90 bg-white hover:border-amber-500/60 hover:bg-gradient-to-b hover:from-white hover:to-[#fcfbf9] hover:shadow-[0_10px_24px_-6px_rgba(217,119,6,0.18)] hover:-translate-y-1'
-                }`}
+              className="group relative flex flex-col items-center justify-center py-1.5 transition-all duration-300 cursor-pointer"
             >
-              {clean.type === 'نقل' && (
-                <span className="absolute top-2.5 end-2.5 flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10.5px] font-black text-white shadow-md z-10 animate-in fade-in zoom-in-95">
-                  <Check size={11} strokeWidth={3} />
-                  <span>مُفعّل</span>
-                </span>
-              )}
-
-              {/* Authentic Transport Plate Representation */}
-              <div className="rounded-xl p-2 sm:p-2.5 flex items-center justify-center w-full h-[110px] sm:h-[115px] mb-2 relative overflow-hidden transition-all duration-300 bg-gradient-to-b from-[#f1f5f9] via-[#e2e8f0] to-[#cbd5e1] border border-slate-300/80 shadow-[inset_0_2px_8px_rgba(15,23,42,0.1),0_1px_2px_rgba(255,255,255,0.8)] group-hover:border-amber-500/50 group-hover:shadow-[inset_0_2px_10px_rgba(217,119,6,0.18)]">
-                <div className="w-full transition-transform duration-300 group-hover:scale-[1.03] filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.12)]">
-                  <PlateVisualizer
-                    lettersAr={['ن', 'ق', 'ل']}
-                    lettersEn={['N', 'Q', 'L']}
-                    numbers="7341"
-                    plateType="نقل"
-                    compact
-                  />
-                </div>
+              <div
+                className={`w-full max-w-[272px] sm:max-w-[286px] transition-all duration-300 group-hover:-translate-y-1 ${
+                  clean.type === 'نقل'
+                    ? 'scale-[1.03] drop-shadow-[0_0_18px_rgba(217,184,127,0.55)]'
+                    : 'opacity-92 group-hover:opacity-100 drop-shadow-[0_10px_20px_rgba(0,0,0,0.38)]'
+                }`}
+              >
+                <PlateVisualizer
+                  lettersAr={['ن', 'ق', 'ل']}
+                  lettersEn={['L', 'G', 'N']}
+                  numbers="7341"
+                  plateType="نقل"
+                  compact
+                />
               </div>
 
-              {/* Single-Line Classification & Subtitle */}
-              <div className="flex items-center justify-center gap-1.5 text-xs sm:text-[13px] font-black text-navy group-hover:text-amber-700 transition-colors flex-wrap py-0.5">
-                <span>نقل خاص وتجاري</span>
-                <span className="text-[11px] font-mono text-slate-400 font-normal">(Transport)</span>
-                <span className="text-slate-300 font-normal">·</span>
-                <span className="text-[11px] sm:text-xs text-slate-500 font-bold">شريط أصفر كهرماني رسمي</span>
+              <div
+                className={`mt-2.5 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 pf-type-caption font-bold transition-all ${
+                  clean.type === 'نقل'
+                    ? 'bg-gradient-to-r from-[#d9b87f] via-[#ecd5a5] to-[#cb9b48] text-navy-deep font-black shadow-sm'
+                    : 'text-slate-200 group-hover:text-gold-light'
+                }`}
+              >
+                {clean.type === 'نقل' && <Check size={13} strokeWidth={3} />}
+                <span>نقل خاص</span>
               </div>
             </Link>
           </div>
@@ -622,7 +614,7 @@ export async function Catalog({
 
                 <Link
                   href={currentPath}
-                  className="ms-auto inline-flex items-center gap-1 text-[11px] font-bold text-rose-400 hover:text-rose-300 hover:underline"
+                  className="ms-auto inline-flex items-center gap-1 pf-type-micro font-bold text-rose-400 hover:text-rose-300 hover:underline"
                 >
                   <RotateCcw size={11} />
                   <span>مسح الكل</span>
@@ -647,6 +639,7 @@ export async function Catalog({
           currentPath={currentPath}
           configured={result.configured}
           available={result.available}
+          mode={isStoreMode ? 'store' : 'auction'}
         />
       </section>
       </div>
@@ -657,16 +650,15 @@ export async function Catalog({
 export function CatalogSkeleton() {
   return (
     <>
-      {/* Luxury Hero Skeleton with Shimmer */}
-      <section className="relative overflow-hidden border-b border-gold/25 bg-gradient-to-b from-[#091224] via-[#070d1a] to-[#040810] py-14 sm:py-18 text-white">
+      {/* 1. Luxury Hero Skeleton with Shimmer */}
+      <section className="hero-luxury-ambient relative overflow-hidden border-b border-gold/25 bg-gradient-to-b from-[#091224] via-[#070d1a] to-[#040810] pt-22 sm:pt-26 lg:pt-28 pb-24 sm:pb-28 lg:pb-32 text-white">
         <div className="container-fbs relative z-10 space-y-4">
-          <div className="h-4 w-32 rounded-md skeleton-shimmer-dark" />
-          <div className="h-8 w-56 rounded-full skeleton-shimmer-dark" />
-          <div className="h-12 w-80 sm:w-96 rounded-xl skeleton-shimmer-dark" />
+          <div className="h-4 w-36 rounded-md skeleton-shimmer-dark" />
+          <div className="h-11 w-80 sm:w-[440px] rounded-xl skeleton-shimmer-dark" />
           <div className="h-5 w-full max-w-xl rounded-md skeleton-shimmer-dark" />
-          <div className="mt-8 pt-5 border-t border-white/10">
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 p-2 rounded-2xl border-2 border-gold/20 bg-white/[0.04]">
-              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+          <div className="mt-6 pt-4 border-t border-white/10">
+            <div className="grid grid-cols-3 gap-2 max-w-xl p-1.5 rounded-2xl border border-gold/20 bg-white/[0.04]">
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="h-10 w-full rounded-xl skeleton-shimmer-dark" />
               ))}
             </div>
@@ -674,25 +666,128 @@ export function CatalogSkeleton() {
         </div>
       </section>
 
-      {/* Main Catalog Body Skeleton */}
-      <div className="container-fbs py-8 sm:py-12">
-        <div className="grid gap-8 lg:grid-cols-[300px_1fr]">
-          {/* Filters Sidebar Placeholder */}
-          <div className="hidden lg:block space-y-4">
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 space-y-4 shadow-xs">
-              <div className="h-5 w-28 rounded-md skeleton-shimmer" />
-              <div className="space-y-2.5 pt-2">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="h-5 w-full rounded-md skeleton-shimmer" />
-                ))}
-              </div>
+      {/* 2. Overlapping 3-Plate Type Selector Skeleton + Full-Width Stage Bar + Full-Height 2-Column Skeleton */}
+      <div className="relative bg-[#f8fafc] flow-root pb-16 sm:pb-24">
+        <section className="container-fbs relative z-30 -mt-14 sm:-mt-16 lg:-mt-20 mb-7 sm:mb-9">
+          <div className="rounded-3xl border border-gold/30 bg-[#080f1e]/95 px-4 py-5 sm:px-6 sm:py-6 shadow-xl">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 items-center">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex flex-col items-center gap-2.5">
+                  <div className="h-[68px] w-full max-w-[220px] rounded-xl skeleton-shimmer-dark" />
+                  <div className="h-5 w-24 rounded-full skeleton-shimmer-dark" />
+                </div>
+              ))}
             </div>
           </div>
+        </section>
 
-          {/* Plates Grid with Luxury Shimmer Cards */}
-          <div className="space-y-6">
-            <div className="h-14 rounded-2xl border border-slate-200 bg-white p-4 skeleton-shimmer shadow-xs" />
-            <PlateCardSkeletonGrid count={6} />
+        <div className="container-fbs">
+          {/* Full-Width Stage Bar Skeleton */}
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-neutral-200/80 bg-white p-2.5 sm:px-4 sm:py-3 shadow-xs">
+            <div className="h-9 flex-1 min-w-[210px] max-w-md rounded-xl skeleton-shimmer" />
+            <div className="h-9 w-40 rounded-xl skeleton-shimmer" />
+          </div>
+
+          {/* 2-Column Main Content: Full-Height Filter Sidebar (Right) & 9 Plate Cards (Left) */}
+          <div className="grid gap-4 xl:gap-5 lg:grid-cols-[255px_minmax(0,1fr)] xl:grid-cols-[265px_minmax(0,1fr)] items-start">
+            {/* Full-Height Filters Sidebar Skeleton (Fills the entire right column with zero empty white gap) */}
+            <aside className="hidden lg:block">
+              <div className="rounded-2xl border border-[#E7E5DF] bg-white p-4 space-y-4 shadow-xs">
+                {/* Sidebar Header */}
+                <div className="flex items-center gap-3 pb-3.5 border-b border-[#ECE9E2]">
+                  <div className="h-9 w-9 rounded-xl skeleton-shimmer shrink-0" />
+                  <div className="space-y-1.5 flex-1">
+                    <div className="h-4 w-28 rounded-md skeleton-shimmer" />
+                    <div className="h-3 w-36 rounded-md skeleton-shimmer" />
+                  </div>
+                </div>
+
+                {/* Sort By Segmented Control */}
+                <div className="space-y-2 pb-3.5 border-b border-[#ECE9E2]">
+                  <div className="flex items-center justify-between">
+                    <div className="h-3.5 w-20 rounded-md skeleton-shimmer" />
+                    <div className="h-3 w-14 rounded-md skeleton-shimmer" />
+                  </div>
+                  <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-[#FAF9F6] border border-[#E5E2D9]">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="h-8 rounded-lg skeleton-shimmer" />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Filter Group 1: Price Range */}
+                <div className="rounded-xl border border-[#ECE9E2] bg-[#FAF9F6]/70 p-3 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="h-4 w-24 rounded-md skeleton-shimmer" />
+                    <div className="h-4 w-4 rounded-md skeleton-shimmer" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="h-9 rounded-lg skeleton-shimmer" />
+                    <div className="h-9 rounded-lg skeleton-shimmer" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="h-7 rounded-lg skeleton-shimmer" />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Filter Group 2: Letters & Digits */}
+                <div className="rounded-xl border border-[#ECE9E2] bg-[#FAF9F6]/70 p-3 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="h-4 w-28 rounded-md skeleton-shimmer" />
+                    <div className="h-4 w-4 rounded-md skeleton-shimmer" />
+                  </div>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="h-8 rounded-lg skeleton-shimmer" />
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="h-8 rounded-lg skeleton-shimmer" />
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="h-7 rounded-lg skeleton-shimmer" />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Filter Group 3: Category & City */}
+                <div className="rounded-xl border border-[#ECE9E2] bg-[#FAF9F6]/70 p-3 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="h-4 w-24 rounded-md skeleton-shimmer" />
+                    <div className="h-4 w-4 rounded-md skeleton-shimmer" />
+                  </div>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="h-8 rounded-lg skeleton-shimmer" />
+                    ))}
+                  </div>
+                  <div className="h-9 w-full rounded-lg skeleton-shimmer" />
+                </div>
+
+                {/* Action Buttons */}
+                <div className="space-y-2 pt-1">
+                  <div className="h-10 w-full rounded-xl skeleton-shimmer" />
+                  <div className="h-8 w-full rounded-xl skeleton-shimmer" />
+                </div>
+
+                {/* Bottom Trust Card Skeleton */}
+                <div className="rounded-xl border border-[#E7E5DF] bg-[#FAF7F0] p-3.5 space-y-2">
+                  <div className="h-4 w-32 rounded-md skeleton-shimmer" />
+                  <div className="h-3 w-full rounded-md skeleton-shimmer" />
+                  <div className="h-3 w-4/5 rounded-md skeleton-shimmer" />
+                </div>
+              </div>
+            </aside>
+
+            {/* Plates Grid with Luxury Shimmer Cards (9 cards = 3 rows × 3 columns) */}
+            <div className="min-w-0">
+              <PlateCardSkeletonGrid count={9} />
+            </div>
           </div>
         </div>
       </div>

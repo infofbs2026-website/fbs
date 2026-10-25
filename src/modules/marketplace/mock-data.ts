@@ -372,7 +372,37 @@ export const fallbackPlates: MarketplacePlate[] = [
     description: 'لوحة صغيرة مفردة للسيارات الرياضية برقم متناظر 505 وحروف متناسقة.',
     priceHalalas: '6500000',
     status: 'PUBLISHED',
-    featured: false,
+    featured: true,
+    verified: true,
+    auction: null
+  },
+  {
+    id: 'sample-17',
+    slug: 'mlk-5',
+    lettersAr: ['م', 'ل', 'ك'],
+    lettersEn: ['Z', 'L', 'K'],
+    numbers: '5',
+    city: 'الرياض',
+    type: 'خصوصي',
+    description: 'لوحة أحادية ملكية نادرة للبيع المباشر الفوري بحروف م ل ك ورقم 5.',
+    priceHalalas: '48000000',
+    status: 'PUBLISHED',
+    featured: true,
+    verified: true,
+    auction: null
+  },
+  {
+    id: 'sample-18',
+    slug: 'nkb-22',
+    lettersAr: ['ن', 'ح', 'ب'],
+    lettersEn: ['N', 'J', 'B'],
+    numbers: '22',
+    city: 'جدة',
+    type: 'صغيرة',
+    description: 'لوحة ثنائية متطابقة قياس رياضي مخصصة للبيع المباشر الفوري.',
+    priceHalalas: '26000000',
+    status: 'PUBLISHED',
+    featured: true,
     verified: true,
     auction: null
   }
@@ -449,7 +479,9 @@ export function filterFallbackPlates(
   let list = [...plates];
 
   if (filter.auctionStatus) {
-    if (filter.auctionStatus === 'LIVE') {
+    if (filter.auctionStatus === 'DIRECT') {
+      list = list.filter((p) => p.auction == null);
+    } else if (filter.auctionStatus === 'LIVE') {
       list = list.filter((p) => p.auction?.status === 'LIVE');
     } else if (filter.auctionStatus === 'UPCOMING') {
       list = list.filter((p) => p.auction?.status === 'SCHEDULED' || p.auction?.status === 'REGISTRATION_OPEN');

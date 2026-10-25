@@ -18,7 +18,8 @@ import {
   Trophy
 } from 'lucide-react';
 import { getPlateBySlug } from '@/modules/marketplace/service';
-import { PlateVisualizer, statusLabels, EmptyState } from '@/components/ui';
+import { FbsStageWatermark, PlateVisualizer, statusLabels, EmptyState } from '@/components/ui';
+import { PlateCarPreview3D } from '@/components/plate-car-preview-3d';
 import { ActionButton } from '@/components/forms';
 import { SarPrice, SarSymbol, formatEnglishAmount } from '@/components/sar-symbol';
 
@@ -119,8 +120,8 @@ export default async function Detail({ params }: { params: Promise<{ slug: strin
           <div className="space-y-8">
             {/* Skeuomorphic Plate Presentation Pedestal */}
             <div className="luxury-card p-6 sm:p-10 text-center relative overflow-hidden">
-              <div className="plate-tray-recessed rounded-3xl p-8 sm:p-14 flex items-center justify-center shadow-[inset_0_4px_16px_rgba(15,23,42,0.1)]">
-                <div className="w-full max-w-[460px] transition-transform duration-300 hover:scale-[1.02]">
+              <div className="plate-tray-recessed relative overflow-hidden rounded-3xl p-8 sm:p-14 flex items-center justify-center"><FbsStageWatermark />
+                <div className="relative z-10 w-full max-w-[460px] transition-transform duration-300 hover:scale-[1.02]">
                   <PlateVisualizer
                     lettersAr={p.lettersAr}
                     lettersEn={p.lettersEn}
@@ -178,32 +179,16 @@ export default async function Detail({ params }: { params: Promise<{ slug: strin
               </div>
             </div>
 
-            {/* Virtual Vehicle Mounting Preview */}
-            <div className="luxury-card p-6 sm:p-8 bg-gradient-to-r from-slate-900 to-navy text-white">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Trophy size={18} className="text-gold" />
-                  <h3 className="text-base font-bold text-white">معاينة اللوحة على مركبة فاخرة</h3>
-                </div>
-                <span className="text-xs text-gold-light font-semibold">محاكاة رقمية واقعية</span>
-              </div>
-              <p className="text-xs leading-relaxed text-slate-300">
-                شاهد كيف تمنح هذه اللوحة هيبة وفخامة استثنائية فور تركيبها على مقدمة أو خلفية سيارتك (مرسيدس مايباخ، رولز رويس، أو بورش).
-              </p>
-              <div className="mt-5 rounded-2xl bg-black/40 border border-white/10 p-6 text-center">
-                <div className="mx-auto max-w-[280px]">
-                  <PlateVisualizer
-                    lettersAr={p.lettersAr}
-                    lettersEn={p.lettersEn}
-                    numbers={p.numbers}
-                    plateType={p.type}
-                  />
-                </div>
-                <span className="mt-3 block text-[11px] text-slate-400">
-                  تنسيق الأبعاد متوافق مع معايير المرور السعودي للصدامات الأمامية والخلفية
-                </span>
-              </div>
-            </div>
+            {/* 3D Realistic Vehicle Mounting Studio */}
+            <PlateCarPreview3D
+              initialPlate={{
+                lettersAr: p.lettersAr,
+                lettersEn: p.lettersEn,
+                numbers: p.numbers,
+                plateType: p.type,
+                slug: p.slug
+              }}
+            />
           </div>
 
           {/* Right Column: Bidding Command Box & Financial Protections */}

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { IBM_Plex_Sans_Arabic } from 'next/font/google';
+import { IBM_Plex_Sans_Arabic, Noto_Naskh_Arabic, Barlow_Semi_Condensed } from 'next/font/google';
 import Script from 'next/script';
 import { Header, Footer } from '@/components/shell';
 import { GlobalAtmosphere } from '@/components/global-atmosphere';
@@ -9,6 +9,20 @@ const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
   subsets: ['arabic', 'latin'],
   weight: ['300', '400', '500', '600', '700'],
   variable: '--font-ibm-plex-arabic',
+  display: 'swap',
+});
+
+const notoNaskhArabic = Noto_Naskh_Arabic({
+  subsets: ['arabic'],
+  weight: ['600', '700'],
+  variable: '--font-plate-naskh',
+  display: 'swap',
+});
+
+const barlowSemiCondensed = Barlow_Semi_Condensed({
+  subsets: ['latin'],
+  weight: ['600', '700'],
+  variable: '--font-plate-din',
   display: 'swap',
 });
 
@@ -22,7 +36,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={ibmPlexSansArabic.variable} suppressHydrationWarning>
+    <html
+      lang="ar"
+      dir="rtl"
+      className={`${ibmPlexSansArabic.variable} ${notoNaskhArabic.variable} ${barlowSemiCondensed.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <link rel="preload" as="image" href="/videos/fbs-hero-poster.webp" type="image/webp" />
         <Script

@@ -165,8 +165,8 @@
   .container-fbs {
     margin-inline: auto;
     width: 100%;
-    max-width: 1400px;
-    padding-inline: clamp(1rem, 2.2vw, 2.5rem);
+    max-width: 1220px;
+    padding-inline: clamp(1.5rem, 3.5vw, 2.5rem);
   }
 
   .hero-container {
@@ -458,12 +458,11 @@
 
 /* Neomorphic Recessed Display Tray for Plates */
 .plate-tray-recessed {
-  background: linear-gradient(180deg, #f0f3f8 0%, #e5e9f2 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f6f8fc 52%, #ebf0f6 100%);
   box-shadow:
-    inset 0 3px 8px rgba(15, 23, 42, 0.09),
-    inset 0 1px 3px rgba(15, 23, 42, 0.06),
-    inset 0 -1px 2px rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    inset 0 3px 10px rgba(15, 23, 42, 0.06);
+  border: 1px solid #dce3ee;
 }
 
 .plate-tray-recessed-dark {
@@ -475,32 +474,45 @@
 }
 
 /* ============================================================== */
-/* AUTHENTIC SKEUOMORPHIC SAUDI VEHICLE PLATE STYLING             */
-/* Exactly matches the 3 official reference specifications:       */
-/* 1. خصوصي (Private) - 2 rows + white pillar                     */
-/* 2. نقل (Transport) - 2 rows + golden amber pillar + hologram    */
-/* 3. صغيرة (Small/Sports) - 3 columns, no horizontal line        */
+/* PHOTOREALISTIC SCREW-FREE SAUDI CUSTOM-LOGO LICENSE PLATES     */
+/* Rolled 3D Silver Lip + Flush 3D Black Bead + Brushed Aluminum  */
+/* Authentic Naskh & DIN 1451 Stamped Glyphs + Category Pillars:  */
+/* 1. خصوصي (Private)   - Slim White Pillar + Dark Green Emblem   */
+/* 2. صغيرة (Sports)    - Wider White Pillar + Black Emblem + ●   */
+/* 3. نقل خاص (Transport)- Blue Pillar + White Emblem + ▼         */
 /* ============================================================== */
 
 .hero-saudi-plate {
-  --plate-retro-pattern: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 0 L12 3 L12 9 L6 12 L0 9 L0 3 Z' fill='none' stroke='%23000000' stroke-opacity='0.04' stroke-width='0.6'/%3E%3Ccircle cx='6' cy='6' r='0.75' fill='%23ffffff' fill-opacity='0.65'/%3E%3C/svg%3E");
+  --plate-retro-pattern: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 14 14' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 0 L14 3.5 L14 10.5 L7 14 L0 10.5 L0 3.5 Z' fill='none' stroke='%230f172a' stroke-opacity='0.02' stroke-width='0.5'/%3E%3Ccircle cx='7' cy='7' r='0.6' fill='%23ffffff' fill-opacity='0.72'/%3E%3C/svg%3E");
+  --plate-ink: #111621;
   container-type: inline-size;
   container-name: plate;
-  width: min(100%, 390px);
-  height: 122px;
+  width: min(100%, 416px);
+  height: auto;
   direction: ltr !important;
-  background-color: #14181f;
-  padding: 0;
-  border: 3px solid #bcc3cb;
-  border-top-color: #d8dde4;
-  border-left-color: #cad0d8;
-  border-bottom-color: #7b838d;
-  border-right-color: #939aa3;
-  border-radius: 11px;
-  color: #0b0f17;
+  /* Photorealistic 3D rolled anodized silver-chrome outer lip — black bead sits 100% flush inside */
+  background: linear-gradient(
+    165deg,
+    #ffffff 0%,
+    #f1f5f9 20%,
+    #cbd5e1 52%,
+    #94a3b8 84%,
+    #dbe3ec 100%
+  );
+  padding: clamp(1.7px, 0.56cqi, 2.5px);
+  border: 0.8px solid #94a3b8;
+  border-top-color: #ffffff;
+  border-left-color: #eef2f6;
+  border-bottom-color: #64748b;
+  border-right-color: #64748b;
+  border-radius: clamp(7.5px, 2.45cqi, 11.5px);
+  color: #10151f;
   box-shadow:
-    0 20px 48px -8px rgba(10, 16, 30, 0.52),
-    0 5px 16px -2px rgba(0, 0, 0, 0.25);
+    0 0 0 0.6px rgba(15, 23, 42, 0.22),
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.98),
+    inset 0 -0.8px 0.5px rgba(71, 85, 105, 0.5),
+    0 12px 26px -8px rgba(10, 16, 30, 0.28),
+    0 4px 10px -2px rgba(15, 23, 42, 0.15);
   position: relative;
   z-index: 2;
   user-select: none;
@@ -509,1127 +521,616 @@
   overflow: hidden;
 }
 
+.hero-saudi-plate.is-small {
+  width: min(100%, 392px);
+}
+
 .hero-saudi-plate.compact {
-  width: min(100%, 310px);
-  height: 82px;
-  padding: 0;
-  border-width: 2px;
-  border-radius: 8px;
+  width: min(100%, 288px);
+  padding: clamp(1.45px, 0.52cqi, 2px);
+  border-radius: clamp(6.2px, 2.3cqi, 9.2px);
+}
+
+.hero-saudi-plate.compact.is-small {
+  width: min(100%, 274px);
 }
 
 .hero-saudi-plate.large {
-  width: min(100%, 420px);
-  height: 134px;
-  padding: 0;
-  border-width: 3.5px;
-  border-radius: 13px;
+  width: min(100%, 472px);
+  padding: clamp(2px, 0.58cqi, 2.8px);
+  border-radius: clamp(9px, 2.55cqi, 13px);
 }
 
-/* Diagonal metallic specular light sheen */
+.hero-saudi-plate.large.is-small {
+  width: min(100%, 444px);
+}
+
+.hero-saudi-plate.plate-dark-pedestal {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.22),
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.98),
+    0 22px 48px -12px rgba(0, 0, 0, 0.65),
+    0 8px 20px -4px rgba(0, 0, 0, 0.42);
+}
+
+/* Realistic diagonal studio aluminum sheen across plate & rim */
 .hero-saudi-plate .q-sheen-highlight {
   position: absolute;
   inset: 0;
-  border-radius: 9px;
-  background: linear-gradient(115deg,
-      rgba(255, 255, 255, 0.6) 0%,
-      rgba(255, 255, 255, 0.2) 20%,
-      transparent 35%,
-      transparent 70%,
-      rgba(255, 255, 255, 0.15) 100%);
+  border-radius: inherit;
+  background: linear-gradient(
+    116deg,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0.06) 22%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.14) 52%,
+    transparent 66%,
+    rgba(15, 23, 42, 0.035) 100%
+  );
   pointer-events: none;
   z-index: 4;
 }
 
-/* Subtle Silver Recessed Mounting Dimples (Authentic factory indentations, no crosshead screws) */
-.hero-saudi-plate .q-mount-dimple {
-  position: absolute;
-  width: 6.5px;
-  height: 6.5px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 40% 40%, #ffffff 0%, #d8dde4 50%, #8d98a5 100%);
-  border: 0.75px solid #8d98a5;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.35), 0 0.5px 0.5px rgba(255, 255, 255, 0.9);
-  z-index: 5;
-  pointer-events: none;
-}
-
-.hero-saudi-plate .q-dimple-tl {
-  top: 9px;
-  left: 13px;
-}
-
-.hero-saudi-plate .q-dimple-tr {
-  top: 9px;
-  right: 13px;
-}
-
-.hero-saudi-plate .q-dimple-bl {
-  bottom: 9px;
-  left: 13px;
-}
-
-.hero-saudi-plate .q-dimple-br {
-  bottom: 9px;
-  right: 13px;
-}
-
-.hero-saudi-plate.compact .q-mount-dimple {
-  width: 4.5px;
-  height: 4.5px;
-}
-
-.hero-saudi-plate.compact .q-dimple-tl {
-  top: 5px;
-  left: 8px;
-}
-
-.hero-saudi-plate.compact .q-dimple-tr {
-  top: 5px;
-  right: 8px;
-}
-
-.hero-saudi-plate.compact .q-dimple-bl {
-  bottom: 5px;
-  left: 8px;
-}
-
-.hero-saudi-plate.compact .q-dimple-br {
-  bottom: 5px;
-  right: 8px;
-}
-
-.hero-saudi-plate.large .q-mount-dimple {
-  width: 8px;
-  height: 8px;
-}
-
-.hero-saudi-plate.large .q-dimple-tl {
-  top: 11px;
-  left: 15px;
-}
-
-.hero-saudi-plate.large .q-dimple-tr {
-  top: 11px;
-  right: 15px;
-}
-
-.hero-saudi-plate.large .q-dimple-bl {
-  bottom: 11px;
-  left: 15px;
-}
-
-.hero-saudi-plate.large .q-dimple-br {
-  bottom: 11px;
-  right: 15px;
-}
-
-/* Stamped Oval Mounting Slots for Transport / Commercial - Refined Metallic Silver with Stamped Depth */
-.hero-saudi-plate .q-oval-slot {
-  position: absolute;
-  width: 19px;
-  height: 6.5px;
-  border-radius: 4px;
-  background: radial-gradient(ellipse at 50% 30%, #ffffff 0%, #e8edf3 35%, #d1d9e2 70%, #9aa8b8 100%);
-  border: 0.75px solid #a3b0c0;
-  box-shadow:
-    inset 0 1.2px 1.8px rgba(30, 41, 59, 0.45),
-    inset 0 -1px 1px rgba(255, 255, 255, 0.95),
-    0 1px 1px rgba(255, 255, 255, 0.9),
-    0 0.5px 1px rgba(15, 23, 42, 0.12);
-  z-index: 5;
-  pointer-events: none;
-}
-
-.hero-saudi-plate .q-slot-top-a {
-  top: 6px;
-  left: 20%;
-}
-
-.hero-saudi-plate .q-slot-top-b {
-  top: 6px;
-  right: 33%;
-}
-
-.hero-saudi-plate .q-slot-bot-a {
-  bottom: 6px;
-  left: 20%;
-}
-
-.hero-saudi-plate .q-slot-bot-b {
-  bottom: 6px;
-  right: 33%;
-}
-
-.hero-saudi-plate.compact .q-oval-slot {
-  width: 11px;
-  height: 3px;
-  border-radius: 2px;
-  border-width: 0.75px;
-  border-color: #a3b0c0;
-  box-shadow:
-    inset 0 0.8px 1.2px rgba(30, 41, 59, 0.4),
-    inset 0 -0.5px 0.75px rgba(255, 255, 255, 0.95),
-    0 0.5px 0.5px rgba(255, 255, 255, 0.85);
-}
-
-.hero-saudi-plate.compact .q-slot-top-a {
-  top: 2.5px;
-  left: 19%;
-}
-
-.hero-saudi-plate.compact .q-slot-top-b {
-  top: 2.5px;
-  right: 34%;
-}
-
-.hero-saudi-plate.compact .q-slot-bot-a {
-  bottom: 2.5px;
-  left: 19%;
-}
-
-.hero-saudi-plate.compact .q-slot-bot-b {
-  bottom: 2.5px;
-  right: 34%;
-}
-
-.hero-saudi-plate.large .q-oval-slot {
-  width: 25px;
-  height: 8px;
-  border-radius: 5px;
-  border-width: 1px;
-  border-color: #9aa8b8;
-  box-shadow:
-    inset 0 1.5px 2.5px rgba(30, 41, 59, 0.45),
-    inset 0 -1px 1.5px rgba(255, 255, 255, 0.95),
-    0 1.2px 1.2px rgba(255, 255, 255, 0.9),
-    0 0.5px 1px rgba(15, 23, 42, 0.15);
-}
-
-.hero-saudi-plate.large .q-slot-top-a {
-  top: 7.5px;
-  left: 20%;
-}
-
-.hero-saudi-plate.large .q-slot-top-b {
-  top: 7.5px;
-  right: 33%;
-}
-
-.hero-saudi-plate.large .q-slot-bot-a {
-  bottom: 7.5px;
-  left: 20%;
-}
-
-.hero-saudi-plate.large .q-slot-bot-b {
-  bottom: 7.5px;
-  right: 33%;
-}
-
-/* Continuous Recessed Black Stamped Inner Border with Retroreflective Metal Sheen */
+/* Flush 3D Raised Black Stamped Bead + Brushed Anodized Silver-Aluminum Bed */
 .hero-saudi-plate .plate-inner-frame {
   width: 100%;
-  height: 100%;
-  border: 2.5px solid #14181f;
-  border-radius: 8px;
+  height: clamp(52px, 25.6cqi, 108px);
+  border: clamp(2.2px, 0.76cqi, 3.35px) solid var(--plate-ink);
+  border-radius: clamp(5.8px, 1.92cqi, 9.2px);
   box-sizing: border-box;
   overflow: hidden;
   position: relative;
-  background-color: #f7f9fb;
+  background-color: #eef2f7;
   background-image:
-    radial-gradient(ellipse 90% 70% at 50% 0%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.35) 50%, transparent 80%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(242, 245, 248, 0.7) 35%, rgba(230, 235, 242, 0.85) 70%, rgba(218, 224, 233, 0.95) 100%),
+    repeating-linear-gradient(
+      180deg,
+      rgba(15, 23, 42, 0.014) 0px,
+      rgba(15, 23, 42, 0.014) 1px,
+      rgba(255, 255, 255, 0.42) 1px,
+      rgba(255, 255, 255, 0.42) 2px
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.58) 0%,
+      rgba(255, 255, 255, 0) 36%,
+      rgba(148, 163, 184, 0.13) 100%
+    ),
+    linear-gradient(
+      112deg,
+      #dce2eb 0%,
+      #ecf0f6 18%,
+      #ffffff 42%,
+      #f9fbfd 57%,
+      #e2e8f0 82%,
+      #f3f6fa 100%
+    ),
     var(--plate-retro-pattern);
-  background-repeat: repeat;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.7);
+  background-repeat: repeat, no-repeat, no-repeat, repeat;
+  box-shadow:
+    inset 0 2.1px 2.6px rgba(15, 23, 42, 0.22),
+    inset 0 -1.6px 2px rgba(255, 255, 255, 0.96),
+    inset 1.8px 0 2.2px rgba(15, 23, 42, 0.14),
+    inset -1.4px 0 1.8px rgba(255, 255, 255, 0.9);
 }
 
 .hero-saudi-plate.compact .plate-inner-frame {
-  border-width: 1.75px;
-  border-radius: 6px;
+  height: clamp(49px, 25.2cqi, 74px);
+  border-width: clamp(1.95px, 0.72cqi, 2.55px);
+  border-radius: clamp(4.8px, 1.8cqi, 7px);
 }
 
 .hero-saudi-plate.large .plate-inner-frame {
-  border-width: 3px;
-  border-radius: 9.5px;
+  height: clamp(66px, 26cqi, 122px);
+  border-width: clamp(2.6px, 0.78cqi, 3.7px);
+  border-radius: clamp(7px, 2cqi, 10.4px);
 }
 
 /* ------------------------------------------------------------- */
-/* CENTER-PILLAR LAYOUT: Official Long Saudi License Plate       */
-/* Used for: خصوصي (Private) & نقل (Transport)                    */
-/* Left: Digits | Center: Kingdom Pillar | Right: Letters         */
+/* UNIFIED OPEN-FIELD ARCHITECTURE WITH CENTERED FBS EMBLEM      */
+/* [Digits (Ar/En)]  [Center FBS Emblem]  [Letters] | [Pillar]   */
 /* ------------------------------------------------------------- */
 
-.hero-saudi-plate .plate-layout-center {
+.hero-saudi-plate .plate-layout-open {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 62px minmax(0, 1fr);
+  grid-template-columns:
+    minmax(0, 1.12fr)
+    clamp(42px, 25.5cqi, 110px)
+    minmax(0, 1fr)
+    clamp(18px, 7.9cqi, 34px);
+  align-items: center;
   width: 100%;
   height: 100%;
 }
 
-.hero-saudi-plate.compact .plate-layout-center {
-  grid-template-columns: minmax(0, 1fr) 46px minmax(0, 1fr);
+/* Transport Pillar: Slightly Balanced Width for Blue Strip + Triangle */
+.hero-saudi-plate.is-transport .plate-layout-open {
+  grid-template-columns:
+    minmax(0, 1.12fr)
+    clamp(42px, 25.2cqi, 108px)
+    minmax(0, 1fr)
+    clamp(19px, 8.3cqi, 36px);
 }
 
-.hero-saudi-plate.large .plate-layout-center {
-  grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr);
+/* Sports / Small Plate (صغيرة رياضية): Distinctly Wider KSA Pillar */
+.hero-saudi-plate.is-small .plate-layout-open {
+  grid-template-columns:
+    minmax(0, 1.1fr)
+    clamp(40px, 24.4cqi, 104px)
+    minmax(0, 0.98fr)
+    clamp(24px, 11.2cqi, 48px);
+}
+
+.hero-saudi-plate .q-logo-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 3;
+  overflow: hidden;
+}
+
+.hero-saudi-plate .q-logo-center {
+  padding: clamp(2px, 0.95cqi, 5px) clamp(2.5px, 1.15cqi, 6px);
+}
+
+.hero-saudi-plate .q-fbs-emblem {
+  width: 100%;
+  height: auto;
+  max-width: clamp(38px, 23.2cqi, 100px);
+  max-height: 82%;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 0.6px 0 rgba(255, 255, 255, 0.85))
+    drop-shadow(0.4px 0.9px 0.9px rgba(15, 23, 42, 0.16));
 }
 
 .hero-saudi-plate .q-plate-section {
-  display: grid;
-  grid-template-rows: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   height: 100%;
   width: 100%;
-  overflow: hidden;
+  box-sizing: border-box;
+  padding: clamp(1.5px, 0.75cqi, 3.8px) clamp(1.5px, 0.9cqi, 5px);
+  overflow: visible;
 }
 
 .hero-saudi-plate .q-digits-section {
-  border-right: 2px solid #14181f;
-  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.7);
+  padding-left: clamp(4px, 1.9cqi, 10px);
 }
 
 .hero-saudi-plate .q-letters-section {
-  border-left: 2px solid #14181f;
-  box-shadow: -1px 0 0 rgba(255, 255, 255, 0.7);
-}
-
-.hero-saudi-plate .q-plate-cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  padding: 0 4px;
-}
-
-/* Horizontal Embossed Stamped Groove */
-.hero-saudi-plate .q-row-latin {
-  border-top: 2px solid #14181f;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+  padding-right: clamp(3px, 1.5cqi, 8px);
 }
 
 /* ------------------------------------------------------------- */
-/* TRANSPORT LAYOUT: Main Section + Right Golden Amber Pillar     */
-/* Used for: نقل (Transport / Commercial)                         */
+/* RIGHT-SIDE KINGDOM PILLAR (PRIVATE / WIDER SPORTS / BLUE)     */
 /* ------------------------------------------------------------- */
 
-.hero-saudi-plate .plate-layout-transport {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 68px;
-  width: 100%;
-  height: 100%;
-}
-
-.hero-saudi-plate.compact .plate-layout-transport {
-  grid-template-columns: minmax(0, 1fr) 54px;
-}
-
-.hero-saudi-plate.large .plate-layout-transport {
-  grid-template-columns: minmax(0, 1fr) 80px;
-}
-
-.hero-saudi-plate .plate-layout-transport .q-main-section {
-  display: grid;
-  grid-template-rows: 1fr 1fr;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
-
-.hero-saudi-plate .plate-layout-transport .q-plate-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-}
-
-.hero-saudi-plate.compact .plate-layout-transport .q-plate-row {
-  padding: 0 10px;
-}
-
-.hero-saudi-plate.large .plate-layout-transport .q-plate-row {
-  padding: 0 20px;
-}
-
-.hero-saudi-plate .plate-layout-transport .q-row-latin {
-  border-top: 2px solid #14181f;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
-}
-
-.hero-saudi-plate .plate-layout-transport .q-kingdom-pillar {
-  border-left: 2px solid #14181f;
-  box-shadow: -1px 0 0 rgba(255, 255, 255, 0.7);
-  background-color: #f59e0b;
-  background-image:
-    radial-gradient(ellipse 85% 60% at 50% 15%, rgba(254, 243, 199, 0.9) 0%, rgba(245, 158, 11, 0.4) 50%, transparent 80%),
-    linear-gradient(180deg, #fbbf24 0%, #f59e0b 45%, #d97706 100%),
-    var(--plate-retro-pattern);
-  background-repeat: repeat;
-  padding: 5px 2px;
+.hero-saudi-plate .q-pillar-right-private,
+.hero-saudi-plate .q-pillar-right-transport {
+  border-left: clamp(1.85px, 0.64cqi, 2.8px) solid var(--plate-ink);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
   height: 100%;
-  box-sizing: border-box;
-  text-align: center;
-}
-
-.hero-saudi-plate.compact .plate-layout-transport .q-kingdom-pillar {
-  padding: 3.5px 1.5px;
-}
-
-.hero-saudi-plate.large .plate-layout-transport .q-kingdom-pillar {
-  padding: 7px 3px;
-}
-
-/* Character Blocks: Guaranteed 1:1 Vertical Alignment across Row 1 & Row 2 */
-.hero-saudi-plate .q-digits-block,
-.hero-saudi-plate .q-letters-block {
-  display: grid;
-  justify-items: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  direction: ltr !important;
-  box-sizing: border-box;
-  padding: 0 4px;
-}
-
-/* Skeuomorphic Die-Stamped Embossed Characters */
-.hero-saudi-plate .q-char-cell {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #080c12;
-  font-weight: 900;
-  line-height: 1;
-  width: 100%;
-  height: 100%;
-  direction: ltr !important;
-  text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.95),
-    0 -1.2px 0.5px rgba(0, 0, 0, 0.95),
-    1px 2px 2.5px rgba(0, 0, 0, 0.38),
-    -0.5px -0.5px 0.5px rgba(255, 255, 255, 0.5);
-  filter: drop-shadow(0 1.5px 1px rgba(0, 0, 0, 0.22));
-}
-
-/* Arabic Glyphs: Sized and calibrated for exact optical mass equivalence with Latin */
-.hero-saudi-plate .q-arabic-char.q-char-digit {
-  font-family: 'IBM Plex Sans Arabic', system-ui, -apple-system, sans-serif;
-  font-size: 32px;
-}
-
-.hero-saudi-plate .q-arabic-char.q-char-letter {
-  font-family: 'IBM Plex Sans Arabic', system-ui, -apple-system, sans-serif;
-  font-size: 30px;
-}
-
-/* Latin Glyphs */
-.hero-saudi-plate .q-latin-char.q-char-digit {
-  font-family: 'Manrope', 'DIN Alternate', 'Arial Black', sans-serif;
-  font-size: 28px;
-}
-
-.hero-saudi-plate .q-latin-char.q-char-letter {
-  font-family: 'Manrope', 'DIN Alternate', 'Arial Black', sans-serif;
-  font-size: 26px;
-  letter-spacing: 0.5px;
-}
-
-/* Compact scale & refined lighter weight */
-.hero-saudi-plate.compact .q-char-cell {
-  font-weight: 750;
-}
-
-.hero-saudi-plate.compact .q-arabic-char.q-char-digit {
-  font-size: 21px;
-}
-
-.hero-saudi-plate.compact .q-arabic-char.q-char-letter {
-  font-size: 19px;
-}
-
-.hero-saudi-plate.compact .q-latin-char.q-char-digit {
-  font-size: 18px;
-}
-
-.hero-saudi-plate.compact .q-latin-char.q-char-letter {
-  font-size: 16px;
-}
-
-/* Large scale */
-.hero-saudi-plate.large .q-arabic-char.q-char-digit {
-  font-size: 38px;
-}
-
-.hero-saudi-plate.large .q-arabic-char.q-char-letter {
-  font-size: 35px;
-}
-
-.hero-saudi-plate.large .q-latin-char.q-char-digit {
-  font-size: 33px;
-}
-
-.hero-saudi-plate.large .q-latin-char.q-char-letter {
-  font-size: 31px;
-}
-
-/* ------------------------------------------------------------- */
-/* CENTER KINGDOM PILLAR                                         */
-/* ------------------------------------------------------------- */
-
-.hero-saudi-plate .q-kingdom-pillar.q-pillar-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 5px 2px;
-  height: 100%;
+  padding: clamp(1.8px, 0.95cqi, 4.5px) clamp(1px, 0.35cqi, 2px);
   box-sizing: border-box;
   text-align: center;
   position: relative;
   z-index: 3;
+  overflow: hidden;
 }
 
-.hero-saudi-plate.compact .q-kingdom-pillar.q-pillar-center {
-  padding: 2px 1px;
+.hero-saudi-plate .q-pillar-right-private {
+  background-color: #f3f6fa;
+  background-image:
+    repeating-linear-gradient(
+      180deg,
+      rgba(15, 23, 42, 0.012) 0px,
+      rgba(15, 23, 42, 0.012) 1px,
+      rgba(255, 255, 255, 0.45) 1px,
+      rgba(255, 255, 255, 0.45) 2px
+    ),
+    linear-gradient(135deg, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%),
+    var(--plate-retro-pattern);
+  background-repeat: repeat, no-repeat, repeat;
+  box-shadow:
+    -1.6px 0 2px rgba(15, 23, 42, 0.18),
+    -0.7px 0 0 rgba(255, 255, 255, 0.95),
+    inset 1.6px 0 2px rgba(15, 23, 42, 0.16),
+    inset 0 2px 2.4px rgba(15, 23, 42, 0.18),
+    inset 0 -1.5px 1.8px rgba(255, 255, 255, 0.92);
 }
 
-.hero-saudi-plate.large .q-kingdom-pillar.q-pillar-center {
-  padding: 7px 3px;
+.hero-saudi-plate .q-pillar-right-transport,
+.hero-saudi-plate .plate-inner-frame.is-transport .q-kingdom-pillar {
+  background-color: #0284c7;
+  background-image:
+    radial-gradient(
+      ellipse 90% 60% at 50% 14%,
+      rgba(125, 211, 252, 0.4) 0%,
+      rgba(14, 165, 233, 0.15) 50%,
+      transparent 82%
+    ),
+    linear-gradient(180deg, #0ea5e9 0%, #0284c7 48%, #0369a1 100%),
+    var(--plate-retro-pattern);
+  background-repeat: repeat;
+  box-shadow:
+    -1.6px 0 2px rgba(15, 23, 42, 0.18),
+    -0.7px 0 0 rgba(255, 255, 255, 0.92),
+    inset 1.5px 0 2px rgba(2, 24, 54, 0.35),
+    inset 0 2px 2.4px rgba(2, 24, 54, 0.28),
+    inset 0 -1.4px 1.8px rgba(186, 230, 253, 0.35);
+}
+
+/* Elevated Top Group: Saudi Emblem + السعودية */
+.hero-saudi-plate .q-pillar-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: clamp(0.4px, 0.2cqi, 1px);
+  width: 100%;
+}
+
+.hero-saudi-plate .q-saudi-emblem {
+  width: clamp(9.8px, 5cqi, 22.5px) !important;
+  height: clamp(9.8px, 5cqi, 22.5px) !important;
+  filter: drop-shadow(0 0.5px 0 rgba(255, 255, 255, 0.88));
+}
+
+.hero-saudi-plate.is-small .q-saudi-emblem {
+  width: clamp(12px, 6.35cqi, 28px) !important;
+  height: clamp(12px, 6.35cqi, 28px) !important;
+}
+
+.hero-saudi-plate .q-saudi-emblem.is-green-emblem {
+  filter: drop-shadow(0 0.5px 0 rgba(255, 255, 255, 0.92));
+}
+
+.hero-saudi-plate .q-saudi-emblem.is-white-emblem {
+  filter: drop-shadow(0 0.65px 0.85px rgba(2, 32, 71, 0.48));
 }
 
 .hero-saudi-plate .q-saudi-text {
-  font-family: 'IBM Plex Sans Arabic', sans-serif;
-  font-weight: 900;
-  font-size: 8.5px;
+  font-family: var(--font-plate-naskh), 'IBM Plex Sans Arabic', sans-serif;
+  font-weight: 700;
+  font-size: clamp(3.4px, 1.68cqi, 7.6px);
   line-height: 1;
-  color: #0b0f17;
-  text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.8);
+  letter-spacing: -0.08px;
+  color: #080d16;
+  white-space: nowrap;
+  text-shadow: 0 0.4px 0 rgba(255, 255, 255, 0.65);
 }
 
-.hero-saudi-plate.compact .q-saudi-text {
-  font-size: 6px;
-  font-weight: 750;
+.hero-saudi-plate.is-small .q-saudi-text {
+  font-size: clamp(4.1px, 2.08cqi, 9.2px);
 }
 
-.hero-saudi-plate.large .q-saudi-text {
-  font-size: 10.5px;
+.hero-saudi-plate .q-pillar-right-transport .q-saudi-text {
+  text-shadow: 0 0.4px 0 rgba(255, 255, 255, 0.28);
 }
 
-.hero-saudi-plate .q-ksa-text {
-  font-family: 'Manrope', 'DIN Alternate', 'Arial Black', sans-serif;
-  font-weight: 900;
-  font-size: 11px;
-  line-height: 1;
-  letter-spacing: 1px;
-  color: #0b0f17;
-  text-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.8);
-}
-
-.hero-saudi-plate.compact .q-ksa-text {
-  font-size: 7.5px;
-  font-weight: 800;
-}
-
-.hero-saudi-plate.large .q-ksa-text {
-  font-size: 13.5px;
-}
-
-/* Pillar Specifics: خصوصي (Private) */
-.hero-saudi-plate .plate-inner-frame.is-private .q-kingdom-pillar {
-  background-color: #f7f9fb;
-  background-image:
-    radial-gradient(ellipse 90% 70% at 50% 0%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.35) 50%, transparent 80%),
-    linear-gradient(180deg, #ffffff 0%, #f4f6f8 100%),
-    var(--plate-retro-pattern);
-  background-repeat: repeat;
-}
-
-/* Pillar Bottom Row for Private Plate: Hologram Strip + Black Dot Seal side-by-side */
-.hero-saudi-plate .q-pillar-bottom-private {
+/* Vertical K / S / A Stack */
+.hero-saudi-plate .q-ksa-stack {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  width: 84%;
+  gap: clamp(0.3px, 0.14cqi, 0.8px);
+  font-family: var(--font-plate-din), 'Bahnschrift', 'DIN Alternate', sans-serif;
+  font-weight: 700;
+  font-size: clamp(4.2px, 2.06cqi, 9.5px);
+  line-height: 0.96;
+  color: #080d16;
+  text-shadow: 0 0.4px 0 rgba(255, 255, 255, 0.65);
+}
+
+.hero-saudi-plate.is-small .q-ksa-stack {
+  font-size: clamp(4.8px, 2.45cqi, 11px);
+  line-height: 0.98;
+}
+
+.hero-saudi-plate .q-pillar-right-transport .q-ksa-stack {
+  text-shadow: 0 0.4px 0 rgba(255, 255, 255, 0.28);
+}
+
+/* Brushed Metallic Silver Security Band Directly Behind 'A' (Private & Sports) */
+.hero-saudi-plate .q-ksa-a-foil {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  padding-bottom: 2px;
-}
-
-.hero-saudi-plate.compact .q-pillar-bottom-private {
-  gap: 2px;
-  padding-bottom: 1px;
-}
-
-.hero-saudi-plate.large .q-pillar-bottom-private {
-  gap: 5px;
-}
-
-.hero-saudi-plate .q-hologram-strip {
-  width: 20px;
-  height: 9.5px;
-  border-radius: 2px;
-  background: linear-gradient(135deg, #334155 0%, #94a3b8 25%, #475569 50%, #cbd5e1 75%, #1e293b 100%);
-  border: 0.5px solid rgba(0, 0, 0, 0.45);
-  box-shadow: inset 0 0 2px rgba(255, 255, 255, 0.6), 0 1px 1px rgba(0, 0, 0, 0.25);
+  max-width: 34px;
+  padding: clamp(0.35px, 0.15cqi, 0.85px) 0;
+  margin-top: clamp(0.3px, 0.12cqi, 0.7px);
+  border-radius: clamp(1px, 0.42cqi, 2px);
+  background: linear-gradient(
+    90deg,
+    #94a3b8 0%,
+    #cbd5e1 26%,
+    #f8fafc 52%,
+    #cbd5e1 78%,
+    #94a3b8 100%
+  );
+  border: 0.5px solid rgba(71, 85, 105, 0.36);
+  box-shadow:
+    inset 0 0.5px 1px rgba(255, 255, 255, 0.9),
+    0 0.4px 0.8px rgba(15, 23, 42, 0.18);
   position: relative;
   overflow: hidden;
 }
 
-.hero-saudi-plate.compact .q-hologram-strip {
-  width: 13px;
-  height: 5.5px;
+.hero-saudi-plate .q-ksa-a-char {
+  position: relative;
+  z-index: 2;
+  line-height: 0.95;
+  color: #080d16;
 }
 
-.hero-saudi-plate.large .q-hologram-strip {
-  width: 26px;
-  height: 12px;
+/* Brushed Metallic Silver Security Strip Below 'A' (Transport) */
+.hero-saudi-plate .q-hologram-strip {
+  width: 80%;
+  max-width: 26px;
+  height: clamp(2.8px, 1.5cqi, 7px);
+  border-radius: 1.2px;
+  background: linear-gradient(
+    90deg,
+    #94a3b8 0%,
+    #f1f5f9 26%,
+    #cbd5e1 50%,
+    #ffffff 74%,
+    #64748b 100%
+  );
+  border: 0.5px solid rgba(15, 23, 42, 0.35);
+  box-shadow:
+    inset 0 0 1.5px rgba(255, 255, 255, 0.85),
+    0 0.4px 0.8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .hero-saudi-plate .q-hologram-shimmer {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg,
-      rgba(255, 0, 128, 0.18) 0%,
-      rgba(0, 255, 255, 0.28) 30%,
-      rgba(255, 255, 0, 0.24) 60%,
-      rgba(0, 255, 0, 0.18) 100%);
-  mix-blend-mode: color-dodge;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.34) 0%,
+    rgba(226, 232, 240, 0.24) 50%,
+    rgba(255, 255, 255, 0.38) 100%
+  );
   pointer-events: none;
 }
 
 .hero-saudi-plate .q-hologram-bars {
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(90deg,
-      rgba(255, 255, 255, 0.35) 0px,
-      rgba(255, 255, 255, 0.35) 1.5px,
-      transparent 1.5px,
-      transparent 3px);
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.3) 0px,
+    rgba(255, 255, 255, 0.3) 1.5px,
+    transparent 1.5px,
+    transparent 3px
+  );
   pointer-events: none;
 }
 
+/* Bottom Category Marks:
+   - Medium Black Circle (●) for خصوصي
+   - Larger Bold Black Circle (●) for صغيرة رياضية
+   - Downward Black Triangle (▼) for نقل خاص */
 .hero-saudi-plate .q-black-seal {
-  width: 9.5px;
-  height: 9.5px;
+  width: clamp(4.2px, 2.28cqi, 10px);
+  height: clamp(4.2px, 2.28cqi, 10px);
   border-radius: 50%;
-  background: #0b0f17;
-  box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.5), inset 0 0.5px 0.5px rgba(255, 255, 255, 0.3);
+  background: radial-gradient(circle at 35% 35%, #1e2533 0%, #070b12 75%);
+  box-shadow:
+    0 0.6px 0 rgba(255, 255, 255, 0.92),
+    0 0.8px 1.2px rgba(15, 23, 42, 0.25);
+  flex-shrink: 0;
 }
 
-.hero-saudi-plate.compact .q-black-seal {
-  width: 5.5px;
-  height: 5.5px;
+.hero-saudi-plate.is-small .q-black-seal {
+  width: clamp(6.8px, 3.85cqi, 16.5px);
+  height: clamp(6.8px, 3.85cqi, 16.5px);
 }
 
-.hero-saudi-plate.large .q-black-seal {
-  width: 12px;
-  height: 12px;
+.hero-saudi-plate .q-transport-triangle {
+  width: clamp(5.2px, 2.85cqi, 13px);
+  height: clamp(4.4px, 2.4cqi, 11px);
+  display: block;
+  filter: drop-shadow(0 0.45px 0 rgba(255, 255, 255, 0.28));
+  flex-shrink: 0;
 }
 
-/* Pillar Specifics: نقل (Transport / Commercial) */
-.hero-saudi-plate .plate-inner-frame.is-transport .q-kingdom-pillar {
-  background-color: #f59e0b;
-  background-image:
-    radial-gradient(ellipse 85% 60% at 50% 15%, rgba(254, 243, 199, 0.9) 0%, rgba(245, 158, 11, 0.4) 50%, transparent 80%),
-    linear-gradient(180deg, #fbbf24 0%, #f59e0b 45%, #d97706 100%),
-    var(--plate-retro-pattern);
-  background-repeat: repeat;
-  box-shadow: inset 1px 0 2px rgba(255, 255, 255, 0.4), inset -1px 0 2px rgba(255, 255, 255, 0.4);
-}
+/* ------------------------------------------------------------- */
+/* DIE-STAMPED 3D EMBOSSED CHARACTER BLOCKS & AUTHENTIC FONTS    */
+/* Calligraphic Naskh (Arabic) + Tall DIN 1451 Proportions (En)  */
+/* ------------------------------------------------------------- */
 
-.hero-saudi-plate .q-pillar-bottom-transport {
-  display: flex;
-  flex-direction: column;
+.hero-saudi-plate .q-digits-block,
+.hero-saudi-plate .q-letters-block {
+  display: grid;
+  justify-items: center;
   align-items: center;
-  gap: 2px;
   width: 100%;
+  height: 49%;
+  direction: ltr !important;
+  box-sizing: border-box;
+  padding: 0 clamp(1px, 0.5cqi, 3px);
+  overflow: visible;
 }
 
-.hero-saudi-plate .q-transport-hologram-seal {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 40% 35%, #ffffff 0%, #e2e8f0 30%, #94a3b8 60%, #475569 90%, #334155 100%);
-  border: 1px solid #475569;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), inset 0 1px 1px #ffffff;
-  display: flex;
+.hero-saudi-plate .q-char-cell {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.hero-saudi-plate.compact .q-transport-hologram-seal {
-  width: 13px;
-  height: 13px;
-}
-
-.hero-saudi-plate.large .q-transport-hologram-seal {
-  width: 20px;
-  height: 20px;
-}
-
-.hero-saudi-plate .q-transport-word {
-  font-family: 'IBM Plex Sans Arabic', sans-serif;
-  font-weight: 900;
-  font-size: 12.5px;
+  color: #11151e;
   line-height: 1;
-  color: #0b0f17;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
-}
-
-.hero-saudi-plate.compact .q-transport-word {
-  font-size: 10px;
-}
-
-.hero-saudi-plate.large .q-transport-word {
-  font-size: 16px;
-}
-
-/* ------------------------------------------------------------- */
-/* 3-COLUMN LAYOUT: صغيرة (Small / Sports / US Size)              */
-/* Exact simulation of media_1792367374446.jpg                   */
-/* NO horizontal divider line anywhere!                          */
-/* ------------------------------------------------------------- */
-
-.hero-saudi-plate .plate-layout-small {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 64px;
   width: 100%;
   height: 100%;
+  direction: ltr !important;
+  position: relative;
+  z-index: 3;
+  overflow: visible;
+  -webkit-text-stroke: 0.2px #090d14;
+  text-shadow:
+    -0.65px -0.75px 0 rgba(255, 255, 255, 0.98),
+    0.55px -0.55px 0 rgba(255, 255, 255, 0.88),
+    -0.5px 0.5px 0 rgba(226, 232, 240, 0.78),
+    0.85px 1.55px 1.35px rgba(15, 23, 42, 0.36),
+    0 2.3px 3px rgba(15, 23, 42, 0.16);
 }
 
-.hero-saudi-plate.compact .plate-layout-small {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 52px;
+/* Authentic Calligraphic Saudi Plate Naskh (Arabic Digits & Letters) */
+.hero-saudi-plate .q-arabic-char.q-char-digit {
+  font-family: var(--font-plate-naskh), 'Noto Naskh Arabic', 'Traditional Arabic', serif;
+  font-size: clamp(12.6px, 8.9cqi, 41px);
+  font-weight: 700;
+  transform: translateY(-2%);
 }
 
-.hero-saudi-plate.large .plate-layout-small {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 76px;
+.hero-saudi-plate .q-arabic-char.q-char-letter {
+  font-family: var(--font-plate-naskh), 'Noto Naskh Arabic', 'Traditional Arabic', serif;
+  font-size: clamp(12.2px, 8.5cqi, 39px);
+  font-weight: 700;
+  transform: translateY(-4%);
 }
 
-.hero-saudi-plate .plate-layout-small .q-small-col {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  height: 100%;
-  padding: 4px 6px;
-  box-sizing: border-box;
-  border-right: 2px solid #14181f;
-  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.85);
+/* Authentic Tall DIN 1451 Proportions (Latin Digits & Letters) */
+.hero-saudi-plate .q-latin-char.q-char-digit {
+  font-family: var(--font-plate-din), 'Bahnschrift', 'DIN Alternate', sans-serif;
+  font-size: clamp(11.8px, 8.2cqi, 37.5px);
+  font-weight: 600;
+  letter-spacing: clamp(0px, 0.12cqi, 0.6px);
+  transform: scaleY(1.06);
 }
 
-.hero-saudi-plate .plate-layout-small .q-kingdom-pillar {
-  border-left: 2px solid #14181f;
-  box-shadow: -1px 0 0 rgba(255, 255, 255, 0.7);
-  padding: 5px 2px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-  box-sizing: border-box;
-  text-align: center;
+.hero-saudi-plate .q-latin-char.q-char-letter {
+  font-family: var(--font-plate-din), 'Bahnschrift', 'DIN Alternate', sans-serif;
+  font-size: clamp(11.4px, 7.9cqi, 36px);
+  font-weight: 600;
+  letter-spacing: clamp(0px, 0.14cqi, 0.7px);
+  transform: scaleY(1.06);
 }
 
-.hero-saudi-plate.compact .plate-layout-small .q-kingdom-pillar {
-  padding: 3.5px 1px;
+/* VIP 1-2 Digit Plates (e.g. 1, 7, 99): Commanding Optical Scale */
+.hero-saudi-plate.digits-1 .q-arabic-char.q-char-digit,
+.hero-saudi-plate.digits-2 .q-arabic-char.q-char-digit {
+  font-size: clamp(13.6px, 9.5cqi, 44px);
 }
 
-.hero-saudi-plate.large .plate-layout-small .q-kingdom-pillar {
-  padding: 7px 3px;
+.hero-saudi-plate.digits-1 .q-latin-char.q-char-digit,
+.hero-saudi-plate.digits-2 .q-latin-char.q-char-digit {
+  font-size: clamp(12.8px, 8.8cqi, 40.5px);
 }
 
-.hero-saudi-plate .q-black-seal {
-  width: 8.5px;
-  height: 8.5px;
-  border-radius: 50%;
-  background: #0b0f17;
-  box-shadow: 0 0.5px 0 rgba(255, 255, 255, 0.9), inset 0 1px 1px rgba(0, 0, 0, 0.8);
+/* 4-Digit Plates (e.g. 8888, 5333): Commanding Authentic Height without Crowding */
+.hero-saudi-plate.digits-4 .q-arabic-char.q-char-digit {
+  font-size: clamp(11.5px, 8.1cqi, 37px);
+  letter-spacing: -0.2px;
 }
 
-.hero-saudi-plate.compact .q-black-seal {
-  width: 7px;
-  height: 7px;
+.hero-saudi-plate.digits-4 .q-latin-char.q-char-digit {
+  font-size: clamp(10.8px, 7.5cqi, 34.5px);
+  letter-spacing: -0.15px;
 }
 
-.hero-saudi-plate.large .q-black-seal {
-  width: 11px;
-  height: 11px;
+/* 3-Letter Plates (e.g. ر ح س, ب ط ل, ن ق ل): Authentic Calligraphic Presence */
+.hero-saudi-plate.letters-3 .q-arabic-char.q-char-letter {
+  font-size: clamp(11.4px, 7.9cqi, 36px);
 }
 
-/* ============================================================== */
-/* DYNAMIC MOBILE RESPONSIVE SAUDI PLATE STYLING                   */
-/* Handcrafted for screens 360px, 390px, 430px & 2-column grids    */
-/* - Prevents plate from becoming tall/fat (slender 3.15:1 ratio)  */
-/* - Reduces font weight to 600 so strokes don't bleed or blur     */
-/* - Dynamically sizes digits (4 digits vs 3 vs 1-2) & letters     */
-/* - Compacts Center Pillar to give 20%+ more space to digits/chars*/
-/* ============================================================== */
+.hero-saudi-plate.letters-3 .q-latin-char.q-char-letter {
+  font-size: clamp(10.6px, 7.4cqi, 33.5px);
+}
 
-@media (max-width: 640px) {
-  /* Unified 56px height across ALL plate types (Private, Transport, and Small) */
-  .hero-saudi-plate.compact {
-    width: 100%;
-    max-width: 250px;
-    height: 56px;
-    max-height: 56px;
-    border-width: 1.5px;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px -2px rgba(10, 16, 30, 0.2);
+/* ------------------------------------------------------------- */
+/* CONTAINER & MOBILE ADAPTATION (COLLISION-FREE DOWN TO 155PX)  */
+/* ------------------------------------------------------------- */
+
+@container plate (max-width: 245px) {
+  .q-char-cell {
+    -webkit-text-stroke: 0.12px #090d14;
+    text-shadow:
+      -0.5px -0.55px 0 rgba(255, 255, 255, 0.96),
+      0.4px -0.4px 0 rgba(255, 255, 255, 0.85),
+      0.65px 1.15px 1.1px rgba(15, 23, 42, 0.32);
   }
 
-  /* Small sports plate: unified to the EXACT same 56px height as private and transport */
-  .hero-saudi-plate.compact.is-small {
-    height: 56px;
-    max-height: 56px;
-    max-width: 220px;
-  }
-
-  /* Inner frame borders scaled down */
-  .hero-saudi-plate.compact .plate-inner-frame {
-    border-width: 1.25px;
-    border-radius: 5px;
-  }
-
-  /* Slimmer Center Pillar: gives digits and letters more breathing room */
-  .hero-saudi-plate.compact .plate-layout-center {
-    grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr);
-  }
-
-  .hero-saudi-plate.compact .q-digits-section {
-    border-right-width: 1.25px;
-  }
-
-  .hero-saudi-plate.compact .q-letters-section {
-    border-left-width: 1.25px;
-  }
-
-  .hero-saudi-plate.compact .q-row-latin {
-    border-top-width: 1.25px;
-  }
-
-  /* Center Kingdom Pillar inside details */
-  .hero-saudi-plate.compact .q-kingdom-pillar.q-pillar-center {
-    padding: 1.5px 0.5px;
-  }
-
-  .hero-saudi-plate.compact .q-saudi-emblem {
-    width: 8.5px !important;
-    height: 8.5px !important;
-  }
-
-  .hero-saudi-plate.compact .q-saudi-text {
-    font-size: 4px;
-    font-weight: 700;
-    line-height: 1;
-  }
-
-  .hero-saudi-plate.compact .q-ksa-text {
-    font-size: 5px;
-    font-weight: 700;
-    letter-spacing: 0.1px;
-    line-height: 1;
-  }
-
-  .hero-saudi-plate.compact .q-pillar-bottom-private {
-    gap: 1.5px;
-    padding-bottom: 0.5px;
-  }
-
-  .hero-saudi-plate.compact .q-hologram-strip {
-    width: 8px;
-    height: 3.5px;
-    border-radius: 1px;
-  }
-
-  .hero-saudi-plate.compact .q-black-seal {
-    width: 3.5px;
-    height: 3.5px;
-  }
-
-  /* Transport Layout on Mobile */
-  .hero-saudi-plate.compact .plate-layout-transport {
-    grid-template-columns: minmax(0, 1fr) 30px;
-  }
-
-  .hero-saudi-plate.compact .plate-layout-transport .q-plate-row {
-    padding: 0 4px;
-  }
-
-  .hero-saudi-plate.compact .plate-layout-transport .q-row-latin {
-    border-top-width: 1.25px;
-  }
-
-  .hero-saudi-plate.compact .plate-layout-transport .q-kingdom-pillar {
-    border-left-width: 1.25px;
-    padding: 1.5px 0.5px;
-  }
-
-  .hero-saudi-plate.compact .q-transport-hologram-seal {
-    width: 8px;
-    height: 8px;
-  }
-
-  .hero-saudi-plate.compact .q-transport-word {
-    font-size: 6px;
-    font-weight: 700;
-  }
-
-  /* Small Plate Layout on Mobile: identical 56px height */
-  .hero-saudi-plate.compact .plate-layout-small {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 28px;
-  }
-
-  .hero-saudi-plate.compact .plate-layout-small .q-small-col {
-    padding: 1.5px 2px;
-    border-right-width: 1.25px;
-  }
-
-  .hero-saudi-plate.compact .plate-layout-small .q-kingdom-pillar {
-    border-left-width: 1.25px;
-    padding: 2px 1px;
-  }
-
-  /* Refined Factory Stamped Mounting Dimples on Compact Plates */
-  .hero-saudi-plate.compact .q-mount-dimple {
-    width: 3.5px;
-    height: 3.5px;
-    border-width: 0.5px;
-  }
-  .hero-saudi-plate.compact .q-dimple-tl {
-    top: 3px;
-    left: 4.5px;
-  }
-  .hero-saudi-plate.compact .q-dimple-tr {
-    top: 3px;
-    right: 4.5px;
-  }
-  .hero-saudi-plate.compact .q-dimple-bl {
-    bottom: 3px;
-    left: 4.5px;
-  }
-  .hero-saudi-plate.compact .q-dimple-br {
-    bottom: 3px;
-    right: 4.5px;
-  }
-
-  /* Compact transport mounting slots safely inside white body */
-  .hero-saudi-plate.compact .q-oval-slot {
-    width: 10px;
-    height: 2.5px;
-    border-radius: 1.5px;
-  }
-  .hero-saudi-plate.compact .q-slot-top-a {
-    top: 2px;
-    left: 19%;
-  }
-  .hero-saudi-plate.compact .q-slot-top-b {
-    top: 2px;
-    right: 34%;
-  }
-  .hero-saudi-plate.compact .q-slot-bot-a {
-    bottom: 2px;
-    left: 19%;
-  }
-  .hero-saudi-plate.compact .q-slot-bot-b {
-    bottom: 2px;
-    right: 34%;
-  }
-
-  /* Cell Padding: eliminate wasted horizontal space */
-  .hero-saudi-plate.compact .q-plate-cell,
-  .hero-saudi-plate.compact .q-digits-block,
-  .hero-saudi-plate.compact .q-letters-block {
+  .q-digits-block,
+  .q-letters-block {
     padding: 0 1px;
   }
 
-  /* Authentic Stamped 3D Embossed Engraving ("الحفر والنحت المعدني المعتمد للوحات") */
-  .hero-saudi-plate.compact .q-char-cell {
-    text-shadow:
-      0 1px 0 rgba(255, 255, 255, 0.95),
-      0 -1px 0.4px rgba(0, 0, 0, 0.92),
-      0.8px 1.5px 2px rgba(0, 0, 0, 0.3),
-      -0.4px -0.4px 0.4px rgba(255, 255, 255, 0.45);
-    filter: drop-shadow(0 1px 0.8px rgba(0, 0, 0, 0.22));
+  .q-logo-center {
+    padding: 1.5px 2px;
   }
 
-  /* Optical Weight Harmony: balanced weight between Arabic, Latin digits, and Latin letters */
-  .hero-saudi-plate.compact .q-arabic-char {
-    font-weight: 700 !important;
-  }
-
-  .hero-saudi-plate.compact .q-latin-char.q-char-digit {
-    font-weight: 700 !important;
-  }
-
-  /* Latin uppercase letters (e.g. H, B, A) optical balance with Arabic strokes */
-  .hero-saudi-plate.compact .q-latin-char.q-char-letter {
-    font-weight: 650 !important;
-  }
-
-  /* Base font sizes on mobile for 56px height */
-  .hero-saudi-plate.compact .q-arabic-char.q-char-digit {
-    font-size: 13.5px;
-  }
-  .hero-saudi-plate.compact .q-arabic-char.q-char-letter {
-    font-size: 12.5px;
-  }
-  .hero-saudi-plate.compact .q-latin-char.q-char-digit {
-    font-size: 12.5px;
-  }
-  .hero-saudi-plate.compact .q-latin-char.q-char-letter {
-    font-size: 11.5px;
-    letter-spacing: 0;
-  }
-
-  /* Dynamic sizing for 4 Digits (e.g. 5333, 2223, 8888) */
-  .hero-saudi-plate.compact.digits-4 .q-arabic-char.q-char-digit {
-    font-size: 11px;
-    letter-spacing: -0.2px;
-  }
-  .hero-saudi-plate.compact.digits-4 .q-latin-char.q-char-digit {
-    font-size: 10px;
-    letter-spacing: -0.2px;
-  }
-  /* In 4-digit plates, scale letters so H B A doesn't overpower the 4 numbers */
-  .hero-saudi-plate.compact.digits-4 .q-arabic-char.q-char-letter {
-    font-size: 11.5px;
-  }
-  .hero-saudi-plate.compact.digits-4 .q-latin-char.q-char-letter {
-    font-size: 10.5px;
-    letter-spacing: -0.2px;
-  }
-
-  /* Dynamic sizing for 3 Digits (e.g. 777, 966, 300, 911) */
-  .hero-saudi-plate.compact.digits-3 .q-arabic-char.q-char-digit {
-    font-size: 13px;
-  }
-  .hero-saudi-plate.compact.digits-3 .q-latin-char.q-char-digit {
-    font-size: 12px;
-  }
-
-  /* Dynamic sizing for 1-2 Digits (e.g. 1, 7, 99) */
-  .hero-saudi-plate.compact.digits-1 .q-arabic-char.q-char-digit,
-  .hero-saudi-plate.compact.digits-2 .q-arabic-char.q-char-digit {
-    font-size: 15.5px;
-  }
-  .hero-saudi-plate.compact.digits-1 .q-latin-char.q-char-digit,
-  .hero-saudi-plate.compact.digits-2 .q-latin-char.q-char-digit {
-    font-size: 14px;
-  }
-
-  /* Dynamic sizing for 3 Letters (e.g. هـ ب أ, د ع س, ج ن ك, ح ط ا) */
-  .hero-saudi-plate.compact.letters-3 .q-arabic-char.q-char-letter {
-    font-size: 11.5px;
-  }
-  .hero-saudi-plate.compact.letters-3 .q-latin-char.q-char-letter {
-    font-size: 10.5px;
-    letter-spacing: -0.2px;
-  }
-
-  /* Dynamic sizing for 1-2 Letters (e.g. ح ق, س ر) */
-  .hero-saudi-plate.compact.letters-1 .q-arabic-char.q-char-letter,
-  .hero-saudi-plate.compact.letters-2 .q-arabic-char.q-char-letter {
-    font-size: 14.5px;
-  }
-  .hero-saudi-plate.compact.letters-1 .q-latin-char.q-char-letter,
-  .hero-saudi-plate.compact.letters-2 .q-latin-char.q-char-letter {
-    font-size: 13px;
+  .q-pillar-right-private,
+  .q-pillar-right-transport {
+    padding: 1.5px 1px;
   }
 }
 
-/* Small mobile devices (<= 380px, e.g. 360px viewport) */
-@media (max-width: 380px) {
-  .hero-saudi-plate.compact {
-    height: 54px;
-    max-height: 54px;
+@container plate (max-width: 185px) {
+  .plate-layout-open {
+    grid-template-columns: minmax(0, 1.12fr) clamp(36px, 25cqi, 46px) minmax(0, 1fr) 17px;
   }
-  .hero-saudi-plate.compact.is-small {
-    height: 54px;
-    max-height: 54px;
-  }
-  .hero-saudi-plate.compact .plate-layout-center {
-    grid-template-columns: minmax(0, 1fr) 25px minmax(0, 1fr);
-  }
-  .hero-saudi-plate.compact .plate-layout-transport {
-    grid-template-columns: minmax(0, 1fr) 26px;
-  }
-  .hero-saudi-plate.compact .plate-layout-small {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 25px;
-  }
-  .hero-saudi-plate.compact.digits-4 .q-arabic-char.q-char-digit {
-    font-size: 10px;
-  }
-  .hero-saudi-plate.compact.digits-4 .q-latin-char.q-char-digit {
-    font-size: 9px;
-    letter-spacing: -0.3px;
-  }
-  .hero-saudi-plate.compact.digits-4 .q-arabic-char.q-char-letter {
-    font-size: 10.5px;
-  }
-  .hero-saudi-plate.compact.digits-4 .q-latin-char.q-char-letter {
-    font-size: 9.5px;
-    letter-spacing: -0.3px;
-  }
-  .hero-saudi-plate.compact.digits-3 .q-arabic-char.q-char-digit {
-    font-size: 12px;
-  }
-  .hero-saudi-plate.compact.digits-3 .q-latin-char.q-char-digit {
-    font-size: 11px;
-  }
-  .hero-saudi-plate.compact.letters-3 .q-arabic-char.q-char-letter {
-    font-size: 10.5px;
-  }
-  .hero-saudi-plate.compact.letters-3 .q-latin-char.q-char-letter {
-    font-size: 9.8px;
-    letter-spacing: -0.2px;
-  }
-}
 
-/* Container Queries for autonomous container adaptation */
-@container plate (max-width: 165px) {
-  .q-char-cell {
-    text-shadow:
-      0 0.9px 0 rgba(255, 255, 255, 0.95),
-      0 -0.9px 0.4px rgba(0, 0, 0, 0.9),
-      0.6px 1.2px 1.5px rgba(0, 0, 0, 0.28),
-      -0.4px -0.4px 0.3px rgba(255, 255, 255, 0.4) !important;
-    filter: drop-shadow(0 0.8px 0.6px rgba(0, 0, 0, 0.2)) !important;
-  }
-  .q-arabic-char {
-    font-weight: 700 !important;
-  }
-  .q-latin-char.q-char-digit {
-    font-weight: 700 !important;
-  }
-  .q-latin-char.q-char-letter {
-    font-weight: 650 !important;
-  }
-  .plate-layout-center {
-    grid-template-columns: minmax(0, 1fr) 26px minmax(0, 1fr) !important;
-  }
-  .plate-layout-transport {
-    grid-template-columns: minmax(0, 1fr) 28px !important;
-  }
-  .plate-layout-small {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 26px !important;
-  }
   .q-saudi-emblem {
-    width: 8px !important;
-    height: 8px !important;
+    width: 9px !important;
+    height: 9px !important;
   }
+
   .q-saudi-text {
-    font-size: 3.8px !important;
+    font-size: 3.3px;
   }
-  .q-ksa-text {
-    font-size: 4.8px !important;
+
+  .q-ksa-stack {
+    font-size: 3.9px;
+    line-height: 0.92;
+  }
+
+  .q-hologram-strip {
+    height: 2.3px;
+  }
+
+  .q-black-seal {
+    width: 3.4px;
+    height: 3.4px;
+  }
+
+  .q-transport-triangle {
+    width: 4.4px;
+    height: 3.7px;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-saudi-plate.compact {
+    width: 100%;
+    max-width: 272px;
+    padding: 1.35px;
+    border-radius: 6.5px;
+  }
+
+  .hero-saudi-plate.compact.is-small {
+    max-width: 258px;
+  }
+
+  .hero-saudi-plate.compact .plate-inner-frame {
+    height: clamp(47px, 25.4cqi, 66px);
+    border-width: 1.85px;
+    border-radius: 5.2px;
   }
 }
 

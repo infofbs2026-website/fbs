@@ -43,17 +43,26 @@ export async function getMarketplace(input: MarketplaceQuery = {}): Promise<Mark
 
   try {
     let query = db.from('public_plates').select('*', { count: 'exact' });
-    if (input.auctionStatus) {
+    if (input.auctionStatus === 'DIRECT') {
+      const filtered = filterFallbackPlates(fallbackPlates, input);
+      return {
+        configured: true,
+        available: true,
+        plates: filtered.slice((page - 1) * pageSize, page * pageSize),
+        total: filtered.length,
+        page,
+        pageSize
+      };
+    } else if (input.auctionStatus) {
       let aq = db.from('public_auctions').select('plate_id');
       if (input.auctionStatus === 'LIVE') aq = aq.eq('status', 'LIVE');
       else if (input.auctionStatus === 'UPCOMING') aq = aq.in('status', ['SCHEDULED', 'REGISTRATION_OPEN', 'WAITING_ROOM']);
       else if (input.auctionStatus === 'COMPLETED') aq = aq.in('status', ['ENDED', 'COMPLETED', 'RESERVE_NOT_MET']);
       const active = await aq.limit(1000);
-      if (active.error) {
+      if (active.error || !active.data?.length) {
         const filtered = filterFallbackPlates(fallbackPlates, input);
         return { configured: true, available: true, plates: filtered.slice((page - 1) * pageSize, page * pageSize), total: filtered.length, page, pageSize };
       }
-      if (!active.data?.length) return { configured: true, available: true, plates: [], total: 0, page, pageSize };
       query = query.in('id', active.data.map(a => a.plate_id));
     }
     if (input.digitsCount && /^[1-4]$/.test(input.digitsCount)) query = query.eq('digits_count', Number(input.digitsCount));
@@ -136,10 +145,41 @@ const defaultTypes = [
 ];
 
 const defaultCities = [
-  { id: 'riyadh', name_ar: 'الرياض' }, { id: 'jeddah', name_ar: 'جدة' },
-  { id: 'dammam', name_ar: 'الدمام' }, { id: 'makkah', name_ar: 'مكة المكرمة' },
-  { id: 'madinah', name_ar: 'المدينة المنورة' }, { id: 'abha', name_ar: 'أبها' },
-  { id: 'khobar', name_ar: 'الخبر' }, { id: 'qilwah', name_ar: 'قلوة' }
+  { id: 'riyadh', name_ar: 'الرياض' },
+  { id: 'jeddah', name_ar: 'جدة' },
+  { id: 'makkah', name_ar: 'مكة المكرمة' },
+  { id: 'madinah', name_ar: 'المدينة المنورة' },
+  { id: 'dammam', name_ar: 'الدمام' },
+  { id: 'khobar', name_ar: 'الخبر' },
+  { id: 'dhahran', name_ar: 'الظهران' },
+  { id: 'taif', name_ar: 'الطائف' },
+  { id: 'buraidah', name_ar: 'بريدة' },
+  { id: 'unaizah', name_ar: 'عنيزة' },
+  { id: 'tabuk', name_ar: 'تبوك' },
+  { id: 'abha', name_ar: 'أبها' },
+  { id: 'khamis_mushait', name_ar: 'خميس مشيط' },
+  { id: 'hail', name_ar: 'حائل' },
+  { id: 'jazan', name_ar: 'جازان' },
+  { id: 'najran', name_ar: 'نجران' },
+  { id: 'jubail', name_ar: 'الجبيل' },
+  { id: 'yanbu', name_ar: 'ينبع' },
+  { id: 'ahsa', name_ar: 'الأحساء' },
+  { id: 'hafar_albatin', name_ar: 'حفر الباطن' },
+  { id: 'kharj', name_ar: 'الخرج' },
+  { id: 'qatif', name_ar: 'القطيف' },
+  { id: 'baha', name_ar: 'الباحة' },
+  { id: 'sakaka', name_ar: 'سكاكا (الجوف)' },
+  { id: 'arar', name_ar: 'عرعر' },
+  { id: 'qurayyat', name_ar: 'القريات' },
+  { id: 'bisha', name_ar: 'بيشة' },
+  { id: 'rass', name_ar: 'الرس' },
+  { id: 'zulfi', name_ar: 'الزلفي' },
+  { id: 'majmaah', name_ar: 'المجمعة' },
+  { id: 'dawadmi', name_ar: 'الدوادمي' },
+  { id: 'wadi_aldawasir', name_ar: 'وادي الدواسر' },
+  { id: 'qunfudhah', name_ar: 'القنفذة' },
+  { id: 'rabigh', name_ar: 'رابغ' },
+  { id: 'qilwah', name_ar: 'قلوة' }
 ];
 
 export async function getReferenceData() {
@@ -151,11 +191,17 @@ export async function getReferenceData() {
       db.from('plate_types').select('id,name_ar').eq('active', true).order('sort_order'),
       db.from('cities').select('id,name_ar').order('name_ar'),
     ]);
+    const dbCities = cities.data ?? [];
+    const existingNames = new Set(dbCities.map((c) => String(c.name_ar ?? '').trim()));
+    const mergedCities = [
+      ...dbCities,
+      ...defaultCities.filter((c) => !existingNames.has(c.name_ar))
+    ];
     return {
       configured: true,
       letters: letters.data?.length ? letters.data : defaultLetters,
       types: types.data?.length ? types.data : defaultTypes,
-      cities: cities.data?.length ? cities.data : defaultCities
+      cities: mergedCities.length ? mergedCities : defaultCities
     };
   } catch {
     return { configured: true, letters: defaultLetters, types: defaultTypes, cities: defaultCities };

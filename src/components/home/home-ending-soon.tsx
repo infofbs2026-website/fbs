@@ -11,7 +11,7 @@ import {
   Gavel,
   ShieldCheck
 } from 'lucide-react';
-import { PlateVisualizer } from '@/components/ui';
+import { FbsStageWatermark, PlateVisualizer } from '@/components/ui';
 import { SarSymbol } from '@/components/sar-symbol';
 import type { MarketplacePlate } from '@/modules/marketplace/types';
 import { ScrollReveal } from '@/components/home-motion';
@@ -91,18 +91,19 @@ const EndingSoonCard = memo(function EndingSoonCard({
       </div>
 
       {/* -------------------------------------------------------- */}
-      {/* POSTER CENTER: AUTHENTIC SAUDI PLATE (SLIGHTLY COMPACTED) */}
+      {/* POSTER CENTER: AUTHENTIC SAUDI PLATE + FBS WATERMARK     */}
       {/* -------------------------------------------------------- */}
-      <div className="my-1.5 sm:my-2 py-1.5 sm:py-2 px-1 w-full flex items-center justify-center rounded-xl bg-gradient-to-b from-[#FAF9F6] via-[#F3F0EA] to-[#ECE8E0] border border-[#E4E1D7] transition-all duration-300 group-hover:border-[#D9BB81]/60">
-        <div className="w-full flex justify-center py-0.5 transition-transform duration-300 group-hover:scale-[1.02]">
-          <div className="w-full max-w-[240px] flex justify-center scale-[0.92] origin-center">
+      <div className="relative overflow-hidden my-2 sm:my-2.5 py-5 sm:py-6 px-2 w-full min-h-[128px] sm:min-h-[144px] flex items-center justify-center rounded-xl bg-gradient-to-b from-[#FFFFFF] via-[#F6F8FC] to-[#EBF0F6] border border-[#DCE3EE] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_2px_6px_rgba(15,23,42,0.04)] transition-all duration-300 group-hover:border-[#D9BB81]/70">
+        <FbsStageWatermark />
+        <div className="relative z-10 w-full flex justify-center py-0.5 transition-transform duration-300 group-hover:scale-[1.02]">
+          <div className="w-full max-w-[244px] flex justify-center scale-[0.94] origin-center">
             <PlateVisualizer
               lettersAr={plate.lettersAr}
               lettersEn={plate.lettersEn}
               numbers={plate.numbers}
               plateType={plate.type}
               compact
-              className="w-full filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.06)]"
+              className="w-full filter drop-shadow-[0_6px_14px_rgba(15,23,42,0.13)]"
             />
           </div>
         </div>

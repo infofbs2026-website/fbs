@@ -3,7 +3,16 @@ import Link from 'next/link';
 import { SellerForm } from '@/components/seller-form';
 import { getViewer } from '@/lib/auth';
 import { getReferenceData } from '@/modules/marketplace/service';
-import { ShieldCheck, Award, Lock, FileCheck2, MessageCircle, HelpCircle } from 'lucide-react';
+import {
+  ShieldCheck,
+  Award,
+  Lock,
+  FileCheck2,
+  MessageCircle,
+  HelpCircle,
+  CheckCircle2,
+  ArrowLeft
+} from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'اعرض لوحتك في مزادات النخبة | فارس بن سعود'
@@ -13,56 +22,53 @@ export default async function Sell() {
   const [viewer, refs] = await Promise.all([getViewer(), getReferenceData()]);
 
   return (
-    <div className="w-full bg-[#050914] text-white">
+    <div className="w-full bg-[#F0F1F2] text-[#14243C]">
       {/* ============================================================= */}
-      {/* 1. EXTENDED LUXURY HERO SECTION WITH 3 INTEGRATED TRUST CARDS */}
+      {/* 1. LUXURY DARK HERO SECTION WITH 3 INTEGRATED TRUST CARDS     */}
       {/* ============================================================= */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#030612] via-[#071328] via-[#0b1b38] to-[#071124] text-white pt-24 sm:pt-32 pb-14 sm:pb-20 border-b border-gold/30 shadow-2xl">
-        {/* Ambient Lights & Multi-Layered Radial Gradients */}
-        <div className="pointer-events-none absolute -top-44 start-1/2 -translate-x-1/2 h-[650px] w-[1100px] rounded-full bg-gradient-to-b from-gold/25 via-amber-500/10 to-transparent blur-[150px]" />
-        <div className="pointer-events-none absolute top-1/3 start-1/2 -translate-x-1/2 -translate-y-1/2 h-[450px] w-[800px] rounded-full bg-gold/10 blur-[130px]" />
-        <div className="pointer-events-none absolute bottom-10 end-0 h-[450px] w-[450px] rounded-full bg-blue-600/15 blur-[140px]" />
-        <div className="pointer-events-none absolute top-1/4 start-0 h-[400px] w-[400px] rounded-full bg-amber-400/8 blur-[130px]" />
+      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#d9b87f]/25 bg-gradient-to-b from-[#091224] via-[#070d1a] to-[#040810] pt-28 sm:pt-34 lg:pt-38 pb-12 sm:pb-16 text-white">
+        {/* Ambient background glows */}
+        <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+          <div className="absolute -top-28 end-10 h-80 w-80 rounded-full bg-gold/15 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-28 start-10 h-96 w-96 rounded-full bg-blue-600/15 blur-3xl pointer-events-none" />
+          <div className="absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 h-80 w-[700px] rounded-full bg-amber-500/5 blur-[120px] pointer-events-none" />
+        </div>
 
-        {/* Aerospace Micro Grid */}
-        <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.05]" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="sell-hero-grid" width="48" height="48" patternUnits="userSpaceOnUse">
-              <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#d9b87f" strokeWidth="1" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#sell-hero-grid)" />
-        </svg>
+        {/* Light Hero Contrast Overlay: Preserves ambient background glow & grid */}
+        <div
+          className="absolute inset-0 pointer-events-none select-none bg-gradient-to-b from-[#040811]/15 via-transparent to-[#040811]/20"
+          aria-hidden="true"
+        />
 
-        <div className="container-fbs relative z-10">
+        <div className="container-fbs relative z-10 pt-2 sm:pt-3">
           {/* Breadcrumbs */}
-          <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-2 text-xs text-slate-400 font-medium">
-            <Link href="/" className="hover:text-gold transition-colors">
+          <nav aria-label="Breadcrumb" className="mb-3.5 flex flex-wrap items-center gap-2 pf-type-micro font-semibold text-gold-light">
+            <Link href="/" className="hover:text-white transition-colors">
               الرئيسية
             </Link>
-            <span>/</span>
-            <span className="text-gold-light">المزادات والوساطة</span>
-            <span>/</span>
+            <span className="text-gold/50">/</span>
+            <Link href="/auctions" className="hover:text-white transition-colors text-slate-300">
+              المزادات والوساطة
+            </Link>
+            <span className="text-gold/50">/</span>
             <span className="text-white font-bold">اعرض لوحتك</span>
           </nav>
 
-          {/* Unified Luxury Eyebrow Badge (Spacious & Breathable) */}
-          <div className="inline-flex items-center gap-2.5 rounded-full border border-gold/50 bg-[#101b33]/90 px-6 sm:px-7 py-2.5 sm:py-3 text-xs sm:text-sm font-black text-gold-light shadow-[0_4px_22px_rgba(217,184,127,0.25)] backdrop-blur-md my-6 sm:my-8">
-            <span className="flex h-2 w-2 rounded-full bg-gold animate-pulse shrink-0" />
-            <Award size={18} className="text-gold shrink-0" />
-            <span className="tracking-wide">خدمة كبار الملاك والمستثمرين — منصة العرض الحصرية</span>
+          <div className="max-w-3xl">
+            <h1 className="pf-type-h1 font-black text-white tracking-tight">
+              اعرض لوحتك في{' '}
+              <span className="bg-gradient-to-r from-[#e7cb97] via-[#f7e6c4] to-[#cb9b48] bg-clip-text text-transparent">
+                مزادات النخبة
+              </span>
+            </h1>
+            <p className="mt-2.5 max-w-[62ch] pf-type-body text-slate-200 font-normal">
+              منصتك الأولى في المملكة لعرض اللوحات الماسية والنادرة أمام نخبة المزايدين والمقتنين، مع ضمان حماية حقوق البائع وسرية المعاملات المالية.
+            </p>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight max-w-3xl">
-            اعرض لوحتك في مزادات النخبة
-          </h1>
-          <p className="mt-4 max-w-2xl text-sm sm:text-base leading-relaxed text-slate-300 font-normal">
-            منصتك الأولى في المملكة لعرض اللوحات الماسية والنادرة أمام نخبة المزايدين والمقتنين، مع ضمان حماية حقوق البائع وسرية المعاملات المالية.
-          </p>
-
-          {/* 3 Prestige Trust Cards (Joined with the Hero, Tuned Glassmorphism) */}
-          <div className="mt-12 sm:mt-16 pt-8 border-t border-gold/20">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {/* 3 Prestige Trust Cards inside Hero */}
+          <div className="mt-8 sm:mt-10 pt-6 border-t border-white/10">
+            <div className="grid grid-cols-1 gap-3.5 sm:gap-4 sm:grid-cols-3">
               {[
                 {
                   title: 'حماية وضمان مالي كامل',
@@ -84,19 +90,18 @@ export default async function Sell() {
                 return (
                   <div
                     key={idx}
-                    className="group relative overflow-hidden flex items-center gap-4.5 rounded-2xl border border-gold/45 bg-gradient-to-br from-white/[0.13] via-[#102042]/90 to-[#0c1833]/95 backdrop-blur-xl p-5 sm:p-5.5 shadow-[0_10px_35px_rgba(0,0,0,0.45),inset_0_1px_1px_rgba(255,255,255,0.28)] hover:border-gold hover:from-white/[0.19] hover:via-[#162c5b]/95 hover:shadow-[0_14px_45px_rgba(217,184,127,0.25),inset_0_1px_1px_rgba(255,255,255,0.4)] hover:-translate-y-1 transition-all duration-300"
+                    className="group relative overflow-hidden flex items-center gap-3.5 rounded-2xl border border-gold/35 bg-gradient-to-br from-white/[0.09] via-[#0c162d]/90 to-[#081022]/95 backdrop-blur-xl p-4 sm:p-4.5 shadow-[0_10px_28px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.18)] hover:border-gold/70 hover:-translate-y-0.5 transition-all duration-300"
                   >
-                    {/* Glass Specular Accent */}
-                    <div className="pointer-events-none absolute -top-10 -end-10 h-28 w-28 rounded-full bg-gold/20 blur-2xl group-hover:bg-gold/35 transition-all duration-300" />
+                    <div className="pointer-events-none absolute -top-8 -end-8 h-24 w-24 rounded-full bg-gold/15 blur-2xl group-hover:bg-gold/25 transition-all duration-300" />
 
-                    <div className="relative z-10 flex h-12 w-12 sm:h-13 sm:w-13 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-gold/35 via-gold/15 to-transparent border border-gold/60 text-gold-light shadow-[0_0_20px_rgba(217,184,127,0.28)] group-hover:scale-110 group-hover:text-gold group-hover:shadow-[0_0_28px_rgba(217,184,127,0.5)] transition-all duration-300">
-                      <Icon size={24} />
+                    <div className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold/15 border border-gold/45 text-gold-light shadow-[0_0_16px_rgba(217,184,127,0.2)] group-hover:scale-105 transition-transform duration-300">
+                      <Icon size={20} />
                     </div>
-                    <div className="relative z-10">
-                      <h3 className="text-sm sm:text-base font-black text-white group-hover:text-gold-light transition-colors leading-snug tracking-tight">
+                    <div className="relative z-10 min-w-0">
+                      <h3 className="pf-type-h3 font-bold text-white group-hover:text-gold-light transition-colors tracking-tight">
                         {card.title}
                       </h3>
-                      <p className="mt-1 text-xs sm:text-[12.5px] text-slate-200 font-medium leading-relaxed">
+                      <p className="mt-0.5 pf-type-micro text-slate-300 font-medium">
                         {card.desc}
                       </p>
                     </div>
@@ -109,50 +114,49 @@ export default async function Sell() {
       </section>
 
       {/* ============================================================= */}
-      {/* 2. REFINED LUXURY LIGHT PAGE BODY                             */}
+      {/* 2. SOFT STONE LUXURY BODY (Reference: HomeHowItWorks #F0F1F2) */}
       {/* ============================================================= */}
-      <main className="relative min-h-screen bg-gradient-to-b from-[#f8fafc] via-[#f1f5f9] to-[#f8fafc] py-14 sm:py-20 text-navy overflow-hidden">
-        {/* Subtle Ambient Gold Glow Blobs on Light Background */}
-        <div className="pointer-events-none absolute -top-40 start-1/2 -translate-x-1/2 h-[500px] w-[900px] rounded-full bg-gold/10 blur-[140px]" />
-        <div className="pointer-events-none absolute bottom-10 end-0 h-[400px] w-[400px] rounded-full bg-blue-900/5 blur-[120px]" />
-
-        {/* Subtle Executive Micro-Grid Pattern */}
-        <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.035]" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="sell-body-grid" width="44" height="44" patternUnits="userSpaceOnUse">
-              <path d="M 44 0 L 0 0 0 44" fill="none" stroke="#0f172a" strokeWidth="1" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#sell-body-grid)" />
-        </svg>
+      <section className="relative border-t border-[#E5E7EB] bg-[#F0F1F2] py-12 sm:py-16 lg:py-20 text-[#14243C] overflow-hidden">
+        {/* Top Specular Edge Line */}
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#D9BB81]/40 to-transparent pointer-events-none" />
 
         <div className="container-fbs relative z-10">
-          <div className="space-y-12">
+          <div className="space-y-8 sm:space-y-10">
+            {/* Guest Preview Notice Card (White Surface with Warm Gold Accents) */}
             {!viewer && (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-6 rounded-3xl border-2 border-gold/45 bg-gradient-to-r from-[#18253f]/95 via-[#141f35]/95 to-[#101a2d]/95 backdrop-blur-xl py-8 sm:py-9.5 px-6 sm:px-8 min-h-[140px] sm:min-h-[150px] shadow-[0_20px_50px_-10px_rgba(16,23,40,0.22)]">
-                <div className="flex items-center gap-4">
-                  <span className="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl bg-gold/20 text-gold border border-gold/35 shadow-inner">
-                    <Lock size={22} />
+              <div className="relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-4 rounded-2xl border border-[#E7E5DF] hover:border-[#D9BB81]/80 bg-white p-4 sm:p-5.5 shadow-[0_4px_16px_rgba(20,36,60,0.04)] transition-all duration-300">
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#D9BB81]/50 to-transparent pointer-events-none" />
+
+                <div className="flex items-start sm:items-center gap-3.5 min-w-0">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#9E7B35]/40 bg-[#FAF7F0] text-[#8C6B2D] shadow-2xs">
+                    <Lock size={20} />
                   </span>
-                  <div>
-                    <h4 className="text-sm sm:text-base font-black text-white">
-                      محاكي تسجيل اللوحات المميزة (وضع المعاينة المباشرة)
-                    </h4>
-                    <p className="text-xs sm:text-[13px] text-slate-300 font-medium mt-1 leading-relaxed">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="pf-type-h3 font-bold text-[#14243C]">
+                        محاكي تسجيل اللوحات المميزة
+                      </h2>
+                      <span className="inline-flex items-center gap-1 rounded-full border border-[#D9BB81]/50 bg-[#FAF7F0] px-2.5 py-0.5 pf-type-micro font-bold text-[#8C6B2D]">
+                        وضع المعاينة المباشرة
+                      </span>
+                    </div>
+                    <p className="pf-type-caption text-[#526071] font-normal mt-1">
                       يمكنك تجربة تحديد حروف وأرقام لوحتك بالأسفل ومعاينتها مباشرة. لحفظ اللوحة واعتمادها رسمياً، يُرجى تسجيل الدخول.
                     </p>
                   </div>
                 </div>
-                <div className="flex shrink-0 gap-3">
+
+                <div className="flex flex-wrap items-center shrink-0 gap-2.5 w-full md:w-auto">
                   <Link
                     href="/login?redirect=/sell-your-plate"
-                    className="btn btn-gold py-3 px-6 text-xs sm:text-sm font-black shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    className="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white py-2.5 px-5 pf-type-caption font-bold shadow-xs transition-all active:scale-95"
                   >
-                    تسجيل الدخول
+                    <span>تسجيل الدخول</span>
+                    <ArrowLeft size={14} className="text-[#D9BB81]" />
                   </Link>
                   <Link
                     href="/register?redirect=/sell-your-plate"
-                    className="btn border-2 border-white/20 bg-white/10 text-white py-3 px-6 text-xs sm:text-sm font-black hover:bg-white/20 hover:border-white/30 transition-all"
+                    className="flex-1 md:flex-initial inline-flex items-center justify-center rounded-xl border border-[#D9BB81]/60 bg-[#FAF9F6] hover:bg-[#FAF7F0] hover:border-[#9E7B35] text-[#14243C] py-2.5 px-5 pf-type-caption font-bold transition-all active:scale-95"
                   >
                     إنشاء حساب
                   </Link>
@@ -160,6 +164,7 @@ export default async function Sell() {
               </div>
             )}
 
+            {/* Main Interactive Seller Form & Live Plate Visualizer */}
             <SellerForm
               letters={refs.letters}
               types={refs.types}
@@ -167,58 +172,98 @@ export default async function Sell() {
               isLoggedIn={Boolean(viewer)}
             />
 
-            {/* Seller Guarantee & Help Footer Cards */}
-            <div className="grid gap-6 sm:grid-cols-2">
-              <div className="rounded-3xl border-2 border-gold/40 bg-gradient-to-br from-[#18253f]/88 via-[#141f35]/90 to-[#101a2d]/88 backdrop-blur-xl p-7 shadow-[0_20px_45px_-10px_rgba(16,23,40,0.18)] hover:border-gold/70 transition-all">
-                <h3 className="flex items-center gap-2.5 text-base font-black text-white">
-                  <ShieldCheck size={20} className="text-gold" />
-                  <span>إرشادات اعتماد وعرض اللوحة</span>
-                </h3>
-                <ul className="mt-4 space-y-3 text-xs sm:text-sm leading-relaxed text-slate-200 font-medium">
-                  <li className="flex items-start gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-gold mt-2 shrink-0" />
-                    <span>تُراجع المستندات بدقة للتأكد من مطابقة السجل المروري للمركبة.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-gold mt-2 shrink-0" />
-                    <span>يتولى مستشارو المنصة تقدير السعر الافتتاحي بالتشاور المباشر مع المالك.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-gold mt-2 shrink-0" />
-                    <span>يتم توثيق شروط المزاد وقيمة التأمين الإلزامي للمشاركين لضمان جدية المزايدات.</span>
-                  </li>
-                </ul>
+            {/* Seller Guarantee & Executive Concierge Footer Cards (Matching HomeHowItWorks Cards) */}
+            <div className="grid gap-4 sm:gap-5 md:grid-cols-2 items-stretch">
+              {/* Card 1: Official Guidelines */}
+              <div className="group relative flex flex-col justify-between rounded-2xl bg-white border border-[#E7E5DF] hover:border-[#D9BB81]/80 p-5 sm:p-6 shadow-[0_4px_16px_rgba(20,36,60,0.04)] hover:shadow-[0_10px_24px_rgba(20,36,60,0.06)] transition-all duration-300 overflow-hidden">
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#D9BB81]/40 to-transparent" />
+
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#E7E5DF] bg-[#FAF9F6] text-[#14243C] group-hover:border-[#D9BB81]/60 transition-colors">
+                      <ShieldCheck size={20} className="text-[#9E7B35]" />
+                    </span>
+                    <span className="inline-flex items-center rounded-full border border-[#E7E5DF] bg-[#FAF9F6] px-3 py-0.5 pf-type-micro font-semibold text-[#526071]">
+                      ضوابط الاعتماد الرسمي
+                    </span>
+                  </div>
+
+                  <h3 className="pf-type-h3 font-bold text-[#14243C] group-hover:text-[#9E7B35] transition-colors">
+                    إرشادات اعتماد وعرض اللوحة
+                  </h3>
+
+                  <ul className="mt-3 space-y-2.5 pf-type-body text-[#526071]">
+                    <li className="flex items-start gap-2.5">
+                      <CheckCircle2 size={16} className="text-[#9E7B35] mt-1 shrink-0" />
+                      <span>تُراجع المستندات بدقة للتأكد من مطابقة السجل المروري للمركبة.</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <CheckCircle2 size={16} className="text-[#9E7B35] mt-1 shrink-0" />
+                      <span>يتولى مستشارو المنصة تقدير السعر الافتتاحي بالتشاور المباشر مع المالك.</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <CheckCircle2 size={16} className="text-[#9E7B35] mt-1 shrink-0" />
+                      <span>يتم توثيق شروط المزاد وقيمة التأمين الإلزامي للمشاركين لضمان جدية المزايدات.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="mt-5 pt-3.5 border-t border-[#ECE9E2] flex flex-wrap items-center justify-between gap-2 pf-type-micro font-medium text-[#526071]">
+                  <span className="inline-flex items-center gap-1.5 rounded-lg border border-[#E7E5DF] bg-[#FAF9F6] px-2.5 py-1">
+                    <ShieldCheck size={13} className="text-[#9E7B35] shrink-0" />
+                    <span>مراجعة وتدقيق معتمد</span>
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse shrink-0" />
+                    <span>حماية تعاقدية كاملة</span>
+                  </span>
+                </div>
               </div>
 
-              <div className="rounded-3xl border-2 border-gold/40 bg-gradient-to-br from-[#18253f]/88 via-[#141f35]/90 to-[#101a2d]/88 backdrop-blur-xl p-7 shadow-[0_20px_45px_-10px_rgba(16,23,40,0.18)] hover:border-gold/70 transition-all flex flex-col justify-between">
+              {/* Card 2: Private Valuation Concierge */}
+              <div className="group relative flex flex-col justify-between rounded-2xl bg-white border border-[#9E7B35]/60 p-5 sm:p-6 shadow-[0_12px_28px_rgba(20,36,60,0.06)] transition-all duration-300 overflow-hidden">
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#9E7B35]/60 to-transparent" />
+
                 <div>
-                  <h3 className="flex items-center gap-2.5 text-base font-black text-gold">
-                    <HelpCircle size={20} className="text-gold" />
-                    <span>هل تحتاج استشارة خاصة لتقييم لوحتك؟</span>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#9E7B35]/40 bg-[#FAF7F0] text-[#8C6B2D]">
+                      <HelpCircle size={20} />
+                    </span>
+                    <span className="inline-flex items-center rounded-full border border-[#D9BB81]/50 bg-[#FAF7F0] px-3 py-0.5 pf-type-micro font-bold text-[#8C6B2D]">
+                      خدمة كبار الملاك VIP
+                    </span>
+                  </div>
+
+                  <h3 className="pf-type-h3 font-bold text-[#14243C]">
+                    هل تحتاج استشارة خاصة لتقييم لوحتك؟
                   </h3>
-                  <p className="mt-4 text-xs sm:text-sm leading-relaxed text-slate-200 font-medium">
+
+                  <p className="mt-2 pf-type-body text-[#526071]">
                     مستشارو المكتب الخاص جاهزون للإجابة على جميع استفساراتك وتقديم تقييم فني وقيمة تقديرية للوحتك المميزة قبل اعتمادها وطرحها في المزاد.
                   </p>
-                  <div className="mt-4 rounded-2xl bg-gold/15 border border-gold/30 p-3.5 text-xs text-gold-light font-medium leading-relaxed">
+
+                  <div className="mt-3.5 rounded-xl bg-[#FAF7F0] border border-[#D9BB81]/50 p-3 pf-type-caption text-[#8C6B2D] font-semibold">
                     خدمة حصرية وسرية تامة مخصصة لكبار الملاك ومقتني اللوحات النادرة في المملكة.
                   </div>
                 </div>
-                <div className="mt-6 pt-4 border-t border-white/10">
+
+                <div className="mt-5 pt-3.5 border-t border-[#ECE9E2]">
                   <a
                     href="https://wa.me/966500000000"
                     target="_blank"
                     rel="noreferrer"
-                    className="btn btn-gold w-full py-3.5 text-xs sm:text-sm font-black shadow-lg inline-flex items-center justify-center gap-2"
+                    className="w-full rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white py-3 px-5 pf-type-caption font-bold shadow-xs transition-all inline-flex items-center justify-center gap-2 active:scale-[0.99]"
                   >
-                    <MessageCircle size={17} />
+                    <MessageCircle size={16} className="text-[#D9BB81] shrink-0" />
                     <span>تواصل مع مستشار المزادات عبر واتساب</span>
+                    <ArrowLeft size={14} className="text-[#D9BB81] shrink-0" />
                   </a>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </main>
+      </section>
     </div>
   );
 }

@@ -149,7 +149,7 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
           </video>
           {/* Subtle Atmospheric Overlay: Softens background highlights without dulling the 100% video vibrancy */}
           <div
-            className="absolute inset-0 pointer-events-none select-none bg-gradient-to-b from-[#08162B]/35 via-black/15 to-[#08162B]/50"
+            className="absolute inset-0 pointer-events-none select-none bg-gradient-to-b from-[#060e1e]/50 via-[#050b18]/35 to-[#060e1e]/65 bg-[radial-gradient(ellipse_at_right,rgba(4,8,17,0.42),transparent_70%)]"
             aria-hidden="true"
           />
         </div>

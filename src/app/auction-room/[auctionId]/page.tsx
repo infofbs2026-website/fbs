@@ -3,7 +3,7 @@ import { z } from 'zod';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Gavel, Radio, ShieldCheck, Trophy } from 'lucide-react';
-import { PlateVisualizer } from '@/components/ui';
+import { FbsStageWatermark, PlateVisualizer } from '@/components/ui';
 import { LiveRoom } from '@/components/live-room';
 import { createAdminClient } from '@/lib/supabase/server';
 import { getViewer } from '@/lib/auth';
@@ -86,8 +86,8 @@ export default async function Room({ params }: { params: Promise<{ auctionId: st
           {/* Plate Showcase Pedestal */}
           <div className="space-y-6">
             <div className="luxury-card p-6 sm:p-10 text-center relative overflow-hidden">
-              <div className="plate-tray-recessed rounded-3xl p-8 sm:p-14 flex items-center justify-center shadow-[inset_0_4px_16px_rgba(15,23,42,0.1)]">
-                <div className="w-full max-w-[460px]">
+              <div className="plate-tray-recessed relative overflow-hidden rounded-3xl p-8 sm:p-14 flex items-center justify-center"><FbsStageWatermark />
+                <div className="relative z-10 w-full max-w-[460px]">
                   <PlateVisualizer
                     lettersAr={plate.lettersAr}
                     lettersEn={plate.lettersEn}

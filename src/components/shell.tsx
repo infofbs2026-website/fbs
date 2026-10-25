@@ -164,6 +164,29 @@ export function SellPlateNavIcon({ className = 'w-4 h-4' }: { className?: string
   );
 }
 
+/**
+ * 5. استوديو 3D (3D Car Showroom):
+ */
+export function Studio3DNavIcon({ className = 'w-4 h-4' }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" fill="currentColor" fillOpacity="0.08" />
+      <polyline points="3.29 7 12 12 20.71 7" />
+      <line x1="12" y1="22" x2="12" y2="12" />
+      <circle cx="12" cy="7" r="1.5" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 const primaryNav = [
   { href: '/auctions', label: 'المزادات', icon: AuctionsNavIcon },
   { href: '/plates', label: 'المتجر', icon: PlatesStoreNavIcon },
@@ -339,8 +362,9 @@ export function Header() {
     pathname === '/verify';
 
   const isAccountPage = pathname.startsWith('/account');
+  const isStudioPage = pathname.startsWith('/studio-3d');
 
-  if (isAuthPage || isAccountPage) {
+  if (isAuthPage || isAccountPage || isStudioPage) {
     return null;
   }
 
@@ -693,8 +717,9 @@ export function Footer() {
     pathname === '/verify';
 
   const isAccountPage = pathname.startsWith('/account');
+  const isStudioPage = pathname.startsWith('/studio-3d');
 
-  if (isAuthPage || isAccountPage) {
+  if (isAuthPage || isAccountPage || isStudioPage) {
     return null;
   }
 

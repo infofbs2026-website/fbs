@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ArrowLeft, MapPin, Store } from 'lucide-react';
-import { PlateVisualizer } from '@/components/ui';
+import { FbsStageWatermark, PlateVisualizer } from '@/components/ui';
 import { SarSymbol } from '@/components/sar-symbol';
 import type { MarketplacePlate } from '@/modules/marketplace/types';
 import { ScrollReveal, StaggerGrid } from '@/components/home-motion';
@@ -76,9 +76,10 @@ function SimplifiedPlateCard({ plate }: { plate: MarketplacePlate }) {
         </span>
       </div>
 
-      {/* 2. Center: Authentic Saudi Plate in Clean Recessed Tray */}
-      <div className="my-1 sm:my-2 flex items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-b from-[#FAF9F6] via-[#F1EEE7] to-[#E9E5DD] p-1 sm:p-2.5 h-[66px] sm:h-[88px] border border-[#E5E2D9] transition-all duration-300 group-hover:border-[#D9BB81]/60">
-        <div className="w-full flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.02] filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+      {/* 2. Center: Authentic Saudi Plate on Tall Platinum Showcase Stage with Etched FBS Watermark */}
+      <div className="relative overflow-hidden my-1.5 sm:my-2.5 flex items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-b from-[#FFFFFF] via-[#F6F8FC] to-[#EBF0F6] px-2 py-4 sm:px-3 sm:py-5 h-[112px] sm:h-[140px] lg:h-[146px] border border-[#DCE3EE] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_2px_6px_rgba(15,23,42,0.04)] transition-all duration-300 group-hover:border-[#D9BB81]/70">
+        <FbsStageWatermark />
+        <div className="relative z-10 w-full flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.02] filter drop-shadow-[0_5px_12px_rgba(15,23,42,0.12)]">
           <PlateVisualizer
             lettersAr={plate.lettersAr}
             lettersEn={plate.lettersEn}
