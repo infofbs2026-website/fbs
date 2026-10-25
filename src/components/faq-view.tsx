@@ -278,27 +278,11 @@ export function FaqView() {
   };
 
   return (
-    <div className="w-full bg-[#f8fafc] text-navy">
+    <div className="w-full bg-[#F2F0EA] text-navy">
       {/* ================================================================= */}
-      {/* 1. LUXURY HERO BANNER WITH AEROSPACE AMBIENCE & INSTANT SEARCH    */}
+      {/* 1. LUXURY HERO BANNER WITH HIGH-CONTRAST ROYAL NAVY & SEARCH      */}
       {/* ================================================================= */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#030612] via-[#071328] via-[#0b1b38] to-[#071124] text-white pt-24 sm:pt-32 pb-14 sm:pb-20 border-b border-gold/30 shadow-2xl">
-        {/* Ambient Lights & Multi-Layered Radial Gradients */}
-        <div className="pointer-events-none absolute -top-44 start-1/2 -translate-x-1/2 h-[650px] w-[1100px] rounded-full bg-gradient-to-b from-gold/25 via-amber-500/10 to-transparent blur-[150px]" />
-        <div className="pointer-events-none absolute top-1/3 start-1/2 -translate-x-1/2 -translate-y-1/2 h-[450px] w-[800px] rounded-full bg-gold/10 blur-[130px]" />
-        <div className="pointer-events-none absolute bottom-10 end-0 h-[450px] w-[450px] rounded-full bg-blue-600/15 blur-[140px]" />
-        <div className="pointer-events-none absolute top-1/4 start-0 h-[400px] w-[400px] rounded-full bg-amber-400/8 blur-[130px]" />
-
-        {/* Aerospace Micro Grid */}
-        <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.05]" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="faq-view-grid" width="48" height="48" patternUnits="userSpaceOnUse">
-              <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#d9b87f" strokeWidth="1" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#faq-view-grid)" />
-        </svg>
-
+      <section className="hero-luxury-ambient relative overflow-hidden text-white pt-26 sm:pt-32 pb-14 sm:pb-20 border-b border-[#D9BB81]/30 shadow-xl">
         <div className="container-fbs relative z-10">
           {/* Breadcrumbs */}
           <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-2 text-xs text-slate-400 font-medium">

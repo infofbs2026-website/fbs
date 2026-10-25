@@ -59,9 +59,12 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
   // stage 3: Action Buttons appear (2550ms)
   // stage 4: Auction Card glides in from side (2950ms)
   const [stage, setStage] = useState(0);
+  const revealedRef = useRef(false);
 
-  // Instantly reveal all elements (for Skip or Scroll)
+  // Instantly reveal all elements once (for Skip or Scroll) without firing repeatedly on scroll
   const skipToRevealed = useCallback(() => {
+    if (revealedRef.current) return;
+    revealedRef.current = true;
     setStage(4);
     if (typeof window !== 'undefined') {
       (window as unknown as { __fbsHeroRevealed: boolean }).__fbsHeroRevealed = true;
@@ -98,13 +101,15 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
     }, 420);
 
     const t4 = setTimeout(() => {
+      revealedRef.current = true;
       setStage(4);
     }, 580);
 
-    // Instant reveal on user scroll
+    // Instant reveal on user scroll (removes itself immediately once triggered)
     const handleScroll = () => {
       if (window.scrollY > 20) {
         skipToRevealed();
+        window.removeEventListener('scroll', handleScroll);
       }
     };
 
@@ -122,11 +127,11 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
   const isFullyRevealed = stage >= 4;
 
   return (
-    <div className="relative w-full bg-[#08162B] overflow-hidden">
+    <div className="relative w-full bg-[#08162B] overflow-hidden [overflow-anchor:none]">
       {/* ============================================================== */}
       {/* 1. HERO SECTION: FULL-BLEED CINEMATIC 1080p BACKGROUND VIDEO    */}
       {/* ============================================================== */}
-      <section className="relative w-full min-h-[100dvh] flex flex-col justify-center items-center pt-[clamp(4.25rem,6.5vh,5.5rem)] pb-[clamp(1.5rem,3vh,2.5rem)] text-white overflow-hidden bg-[#08162B]">
+      <section className="relative w-full min-h-[100svh] lg:min-h-[100dvh] flex flex-col justify-center items-center pt-[clamp(4.25rem,6.5svh,5.5rem)] pb-[clamp(1.5rem,3svh,2.5rem)] text-white overflow-hidden bg-[#08162B]">
 
         {/* Background Video Layer: 100% crisp with ultra-subtle clarity tint */}
         <div

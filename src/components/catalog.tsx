@@ -214,11 +214,22 @@ export async function Catalog({
     return qs ? `${currentPath}?${qs}` : currentPath;
   }
 
+  const breadcrumbCurrent = isStoreMode
+    ? 'المتجر المباشر'
+    : isLive
+      ? 'المزادات المباشرة'
+      : isUpcoming
+        ? 'المزادات القادمة'
+        : isCompleted
+          ? 'المزادات المنتهية'
+          : 'المزادات الرسمية';
+
   const heroTabs = isStoreMode
     ? [
         {
           href: '/plates',
           label: 'كل المعروض بالمتجر',
+          mobileLabel: 'كل المعروض',
           active: !clean.featured && !clean.digitsCount,
           icon: TabIconAllPlates,
           isLive: false
@@ -226,6 +237,7 @@ export async function Catalog({
         {
           href: '/plates?featured=true',
           label: 'لوحات النخبة VIP',
+          mobileLabel: 'نخبة VIP',
           active: clean.featured === 'true',
           icon: TabIconElite,
           isLive: false
@@ -233,6 +245,7 @@ export async function Catalog({
         {
           href: '/plates?digitsCount=1',
           label: 'الأرقام الأحادية النادرة',
+          mobileLabel: 'الأحادية النادرة',
           active: clean.digitsCount === '1',
           icon: TabIconSingleDigit,
           isLive: false
@@ -242,6 +255,7 @@ export async function Catalog({
         {
           href: '/auctions',
           label: 'كل اللوحات',
+          mobileLabel: 'كل اللوحات',
           active: !auctionFilter || auctionFilter === 'ALL',
           icon: TabIconAllPlates,
           isLive: false
@@ -249,6 +263,7 @@ export async function Catalog({
         {
           href: '/auctions/live',
           label: 'مباشر الآن',
+          mobileLabel: 'مباشر الآن',
           active: isLive,
           icon: TabIconLive,
           isLive: true
@@ -256,6 +271,7 @@ export async function Catalog({
         {
           href: '/auctions/upcoming',
           label: 'مزادات قادمة',
+          mobileLabel: 'مزادات قادمة',
           active: isUpcoming,
           icon: TabIconUpcoming,
           isLive: false
@@ -265,70 +281,54 @@ export async function Catalog({
   return (
     <>
       {/* ============================================================== */}
-      {/* 1. LUXURY PAGE HEADER HERO BANNER                              */}
+      {/* 1. LUXURY PAGE HEADER HERO BANNER (HIGH-CONTRAST ROYAL NAVY)   */}
       {/* ============================================================== */}
-      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#d9b87f]/25 bg-gradient-to-b from-[#091224] via-[#070d1a] to-[#040810] pt-22 sm:pt-26 lg:pt-28 pb-24 sm:pb-28 lg:pb-32 text-white">
-
-        {/* Ambient background glows */}
-        <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
-          <div className="absolute -top-28 end-10 h-80 w-80 rounded-full bg-gold/15 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-28 start-10 h-96 w-96 rounded-full bg-blue-600/15 blur-3xl pointer-events-none" />
-          <div className="absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 h-80 w-[700px] rounded-full bg-amber-500/5 blur-[120px] pointer-events-none" />
-        </div>
-
-        {/* Light Hero Contrast Overlay: Preserves ambient background glow & grid */}
-        <div
-          className="absolute inset-0 pointer-events-none select-none bg-gradient-to-b from-[#040811]/15 via-transparent to-[#040811]/20"
-          aria-hidden="true"
-        />
-
+      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#D9BB81]/30 pt-26 sm:pt-30 lg:pt-34 pb-26 sm:pb-30 lg:pb-34 text-white">
         <div className="container-fbs relative z-10">
-          <div className="flex flex-wrap items-center gap-2 pf-type-micro font-semibold text-gold-light mb-2">
-            <Link href="/" className="hover:text-white transition-colors">الرئيسية</Link>
-            <span className="text-gold/50">/</span>
-            <span className="text-white font-bold">{title}</span>
+          {/* Concise High-Contrast Breadcrumb Trail */}
+          <nav
+            aria-label="مسار التصفح"
+            className="mb-3.5 sm:mb-4 flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-300"
+          >
+            <Link href="/" className="hover:text-[#F5E3BE] transition-colors">
+              الرئيسية
+            </Link>
+            <span className="text-[#D9BB81]/60">/</span>
+            <span className="text-[#F5E3BE] font-bold">{breadcrumbCurrent}</span>
+          </nav>
+
+          {/* Editorial Title & Subtitle with Clean Vertical Rhythm */}
+          <div className="max-w-3xl">
+            <h1 className="text-[clamp(1.75rem,4.8vw,2.75rem)] font-black tracking-tight leading-[1.28] text-white">
+              {isStoreMode ? (
+                <>
+                  متجر اللوحات المميزة{' '}
+                  <span className="inline-block bg-gradient-to-r from-[#F5E3BE] via-[#E4C78D] to-[#C89B4B] bg-clip-text text-transparent">
+                    للبيع المباشر
+                  </span>
+                </>
+              ) : title === 'اللوحات المميزة والمزادات' ? (
+                <>
+                  اللوحات المميزة{' '}
+                  <span className="inline-block bg-gradient-to-r from-[#F5E3BE] via-[#E4C78D] to-[#C89B4B] bg-clip-text text-transparent">
+                    والمزادات الرسمية
+                  </span>
+                </>
+              ) : (
+                title
+              )}
+            </h1>
+
+            <p className="mt-3 sm:mt-4 text-[14px] sm:text-[15.5px] leading-[1.8] text-slate-300 font-normal max-w-[62ch]">
+              {subtitle}
+            </p>
           </div>
 
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div className="max-w-3xl">
-              <h1 className="pf-type-h1 font-black tracking-tight text-white">
-                {isStoreMode ? (
-                  <>
-                    متجر اللوحات المميزة{' '}
-                    <span className="bg-gradient-to-r from-[#e7cb97] via-[#f7e6c4] to-[#cb9b48] bg-clip-text text-transparent">
-                      للبيع المباشر
-                    </span>
-                  </>
-                ) : title === 'اللوحات المميزة والمزادات' ? (
-                  <>
-                    اللوحات المميزة{' '}
-                    <span className="bg-gradient-to-r from-[#e7cb97] via-[#f7e6c4] to-[#cb9b48] bg-clip-text text-transparent">
-                      والمزادات الرسمية
-                    </span>
-                  </>
-                ) : (
-                  title
-                )}
-              </h1>
-
-              <p className="mt-2 pf-type-body text-slate-200 font-normal max-w-[65ch]">
-                {subtitle}
-              </p>
-            </div>
-
-            {/* Left side opposite title: Prominent Luxury Action Icons (المفضلة & سلة الشراء) */}
-            {isStoreMode && (
-              <div className="self-start md:self-center shrink-0">
-                <StoreHeaderActions />
-              </div>
-            )}
-          </div>
-
-          {/* Quick Category Navigation Tabs */}
-          <div className="mt-5 sm:mt-6 pt-4 border-t border-white/10">
-            <div className="relative inline-block w-full max-w-xl overflow-hidden rounded-2xl border border-gold/35 bg-gradient-to-r from-[#0c162d]/95 via-[#101e3d]/90 to-[#0c162d]/95 p-1.5 backdrop-blur-2xl shadow-[0_10px_30px_rgba(0,0,0,0.45)]">
-              {/* Top Luxury Gold Accent Line */}
-              <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#d9b87f]/80 to-transparent pointer-events-none" />
+          {/* Unified Hero Command Bar: Category Tabs + Store Wishlist/Cart Pod */}
+          <div className="mt-7 sm:mt-8 pt-5 sm:pt-6 border-t border-white/10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-5">
+            {/* Category Segmented Capsule */}
+            <div className="relative w-full lg:w-auto lg:min-w-[500px] xl:min-w-[540px] max-w-2xl overflow-hidden rounded-2xl border border-[#D9BB81]/30 bg-[#060E1F]/90 p-1.5 backdrop-blur-xl shadow-[0_14px_34px_rgba(0,0,0,0.45)]">
+              <div className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-[#D9BB81]/65 to-transparent" />
 
               <div className="grid grid-cols-3 gap-1.5 w-full">
                 {heroTabs.map((tab) => {
@@ -337,16 +337,19 @@ export async function Catalog({
                     <Link
                       key={tab.href}
                       href={tab.href}
-                      className={`group relative flex items-center justify-center gap-1.5 rounded-xl px-2.5 py-2.5 text-center pf-type-micro font-bold transition-all duration-200 w-full ${tab.active
-                          ? 'bg-gradient-to-r from-[#d9b87f] via-[#ecd5a5] to-[#cb9b48] text-navy-deep font-black shadow-[0_4px_14px_rgba(217,184,127,0.35)] border border-white/40'
-                          : 'text-slate-100 hover:text-white bg-white/[0.05] hover:bg-white/[0.12] border border-white/10 hover:border-gold/40'
-                        }`}
+                      className={`group relative flex h-10 sm:h-[42px] items-center justify-center gap-1.5 rounded-xl px-2 sm:px-3.5 text-center text-[11.5px] sm:text-[12.5px] font-bold transition-all duration-200 w-full ${
+                        tab.active
+                          ? 'bg-gradient-to-r from-[#DFC38D] via-[#F2DFB6] to-[#C89B4B] text-[#071122] font-black shadow-[0_4px_14px_rgba(217,187,129,0.3)] border border-white/40'
+                          : 'text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 hover:border-[#D9BB81]/40'
+                      }`}
                     >
                       <Icon
-                        className={`w-3.5 h-3.5 shrink-0 transition-colors ${tab.active ? 'text-navy-deep' : 'text-gold group-hover:text-gold-light'
-                          }`}
+                        className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+                          tab.active ? 'text-[#071122]' : 'text-[#D9BB81] group-hover:text-[#F5E3BE]'
+                        }`}
                       />
-                      <span className="whitespace-nowrap tracking-tight">{tab.label}</span>
+                      <span className="whitespace-nowrap tracking-tight sm:hidden">{tab.mobileLabel}</span>
+                      <span className="whitespace-nowrap tracking-tight hidden sm:inline">{tab.label}</span>
                       {tab.isLive && (
                         <span className="flex h-2 w-2 relative ms-0.5 shrink-0">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -358,24 +361,21 @@ export async function Catalog({
                 })}
               </div>
             </div>
+
+            {/* Store Wishlist & Cart Action Pod (Balanced 2-Column on Mobile, Left-Aligned on Desktop) */}
+            {isStoreMode && <StoreHeaderActions />}
           </div>
         </div>
       </section>
 
       {/* ============================================================== */}
-      {/* UNIFIED LUXURY CONTENT ZONE (SECTIONS 2 & 3 SEAMLESS INTEGRATION) */}
+      {/* UNIFIED LUXURY CONTENT ZONE (CRISP HIGH-CONTRAST WARM STONE)   */}
       {/* ============================================================== */}
-      <div className="relative bg-[#f8fafc] flow-root">
-        {/* Subtle Ambient Background Accents strictly clipped */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden select-none">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(217,184,127,0.06),transparent_70%)]" />
-          <div className="absolute -top-32 -end-32 h-96 w-96 rounded-full bg-gold/5 blur-3xl" />
-          <div className="absolute top-1/2 -start-32 h-96 w-96 rounded-full bg-blue-500/5 blur-3xl" />
-        </div>
+      <div className="relative bg-[#F2F0EA] flow-root">
 
         {/* 2. AUTHENTIC SAUDI PLATE TYPE VISUAL SELECTOR (نوع اللوحة)      */}
-        <section aria-label="نوع اللوحة المعتمدة" className="container-fbs relative z-30 -mt-14 sm:-mt-16 lg:-mt-20 mb-7 sm:mb-9">
-        <div className="relative overflow-hidden rounded-3xl border border-gold/35 bg-gradient-to-b from-[#0c162c]/95 via-[#080f1e]/98 to-[#050a14]/95 px-4 py-4 sm:px-6 sm:py-5 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.6),0_0_30px_rgba(217,184,127,0.1)] backdrop-blur-2xl">
+        <section aria-label="نوع اللوحة المعتمدة" className="container-fbs relative z-30 -mt-12 sm:-mt-15 lg:-mt-18 mb-7 sm:mb-9">
+        <div className="relative overflow-hidden rounded-3xl border border-[#D9BB81]/35 bg-gradient-to-b from-[#0A162C] via-[#071020] to-[#050B16] px-4 py-4 sm:px-6 sm:py-5 shadow-[0_22px_50px_-14px_rgba(4,9,20,0.65)]">
           {/* Top Luxury Gold Accent Line */}
           <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#d9b87f]/80 to-transparent pointer-events-none" />
 
@@ -651,13 +651,13 @@ export function CatalogSkeleton() {
   return (
     <>
       {/* 1. Luxury Hero Skeleton with Shimmer */}
-      <section className="hero-luxury-ambient relative overflow-hidden border-b border-gold/25 bg-gradient-to-b from-[#091224] via-[#070d1a] to-[#040810] pt-22 sm:pt-26 lg:pt-28 pb-24 sm:pb-28 lg:pb-32 text-white">
+      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#D9BB81]/30 pt-26 sm:pt-30 lg:pt-34 pb-26 sm:pb-30 lg:pb-34 text-white">
         <div className="container-fbs relative z-10 space-y-4">
           <div className="h-4 w-36 rounded-md skeleton-shimmer-dark" />
           <div className="h-11 w-80 sm:w-[440px] rounded-xl skeleton-shimmer-dark" />
           <div className="h-5 w-full max-w-xl rounded-md skeleton-shimmer-dark" />
-          <div className="mt-6 pt-4 border-t border-white/10">
-            <div className="grid grid-cols-3 gap-2 max-w-xl p-1.5 rounded-2xl border border-gold/20 bg-white/[0.04]">
+          <div className="mt-7 pt-5 border-t border-white/10">
+            <div className="grid grid-cols-3 gap-2 max-w-xl p-1.5 rounded-2xl border border-[#D9BB81]/25 bg-[#060E1F]/90">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="h-10 w-full rounded-xl skeleton-shimmer-dark" />
               ))}
@@ -667,9 +667,9 @@ export function CatalogSkeleton() {
       </section>
 
       {/* 2. Overlapping 3-Plate Type Selector Skeleton + Full-Width Stage Bar + Full-Height 2-Column Skeleton */}
-      <div className="relative bg-[#f8fafc] flow-root pb-16 sm:pb-24">
-        <section className="container-fbs relative z-30 -mt-14 sm:-mt-16 lg:-mt-20 mb-7 sm:mb-9">
-          <div className="rounded-3xl border border-gold/30 bg-[#080f1e]/95 px-4 py-5 sm:px-6 sm:py-6 shadow-xl">
+      <div className="relative bg-[#F2F0EA] flow-root pb-16 sm:pb-24">
+        <section className="container-fbs relative z-30 -mt-12 sm:-mt-15 lg:-mt-18 mb-7 sm:mb-9">
+          <div className="rounded-3xl border border-[#D9BB81]/35 bg-[#071020] px-4 py-5 sm:px-6 sm:py-6 shadow-xl">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 items-center">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="flex flex-col items-center gap-2.5">

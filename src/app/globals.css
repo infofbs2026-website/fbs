@@ -181,7 +181,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: clamp(1.25rem, 2.5vh, 2rem);
+    gap: clamp(1.25rem, 2.5svh, 2rem);
     width: 90%;
     min-inline-size: 0;
   }
@@ -288,15 +288,13 @@
   }
 
   .luxury-card {
-    background: rgba(255, 255, 255, 0.88);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(226, 232, 240, 0.85);
+    background: #ffffff;
+    border: 1px solid #e2dfd7;
     border-radius: 1.25rem;
     box-shadow:
-      0 10px 30px -5px rgba(26, 37, 65, 0.06),
-      0 2px 6px -1px rgba(0, 0, 0, 0.03),
-      inset 0 1px 1px rgba(255, 255, 255, 1);
+      0 10px 28px -6px rgba(15, 23, 42, 0.07),
+      0 2px 6px -1px rgba(15, 23, 42, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 1);
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
@@ -430,22 +428,38 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* Pure Procedural CSS Luxury Atmosphere with Vibrant Ambient Beams */
+/* High-Contrast Royal Obsidian & Midnight Sapphire Interior Hero */
 .hero-luxury-ambient {
-  background-color: #050813;
+  background-color: #050b16;
   background-image:
-    radial-gradient(ellipse 800px 600px at 75% 25%, rgba(217, 184, 127, 0.32) 0%, rgba(208, 173, 103, 0.14) 35%, transparent 70%),
-    radial-gradient(ellipse 900px 700px at 15% 75%, rgba(37, 99, 235, 0.42) 0%, rgba(30, 58, 138, 0.22) 40%, transparent 75%),
-    radial-gradient(ellipse 700px 450px at 50% 0%, rgba(250, 235, 208, 0.28) 0%, rgba(217, 184, 127, 0.1) 45%, transparent 70%),
-    linear-gradient(rgba(217, 184, 127, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(217, 184, 127, 0.07) 1px, transparent 1px),
-    linear-gradient(180deg, #050813 0%, #0c152a 50%, #050813 100%);
+    linear-gradient(
+      180deg,
+      rgba(2, 6, 15, 0.94) 0%,
+      rgba(4, 11, 24, 0.38) 28%,
+      rgba(4, 11, 24, 0) 58%,
+      rgba(3, 8, 18, 0.76) 100%
+    ),
+    radial-gradient(
+      ellipse 680px 420px at 82% 38%,
+      rgba(217, 187, 129, 0.085) 0%,
+      rgba(217, 187, 129, 0.025) 45%,
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 820px 520px at 18% 78%,
+      rgba(16, 48, 104, 0.34) 0%,
+      rgba(10, 28, 64, 0.16) 48%,
+      transparent 76%
+    ),
+    linear-gradient(rgba(217, 187, 129, 0.024) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(217, 187, 129, 0.024) 1px, transparent 1px),
+    linear-gradient(180deg, #040914 0%, #08162b 52%, #050c1a 100%);
   background-size:
     auto,
     auto,
     auto,
-    52px 52px,
-    52px 52px,
+    56px 56px,
+    56px 56px,
     auto;
   background-repeat:
     no-repeat,

@@ -451,26 +451,11 @@ export function HowItWorksView() {
   const steps = activeTab === 'buyer' ? buyerJourneySteps : sellerJourneySteps;
 
   return (
-    <div className="min-h-screen bg-[#fcfcfd]">
+    <div className="min-h-screen bg-[#F2F0EA]">
       {/* =================================================================== */}
       {/* 1. PRESTIGE DARK HERO SECTION                                       */}
       {/* =================================================================== */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#0b1426] via-[#101b34] to-[#162544] text-white pt-16 sm:pt-22 lg:pt-32 pb-28 sm:pb-36 lg:pb-48 min-h-[55vh] lg:min-h-[69vh] flex flex-col justify-center">
-        {/* Subtle Ambient Gold Light Blobs */}
-        <div className="pointer-events-none absolute -top-40 start-1/2 -translate-x-1/2 h-96 w-96 rounded-full bg-gold/15 blur-[120px]" />
-        <div className="pointer-events-none absolute -bottom-24 start-10 h-72 w-72 rounded-full bg-gold/10 blur-[100px]" />
-        <div className="pointer-events-none absolute top-1/3 end-10 h-80 w-80 rounded-full bg-blue-900/20 blur-[110px]" />
-
-        {/* Subtle Grid Texture */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 1px 1px, #d9b87f 1px, transparent 0)',
-            backgroundSize: '36px 36px'
-          }}
-        />
-
+      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#D9BB81]/30 text-white pt-26 sm:pt-30 lg:pt-34 pb-28 sm:pb-36 lg:pb-48 min-h-[55svh] lg:min-h-[69vh] flex flex-col justify-center">
         <div className="container-fbs relative z-10">
           {/* Stage 1: Breadcrumb Navigation & Eyebrow Capsule */}
           <div

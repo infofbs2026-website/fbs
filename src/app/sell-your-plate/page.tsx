@@ -22,24 +22,11 @@ export default async function Sell() {
   const [viewer, refs] = await Promise.all([getViewer(), getReferenceData()]);
 
   return (
-    <div className="w-full bg-[#F0F1F2] text-[#14243C]">
+    <div className="w-full bg-[#F2F0EA] text-[#14243C]">
       {/* ============================================================= */}
       {/* 1. LUXURY DARK HERO SECTION WITH 3 INTEGRATED TRUST CARDS     */}
       {/* ============================================================= */}
-      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#d9b87f]/25 bg-gradient-to-b from-[#091224] via-[#070d1a] to-[#040810] pt-28 sm:pt-34 lg:pt-38 pb-12 sm:pb-16 text-white">
-        {/* Ambient background glows */}
-        <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
-          <div className="absolute -top-28 end-10 h-80 w-80 rounded-full bg-gold/15 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-28 start-10 h-96 w-96 rounded-full bg-blue-600/15 blur-3xl pointer-events-none" />
-          <div className="absolute top-1/2 start-1/2 -translate-x-1/2 -translate-y-1/2 h-80 w-[700px] rounded-full bg-amber-500/5 blur-[120px] pointer-events-none" />
-        </div>
-
-        {/* Light Hero Contrast Overlay: Preserves ambient background glow & grid */}
-        <div
-          className="absolute inset-0 pointer-events-none select-none bg-gradient-to-b from-[#040811]/15 via-transparent to-[#040811]/20"
-          aria-hidden="true"
-        />
-
+      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#D9BB81]/30 pt-28 sm:pt-34 lg:pt-38 pb-12 sm:pb-16 text-white">
         <div className="container-fbs relative z-10 pt-2 sm:pt-3">
           {/* Breadcrumbs */}
           <nav aria-label="Breadcrumb" className="mb-3.5 flex flex-wrap items-center gap-2 pf-type-micro font-semibold text-gold-light">
@@ -57,7 +44,7 @@ export default async function Sell() {
           <div className="max-w-3xl">
             <h1 className="pf-type-h1 font-black text-white tracking-tight">
               اعرض لوحتك في{' '}
-              <span className="bg-gradient-to-r from-[#e7cb97] via-[#f7e6c4] to-[#cb9b48] bg-clip-text text-transparent">
+              <span className="inline-block bg-gradient-to-r from-[#F5E3BE] via-[#E4C78D] to-[#C89B4B] bg-clip-text text-transparent">
                 مزادات النخبة
               </span>
             </h1>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useEffect, memo } from 'react';
+import React, { useRef, useState, useEffect, useMemo, useCallback, memo } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
@@ -51,23 +51,39 @@ function getAuctionTime(seed: number) {
 }
 
 /**
+ * Keeps horizontal track offset strictly wrapped inside (-2 * setWidth, -setWidth].
+ * With 3 identical sets [0..W), [W..2W), [2W..3W), Set 0 is always buffered on the left
+ * and Set 2 is always buffered on the right — making empty gaps mathematically impossible
+ * whether swiping right or left indefinitely.
+ */
+function wrapTrackOffset(x: number, setWidth: number): number {
+  if (setWidth <= 0) return 0;
+  const rel = (x + setWidth) % setWidth;
+  const normalized = rel > 0 ? rel - setWidth : rel;
+  return normalized - setWidth;
+}
+
+/**
  * Reusable Card Component for Ending Soon Auctions
  */
 const EndingSoonCard = memo(function EndingSoonCard({
   plate,
   lotNum,
-  timeInfo
+  timeInfo,
+  cardRef
 }: {
   plate: MarketplacePlate;
   lotNum: number;
   timeInfo: { text: string; color: string };
+  cardRef?: React.Ref<HTMLElement>;
 }) {
   const rawPrice = plate.auction?.currentPriceHalalas ?? plate.priceHalalas ?? '0';
 
   return (
     <article
+      ref={cardRef}
       dir="rtl"
-      className="@container relative shrink-0 w-[clamp(260px,76vw,292px)] sm:w-[295px] rounded-2xl overflow-hidden border border-[#E7E4DC] hover:border-[#D9BB81]/80 shadow-[0_4px_16px_rgba(20,36,60,0.04)] hover:shadow-[0_12px_28px_rgba(20,36,60,0.08)] transition-all duration-300 bg-white p-3 sm:p-3.5 flex flex-col justify-between select-none"
+      className="@container relative shrink-0 w-[clamp(260px,76vw,292px)] sm:w-[295px] rounded-2xl overflow-hidden border border-[#E7E4DC] hover:border-[#D9BB81]/80 shadow-[0_4px_16px_rgba(20,36,60,0.04)] hover:shadow-[0_12px_28px_rgba(20,36,60,0.08)] transition-[border-color,box-shadow] duration-300 bg-white p-3 sm:p-3.5 flex flex-col justify-between select-none"
     >
       {/* Subtle Top Specular Edge */}
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#D9BB81]/40 to-transparent pointer-events-none" />
@@ -93,7 +109,7 @@ const EndingSoonCard = memo(function EndingSoonCard({
       {/* -------------------------------------------------------- */}
       {/* POSTER CENTER: AUTHENTIC SAUDI PLATE + FBS WATERMARK     */}
       {/* -------------------------------------------------------- */}
-      <div className="relative overflow-hidden my-2 sm:my-2.5 py-5 sm:py-6 px-2 w-full min-h-[128px] sm:min-h-[144px] flex items-center justify-center rounded-xl bg-gradient-to-b from-[#FFFFFF] via-[#F6F8FC] to-[#EBF0F6] border border-[#DCE3EE] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_2px_6px_rgba(15,23,42,0.04)] transition-all duration-300 group-hover:border-[#D9BB81]/70">
+      <div className="relative overflow-hidden my-2 sm:my-2.5 py-5 sm:py-6 px-2 w-full min-h-[128px] sm:min-h-[144px] flex items-center justify-center rounded-xl bg-gradient-to-b from-[#FFFFFF] via-[#F6F8FC] to-[#EBF0F6] border border-[#DCE3EE] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_2px_6px_rgba(15,23,42,0.04)] transition-colors duration-300 group-hover:border-[#D9BB81]/70">
         <FbsStageWatermark />
         <div className="relative z-10 w-full flex justify-center py-0.5 transition-transform duration-300 group-hover:scale-[1.02]">
           <div className="w-full max-w-[244px] flex justify-center scale-[0.94] origin-center">
@@ -143,6 +159,7 @@ const EndingSoonCard = memo(function EndingSoonCard({
 
         <Link
           href={`/plates/${plate.slug}`}
+          draggable={false}
           className="group w-full h-9 sm:h-[38px] rounded-xl bg-gradient-to-r from-[#D9BB81] via-[#E0CDA4] to-[#C9A569] hover:from-[#E6D4AF] hover:to-[#D4B375] text-[#08162B] text-xs font-bold shadow-xs hover:shadow-sm active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 mt-0.5"
         >
           <Gavel size={13} className="text-[#08162B] transition-transform duration-200 group-hover:-rotate-12" />
@@ -157,8 +174,23 @@ const EndingSoonCard = memo(function EndingSoonCard({
 export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
   const plates = endingSoonAuctions && endingSoonAuctions.length > 0 ? endingSoonAuctions : [];
 
-  // Duplicated set for seamless infinite continuous GPU glide across all screen sizes
-  const loopedPlates = plates.length > 0 ? [...plates, ...plates] : [];
+  // Build one normalized period of full plate cycles (>= 8 cards so 1 period > widest 1220px viewport)
+  const baseItems = useMemo(() => {
+    if (plates.length === 0) return [];
+    const items: { plate: MarketplacePlate; lotNum: number }[] = [];
+    while (items.length < 8) {
+      for (let i = 0; i < plates.length; i++) {
+        items.push({ plate: plates[i], lotNum: i + 1 });
+      }
+    }
+    return items;
+  }, [plates]);
+
+  // Triple-buffered track: [Set 0 (left buffer), Set 1 (center active), Set 2 (right buffer)]
+  const trackItems = useMemo(
+    () => (baseItems.length > 0 ? [...baseItems, ...baseItems, ...baseItems] : []),
+    [baseItems]
+  );
 
   // 30-Second Calm Clock: zero CPU drain
   const [, setTimeTick] = useState<number>(0);
@@ -169,53 +201,327 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
     return () => clearInterval(timer);
   }, []);
 
-  // Unified Manual Nudge Support (Desktop + Mobile)
-  const [shift, setShift] = useState(0);
-  const [isManual, setIsManual] = useState(false);
-  const manualTimerRef = useRef<NodeJS.Timeout | null>(null);
+  // Refs for zero-re-render 60fps infinite bidirectional track physics
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const firstSetStartRef = useRef<HTMLElement | null>(null);
+  const secondSetStartRef = useRef<HTMLElement | null>(null);
 
-  const nudge = (direction: 'next' | 'prev') => {
-    setIsManual(true);
-    const step = typeof window !== 'undefined' && window.innerWidth < 640 ? 275 : 315;
-    setShift((prev) => (direction === 'next' ? prev - step : prev + step));
+  const setWidthRef = useRef<number>(0);
+  const cardStrideRef = useRef<number>(290);
+  const offsetRef = useRef<number>(0);
+  const initializedRef = useRef<boolean>(false);
 
-    if (manualTimerRef.current) clearTimeout(manualTimerRef.current);
-    manualTimerRef.current = setTimeout(() => {
-      setIsManual(false);
-      setShift(0);
-    }, 4500);
-  };
+  const velocityRef = useRef<number>(0); // px/sec momentum after swipe release
+  const pendingNudgeRef = useRef<number>(0); // px queued from Prev / Next buttons
+  const autoRampRef = useRef<number>(1);
+  const pauseAutoUntilRef = useRef<number>(0);
+  const isHoveredRef = useRef<boolean>(false);
+  const inViewRef = useRef<boolean>(true);
+  const reducedMotionRef = useRef<boolean>(false);
+  const suppressClickUntilRef = useRef<number>(0);
 
-  // Mobile Touch Swipe Gesture Support (Without blocking vertical page scrolling)
-  const touchStartXRef = useRef<number | null>(null);
-  const touchStartYRef = useRef<number | null>(null);
+  const dragRef = useRef<{
+    active: boolean;
+    axis: 'none' | 'x' | 'y';
+    startX: number;
+    startY: number;
+    lastX: number;
+    lastTime: number;
+    vxPxPerMs: number;
+    movedPx: number;
+  }>({
+    active: false,
+    axis: 'none',
+    startX: 0,
+    startY: 0,
+    lastX: 0,
+    lastTime: 0,
+    vxPxPerMs: 0,
+    movedPx: 0
+  });
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartXRef.current = e.touches[0].clientX;
-    touchStartYRef.current = e.touches[0].clientY;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartXRef.current === null || touchStartYRef.current === null) return;
-    const diffX = e.changedTouches[0].clientX - touchStartXRef.current;
-    const diffY = e.changedTouches[0].clientY - touchStartYRef.current;
-
-    // Detect horizontal swipe (horizontal distance > 35px and greater than vertical scroll)
-    if (Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY)) {
-      if (diffX < 0) {
-        nudge('next');
-      } else {
-        nudge('prev');
-      }
+  const applyTransform = useCallback(() => {
+    if (trackRef.current) {
+      trackRef.current.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
     }
-    touchStartXRef.current = null;
-    touchStartYRef.current = null;
-  };
+  }, []);
+
+  const measureTrack = useCallback(() => {
+    const firstEl = firstSetStartRef.current;
+    const secondEl = secondSetStartRef.current;
+    if (!firstEl || !secondEl || baseItems.length === 0) return;
+
+    const measuredWidth = secondEl.offsetLeft - firstEl.offsetLeft;
+    if (measuredWidth <= 0) return;
+
+    const prevWidth = setWidthRef.current;
+    setWidthRef.current = measuredWidth;
+    cardStrideRef.current = measuredWidth / baseItems.length;
+
+    if (!initializedRef.current) {
+      offsetRef.current = -measuredWidth;
+      initializedRef.current = true;
+    } else if (prevWidth > 0 && Math.abs(measuredWidth - prevWidth) > 0.5) {
+      const progress = (offsetRef.current + prevWidth) / prevWidth;
+      offsetRef.current = wrapTrackOffset(-measuredWidth + progress * measuredWidth, measuredWidth);
+    } else {
+      offsetRef.current = wrapTrackOffset(offsetRef.current, measuredWidth);
+    }
+
+    applyTransform();
+  }, [applyTransform, baseItems.length]);
+
+  const nudge = useCallback((direction: 'next' | 'prev') => {
+    const fallbackStep = typeof window !== 'undefined' && window.innerWidth < 640 ? 276 : 315;
+    const step = cardStrideRef.current > 0 ? cardStrideRef.current : fallbackStep;
+    velocityRef.current = 0;
+    pendingNudgeRef.current += direction === 'next' ? -step : step;
+    pauseAutoUntilRef.current = performance.now() + 2400;
+  }, []);
+
+  // Measure track geometry & keep synced via ResizeObserver + IntersectionObserver
+  useEffect(() => {
+    if (trackItems.length === 0) return;
+
+    reducedMotionRef.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    measureTrack();
+
+    let resizeObserver: ResizeObserver | null = null;
+    if ('ResizeObserver' in window && trackRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        measureTrack();
+      });
+      resizeObserver.observe(trackRef.current);
+    }
+    window.addEventListener('resize', measureTrack, { passive: true });
+
+    let intersectionObserver: IntersectionObserver | null = null;
+    if ('IntersectionObserver' in window && viewportRef.current) {
+      intersectionObserver = new IntersectionObserver(
+        ([entry]) => {
+          inViewRef.current = entry.isIntersecting;
+        },
+        { rootMargin: '200px 0px' }
+      );
+      intersectionObserver.observe(viewportRef.current);
+    }
+
+    return () => {
+      resizeObserver?.disconnect();
+      intersectionObserver?.disconnect();
+      window.removeEventListener('resize', measureTrack);
+    };
+  }, [measureTrack, trackItems.length]);
+
+  // Native Touch & Mouse Drag Listeners (1:1 tracking + vertical scroll preservation)
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport || trackItems.length === 0) return;
+
+    const beginDrag = (clientX: number, clientY: number) => {
+      if (setWidthRef.current <= 0) measureTrack();
+      dragRef.current = {
+        active: true,
+        axis: 'none',
+        startX: clientX,
+        startY: clientY,
+        lastX: clientX,
+        lastTime: performance.now(),
+        vxPxPerMs: 0,
+        movedPx: 0
+      };
+      velocityRef.current = 0;
+      pendingNudgeRef.current = 0;
+    };
+
+    const moveDrag = (clientX: number, clientY: number, preventDefaultIfHorizontal?: () => void) => {
+      const d = dragRef.current;
+      if (!d.active) return;
+
+      const totalDx = clientX - d.startX;
+      const totalDy = clientY - d.startY;
+
+      if (d.axis === 'none') {
+        if (Math.hypot(totalDx, totalDy) < 6) return;
+        // Lock to vertical if gesture is predominantly vertical so browser scroll stays 100% native
+        if (Math.abs(totalDy) > Math.abs(totalDx)) {
+          d.axis = 'y';
+          d.active = false;
+          return;
+        }
+        d.axis = 'x';
+        d.lastX = clientX;
+        d.lastTime = performance.now();
+      }
+
+      if (d.axis !== 'x') return;
+      preventDefaultIfHorizontal?.();
+
+      const now = performance.now();
+      const dt = Math.max(1, now - d.lastTime);
+      const deltaX = clientX - d.lastX;
+
+      const instantVx = Math.max(-2.8, Math.min(2.8, deltaX / dt));
+      d.vxPxPerMs = d.vxPxPerMs * 0.25 + instantVx * 0.75;
+      d.movedPx += Math.abs(deltaX);
+      d.lastX = clientX;
+      d.lastTime = now;
+
+      if (setWidthRef.current > 0) {
+        offsetRef.current = wrapTrackOffset(offsetRef.current + deltaX, setWidthRef.current);
+        applyTransform();
+      }
+    };
+
+    const endDrag = () => {
+      const d = dragRef.current;
+      if (!d.active) return;
+
+      const wasHorizontal = d.axis === 'x';
+      const staleTouch = performance.now() - d.lastTime > 90;
+      const releaseVx = wasHorizontal && !staleTouch ? d.vxPxPerMs * 1000 : 0;
+
+      if (wasHorizontal) {
+        velocityRef.current = Math.max(-2200, Math.min(2200, releaseVx));
+        pauseAutoUntilRef.current = performance.now() + 1800;
+        if (d.movedPx > 8) {
+          suppressClickUntilRef.current = performance.now() + 320;
+        }
+      }
+
+      d.active = false;
+      d.axis = 'none';
+    };
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      beginDrag(e.touches[0].clientX, e.touches[0].clientY);
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      moveDrag(e.touches[0].clientX, e.touches[0].clientY, () => {
+        if (e.cancelable) e.preventDefault();
+      });
+    };
+
+    const onTouchEnd = () => endDrag();
+
+    const onMouseDown = (e: MouseEvent) => {
+      if (e.button !== 0) return;
+      beginDrag(e.clientX, e.clientY);
+      const onWinMouseMove = (ev: MouseEvent) => {
+        moveDrag(ev.clientX, ev.clientY);
+      };
+      const onWinMouseUp = () => {
+        endDrag();
+        window.removeEventListener('mousemove', onWinMouseMove);
+        window.removeEventListener('mouseup', onWinMouseUp);
+      };
+      window.addEventListener('mousemove', onWinMouseMove);
+      window.addEventListener('mouseup', onWinMouseUp);
+    };
+
+    viewport.addEventListener('touchstart', onTouchStart, { passive: true });
+    viewport.addEventListener('touchmove', onTouchMove, { passive: false });
+    viewport.addEventListener('touchend', onTouchEnd, { passive: true });
+    viewport.addEventListener('touchcancel', onTouchEnd, { passive: true });
+    viewport.addEventListener('mousedown', onMouseDown);
+
+    return () => {
+      viewport.removeEventListener('touchstart', onTouchStart);
+      viewport.removeEventListener('touchmove', onTouchMove);
+      viewport.removeEventListener('touchend', onTouchEnd);
+      viewport.removeEventListener('touchcancel', onTouchEnd);
+      viewport.removeEventListener('mousedown', onMouseDown);
+    };
+  }, [applyTransform, measureTrack, trackItems.length]);
+
+  // Unified 60fps GPU Loop: Auto-Glide + Swipe Inertia + Arrow Button Stepping
+  useEffect(() => {
+    if (trackItems.length === 0) return;
+
+    const AUTO_GLIDE_SPEED = -28; // Calm continuous right-to-left flow (px/sec)
+    let rafId = 0;
+    let lastTime = performance.now();
+
+    const tick = (now: number) => {
+      const dtSec = Math.min(0.05, Math.max(0.001, (now - lastTime) / 1000));
+      lastTime = now;
+
+      const setWidth = setWidthRef.current;
+      const isActivelyDraggingX = dragRef.current.active && dragRef.current.axis === 'x';
+
+      if (setWidth > 0 && inViewRef.current && !document.hidden && !isActivelyDraggingX) {
+        let nextOffset = offsetRef.current;
+        let moved = false;
+
+        // 1. Smoothly ease any queued arrow-button steps
+        if (Math.abs(pendingNudgeRef.current) > 0.25) {
+          const stepDelta = pendingNudgeRef.current * (1 - Math.exp(-dtSec * 11));
+          nextOffset += stepDelta;
+          pendingNudgeRef.current -= stepDelta;
+          moved = true;
+        } else if (pendingNudgeRef.current !== 0) {
+          nextOffset += pendingNudgeRef.current;
+          pendingNudgeRef.current = 0;
+          moved = true;
+        }
+
+        // 2. Coast with smooth exponential friction after touch/mouse swipe release
+        if (Math.abs(velocityRef.current) > 4) {
+          nextOffset += velocityRef.current * dtSec;
+          velocityRef.current *= Math.exp(-dtSec * 4.2);
+          moved = true;
+        } else if (velocityRef.current !== 0) {
+          velocityRef.current = 0;
+        }
+
+        // 3. Calm continuous auto-glide (ramps smoothly after user interaction)
+        const shouldAutoGlide =
+          !reducedMotionRef.current &&
+          !isHoveredRef.current &&
+          !dragRef.current.active &&
+          now >= pauseAutoUntilRef.current &&
+          Math.abs(pendingNudgeRef.current) < 1 &&
+          Math.abs(velocityRef.current) < 12;
+
+        if (shouldAutoGlide) {
+          autoRampRef.current += (1 - autoRampRef.current) * Math.min(1, dtSec * 3);
+        } else {
+          autoRampRef.current *= Math.exp(-dtSec * 8);
+        }
+
+        if (autoRampRef.current > 0.005) {
+          nextOffset += AUTO_GLIDE_SPEED * autoRampRef.current * dtSec;
+          moved = true;
+        }
+
+        if (moved) {
+          offsetRef.current = wrapTrackOffset(nextOffset, setWidth);
+          applyTransform();
+        }
+      }
+
+      rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [applyTransform, trackItems.length]);
+
+  const handleClickCapture = useCallback((e: React.MouseEvent) => {
+    if (performance.now() < suppressClickUntilRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, []);
 
   if (plates.length === 0) return null;
 
   return (
-    <section className="relative overflow-hidden py-12 sm:py-16 md:py-20 lg:py-24 text-[#14243C] select-none bg-white border-b border-[#E7E5DF]">
+    <section className="relative overflow-hidden py-12 sm:py-16 md:py-20 lg:py-24 text-[#14243C] select-none bg-white border-b border-[#E7E5DF] [overflow-anchor:none]">
       {/* Top 1px Accent Line */}
       <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#D9BB81]/40 to-transparent pointer-events-none" />
 
@@ -277,30 +583,39 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
         </ScrollReveal>
 
         {/* ============================================================== */}
-        {/* UNIFIED CONTINUOUS GLIDE CAROUSEL (Mobile + Desktop Smoothness) */}
+        {/* INFINITE BIDIRECTIONAL GLIDE + 1:1 TOUCH SWIPE CAROUSEL        */}
         {/* ============================================================== */}
         <div
-          className="relative w-full overflow-hidden py-3"
+          ref={viewportRef}
+          className="relative w-full overflow-hidden py-3 touch-pan-y cursor-grab active:cursor-grabbing"
           dir="ltr"
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
+          style={{ touchAction: 'pan-y' }}
+          onMouseEnter={() => {
+            isHoveredRef.current = true;
+          }}
+          onMouseLeave={() => {
+            isHoveredRef.current = false;
+          }}
+          onClickCapture={handleClickCapture}
+          onDragStart={(e) => e.preventDefault()}
         >
           <div
-            className={`flex gap-3.5 sm:gap-5 will-change-transform ${
-              isManual ? 'transition-transform duration-400 ease-out' : 'animate-fbs-carousel-glide'
-            }`}
-            style={
-              isManual
-                ? { transform: `translate3d(${shift}px, 0, 0)` }
-                : undefined
-            }
+            ref={trackRef}
+            className="flex w-max gap-3.5 sm:gap-5 will-change-transform"
           >
-            {loopedPlates.map((plate, idx) => (
+            {trackItems.map((item, idx) => (
               <EndingSoonCard
-                key={`carousel-${plate.id || 'plate'}-${idx}`}
-                plate={plate}
-                lotNum={(idx % plates.length) + 1}
-                timeInfo={getAuctionTime((idx % plates.length) + 1)}
+                key={`carousel-${item.plate.id || 'plate'}-${idx}`}
+                cardRef={
+                  idx === 0
+                    ? firstSetStartRef
+                    : idx === baseItems.length
+                    ? secondSetStartRef
+                    : undefined
+                }
+                plate={item.plate}
+                lotNum={item.lotNum}
+                timeInfo={getAuctionTime(item.lotNum)}
               />
             ))}
           </div>

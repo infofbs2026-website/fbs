@@ -26,20 +26,7 @@ export function PageTitle({
   eyebrow?: string;
 }) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#060b17] via-[#091224] to-[#0f1d38] text-white pt-24 sm:pt-28 lg:pt-32 pb-14 sm:pb-20 lg:pb-24 border-b border-gold/20 shadow-[0_10px_35px_-10px_rgba(0,0,0,0.5)]">
-      {/* Ambient Gold & Navy Glow Blobs */}
-      <div className="pointer-events-none absolute -top-32 start-1/2 -translate-x-1/2 h-80 w-80 rounded-full bg-gold/15 blur-[100px]" />
-      <div className="pointer-events-none absolute -bottom-20 end-10 h-64 w-64 rounded-full bg-blue-900/20 blur-[90px]" />
-
-      {/* Subtle Texture */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: 'radial-gradient(circle at 1px 1px, #d9b87f 1px, transparent 0)',
-          backgroundSize: '36px 36px'
-        }}
-      />
-
+    <section className="hero-luxury-ambient relative overflow-hidden text-white pt-26 sm:pt-30 lg:pt-34 pb-14 sm:pb-20 lg:pb-24 border-b border-[#D9BB81]/30 shadow-[0_10px_35px_-10px_rgba(0,0,0,0.5)]">
       <div className="container-fbs relative z-10">
         {eyebrow && (
           <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3.5 py-1 text-xs font-bold text-gold-light backdrop-blur-sm">

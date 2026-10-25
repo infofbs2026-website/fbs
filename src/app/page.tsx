@@ -1,15 +1,12 @@
 import dynamic from 'next/dynamic';
 import { HeroCinematic } from '@/components/hero-cinematic';
+import { HomeEndingSoon } from '@/components/home/home-ending-soon';
 import { getMarketplace } from '@/modules/marketplace/service';
 import { fallbackPlates } from '@/modules/marketplace/mock-data';
 
-// Dynamic lazy imports for below-the-fold sections:
-// Strips all below-the-fold JS out of the initial entry bundle so Header + Hero have 100% thread priority.
-// SSR remains enabled so search engines & users get instant semantic HTML with 0 layout shift (CLS = 0).
-const HomeEndingSoon = dynamic(
-  () => import('@/components/home/home-ending-soon').then((m) => m.HomeEndingSoon),
-  { ssr: true }
-);
+// Dynamic lazy imports for deeper below-the-fold sections:
+// HomeEndingSoon is imported statically above because it sits directly at the Hero fold boundary,
+// guaranteeing zero hydration/scroll jump when scrolling down from Hero on mobile.
 
 const HomeLiveAuctions = dynamic(
   () => import('@/components/home/home-live-auctions').then((m) => m.HomeLiveAuctions),

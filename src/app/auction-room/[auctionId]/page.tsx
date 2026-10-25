@@ -49,7 +49,7 @@ export default async function Room({ params }: { params: Promise<{ auctionId: st
   return (
     <>
       {/* Luxury Ambient Header Banner */}
-      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#d9b87f]/20 pt-24 sm:pt-28 pb-8 sm:pb-12 text-white">
+      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#D9BB81]/30 pt-26 sm:pt-30 pb-10 sm:pb-14 text-white">
         <div className="container-fbs relative z-10">
           <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-gold-light mb-3">
             <Link href="/" className="hover:text-white transition-colors">الرئيسية</Link>

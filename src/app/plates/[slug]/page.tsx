@@ -55,11 +55,7 @@ export default async function Detail({ params }: { params: Promise<{ slug: strin
       {/* ============================================================== */}
       {/* 1. LUXURY BREADCRUMB & AMBIENT BANNER                          */}
       {/* ============================================================== */}
-      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#d9b87f]/20 pt-24 sm:pt-28 pb-8 sm:pb-12 text-white">
-        <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
-          <div className="absolute -top-24 start-1/2 -translate-x-1/2 h-[350px] w-[700px] rounded-full bg-gradient-to-b from-gold/15 via-gold/5 to-transparent blur-[110px]" />
-        </div>
-
+      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#D9BB81]/30 pt-26 sm:pt-30 pb-10 sm:pb-14 text-white">
         <div className="container-fbs relative z-10">
           {/* Breadcrumb Navigation */}
           <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-gold-light mb-4">

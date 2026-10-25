@@ -289,7 +289,7 @@ export function HeroAuctionCard({
         </div>
 
         {/* Middle Section: Authentic Saudi Plate Floating Directly on VisionOS Glass (Un-nested) */}
-        <div className="flex-1 my-auto py-2.5 sm:py-3.5 xl:py-4.5 w-full flex flex-col justify-center items-center relative">
+        <div className="flex-1 my-auto py-2.5 sm:py-3.5 xl:py-4.5 min-h-[76px] sm:min-h-[82px] w-full flex flex-col justify-center items-center relative">
           <div
             key={currentPlate.id}
             className="relative z-10 w-full flex justify-center animate-plate-switch transition-transform duration-300 hover:scale-[1.02]"
