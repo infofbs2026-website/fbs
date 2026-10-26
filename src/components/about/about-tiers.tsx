@@ -23,7 +23,7 @@ export const plateTiers: PlateTierData[] = [
     rankTag: 'المرتبة الأولى',
     name: 'الأحادية الملكية',
     lettersAr: ['ق'],
-    lettersEn: ['Q'],
+    lettersEn: ['G'],
     numbers: '1',
     description: 'تركيب مفرد للحرف والرقم يتصدر أندر المقتنيات بالمملكة.'
   },
@@ -43,7 +43,7 @@ export const plateTiers: PlateTierData[] = [
     rankTag: 'دلالة عربية',
     name: 'الكلمات الدلالية',
     lettersAr: ['ق', 'م', 'ر'],
-    lettersEn: ['Q', 'M', 'R'],
+    lettersEn: ['R', 'Z', 'G'],
     numbers: '1',
     description: 'أحرف تشكل كلمة عربية مميزة مقترنة برقم أحادي فريد.'
   },

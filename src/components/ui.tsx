@@ -1,13 +1,16 @@
-import { useId } from 'react';
+import { PlateFace } from '@/components/plate-face';
+import { PlateGlyphIcon } from '@/components/plate-vector-glyph';
+import { getPlateGeometry, normalizePlateType, parsePlateData } from '@/lib/plate-data';
+export { FbsPlateEmblem, SaudiEmblem, FbsPlateEmblem as FbsPlateShield } from '@/components/plate-emblems';
+export { normalizePlateType, parsePlateData, SAUDI_PLATE_AR_TO_EN, SAUDI_PLATE_EN_TO_AR } from '@/lib/plate-data';
+export type { SaudiPlateType } from '@/lib/plate-data';
 import Link from 'next/link';
 import {
   ArrowLeft,
   Check,
   Clock,
-  Crown,
   Gavel,
   Heart,
-  Palmtree,
   SearchX,
   ShieldCheck,
   ShoppingBag,
@@ -75,287 +78,6 @@ export function EmptyState({
   );
 }
 
-export function SaudiEmblem({
-  className = '',
-  size = 20,
-  fillColor = '#0b0f17',
-  strokeColor,
-  treeColor,
-  swordsColor
-}: {
-  className?: string;
-  size?: number;
-  fillColor?: string;
-  strokeColor?: string;
-  treeColor?: string;
-  swordsColor?: string;
-}) {
-  const palmFill = treeColor ?? fillColor;
-  const saberFill = swordsColor ?? strokeColor ?? fillColor;
-
-  return (
-    <svg
-      viewBox="0 0 120 120"
-      width={size}
-      height={size}
-      className={className}
-      aria-hidden="true"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{ display: 'block', flexShrink: 0 }}
-    >
-      {/* Crisp Optical-Grade Saudi Date Palm (الشجرة) */}
-      <g fill={palmFill}>
-        {/* Upright Center Crown Spear */}
-        <path d="M 60,3.5 C 55.5,14.5 56,26.5 60,38 C 64,26.5 64.5,14.5 60,3.5 Z" />
-
-        {/* Upper-Inner Arching Fronds */}
-        <path d="M 58.8,35.5 C 50.5,20.5 37.5,10 21.5,11 C 33.5,16.8 43.5,26 55.2,38.5 Z" />
-        <path d="M 61.2,35.5 C 69.5,20.5 82.5,10 98.5,11 C 86.5,16.8 76.5,26 64.8,38.5 Z" />
-
-        {/* Mid-Upper Sweeping Fronds */}
-        <path d="M 57.8,39.5 C 44,26.5 25,20.5 8.5,26.5 C 23.5,29 38.5,34.5 54.2,43 Z" />
-        <path d="M 62.2,39.5 C 76,26.5 95,20.5 111.5,26.5 C 96.5,29 81.5,34.5 65.8,43 Z" />
-
-        {/* Mid-Lower Classic Date-Palm Fronds */}
-        <path d="M 56.8,43.5 C 40.5,35 20,35.5 6,46.5 C 21.5,44 37.5,44.5 53.8,47.5 Z" />
-        <path d="M 63.2,43.5 C 79.5,35 100,35.5 114,46.5 C 98.5,44 82.5,44.5 66.2,47.5 Z" />
-
-        {/* Lower Drooping Fronds */}
-        <path d="M 56.2,47.5 C 41.5,44.5 25.5,49.5 15,61.5 C 28.5,55.5 41.5,52.2 54.8,51.2 Z" />
-        <path d="M 63.8,47.5 C 78.5,44.5 94.5,49.5 105,61.5 C 91.5,55.5 78.5,52.2 65.2,51.2 Z" />
-
-        {/* Sculpted Date Clusters */}
-        <ellipse cx="48.5" cy="55.5" rx="2.7" ry="4" transform="rotate(18 48.5 55.5)" />
-        <ellipse cx="71.5" cy="55.5" rx="2.7" ry="4" transform="rotate(-18 71.5 55.5)" />
-
-        {/* Tapered Segmented Palm Trunk */}
-        <path d="M 56.2,41.5 L 63.8,41.5 L 65.8,64 C 66.6,69.8 69.2,73.2 72.5,75.2 L 47.5,75.2 C 50.8,73.2 53.4,69.8 54.2,64 Z" />
-      </g>
-
-      {/* Crossed Curved Arabian Scimitars (السيفان العربيان) */}
-      <g fill={saberFill}>
-        {/* Left-Hilt to Right-Tip Scimitar */}
-        <path d="M 28.5,105.5 C 48,93 74.5,81.8 110,79 C 97.5,87.8 73,97 33.8,110.8 Z" />
-        <path d="M 25,100.8 L 38.5,114 L 34.8,117.2 L 21.3,104 Z" />
-        <path d="M 28,107.2 L 18.5,115.5 C 15.2,117.8 12,115.2 13.8,111.5 L 24,103.5 Z" />
-
-        {/* Right-Hilt to Left-Tip Scimitar */}
-        <path d="M 91.5,105.5 C 72,93 45.5,81.8 10,79 C 22.5,87.8 47,97 86.2,110.8 Z" />
-        <path d="M 95,100.8 L 81.5,114 L 85.2,117.2 L 98.7,104 Z" />
-        <path d="M 92,107.2 L 101.5,115.5 C 104.8,117.8 108,115.2 106.2,111.5 L 96,103.5 Z" />
-      </g>
-    </svg>
-  );
-}
-
-export type SaudiPlateType = 'private' | 'transport' | 'small';
-
-export function normalizePlateType(type?: string): SaudiPlateType {
-  if (!type) return 'private';
-  const lower = type.toLowerCase().trim();
-  if (lower.includes('نقل') || lower.includes('transport') || lower.includes('commercial')) {
-    return 'transport';
-  }
-  if (
-    lower.includes('صغير') ||
-    lower.includes('small') ||
-    lower.includes('رياض') ||
-    lower.includes('sport') ||
-    lower.includes('us')
-  ) {
-    return 'small';
-  }
-  return 'private';
-}
-
-/**
- * Official Saudi Traffic Authority Arabic to Latin letter standard transliteration table.
- */
-export const SAUDI_PLATE_AR_TO_EN: Record<string, string> = {
-  'أ': 'A', 'ا': 'A', 'إ': 'A', 'آ': 'A', 'ء': 'A',
-  'ب': 'B',
-  'ح': 'J',
-  'د': 'D',
-  'ر': 'R',
-  'س': 'S',
-  'ص': 'X',
-  'ط': 'T',
-  'ع': 'E',
-  'ق': 'G',
-  'ك': 'K',
-  'ل': 'L',
-  'م': 'Z',
-  'ن': 'N',
-  'هـ': 'H', 'ه': 'H',
-  'و': 'U',
-  'ى': 'V', 'ي': 'V'
-};
-
-export const SAUDI_PLATE_EN_TO_AR: Record<string, string> = {
-  A: 'ا',
-  B: 'ب',
-  J: 'ح',
-  D: 'د',
-  R: 'ر',
-  S: 'س',
-  X: 'ص',
-  T: 'ط',
-  E: 'ع',
-  G: 'ق',
-  K: 'ك',
-  L: 'ل',
-  Z: 'م',
-  N: 'ن',
-  H: 'هـ',
-  U: 'و',
-  V: 'ى'
-};
-
-/**
- * Precision CAD-Vector FBS Automotive Emblem (Sleek GT Coupé + Custom FBS Monogram)
- * Reconstructed with pure cubic Bézier curves and dual-tone embossed metallic finish
- * for razor-sharp contrast and factory-stamped realism on Saudi aluminum plates.
- */
-export function FbsPlateEmblem({
-  width,
-  height,
-  className = ''
-}: {
-  width?: number | string;
-  height?: number | string;
-  className?: string;
-}) {
-  const rawId = useId();
-  const uid = rawId.replace(/[^a-zA-Z0-9_-]/g, '');
-  const navyGradId = `fbs-navy-${uid}`;
-  const goldGradId = `fbs-gold-${uid}`;
-  const goldTrimId = `fbs-trim-${uid}`;
-  const embossFilterId = `fbs-emboss-${uid}`;
-
-  return (
-    <svg
-      viewBox="0 0 260 154"
-      width={width}
-      height={height}
-      className={`q-fbs-emblem shrink-0 ${className}`}
-      aria-label="شعار FBS الرسمي"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{ display: 'block' }}
-    >
-      <defs>
-        {/* Deep Royal Midnight Navy Metallic Ink for High-Contrast Stamped Legibility */}
-        <linearGradient id={navyGradId} x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#1e2f53" />
-          <stop offset="45%" stopColor="#121e38" />
-          <stop offset="100%" stopColor="#091122" />
-        </linearGradient>
-
-        {/* Rich Burnished Champagne-Bronze Gold for GT Coupé Silhouette */}
-        <linearGradient id={goldGradId} x1="0%" y1="0%" x2="100%" y2="18%">
-          <stop offset="0%" stopColor="#8c621e" />
-          <stop offset="28%" stopColor="#c79a4b" />
-          <stop offset="55%" stopColor="#ddb66c" />
-          <stop offset="82%" stopColor="#b58636" />
-          <stop offset="100%" stopColor="#7f5718" />
-        </linearGradient>
-
-        {/* Subtle Metallic Gold Bevel Rim */}
-        <linearGradient id={goldTrimId} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#e2be78" />
-          <stop offset="50%" stopColor="#b88938" />
-          <stop offset="100%" stopColor="#8f651f" />
-        </linearGradient>
-
-        {/* Crisp Die-Stamped Aluminum Relief */}
-        <filter id={embossFilterId} x="-10%" y="-10%" width="120%" height="125%">
-          <feDropShadow dx="0" dy="-0.65" stdDeviation="0.25" floodColor="#ffffff" floodOpacity="0.9" />
-          <feDropShadow dx="0" dy="1.1" stdDeviation="0.55" floodColor="#0b1324" floodOpacity="0.24" />
-        </filter>
-      </defs>
-
-      <g filter={`url(#${embossFilterId})`}>
-        {/* ================= 1. SLEEK GT SPORTS COUPÉ SILHOUETTE ================= */}
-        <g>
-          {/* Sweeping Fastback Roofline & Ducktail Spoiler */}
-          <path
-            d="M 10,25.5 C 21,29 33,27.5 50,22 C 78,12.5 103,7.5 127,8.2 C 149,8.8 168,15.5 188,26.8 L 183.5,28.2 C 164,18.5 146,13.2 126.5,12.8 C 103,12.2 79,17 51,26.5 C 34,32 21,33.5 10,25.5 Z"
-            fill={`url(#${goldGradId})`}
-            stroke="#5e3f10"
-            strokeWidth="0.45"
-            strokeLinejoin="round"
-          />
-
-          {/* Sculpted Rear Decklid & C-Pillar Flow */}
-          <path
-            d="M 22,33.2 C 42,27.8 66,26.8 98,30.5 C 70,31.2 46,31.5 27,36.2 C 23,37 19.5,35.5 22,33.2 Z"
-            fill={`url(#${goldGradId})`}
-          />
-
-          {/* Long Muscular GT Hood & Front Fender Horizon */}
-          <path
-            d="M 65,25.8 C 105,30.8 147,31.4 185,32 C 213,32.5 234,38 250,49.5 C 232,42.5 212,37.8 184.5,37 C 145,36 103,35 65,27.6 Z"
-            fill={`url(#${navyGradId})`}
-          />
-
-          {/* Dynamic Aerodynamic Waist Crease */}
-          <path
-            d="M 94,46.2 C 127,40.2 165,39.8 202,42.6 C 166,44 128,44.6 94,46.2 Z"
-            fill={`url(#${goldGradId})`}
-            stroke="#5e3f10"
-            strokeWidth="0.35"
-          />
-
-          {/* Aggressive Predator LED Headlamp Eye */}
-          <path
-            d="M 212,42.2 C 221,41.8 233,45.5 242,51.6 C 231,50.8 221,48.2 215,44.8 Z"
-            fill={`url(#${goldGradId})`}
-            stroke="#5e3f10"
-            strokeWidth="0.4"
-          />
-
-          {/* Rear Tapered Wheel Arch */}
-          <path
-            d="M 39,62.5 C 40.2,49.2 48,43 57.5,43 C 67,43 74.8,49.2 76,62.5 C 73.2,52.2 66.2,47.5 57.5,47.5 C 48.8,47.5 41.8,52.2 39,62.5 Z"
-            fill={`url(#${navyGradId})`}
-          />
-
-          {/* Front Tapered Wheel Arch */}
-          <path
-            d="M 180,65 C 181.2,51.8 189,45.6 198.5,45.6 C 208,45.6 215.8,51.8 217,65 C 214.2,54.8 207.2,50.1 198.5,50.1 C 189.8,50.1 182.8,54.8 180,65 Z"
-            fill={`url(#${navyGradId})`}
-          />
-
-          {/* Sculpted Lower Rocker Sill Blade */}
-          <path
-            d="M 83,62.5 C 113,64.2 144,65 173,64.8 C 144,67.6 113,66.6 83,62.5 Z"
-            fill={`url(#${goldGradId})`}
-            stroke="#5e3f10"
-            strokeWidth="0.35"
-          />
-        </g>
-
-        {/* ================= 2. PRECISION CUSTOM 'FBS' MONOGRAM ================= */}
-        <g stroke={`url(#${goldTrimId})`} strokeWidth="0.9" strokeLinejoin="round">
-          {/* Connected 'FB' Ligature with Signature Speed-Slot & Diagonal Crossbar */}
-          <path
-            fill={`url(#${navyGradId})`}
-            fillRule="evenodd"
-            d="M 22,79 H 131 C 142.2,79 149.8,86 149.8,96.5 C 149.8,103.6 145.6,109.2 139,111.6 C 147.2,114.2 152.2,120.8 152.2,129.4 C 152.2,139 144.2,145.5 133,145.5 H 90 V 98.2 H 110 V 104.8 H 130 C 133.6,104.8 135.8,102.3 135.8,99.4 C 135.8,96.5 133.6,94 130,94 H 42 V 104.8 H 83 L 72,119.8 H 42 V 145.5 H 22 Z M 110,119.8 H 131.5 C 135.6,119.8 138.2,122.4 138.2,125.2 C 138.2,128.1 135.6,130.5 131.5,130.5 H 110 Z"
-          />
-
-          {/* Precision Sporty 'S' with Matching Diagonal Top-Right Cut */}
-          <path
-            fill={`url(#${navyGradId})`}
-            d="M 182,79 H 238 L 227,94 H 183 C 178.4,94 176,96.5 176,99.4 C 176,102.3 178.4,104.8 183,104.8 H 214 C 228.2,104.8 238.2,113.4 238.2,125.2 C 238.2,137 228.2,145.5 214,145.5 H 165.5 C 161,145.5 158,142.1 158,138 C 158,133.9 161,130.5 165.5,130.5 H 213 C 217.6,130.5 220.2,128.1 220.2,125.2 C 220.2,122.4 217.6,119.8 213,119.8 H 182 C 167.8,119.8 158,111.2 158,99.4 C 158,87.6 167.8,79 182,79 Z"
-          />
-        </g>
-      </g>
-    </svg>
-  );
-}
-
-export const FbsPlateShield = FbsPlateEmblem;
-
 /**
  * Luxury Etched Platinum FBS Stage Watermark for Plate Showcase Trays:
  * Crowns the upper stage above the plate with the sleek GT Coupé silhouette
@@ -398,119 +120,6 @@ export function FbsStageWatermark({ className = '' }: { className?: string }) {
   );
 }
 
-export function parsePlateData(
-  lettersAr: string[] | string,
-  lettersEn: string[] | string,
-  numbers: string
-) {
-  const rawDigits = (numbers || '').replace(/\s+/g, '');
-  const standardDigits: string[] = [];
-  for (const ch of rawDigits) {
-    const arIdx = '٠١٢٣٤٥٦٧٨٩'.indexOf(ch);
-    if (arIdx !== -1) {
-      standardDigits.push(String(arIdx));
-    } else if (/\d/.test(ch)) {
-      standardDigits.push(ch);
-    }
-  }
-  const digitPairs = standardDigits.map((d) => ({
-    ar: '٠١٢٣٤٥٦٧٨٩'[Number(d)] ?? d,
-    en: d
-  }));
-
-  // Clean Arabic letters: treat 'هـ' as 1 grapheme, strip rogue dots/commas/punctuation
-  let cleanAr: string[] = [];
-  if (Array.isArray(lettersAr)) {
-    cleanAr = lettersAr
-      .map((l) => {
-        const s = String(l || '').replace(/[\s\-_,\/\\\.،\*\#]/g, '');
-        if (s.startsWith('ه') && (s.includes('ـ') || s.includes('\u0640'))) {
-          return 'هـ';
-        }
-        return s.replace(/[\u0640ـ]/g, '');
-      })
-      .filter(Boolean);
-  } else {
-    const raw = String(lettersAr || '').trim();
-    const tokens = raw.includes(' ')
-      ? raw.split(/\s+/)
-      : raw.match(/(هـ|[\u0600-\u06FF])/g) || [];
-    cleanAr = tokens
-      .map((l) => {
-        const s = l.replace(/[\s\-_,\/\\\.،\*\#]/g, '');
-        if (s.startsWith('ه') && (s.includes('ـ') || s.includes('\u0640'))) {
-          return 'هـ';
-        }
-        return s.replace(/[\u0640ـ]/g, '');
-      })
-      .filter(Boolean);
-  }
-
-  // Normalize Hamza and Arabic forms to official 17 plate glyphs
-  cleanAr = cleanAr.map((ch) => {
-    if (ch === 'أ' || ch === 'إ' || ch === 'آ' || ch === 'ٱ' || ch === 'ء') return 'ا';
-    if (ch === 'ي' || ch === 'ئ' || ch === 'ى') return 'ى';
-    if (ch === 'ه' || ch === 'ة') return 'هـ';
-    if (ch === 'ک') return 'ك';
-    return ch;
-  });
-
-  // Clean Latin letters: strict uppercase A-Z only, discard punctuation and stray characters
-  let cleanEn: string[] = [];
-  if (Array.isArray(lettersEn)) {
-    cleanEn = lettersEn
-      .map((l) => String(l || '').replace(/[^A-Za-z]/g, '').toUpperCase())
-      .filter(Boolean);
-  } else {
-    cleanEn = String(lettersEn || '')
-      .replace(/[^A-Za-z]/g, '')
-      .toUpperCase()
-      .split('')
-      .filter(Boolean);
-  }
-
-  // Align Arabic and Latin letters accurately in LTR column display:
-  // On authentic Saudi plates:
-  // Column 0 (leftmost): Latin letter 0 is under Arabic letter corresponding to Latin 0.
-  // Column N (rightmost, closest to pillar): Arabic reading starts here (first Arabic letter).
-  let displayAr: string[] = [];
-  let displayEn: string[] = [];
-
-  const hasInvalidLatin = cleanEn.some((ch) => !PLATE_GLYPHS_EN[ch] && ch !== 'F');
-
-  if (cleanAr.length > 0) {
-    const firstArMapped = SAUDI_PLATE_AR_TO_EN[cleanAr[0]];
-    if (cleanEn.length > 0 && !hasInvalidLatin && firstArMapped === cleanEn[0]) {
-      displayAr = [...cleanAr];
-      displayEn = [...cleanEn];
-    } else {
-      displayAr = cleanAr.slice().reverse();
-      displayEn = displayAr.map((ch, idx) => {
-        const standard = SAUDI_PLATE_AR_TO_EN[ch];
-        if (standard) return standard;
-        return cleanEn[displayAr.length - 1 - idx] || ch;
-      });
-    }
-  } else if (cleanEn.length > 0) {
-    displayEn = [...cleanEn];
-    displayAr = displayEn.map((ch) => SAUDI_PLATE_EN_TO_AR[ch] || '');
-  }
-
-  const maxLen = Math.max(displayAr.length, displayEn.length);
-  const letterPairs: { ar: string; en: string }[] = [];
-  for (let i = 0; i < maxLen; i++) {
-    letterPairs.push({
-      ar: displayAr[i] || '',
-      en: displayEn[i] || ''
-    });
-  }
-
-  return {
-    digitPairs,
-    letterPairs
-  };
-}
-
 export interface PlateVisualizerProps {
   lettersAr: string[] | string;
   lettersEn: string[] | string;
@@ -523,265 +132,33 @@ export interface PlateVisualizerProps {
   className?: string;
 }
 
-import { PLATE_GLYPHS_AR, normalizeSaudiPlateArChar } from '@/components/plate-glyphs-ar';
-import { PLATE_GLYPHS_EN, PLATE_GLYPHS_EN_FALLBACK, normalizeSaudiPlateEnChar } from '@/components/plate-glyphs-en';
-
-export function PlateArabicGlyph({
-  char,
-  className = ''
-}: {
-  char: string;
-  className?: string;
-}) {
-  const norm = normalizeSaudiPlateArChar(char);
-  const spec = PLATE_GLYPHS_AR[norm];
-  if (!spec) {
-    return <span className={className}>{char}</span>;
-  }
-  return (
-    <svg
-      viewBox={`0 0 ${spec.w} 72`}
-      className={`q-ar-svg-glyph ${className}`}
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d={spec.d} />
-    </svg>
-  );
+export function PlateArabicGlyph({ char, className = '' }: { char: string; className?: string }) {
+  return <PlateGlyphIcon char={char} language="ar" className={className} />;
 }
 
-export function PlateLatinGlyph({
-  char,
-  className = ''
-}: {
-  char: string;
-  className?: string;
-}) {
-  const norm = normalizeSaudiPlateEnChar(char);
-  const displayChar = Array.from(char.normalize('NFKC').trim().toUpperCase())[0] ?? '';
-  const spec = PLATE_GLYPHS_EN[norm] ?? PLATE_GLYPHS_EN_FALLBACK[displayChar];
-  if (!spec) {
-    return <span className={`q-char-fallback ${className}`}>{char}</span>;
-  }
-  return (
-    <svg
-      viewBox={`0 0 ${spec.w} 72`}
-      className={`q-en-svg-glyph ${className}`}
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d={spec.d} />
-    </svg>
-  );
+export function PlateLatinGlyph({ char, className = '' }: { char: string; className?: string }) {
+  return <PlateGlyphIcon char={char} language="en" className={className} />;
 }
 
-/**
- * Photorealistic Screw-Free Saudi Vehicle License Plate with Center FBS Emblem:
- * - Flush silver outer rim + slightly thicker black inner frame (zero gap)
- * - FBS Emblem always centered in an open divider-free main field across all 3 categories
- * - Slim right-side Kingdom Pillar:
- *   1. خصوصي (Private): White pillar + Dark Green Saudi Emblem + vertical K/S/A + silver foil + black circle (●)
- *   2. صغيرة (Small / Sports): White pillar + Black Saudi Emblem + vertical K/S/A + silver foil + black circle (●)
- *   3. نقل (Transport): Blue pillar + White Saudi Emblem + vertical K/S/A + silver foil + downward triangle (▼)
- * - Authentic 27 Arabic vector glyphs (17 letters + 10 digits)
- */
+/** FBS layout and identity are drawn once, inside the shared SVG face. */
 export function PlateVisualizer({
-  lettersAr,
-  lettersEn,
-  numbers,
-  large = false,
-  compact = false,
-  dark = false,
-  plateType = 'private',
-  plateSize,
-  className = ''
+  lettersAr, lettersEn, numbers, large = false, compact = false, dark = false,
+  plateType = 'private', plateSize, className = ''
 }: PlateVisualizerProps) {
-  const normType = normalizePlateType(plateType);
-  const isTransport = normType === 'transport';
-  const isSmall = plateSize
-    ? (plateSize === 'short' || plateSize === 'sports' || plateSize === 'standard')
-    : normType === 'small';
-
-  const { digitPairs, letterPairs } = parsePlateData(
-    lettersAr,
-    lettersEn,
-    numbers
-  );
-
-  const emblemSize = isSmall
-    ? large
-      ? 28
-      : compact
-        ? 18
-        : 24
-    : large
-      ? 23
-      : compact
-        ? 15
-        : 20;
-  const digitCount = digitPairs.length || 1;
-  const letterCount = letterPairs.length || 1;
-
+  const normalizedType = normalizePlateType(plateType);
+  const type = plateSize === 'sports' && normalizedType !== 'transport' ? 'small' : normalizedType;
+  const format = plateSize === 'short' || plateSize === 'standard' ? 'standard' : 'long';
+  const plate = parsePlateData(lettersAr, lettersEn, numbers);
+  const geometry = getPlateGeometry(type, format);
   return (
     <div
       data-pf-proportional="saudi-plate"
-      className={`hero-saudi-plate ${isTransport ? 'is-transport' : ''} ${
-        isSmall ? 'is-small' : 'is-private'
-      } ${compact ? 'compact' : ''} ${large ? 'large' : ''} ${
-        dark ? 'plate-dark-pedestal' : ''
-      } digits-${digitCount} letters-${letterCount} ${className}`}
-      style={{
-        ['--digit-count' as string]: digitCount,
-        ['--letter-count' as string]: letterCount
-      }}
-      role="img"
-      aria-label={`لوحة مركبة سعودية (${
-        isTransport ? 'نقل خاص' : isSmall ? 'صغيرة رياضية' : 'خصوصي'
-      }): ${letterPairs.map((p) => p.ar).join(' ')} ${digitPairs.map((p) => p.ar).join('')}`}
+      data-plate-status={plate.status}
+      className={`hero-saudi-plate ${type === 'transport' ? 'is-transport' : ''} ${type === 'small' ? 'is-small' : 'is-private'} ${compact ? 'compact' : ''} ${large ? 'large' : ''} ${dark ? 'plate-dark-pedestal' : ''} ${format === 'standard' ? 'is-standard-format' : ''} digits-${plate.digitPairs.length || 1} letters-${plate.letterPairs.length || 1} ${className}`}
+      style={{ aspectRatio: `${geometry.width} / ${geometry.height}` }}
       dir="ltr"
     >
-      {/* Subtle diagonal aluminum studio sheen (zero screws or mounting slots) */}
-      <span className="q-sheen-highlight" aria-hidden="true" />
-
-      <div
-        className={`plate-inner-frame plate-layout-open ${
-          isTransport ? 'is-transport' : isSmall ? 'is-small-frame' : 'is-private'
-        }`}
-      >
-        {/* Left: Digits Section (Arabic top, English bottom — open field, no divider lines) */}
-        <div data-pf-part="digits" className="q-plate-section q-digits-section">
-          <div
-            className="q-digits-block"
-            style={{ gridTemplateColumns: `repeat(${digitCount}, minmax(0, 1fr))` }}
-            dir="ltr"
-            aria-label={`أرقام عربية: ${digitPairs.map((p) => p.ar).join('')}`}
-          >
-            {digitPairs.map((pair, idx) => (
-              <span key={`ar-d-${idx}`} className="q-char-cell q-char-digit q-arabic-char">
-                <PlateArabicGlyph char={pair.ar} />
-              </span>
-            ))}
-          </div>
-          <div
-            className="q-digits-block"
-            style={{ gridTemplateColumns: `repeat(${digitCount}, minmax(0, 1fr))` }}
-            dir="ltr"
-            aria-label={`أرقام إنجليزية: ${digitPairs.map((p) => p.en).join('')}`}
-          >
-            {digitPairs.map((pair, idx) => (
-              <span key={`en-d-${idx}`} className="q-char-cell q-char-digit q-latin-char">
-                <PlateLatinGlyph char={pair.en} />
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Center: Official FBS Emblem (Always Centered Across All 3 Plate Categories) */}
-        <div data-pf-part="fbs-logo" className="q-logo-zone q-logo-center">
-          <FbsPlateEmblem />
-        </div>
-
-        {/* Right: Letters Section (Arabic top, English bottom — open field, no divider lines) */}
-        <div data-pf-part="letters" className="q-plate-section q-letters-section">
-          <div
-            className="q-letters-block"
-            style={{ gridTemplateColumns: `repeat(${letterCount}, minmax(0, 1fr))` }}
-            dir="ltr"
-            aria-label={`حروف عربية: ${letterPairs.map((p) => p.ar).join(' ')}`}
-          >
-            {letterPairs.map((pair, idx) => (
-              <span key={`ar-l-${idx}`} className="q-char-cell q-char-letter q-arabic-char">
-                <PlateArabicGlyph char={pair.ar} />
-              </span>
-            ))}
-          </div>
-          <div
-            className="q-letters-block"
-            style={{ gridTemplateColumns: `repeat(${letterCount}, minmax(0, 1fr))` }}
-            dir="ltr"
-            aria-label={`حروف إنجليزية: ${letterPairs.map((p) => p.en).join(' ')}`}
-          >
-            {letterPairs.map((pair, idx) => (
-              <span key={`en-l-${idx}`} className="q-char-cell q-char-letter q-latin-char">
-                <PlateLatinGlyph char={pair.en} />
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Far-Right: Saudi Kingdom Pillar (Slim on Private/Transport, Wider on Sports/Small) */}
-        <div
-          data-pf-part="pillar"
-          className={`q-kingdom-pillar ${
-            isTransport
-              ? 'q-pillar-right-transport'
-              : isSmall
-                ? 'q-pillar-right-private q-pillar-right-small'
-                : 'q-pillar-right-private'
-          }`}
-        >
-          <div className="q-pillar-top">
-            {isTransport ? (
-              <SaudiEmblem
-                size={emblemSize}
-                fillColor="#ffffff"
-                className="q-saudi-emblem is-white-emblem shrink-0"
-              />
-            ) : isSmall ? (
-              <SaudiEmblem
-                size={emblemSize}
-                fillColor="#0b0f17"
-                className="q-saudi-emblem is-small-emblem shrink-0"
-              />
-            ) : (
-              <SaudiEmblem
-                size={emblemSize}
-                treeColor="#0b6330"
-                swordsColor="#084d25"
-                className="q-saudi-emblem is-green-emblem shrink-0"
-              />
-            )}
-            <span className="q-saudi-text">السعودية</span>
-          </div>
-
-          {isTransport ? (
-            <>
-              <span className="q-ksa-stack" aria-label="KSA">
-                <span>K</span>
-                <span>S</span>
-                <span>A</span>
-              </span>
-
-              <span className="q-hologram-strip" title="شريط الهولوغرام الأمني">
-                <span className="q-hologram-shimmer" />
-                <span className="q-hologram-bars" />
-              </span>
-
-              <svg
-                viewBox="0 0 14 12"
-                className="q-transport-triangle shrink-0"
-                aria-hidden="true"
-              >
-                <polygon points="1,1 13,1 7,11.2" fill="#080d16" />
-              </svg>
-            </>
-          ) : (
-            <>
-              <span className="q-ksa-stack" aria-label="KSA">
-                <span>K</span>
-                <span>S</span>
-                <span className="q-ksa-a-foil" title="شريط الأمان المعدني">
-                  <span className="q-hologram-shimmer" />
-                  <span className="q-hologram-bars" />
-                  <span className="q-ksa-a-char">A</span>
-                </span>
-              </span>
-
-              <span className="q-black-seal" title="الختم الأمني المعتمد" />
-            </>
-          )}
-        </div>
-      </div>
+      <PlateFace plate={plate} type={type} format={format} />
     </div>
   );
 }
@@ -952,7 +329,7 @@ export function PlateCard({
         className="relative overflow-hidden my-2 sm:my-2.5 flex items-center justify-center rounded-xl bg-gradient-to-b from-[#FFFFFF] via-[#F6F8FC] to-[#EBF0F6] px-2.5 py-5 sm:px-3 sm:py-6 min-h-[132px] sm:min-h-[150px] border border-[#DCE3EE] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_2px_6px_rgba(15,23,42,0.04)] transition-all duration-300 group-hover:border-[#D9BB81]/70"
       >
         <FbsStageWatermark />
-        <div className="relative z-10 w-full flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.02] filter drop-shadow-[0_6px_14px_rgba(15,23,42,0.13)]">
+        <div className="relative z-10 w-full flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.02]">
           <PlateVisualizer
             lettersAr={plate.lettersAr}
             lettersEn={plate.lettersEn}

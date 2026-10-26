@@ -300,7 +300,8 @@ export function HeroAuctionCard({
               numbers={currentPlate.numbers}
               plateType={currentPlate.type}
               compact
-              className="w-full max-w-[270px] sm:max-w-[280px] xl:max-w-[290px] drop-shadow-[0_12px_28px_rgba(0,0,0,0.65)]"
+              dark
+              className="w-full max-w-[270px] sm:max-w-[280px] xl:max-w-[290px]"
             />
           </div>
         </div>
