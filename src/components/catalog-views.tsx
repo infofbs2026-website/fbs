@@ -104,7 +104,7 @@ export function PlateCardWide({
           className="relative overflow-hidden w-full sm:w-[284px] xl:w-[312px] min-h-[134px] sm:min-h-[148px] shrink-0 rounded-xl px-2.5 py-5 sm:px-3.5 sm:py-6 flex items-center justify-center bg-gradient-to-b from-[#FFFFFF] via-[#F6F8FC] to-[#EBF0F6] border border-[#DCE3EE] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_2px_6px_rgba(15,23,42,0.04)] group-hover:border-[#D9BB81]/70 transition-all"
         >
           <FbsStageWatermark />
-          <div className="relative z-10 w-full flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.02] filter drop-shadow-[0_6px_14px_rgba(15,23,42,0.13)]">
+          <div className="relative z-10 w-full flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.02]">
             <PlateVisualizer
               lettersAr={plate.lettersAr}
               lettersEn={plate.lettersEn}
@@ -364,7 +364,7 @@ export function PlateTableView({
                           href={`/plates/${plate.slug}`}
                           className="block w-full rounded-2xl p-2 bg-gradient-to-b from-[#f1f4f9] via-[#e8edf5] to-[#dde4ee] border border-slate-200/90 shadow-2xs group-hover/row:border-[#0c162d]/40 group-hover/row:shadow-xs transition-all"
                         >
-                          <div className="w-full transition-transform duration-200 group-hover/row:scale-[1.02] filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
+                          <div className="w-full transition-transform duration-200 group-hover/row:scale-[1.02]">
                             <PlateVisualizer
                               lettersAr={plate.lettersAr}
                               lettersEn={plate.lettersEn}

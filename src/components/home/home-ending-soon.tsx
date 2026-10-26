@@ -119,7 +119,7 @@ const EndingSoonCard = memo(function EndingSoonCard({
               numbers={plate.numbers}
               plateType={plate.type}
               compact
-              className="w-full filter drop-shadow-[0_6px_14px_rgba(15,23,42,0.13)]"
+              className="w-full"
             />
           </div>
         </div>

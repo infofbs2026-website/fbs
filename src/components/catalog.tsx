@@ -405,7 +405,7 @@ export async function Catalog({
                 className={`w-full max-w-[272px] sm:max-w-[286px] transition-all duration-300 group-hover:-translate-y-1 ${
                   clean.type === 'خصوصي'
                     ? 'scale-[1.03] drop-shadow-[0_0_18px_rgba(217,184,127,0.55)]'
-                    : 'opacity-92 group-hover:opacity-100 drop-shadow-[0_10px_20px_rgba(0,0,0,0.38)]'
+                    : 'opacity-92 group-hover:opacity-100'
                 }`}
               >
                 <PlateVisualizer
@@ -414,6 +414,7 @@ export async function Catalog({
                   numbers="8888"
                   plateType="خصوصي"
                   compact
+                  dark
                 />
               </div>
 
@@ -438,7 +439,7 @@ export async function Catalog({
                 className={`w-full max-w-[260px] sm:max-w-[274px] transition-all duration-300 group-hover:-translate-y-1 ${
                   clean.type === 'صغيرة'
                     ? 'scale-[1.03] drop-shadow-[0_0_18px_rgba(217,184,127,0.55)]'
-                    : 'opacity-92 group-hover:opacity-100 drop-shadow-[0_10px_20px_rgba(0,0,0,0.38)]'
+                    : 'opacity-92 group-hover:opacity-100'
                 }`}
               >
                 <PlateVisualizer
@@ -447,6 +448,7 @@ export async function Catalog({
                   numbers="3471"
                   plateType="صغيرة"
                   compact
+                  dark
                 />
               </div>
 
@@ -471,7 +473,7 @@ export async function Catalog({
                 className={`w-full max-w-[272px] sm:max-w-[286px] transition-all duration-300 group-hover:-translate-y-1 ${
                   clean.type === 'نقل'
                     ? 'scale-[1.03] drop-shadow-[0_0_18px_rgba(217,184,127,0.55)]'
-                    : 'opacity-92 group-hover:opacity-100 drop-shadow-[0_10px_20px_rgba(0,0,0,0.38)]'
+                    : 'opacity-92 group-hover:opacity-100'
                 }`}
               >
                 <PlateVisualizer
@@ -480,6 +482,7 @@ export async function Catalog({
                   numbers="7341"
                   plateType="نقل"
                   compact
+                  dark
                 />
               </div>
 
