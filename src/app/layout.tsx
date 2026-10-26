@@ -1,8 +1,9 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { IBM_Plex_Sans_Arabic, Noto_Naskh_Arabic, Barlow_Semi_Condensed } from 'next/font/google';
 import Script from 'next/script';
 import { Header, Footer } from '@/components/shell';
 import { GlobalAtmosphere } from '@/components/global-atmosphere';
+import { FloatingSiteActions } from '@/components/floating-site-actions';
 import './globals.css';
 
 const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
@@ -25,6 +26,11 @@ const barlowSemiCondensed = Barlow_Semi_Condensed({
   variable: '--font-plate-din',
   display: 'swap',
 });
+
+export const viewport: Viewport = {
+  themeColor: '#08162b',
+  viewportFit: 'cover',
+};
 
 export const metadata: Metadata = {
   title: { default: 'FBS | فارس بن سعود للوحات المميزة', template: '%s | FBS' },
@@ -68,6 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </main>
         <Footer />
+        <FloatingSiteActions />
       </body>
     </html>
   );

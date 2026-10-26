@@ -1,0 +1,102 @@
+.actions {
+  position: fixed;
+  z-index: 40;
+  right: max(0.875rem, env(safe-area-inset-right, 0px));
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  left: max(0.875rem, env(safe-area-inset-left, 0px));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  direction: ltr;
+  /* Only the two links intercept taps; the space between them stays usable. */
+  pointer-events: none;
+}
+
+.action {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid rgb(255 255 255 / 45%);
+  border-radius: 50%;
+  box-shadow:
+    0 5px 16px rgb(8 22 43 / 22%),
+    inset 0 1px 0 rgb(255 255 255 / 20%);
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.action svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.whatsapp {
+  background: #128c46;
+  color: #fff;
+}
+
+.store {
+  border-color: #d9bb81;
+  background: linear-gradient(135deg, #faebd0, #d9bb81);
+  color: #08162b;
+}
+
+.action:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px #08162b;
+}
+
+.action:active {
+  transform: scale(0.96);
+}
+
+/* Keep dialogs and drawers free of competing controls. */
+:global(body:has(dialog[open], [aria-modal='true'])) .actions {
+  visibility: hidden;
+}
+
+@media (min-width: 768px) {
+  .actions {
+    right: max(1.5rem, env(safe-area-inset-right, 0px));
+    bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    left: max(1.5rem, env(safe-area-inset-left, 0px));
+  }
+
+  .action {
+    width: 3.25rem;
+    height: 3.25rem;
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 20px rgb(8 22 43 / 28%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .action {
+    transition: none;
+  }
+
+  .action:active {
+    transform: none;
+  }
+}
+
+@media print {
+  .actions {
+    display: none;
+  }
+}
