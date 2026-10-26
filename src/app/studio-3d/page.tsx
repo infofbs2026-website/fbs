@@ -24,6 +24,7 @@ export default async function Studio3DPage({
     type?: string;
     preview?: string;
     car?: string;
+    size?: string;
     from?: string;
   }>;
 }) {
@@ -65,6 +66,7 @@ export default async function Studio3DPage({
       variant="page"
       initialPlate={initialPlate}
       initialCarId={initialCar}
+      initialSize={sp.size === 'standard' ? 'standard' : 'long'}
       backHref={backHref}
     />
   );

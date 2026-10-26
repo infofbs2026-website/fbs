@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -16,9 +16,9 @@ import {
   Sparkles,
   Sun
 } from 'lucide-react';
-import { FbsPlateEmblem, normalizePlateType, parsePlateData, PlateVisualizer, SaudiEmblem } from '@/components/ui';
-import { PLATE_GLYPHS_AR, normalizeSaudiPlateArChar } from '@/components/plate-glyphs-ar';
-import { PLATE_GLYPHS_EN, normalizeSaudiPlateEnChar } from '@/components/plate-glyphs-en';
+import { PlateVisualizer } from '@/components/ui';
+import { PlateFace } from '@/components/plate-face';
+import { getPlateGeometry, normalizePlateType, parsePlateData } from '@/lib/plate-data';
 
 /* ============================================================== */
 /* STUDIO DATA                                                     */
@@ -109,584 +109,19 @@ const LIGHTING_FILTERS: Record<LightingMode, string> = {
   day: 'brightness(1.36) contrast(1.10) saturate(1.10)'
 };
 
-/* ============================================================== */
-/* VECTOR CAR MOUNTED PLATE GLYPH HELPERS (AUTHENTIC VECTORS)     */
-/* ============================================================== */
-
-function CarPlateArabicGlyph({
-  char,
-  cx,
-  y,
-  height,
-  embossId
-}: {
-  char: string;
-  cx: number;
-  y: number;
-  height: number;
-  embossId: string;
-}) {
-  const norm = normalizeSaudiPlateArChar(char);
-  const spec = PLATE_GLYPHS_AR[norm];
-  const s = height / 72;
-  if (!spec) {
-    return (
-      <text
-        x={cx}
-        y={y + height * 0.9}
-        textAnchor="middle"
-        fill="#11151e"
-        fontSize={height * 0.9}
-        fontWeight="700"
-        fontFamily="var(--font-plate-naskh), 'Noto Naskh Arabic', 'Traditional Arabic', serif"
-        filter={`url(#${embossId})`}
-      >
-        {char}
-      </text>
-    );
-  }
-  const w = spec.w * s;
-  return (
-    <g
-      transform={`translate(${cx - w / 2}, ${y}) scale(${s})`}
-      fill="#11151e"
-      filter={`url(#${embossId})`}
-    >
-      <path d={spec.d} />
-    </g>
-  );
-}
-
-function CarPlateLatinGlyph({
-  char,
-  cx,
-  y,
-  height,
-  embossId
-}: {
-  char: string;
-  cx: number;
-  y: number;
-  height: number;
-  embossId: string;
-}) {
-  const norm = normalizeSaudiPlateEnChar(char);
-  const spec = norm ? PLATE_GLYPHS_EN[norm] : undefined;
-  const s = height / 72;
-  if (!spec) {
-    return (
-      <text
-        x={cx}
-        y={y + height * 0.9}
-        textAnchor="middle"
-        fill="#11151e"
-        fontSize={height * 0.9}
-        fontWeight="600"
-        fontFamily="var(--font-plate-din), 'Bahnschrift', 'DIN Alternate', sans-serif"
-        filter={`url(#${embossId})`}
-      >
-        {char}
-      </text>
-    );
-  }
-  const w = spec.w * s;
-  return (
-    <g
-      transform={`translate(${cx - w / 2}, ${y}) scale(${s})`}
-      fill="#11151e"
-      filter={`url(#${embossId})`}
-    >
-      <path d={spec.d} />
-    </g>
-  );
-}
-
-/* ============================================================== */
-/* VECTOR CAR MOUNTED PLATE (100% SCALE-SAFE, ZERO OVERLAP)        */
-/* ============================================================== */
-
-export function CarMountedPlate({
-  lettersAr,
-  lettersEn,
-  numbers,
-  plateType = 'خصوصي',
-  size = 'long'
-}: {
+/** Uses the same paths, geometry, ink and emboss as the catalog plate. */
+export function CarMountedPlate({ lettersAr, lettersEn, numbers, plateType = 'خصوصي', size = 'long' }: {
   lettersAr: string[] | string;
   lettersEn: string[] | string;
   numbers: string;
   plateType?: string;
   size?: PlateSize;
 }) {
-  const rawUid = useId().replace(/[^a-zA-Z0-9_-]/g, '');
-  const bgId = `cmp-bg-${rawUid}`;
-  const rimId = `cmp-rim-${rawUid}`;
-  const blueId = `cmp-blue-${rawUid}`;
-  const foilId = `cmp-foil-${rawUid}`;
-  const embossId = `cmp-emboss-${rawUid}`;
-  const innerClipId = `cmp-clip-${rawUid}`;
-
-  const normType = normalizePlateType(plateType);
-  const isTransport = normType === 'transport';
-  const isSmall = normType === 'small' || (size === 'standard' && plateType?.includes('صغير'));
-  const { digitPairs, letterPairs } = parsePlateData(lettersAr, lettersEn, numbers);
-
-  const digitCount = Math.max(1, digitPairs.length);
-  const letterCount = Math.max(1, letterPairs.length);
-
-  // 1. European Long Plate (520mm x 110mm — 3D Silver+Black Frame, Brushed Metal, Authentic Naskh & DIN)
-  if (size === 'long') {
-    const pillarX = isSmall ? 462 : 476;
-    const pillarW = 517.5 - pillarX;
-    const pillarCx = pillarX + pillarW / 2;
-    const letterZoneW = pillarX - 308;
-
-    return (
-      <svg
-        viewBox="0 0 520 110"
-        className="block h-full w-full select-none"
-        xmlns="http://www.w3.org/2000/svg"
-        role="img"
-        aria-label="لوحة مركبة سعودية طويلة"
-      >
-        <defs>
-          <linearGradient id={bgId} x1="0%" y1="0%" x2="100%" y2="25%">
-            <stop offset="0%" stopColor="#dce2eb" />
-            <stop offset="20%" stopColor="#edf1f7" />
-            <stop offset="44%" stopColor="#ffffff" />
-            <stop offset="58%" stopColor="#f9fbfd" />
-            <stop offset="82%" stopColor="#e2e8f0" />
-            <stop offset="100%" stopColor="#f3f6fa" />
-          </linearGradient>
-          <linearGradient id={rimId} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="22%" stopColor="#f1f5f9" />
-            <stop offset="55%" stopColor="#cbd5e1" />
-            <stop offset="84%" stopColor="#94a3b8" />
-            <stop offset="100%" stopColor="#dbe3ec" />
-          </linearGradient>
-          <linearGradient id={blueId} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#0ea5e9" />
-            <stop offset="48%" stopColor="#0284c7" />
-            <stop offset="100%" stopColor="#0369a1" />
-          </linearGradient>
-          <linearGradient id={foilId} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#94a3b8" />
-            <stop offset="26%" stopColor="#cbd5e1" />
-            <stop offset="52%" stopColor="#f8fafc" />
-            <stop offset="78%" stopColor="#cbd5e1" />
-            <stop offset="100%" stopColor="#94a3b8" />
-          </linearGradient>
-          <filter id={embossId} x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="-0.7" dy="-0.7" stdDeviation="0.2" floodColor="#ffffff" floodOpacity="0.96" />
-            <feDropShadow dx="0.85" dy="1.45" stdDeviation="0.65" floodColor="#0f172a" floodOpacity="0.34" />
-          </filter>
-          <clipPath id={innerClipId}>
-            <rect x="2.5" y="2.5" width="515" height="105" rx="7" ry="7" />
-          </clipPath>
-        </defs>
-
-        {/* Brushed Metallic Silver Outer Bezel */}
-        <rect
-          x="0.5"
-          y="0.5"
-          width="519"
-          height="109"
-          rx="9.5"
-          ry="9.5"
-          fill={`url(#${rimId})`}
-          stroke="#64748b"
-          strokeWidth="0.8"
-        />
-
-        {/* Interior Clipped to Black Frame (Zero White Gap Between Silver & Black) */}
-        <g clipPath={`url(#${innerClipId})`}>
-          <rect x="2.5" y="2.5" width="515" height="105" fill={`url(#${bgId})`} />
-
-          {/* Right Kingdom Pillar Background (Slim on Private/Transport, Wider on Sports) */}
-          <rect
-            x={pillarX}
-            y="2.5"
-            width={pillarW}
-            height="105"
-            fill={isTransport ? `url(#${blueId})` : '#f5f7fb'}
-          />
-
-          {/* Soft Studio Metallic Specular Sheen */}
-          <path d="M 0,0 L 185,0 L 105,110 L 0,110 Z" fill="#ffffff" fillOpacity="0.16" pointerEvents="none" />
-        </g>
-
-        {/* Flush 3D Solid Black Stamped Inner Frame */}
-        <rect
-          x="3.8"
-          y="3.8"
-          width="512.4"
-          height="102.4"
-          rx="6.8"
-          ry="6.8"
-          fill="none"
-          stroke="#111621"
-          strokeWidth="3.4"
-        />
-
-        {/* Far-Right Kingdom Pillar Vertical Divider */}
-        <line x1={pillarX} y1="3.8" x2={pillarX} y2="106.2" stroke="#111621" strokeWidth="2.8" />
-
-        {/* Open Field: Digits | Center FBS Emblem | Letters */}
-        {digitPairs.map((pair, idx) => {
-          const cx = 14 + (174 / digitCount) * (idx + 0.5);
-          const h = digitCount > 3 ? 38 : 42;
-          return (
-            <g key={`lp-d-${idx}`}>
-              <CarPlateArabicGlyph char={pair.ar} cx={cx} y={7} height={h} embossId={embossId} />
-              <CarPlateLatinGlyph char={pair.en} cx={cx} y={54} height={h} embossId={embossId} />
-            </g>
-          );
-        })}
-
-        {/* Center FBS Emblem (Always Centered Across All 3 Plate Categories) */}
-        <g transform="translate(196, 24.5)">
-          <FbsPlateEmblem width={102} height={60} />
-        </g>
-
-        {letterPairs.map((pair, idx) => {
-          const cx = 304 + (letterZoneW / letterCount) * (idx + 0.5);
-          return (
-            <g key={`lp-l-${idx}`}>
-              <CarPlateArabicGlyph char={pair.ar} cx={cx} y={7} height={40} embossId={embossId} />
-              <CarPlateLatinGlyph char={pair.en} cx={cx} y={54} height={40} embossId={embossId} />
-            </g>
-          );
-        })}
-
-        {/* Far-Right Kingdom Pillar Content */}
-        <g>
-          <g transform={`translate(${pillarCx - (isSmall ? 14 : 11.5)}, 6.5)`}>
-            {isTransport ? (
-              <SaudiEmblem size={23} fillColor="#ffffff" />
-            ) : isSmall ? (
-              <SaudiEmblem size={28} fillColor="#0b0f17" />
-            ) : (
-              <SaudiEmblem size={23} treeColor="#0b6330" swordsColor="#084d25" />
-            )}
-          </g>
-          <text
-            x={pillarCx}
-            y={isSmall ? '42.5' : '38'}
-            textAnchor="middle"
-            fill="#080d16"
-            fontSize={isSmall ? '9.4' : '7.8'}
-            fontWeight="700"
-            fontFamily="var(--font-plate-naskh), 'IBM Plex Sans Arabic', sans-serif"
-          >
-            السعودية
-          </text>
-          <text
-            x={pillarCx}
-            y={isSmall ? '54.5' : '50.5'}
-            textAnchor="middle"
-            fill="#080d16"
-            fontSize={isSmall ? '11.8' : '10.2'}
-            fontWeight="700"
-            fontFamily="var(--font-plate-din), 'Bahnschrift', sans-serif"
-          >
-            K
-          </text>
-          <text
-            x={pillarCx}
-            y={isSmall ? '65.5' : '60.5'}
-            textAnchor="middle"
-            fill="#080d16"
-            fontSize={isSmall ? '11.8' : '10.2'}
-            fontWeight="700"
-            fontFamily="var(--font-plate-din), 'Bahnschrift', sans-serif"
-          >
-            S
-          </text>
-
-          {isTransport ? (
-            <>
-              <text
-                x={pillarCx}
-                y="70.5"
-                textAnchor="middle"
-                fill="#080d16"
-                fontSize="10.2"
-                fontWeight="700"
-                fontFamily="var(--font-plate-din), 'Bahnschrift', sans-serif"
-              >
-                A
-              </text>
-              <rect
-                x={pillarCx - 12.5}
-                y="75.5"
-                width="25"
-                height="7.5"
-                rx="1.2"
-                fill={`url(#${foilId})`}
-                stroke="#475569"
-                strokeWidth="0.5"
-              />
-              <polygon points={`${pillarCx - 6.5},88.5 ${pillarCx + 6.5},88.5 ${pillarCx},100`} fill="#080d16" />
-            </>
-          ) : (
-            <>
-              {/* Brushed Silver Band Directly Behind 'A' */}
-              <rect
-                x={pillarCx - (isSmall ? 18 : 13.5)}
-                y={isSmall ? '68' : '64'}
-                width={isSmall ? 36 : 27}
-                height={isSmall ? '12.5' : '11'}
-                rx="1.8"
-                fill={`url(#${foilId})`}
-                stroke="#64748b"
-                strokeWidth="0.5"
-              />
-              <text
-                x={pillarCx}
-                y={isSmall ? '78' : '73.2'}
-                textAnchor="middle"
-                fill="#080d16"
-                fontSize={isSmall ? '11.8' : '10.2'}
-                fontWeight="700"
-                fontFamily="var(--font-plate-din), 'Bahnschrift', sans-serif"
-              >
-                A
-              </text>
-              <circle cx={pillarCx} cy={isSmall ? '93' : '90'} r={isSmall ? '8.2' : '5.2'} fill="#080d16" />
-            </>
-          )}
-        </g>
-      </svg>
-    );
-  }
-
-  // 2. Standard / Short Plate (335mm x 170mm — 3D Silver+Black Frame, Brushed Metal, Authentic Naskh & DIN)
-  const spPillarX = isSmall ? 287 : 299;
-  const spPillarW = 332.5 - spPillarX;
-  const spPillarCx = spPillarX + spPillarW / 2;
-  const spLetterZoneW = spPillarX - 196;
-
-  return (
-    <svg
-      viewBox="0 0 335 170"
-      className="block h-full w-full select-none"
-      xmlns="http://www.w3.org/2000/svg"
-      role="img"
-      aria-label="لوحة مركبة سعودية قياسية"
-    >
-      <defs>
-        <linearGradient id={bgId} x1="0%" y1="0%" x2="100%" y2="25%">
-          <stop offset="0%" stopColor="#dce2eb" />
-          <stop offset="20%" stopColor="#edf1f7" />
-          <stop offset="44%" stopColor="#ffffff" />
-          <stop offset="58%" stopColor="#f9fbfd" />
-          <stop offset="82%" stopColor="#e2e8f0" />
-          <stop offset="100%" stopColor="#f3f6fa" />
-        </linearGradient>
-        <linearGradient id={rimId} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#ffffff" />
-          <stop offset="22%" stopColor="#f1f5f9" />
-          <stop offset="55%" stopColor="#cbd5e1" />
-          <stop offset="84%" stopColor="#94a3b8" />
-          <stop offset="100%" stopColor="#dbe3ec" />
-        </linearGradient>
-        <linearGradient id={blueId} x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#0ea5e9" />
-          <stop offset="48%" stopColor="#0284c7" />
-          <stop offset="100%" stopColor="#0369a1" />
-        </linearGradient>
-        <linearGradient id={foilId} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#94a3b8" />
-          <stop offset="26%" stopColor="#cbd5e1" />
-          <stop offset="52%" stopColor="#f8fafc" />
-          <stop offset="78%" stopColor="#cbd5e1" />
-          <stop offset="100%" stopColor="#94a3b8" />
-        </linearGradient>
-        <filter id={embossId} x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="-0.75" dy="-0.75" stdDeviation="0.25" floodColor="#ffffff" floodOpacity="0.96" />
-          <feDropShadow dx="0.9" dy="1.5" stdDeviation="0.7" floodColor="#0f172a" floodOpacity="0.34" />
-        </filter>
-        <clipPath id={innerClipId}>
-          <rect x="2.5" y="2.5" width="330" height="165" rx="7.5" ry="7.5" />
-        </clipPath>
-      </defs>
-
-      {/* Brushed Metallic Silver Outer Bezel */}
-      <rect
-        x="0.5"
-        y="0.5"
-        width="334"
-        height="169"
-        rx="9.5"
-        ry="9.5"
-        fill={`url(#${rimId})`}
-        stroke="#64748b"
-        strokeWidth="0.8"
-      />
-
-      {/* Interior Clipped to Black Frame (Zero White Gap) */}
-      <g clipPath={`url(#${innerClipId})`}>
-        <rect x="2.5" y="2.5" width="330" height="165" fill={`url(#${bgId})`} />
-
-        {/* Far-Right Kingdom Pillar Background */}
-        <rect
-          x={spPillarX}
-          y="2.5"
-          width={spPillarW}
-          height="165"
-          fill={isTransport ? `url(#${blueId})` : '#f5f7fb'}
-        />
-
-        {/* Diagonal Metallic Sheen */}
-        <path d="M 0,0 L 125,0 L 50,170 L 0,170 Z" fill="#ffffff" fillOpacity="0.16" pointerEvents="none" />
-      </g>
-
-      {/* Flush 3D Solid Black Stamped Inner Frame */}
-      <rect
-        x="3.8"
-        y="3.8"
-        width="327.4"
-        height="162.4"
-        rx="7.2"
-        ry="7.2"
-        fill="none"
-        stroke="#111621"
-        strokeWidth="3.3"
-      />
-
-      {/* Far-Right Kingdom Pillar Divider */}
-      <line x1={spPillarX} y1="3.8" x2={spPillarX} y2="166.2" stroke="#111621" strokeWidth="2.6" />
-
-      {/* Open Field: Digits | Center FBS Emblem | Letters */}
-      {digitPairs.map((pair, idx) => {
-        const cx = 10 + (102 / digitCount) * (idx + 0.5);
-        const h = digitCount > 3 ? 34 : 38;
-        return (
-          <g key={`sp-d-${idx}`}>
-            <CarPlateArabicGlyph char={pair.ar} cx={cx} y={28} height={h} embossId={embossId} />
-            <CarPlateLatinGlyph char={pair.en} cx={cx} y={98} height={h} embossId={embossId} />
-          </g>
-        );
-      })}
-
-      <g transform="translate(115, 62)">
-        <FbsPlateEmblem width={75} height={45} />
-      </g>
-
-      {letterPairs.map((pair, idx) => {
-        const cx = 195 + (spLetterZoneW / letterCount) * (idx + 0.5);
-        return (
-          <g key={`sp-l-${idx}`}>
-            <CarPlateArabicGlyph char={pair.ar} cx={cx} y={28} height={36} embossId={embossId} />
-            <CarPlateLatinGlyph char={pair.en} cx={cx} y={98} height={36} embossId={embossId} />
-          </g>
-        );
-      })}
-
-      {/* Far-Right Kingdom Pillar */}
-      <g>
-        <g transform={`translate(${spPillarCx - (isSmall ? 14 : 11.5)}, 12)`}>
-          {isTransport ? (
-            <SaudiEmblem size={23} fillColor="#ffffff" />
-          ) : isSmall ? (
-            <SaudiEmblem size={28} fillColor="#0b0f17" />
-          ) : (
-            <SaudiEmblem size={23} treeColor="#0b6330" swordsColor="#084d25" />
-          )}
-        </g>
-        <text
-          x={spPillarCx}
-          y={isSmall ? '52' : '48'}
-          textAnchor="middle"
-          fill="#080d16"
-          fontSize={isSmall ? '9.2' : '7.8'}
-          fontWeight="700"
-          fontFamily="var(--font-plate-naskh), 'IBM Plex Sans Arabic', sans-serif"
-        >
-          السعودية
-        </text>
-        <text
-          x={spPillarCx}
-          y={isSmall ? '73' : '69'}
-          textAnchor="middle"
-          fill="#080d16"
-          fontSize={isSmall ? '14.5' : '13'}
-          fontWeight="700"
-          fontFamily="var(--font-plate-din), 'Bahnschrift', sans-serif"
-        >
-          K
-        </text>
-        <text
-          x={spPillarCx}
-          y={isSmall ? '90' : '85'}
-          textAnchor="middle"
-          fill="#080d16"
-          fontSize={isSmall ? '14.5' : '13'}
-          fontWeight="700"
-          fontFamily="var(--font-plate-din), 'Bahnschrift', sans-serif"
-        >
-          S
-        </text>
-
-        {isTransport ? (
-          <>
-            <text
-              x={spPillarCx}
-              y="101"
-              textAnchor="middle"
-              fill="#080d16"
-              fontSize="13"
-              fontWeight="700"
-              fontFamily="var(--font-plate-din), 'Bahnschrift', sans-serif"
-            >
-              A
-            </text>
-            <rect
-              x={spPillarCx - 11}
-              y="112"
-              width="22"
-              height="10"
-              rx="1.2"
-              fill={`url(#${foilId})`}
-              stroke="#475569"
-              strokeWidth="0.5"
-            />
-            <polygon points={`${spPillarCx - 7},134 ${spPillarCx + 7},134 ${spPillarCx},149`} fill="#080d16" />
-          </>
-        ) : (
-          <>
-            <rect
-              x={spPillarCx - (isSmall ? 17 : 12.5)}
-              y={isSmall ? '95' : '91'}
-              width={isSmall ? 34 : 25}
-              height={isSmall ? '16' : '14'}
-              rx="2"
-              fill={`url(#${foilId})`}
-              stroke="#64748b"
-              strokeWidth="0.5"
-            />
-            <text
-              x={spPillarCx}
-              y={isSmall ? '108' : '103'}
-              textAnchor="middle"
-              fill="#080d16"
-              fontSize={isSmall ? '14.5' : '13'}
-              fontWeight="700"
-              fontFamily="var(--font-plate-din), 'Bahnschrift', sans-serif"
-            >
-              A
-            </text>
-            <circle cx={spPillarCx} cy={isSmall ? '138' : '136'} r={isSmall ? '9.2' : '5.8'} fill="#080d16" />
-          </>
-        )}
-      </g>
-    </svg>
-  );
+  return <PlateFace plate={parsePlateData(lettersAr, lettersEn, numbers)} type={normalizePlateType(plateType)} format={size} />;
 }
 
 /* ============================================================== */
-/* COMPACT LUXURY DROPDOWN SELECTOR                                */
+/* STUDIO CONTROLS                                                */
 /* ============================================================== */
 
 function StudioSelect<T extends string>({
@@ -796,13 +231,23 @@ export interface PlateCarPreview3DProps {
   /** inline = inside plate detail card, page = full-screen immersive studio */
   variant?: 'inline' | 'page';
   initialCarId?: string;
+  initialSize?: PlateSize;
   backHref?: string;
 }
 
-export function PlateCarPreview3D({
+export function PlateCarPreview3D(props: PlateCarPreview3DProps) {
+  // A different source plate starts a fresh scene. Local preset/car selections
+  // stay intact when the parent re-renders with the same plate data.
+  const plate = props.initialPlate;
+  const sceneKey = JSON.stringify([plate?.lettersAr, plate?.lettersEn, plate?.numbers, plate?.plateType, plate?.slug, props.initialCarId, props.initialSize]);
+  return <PlateCarPreviewScene key={sceneKey} {...props} />;
+}
+
+function PlateCarPreviewScene({
   initialPlate,
   variant = 'inline',
   initialCarId,
+  initialSize = 'long',
   backHref
 }: PlateCarPreview3DProps) {
   const [currentPlate, setCurrentPlate] = useState({
@@ -813,23 +258,7 @@ export function PlateCarPreview3D({
     slug: initialPlate?.slug
   });
 
-  const isInitialTransport = initialPlate?.plateType?.includes('نقل');
-
-  // Keep state in sync if initialPlate updates
-  useEffect(() => {
-    if (initialPlate) {
-      setCurrentPlate({
-        lettersAr: initialPlate.lettersAr ?? ['ب', 'ط', 'ل'],
-        lettersEn: initialPlate.lettersEn ?? ['L', 'T', 'B'],
-        numbers: initialPlate.numbers ?? '8888',
-        plateType: initialPlate.plateType ?? 'خصوصي',
-        slug: initialPlate.slug
-      });
-      if (initialPlate.plateType?.includes('نقل')) {
-        setCarId('sierra');
-      }
-    }
-  }, [initialPlate]);
+  const isInitialTransport = normalizePlateType(initialPlate?.plateType) === 'transport';
 
   const [carId, setCarId] = useState<CarModelId>(() => {
     if (initialCarId && CAR_STUDIO_MODELS.some((c) => c.id === initialCarId)) {
@@ -837,9 +266,7 @@ export function PlateCarPreview3D({
     }
     return isInitialTransport ? 'sierra' : 'g-class';
   });
-  const [plateSize, setPlateSize] = useState<PlateSize>(
-    initialPlate?.plateType?.includes('صغير') ? 'standard' : 'long'
-  );
+  const [plateSize, setPlateSize] = useState<PlateSize>(initialSize);
   const [cameraMode, setCameraMode] = useState<CameraMode>('full');
   const [lighting, setLighting] = useState<LightingMode>('night');
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
@@ -858,7 +285,8 @@ export function PlateCarPreview3D({
   // Bracket dimensions and proportions
   const isLong = plateSize === 'long';
   const bracketWidth = isLong ? b.width : b.width * 0.74;
-  const plateAspect = isLong ? 520 / 110 : 335 / 170;
+  const plateGeometry = getPlateGeometry(normalizePlateType(currentPlate.plateType), plateSize);
+  const plateAspect = plateGeometry.width / plateGeometry.height;
 
   const expandHref = useMemo(() => {
     const params = new URLSearchParams({
@@ -866,11 +294,12 @@ export function PlateCarPreview3D({
       lettersEn: currentPlate.lettersEn.join(','),
       numbers: currentPlate.numbers,
       type: currentPlate.plateType,
-      car: carId
+      car: carId,
+      size: plateSize
     });
     if (currentPlate.slug) params.set('from', currentPlate.slug);
     return `/studio-3d?${params.toString()}`;
-  }, [currentPlate, carId]);
+  }, [currentPlate, carId, plateSize]);
 
   // Cinematic subtle tilt
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -989,7 +418,7 @@ export function PlateCarPreview3D({
               }}
             >
               <div
-                className="relative w-full rounded-[3px] bg-[#0d0f13] p-[1.5px] shadow-[0_6px_18px_rgba(0,0,0,0.92)]"
+                className="relative w-full rounded-[3px] bg-[#0d0f13] shadow-[0_6px_18px_rgba(0,0,0,0.92)]"
                 style={{ aspectRatio: `${plateAspect}` }}
               >
                 <CarMountedPlate
@@ -1292,7 +721,7 @@ export function PlateCarPreview3D({
             }}
           >
             <div
-              className="relative w-full rounded-[3px] bg-[#0d0f13] p-[1.5px] shadow-[0_4px_12px_rgba(0,0,0,0.9)]"
+              className="relative w-full rounded-[3px] bg-[#0d0f13] shadow-[0_4px_12px_rgba(0,0,0,0.9)]"
               style={{ aspectRatio: `${plateAspect}` }}
             >
               <CarMountedPlate
