@@ -122,10 +122,41 @@ export function PlateFace({
           <stop offset="1" stopColor="#e1e6ea" />
         </linearGradient>
         <linearGradient id={id('body')} x1="0" y1="0" x2="1" y2="0.2">
-          <stop offset="0" stopColor="#eef0ec" />
-          <stop offset="0.4" stopColor="#fcfcf8" />
-          <stop offset="0.7" stopColor="#f9faf6" />
-          <stop offset="1" stopColor="#edf0ed" />
+          <stop offset="0" stopColor="#dce2eb" />
+          <stop offset="0.18" stopColor="#ecf0f6" />
+          <stop offset="0.42" stopColor="#ffffff" />
+          <stop offset="0.57" stopColor="#f9fbfd" />
+          <stop offset="0.82" stopColor="#e2e8f0" />
+          <stop offset="1" stopColor="#f3f6fa" />
+        </linearGradient>
+        <linearGradient id={id('pillar-white')} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="0.55" stopColor="#f1f5f9" />
+          <stop offset="1" stopColor="#e2e8f0" />
+        </linearGradient>
+        <linearGradient id={id('sheen')} x1="0" y1="0" x2="1" y2="0.5">
+          <stop offset="0" stopColor="#ffffff" stopOpacity="0.22" />
+          <stop offset="0.22" stopColor="#ffffff" stopOpacity="0.06" />
+          <stop offset="0.4" stopColor="#ffffff" stopOpacity="0" />
+          <stop offset="0.52" stopColor="#ffffff" stopOpacity="0.14" />
+          <stop offset="0.66" stopColor="#ffffff" stopOpacity="0" />
+          <stop offset="1" stopColor="#0f172a" stopOpacity="0.035" />
+        </linearGradient>
+        <linearGradient id={id('recess-top')} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#0f172a" stopOpacity="0.24" />
+          <stop offset="1" stopColor="#0f172a" stopOpacity="0" />
+        </linearGradient>
+        <linearGradient id={id('recess-bottom')} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" stopOpacity="0" />
+          <stop offset="1" stopColor="#ffffff" stopOpacity={transport ? 0.4 : 0.92} />
+        </linearGradient>
+        <linearGradient id={id('recess-left')} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#0f172a" stopOpacity="0.14" />
+          <stop offset="1" stopColor="#0f172a" stopOpacity="0" />
+        </linearGradient>
+        <linearGradient id={id('recess-right')} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#ffffff" stopOpacity="0" />
+          <stop offset="1" stopColor="#ffffff" stopOpacity={transport ? 0.28 : 0.8} />
         </linearGradient>
         <linearGradient id={id('blue')} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#159ac9" />
@@ -133,19 +164,23 @@ export function PlateFace({
           <stop offset="1" stopColor="#106a93" />
         </linearGradient>
         <linearGradient id={id('foil')} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#aeb8bf" />
-          <stop offset="0.3" stopColor="#d8dee1" />
-          <stop offset="0.55" stopColor="#f0f2f1" />
-          <stop offset="0.8" stopColor="#c7cfd4" />
-          <stop offset="1" stopColor="#9ca9b2" />
+          <stop offset="0" stopColor="#94a3b8" />
+          <stop offset="0.26" stopColor="#cbd5e1" />
+          <stop offset="0.52" stopColor="#f8fafc" />
+          <stop offset="0.78" stopColor="#cbd5e1" />
+          <stop offset="1" stopColor="#94a3b8" />
         </linearGradient>
+        <pattern id={id('brushed')} width="4" height="2" patternUnits="userSpaceOnUse">
+          <rect width="4" height="1" fill="#0f172a" opacity="0.014" />
+          <rect y="1" width="4" height="1" fill="#ffffff" opacity="0.32" />
+        </pattern>
         <pattern id={id('grain')} width="8" height="8" patternUnits="userSpaceOnUse">
           <circle cx="1.2" cy="2.4" r="0.4" fill="#5f6870" opacity="0.035" />
           <circle cx="5.5" cy="6.2" r="0.55" fill="#ffffff" opacity="0.3" />
         </pattern>
-        <filter id={id('emboss')} x="-12%" y="-12%" width="124%" height="128%">
-          <feDropShadow dx="-0.25" dy="-0.35" stdDeviation="0.1" floodColor="#fff" floodOpacity="0.8" />
-          <feDropShadow dx="0.35" dy="0.55" stdDeviation="0.22" floodColor="#202629" floodOpacity="0.22" />
+        <filter id={id('emboss')} x="-30%" y="-12%" width="160%" height="128%">
+          <feDropShadow dx="-0.55" dy="-0.6" stdDeviation="0.16" floodColor="#fff" floodOpacity="0.92" />
+          <feDropShadow dx="0.75" dy="1.15" stdDeviation="0.45" floodColor="#202629" floodOpacity="0.34" />
         </filter>
         <clipPath id={id('inside')}>
           <rect x="2.5" y="2.5" width={width - 5} height={height - 5} rx="7" />
@@ -165,13 +200,29 @@ export function PlateFace({
       <g clipPath={`url(#${id('inside')})`}>
         <rect x="2.5" y="2.5" width={width - 5} height={height - 5} fill={`url(#${id('body')})`} />
         <rect x="2.5" y="2.5" width={width - 5} height={height - 5} fill={`url(#${id('grain')})`} />
+        <rect x="2.5" y="2.5" width={pillarX - 2.5} height={height - 5} fill={`url(#${id('brushed')})`} />
         <rect
           x={pillarX}
           y="2.5"
           width={pillarWidth}
           height={height - 5}
-          fill={transport ? `url(#${id('blue')})` : '#f5f6f1'}
+          fill={`url(#${id(transport ? 'blue' : 'pillar-white')})`}
         />
+        {!transport ? (
+          <rect x={pillarX} y="2.5" width={pillarWidth} height={height - 5} fill={`url(#${id('brushed')})`} />
+        ) : null}
+        <rect x="2.5" y="2.5" width={width - 5} height={height - 5} fill={`url(#${id('sheen')})`} />
+        {/* Surface relief sits inside the existing frame; its geometry is unchanged. */}
+        <rect x="3.8" y="3.8" width={width - 7.6} height="5.2" fill={`url(#${id('recess-top')})`} />
+        <rect
+          x="3.8"
+          y={height - 9.6}
+          width={width - 7.6}
+          height="5.8"
+          fill={`url(#${id('recess-bottom')})`}
+        />
+        <rect x="3.8" y="3.8" width="4" height={height - 7.6} fill={`url(#${id('recess-left')})`} />
+        <rect x={width - 7.8} y="3.8" width="4" height={height - 7.6} fill={`url(#${id('recess-right')})`} />
       </g>
       <rect
         x="3.8"
