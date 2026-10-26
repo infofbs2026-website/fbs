@@ -14,9 +14,8 @@ dist/
 # Sensitive or large private files
 *سجل تجاري*
 scratch/
-scripts/*.png
-scripts/audit-results/
-scripts/quick-verify/
+scripts/
+FBS-MTAHD-Payment-Readiness-Report.pdf
 .agents/
 skills-lock.json
 

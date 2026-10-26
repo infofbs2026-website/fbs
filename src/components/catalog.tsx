@@ -682,112 +682,18 @@ export function CatalogSkeleton() {
         </section>
 
         <div className="container-fbs">
-          {/* Full-Width Stage Bar Skeleton */}
+          {/* Full-Width Stage Bar Skeleton (Filter Button + Search Bar + View Toggle) */}
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-neutral-200/80 bg-white p-2.5 sm:px-4 sm:py-3 shadow-xs">
-            <div className="h-9 flex-1 min-w-[210px] max-w-md rounded-xl skeleton-shimmer" />
-            <div className="h-9 w-40 rounded-xl skeleton-shimmer" />
+            <div className="flex flex-1 flex-wrap sm:flex-nowrap items-center gap-2.5 min-w-0">
+              <div className="h-10 w-24 rounded-xl skeleton-shimmer shrink-0" />
+              <div className="h-10 flex-1 min-w-[200px] max-w-md rounded-xl skeleton-shimmer" />
+            </div>
+            <div className="h-10 w-44 rounded-xl skeleton-shimmer shrink-0" />
           </div>
 
-          {/* 2-Column Main Content: Full-Height Filter Sidebar (Right) & 9 Plate Cards (Left) */}
-          <div className="grid gap-4 xl:gap-5 lg:grid-cols-[255px_minmax(0,1fr)] xl:grid-cols-[265px_minmax(0,1fr)] items-start">
-            {/* Full-Height Filters Sidebar Skeleton (Fills the entire right column with zero empty white gap) */}
-            <aside className="hidden lg:block">
-              <div className="rounded-2xl border border-[#E7E5DF] bg-white p-4 space-y-4 shadow-xs">
-                {/* Sidebar Header */}
-                <div className="flex items-center gap-3 pb-3.5 border-b border-[#ECE9E2]">
-                  <div className="h-9 w-9 rounded-xl skeleton-shimmer shrink-0" />
-                  <div className="space-y-1.5 flex-1">
-                    <div className="h-4 w-28 rounded-md skeleton-shimmer" />
-                    <div className="h-3 w-36 rounded-md skeleton-shimmer" />
-                  </div>
-                </div>
-
-                {/* Sort By Segmented Control */}
-                <div className="space-y-2 pb-3.5 border-b border-[#ECE9E2]">
-                  <div className="flex items-center justify-between">
-                    <div className="h-3.5 w-20 rounded-md skeleton-shimmer" />
-                    <div className="h-3 w-14 rounded-md skeleton-shimmer" />
-                  </div>
-                  <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-[#FAF9F6] border border-[#E5E2D9]">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="h-8 rounded-lg skeleton-shimmer" />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Filter Group 1: Price Range */}
-                <div className="rounded-xl border border-[#ECE9E2] bg-[#FAF9F6]/70 p-3 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="h-4 w-24 rounded-md skeleton-shimmer" />
-                    <div className="h-4 w-4 rounded-md skeleton-shimmer" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="h-9 rounded-lg skeleton-shimmer" />
-                    <div className="h-9 rounded-lg skeleton-shimmer" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="h-7 rounded-lg skeleton-shimmer" />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Filter Group 2: Letters & Digits */}
-                <div className="rounded-xl border border-[#ECE9E2] bg-[#FAF9F6]/70 p-3 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="h-4 w-28 rounded-md skeleton-shimmer" />
-                    <div className="h-4 w-4 rounded-md skeleton-shimmer" />
-                  </div>
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="h-8 rounded-lg skeleton-shimmer" />
-                    ))}
-                  </div>
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="h-8 rounded-lg skeleton-shimmer" />
-                    ))}
-                  </div>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="h-7 rounded-lg skeleton-shimmer" />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Filter Group 3: Category & City */}
-                <div className="rounded-xl border border-[#ECE9E2] bg-[#FAF9F6]/70 p-3 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="h-4 w-24 rounded-md skeleton-shimmer" />
-                    <div className="h-4 w-4 rounded-md skeleton-shimmer" />
-                  </div>
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="h-8 rounded-lg skeleton-shimmer" />
-                    ))}
-                  </div>
-                  <div className="h-9 w-full rounded-lg skeleton-shimmer" />
-                </div>
-
-                {/* Action Buttons */}
-                <div className="space-y-2 pt-1">
-                  <div className="h-10 w-full rounded-xl skeleton-shimmer" />
-                  <div className="h-8 w-full rounded-xl skeleton-shimmer" />
-                </div>
-
-                {/* Bottom Trust Card Skeleton */}
-                <div className="rounded-xl border border-[#E7E5DF] bg-[#FAF7F0] p-3.5 space-y-2">
-                  <div className="h-4 w-32 rounded-md skeleton-shimmer" />
-                  <div className="h-3 w-full rounded-md skeleton-shimmer" />
-                  <div className="h-3 w-4/5 rounded-md skeleton-shimmer" />
-                </div>
-              </div>
-            </aside>
-
-            {/* Plates Grid with Luxury Shimmer Cards (9 cards = 3 rows × 3 columns) */}
-            <div className="min-w-0">
-              <PlateCardSkeletonGrid count={9} />
-            </div>
+          {/* Default 4-Column Plates Grid Skeleton (12 cards = 3 rows × 4 columns) */}
+          <div className="min-w-0">
+            <PlateCardSkeletonGrid count={12} />
           </div>
         </div>
       </div>

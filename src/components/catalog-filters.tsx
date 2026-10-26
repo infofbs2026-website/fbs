@@ -24,13 +24,15 @@ interface CatalogFiltersProps {
   cities: { id: string; name_ar: string }[];
   types: { id: string; name_ar: string }[];
   currentPath: string;
+  onClose?: () => void;
 }
 
 export function CatalogFilters({
   initialQuery,
   cities,
   types,
-  currentPath
+  currentPath,
+  onClose
 }: CatalogFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -288,21 +290,34 @@ export function CatalogFilters({
               <span className="text-[11px] font-semibold text-slate-500 mt-0.5">تخصيص الخيارات والمعايير</span>
             </div>
           </div>
-          {hasAnyFilter && (
-            <button
-              type="button"
-              onClick={() => {
-                startTransition(() => {
-                  router.push(currentPath, { scroll: false });
-                });
-              }}
-              className="flex items-center gap-1 text-[11px] font-extrabold text-rose-600 hover:text-rose-700 transition-all bg-rose-50 hover:bg-rose-100 px-2.5 py-1.5 rounded-lg border border-rose-200/80 active:scale-95 shrink-0"
-              title="مسح كافة الفلاتر"
-            >
-              <RotateCcw size={11} strokeWidth={2.5} />
-              <span>مسح الكل</span>
-            </button>
-          )}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {hasAnyFilter && (
+              <button
+                type="button"
+                onClick={() => {
+                  startTransition(() => {
+                    router.push(currentPath, { scroll: false });
+                  });
+                }}
+                className="flex items-center gap-1 text-[11px] font-extrabold text-rose-600 hover:text-rose-700 transition-all bg-rose-50 hover:bg-rose-100 px-2.5 py-1.5 rounded-lg border border-rose-200/80 active:scale-95 shrink-0"
+                title="مسح كافة الفلاتر"
+              >
+                <RotateCcw size={11} strokeWidth={2.5} />
+                <span>مسح الكل</span>
+              </button>
+            )}
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="إخفاء الفلاتر"
+                title="إخفاء الفلاتر"
+                className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#E5E0D5] bg-[#FAF9F6] text-slate-500 hover:border-[#14243C] hover:text-[#14243C] transition-all active:scale-95 shrink-0"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -579,7 +594,7 @@ export function CatalogFilters({
             {openSections.letters && (
               <div className="border-t border-[#EFECE6] p-3.5 space-y-2 bg-[#FAF9F6]/50 max-h-56 overflow-y-auto custom-scrollbar pe-1">
                 {[
-                  { id: '3_same', label: '3 حروف متطابقة', hint: 'أ أ أ' },
+                  { id: '3_same', label: '3 حروف متطابقة', hint: 'ا ا ا' },
                   { id: '2_same', label: 'حرفين متطابقة', hint: 'ب س س' },
                   { id: 'first_last_same', label: 'أول وأخير متطابقة', hint: 'ق ص ق' },
                   { id: 'all_diff', label: 'كل الحروف مختلفة', hint: 'ف ب س' }

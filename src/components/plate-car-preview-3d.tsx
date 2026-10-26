@@ -17,6 +17,8 @@ import {
   Sun
 } from 'lucide-react';
 import { FbsPlateEmblem, normalizePlateType, parsePlateData, PlateVisualizer, SaudiEmblem } from '@/components/ui';
+import { PLATE_GLYPHS_AR, normalizeSaudiPlateArChar } from '@/components/plate-glyphs-ar';
+import { PLATE_GLYPHS_EN, normalizeSaudiPlateEnChar } from '@/components/plate-glyphs-en';
 
 /* ============================================================== */
 /* STUDIO DATA                                                     */
@@ -106,6 +108,98 @@ const LIGHTING_FILTERS: Record<LightingMode, string> = {
   warm: 'sepia(0.20) saturate(1.22) brightness(1.05) contrast(1.06)',
   day: 'brightness(1.36) contrast(1.10) saturate(1.10)'
 };
+
+/* ============================================================== */
+/* VECTOR CAR MOUNTED PLATE GLYPH HELPERS (AUTHENTIC VECTORS)     */
+/* ============================================================== */
+
+function CarPlateArabicGlyph({
+  char,
+  cx,
+  y,
+  height,
+  embossId
+}: {
+  char: string;
+  cx: number;
+  y: number;
+  height: number;
+  embossId: string;
+}) {
+  const norm = normalizeSaudiPlateArChar(char);
+  const spec = PLATE_GLYPHS_AR[norm];
+  const s = height / 72;
+  if (!spec) {
+    return (
+      <text
+        x={cx}
+        y={y + height * 0.9}
+        textAnchor="middle"
+        fill="#11151e"
+        fontSize={height * 0.9}
+        fontWeight="700"
+        fontFamily="var(--font-plate-naskh), 'Noto Naskh Arabic', 'Traditional Arabic', serif"
+        filter={`url(#${embossId})`}
+      >
+        {char}
+      </text>
+    );
+  }
+  const w = spec.w * s;
+  return (
+    <g
+      transform={`translate(${cx - w / 2}, ${y}) scale(${s})`}
+      fill="#11151e"
+      filter={`url(#${embossId})`}
+    >
+      <path d={spec.d} />
+    </g>
+  );
+}
+
+function CarPlateLatinGlyph({
+  char,
+  cx,
+  y,
+  height,
+  embossId
+}: {
+  char: string;
+  cx: number;
+  y: number;
+  height: number;
+  embossId: string;
+}) {
+  const norm = normalizeSaudiPlateEnChar(char);
+  const spec = norm ? PLATE_GLYPHS_EN[norm] : undefined;
+  const s = height / 72;
+  if (!spec) {
+    return (
+      <text
+        x={cx}
+        y={y + height * 0.9}
+        textAnchor="middle"
+        fill="#11151e"
+        fontSize={height * 0.9}
+        fontWeight="600"
+        fontFamily="var(--font-plate-din), 'Bahnschrift', 'DIN Alternate', sans-serif"
+        filter={`url(#${embossId})`}
+      >
+        {char}
+      </text>
+    );
+  }
+  const w = spec.w * s;
+  return (
+    <g
+      transform={`translate(${cx - w / 2}, ${y}) scale(${s})`}
+      fill="#11151e"
+      filter={`url(#${embossId})`}
+    >
+      <path d={spec.d} />
+    </g>
+  );
+}
 
 /* ============================================================== */
 /* VECTOR CAR MOUNTED PLATE (100% SCALE-SAFE, ZERO OVERLAP)        */
@@ -241,32 +335,11 @@ export function CarMountedPlate({
         {/* Open Field: Digits | Center FBS Emblem | Letters */}
         {digitPairs.map((pair, idx) => {
           const cx = 14 + (174 / digitCount) * (idx + 0.5);
+          const h = digitCount > 3 ? 38 : 42;
           return (
             <g key={`lp-d-${idx}`}>
-              <text
-                x={cx}
-                y="46"
-                textAnchor="middle"
-                fill="#11151e"
-                fontSize={digitCount > 3 ? 38 : 42}
-                fontWeight="700"
-                fontFamily="var(--font-plate-naskh), 'Noto Naskh Arabic', 'Traditional Arabic', serif"
-                filter={`url(#${embossId})`}
-              >
-                {pair.ar}
-              </text>
-              <text
-                x={cx}
-                y="92"
-                textAnchor="middle"
-                fill="#11151e"
-                fontSize={digitCount > 3 ? 36 : 40}
-                fontWeight="600"
-                fontFamily="var(--font-plate-din), 'Bahnschrift', 'DIN Alternate', sans-serif"
-                filter={`url(#${embossId})`}
-              >
-                {pair.en}
-              </text>
+              <CarPlateArabicGlyph char={pair.ar} cx={cx} y={7} height={h} embossId={embossId} />
+              <CarPlateLatinGlyph char={pair.en} cx={cx} y={54} height={h} embossId={embossId} />
             </g>
           );
         })}
@@ -280,30 +353,8 @@ export function CarMountedPlate({
           const cx = 304 + (letterZoneW / letterCount) * (idx + 0.5);
           return (
             <g key={`lp-l-${idx}`}>
-              <text
-                x={cx}
-                y="45"
-                textAnchor="middle"
-                fill="#11151e"
-                fontSize={37}
-                fontWeight="700"
-                fontFamily="var(--font-plate-naskh), 'Noto Naskh Arabic', 'Traditional Arabic', serif"
-                filter={`url(#${embossId})`}
-              >
-                {pair.ar}
-              </text>
-              <text
-                x={cx}
-                y="92"
-                textAnchor="middle"
-                fill="#11151e"
-                fontSize={35}
-                fontWeight="600"
-                fontFamily="var(--font-plate-din), 'Bahnschrift', 'DIN Alternate', sans-serif"
-                filter={`url(#${embossId})`}
-              >
-                {pair.en}
-              </text>
+              <CarPlateArabicGlyph char={pair.ar} cx={cx} y={7} height={40} embossId={embossId} />
+              <CarPlateLatinGlyph char={pair.en} cx={cx} y={54} height={40} embossId={embossId} />
             </g>
           );
         })}
@@ -510,32 +561,11 @@ export function CarMountedPlate({
       {/* Open Field: Digits | Center FBS Emblem | Letters */}
       {digitPairs.map((pair, idx) => {
         const cx = 10 + (102 / digitCount) * (idx + 0.5);
+        const h = digitCount > 3 ? 34 : 38;
         return (
           <g key={`sp-d-${idx}`}>
-            <text
-              x={cx}
-              y="66"
-              textAnchor="middle"
-              fill="#11151e"
-              fontSize={digitCount > 3 ? 32 : 37}
-              fontWeight="700"
-              fontFamily="var(--font-plate-naskh), 'Noto Naskh Arabic', 'Traditional Arabic', serif"
-              filter={`url(#${embossId})`}
-            >
-              {pair.ar}
-            </text>
-            <text
-              x={cx}
-              y="138"
-              textAnchor="middle"
-              fill="#11151e"
-              fontSize={digitCount > 3 ? 30 : 35}
-              fontWeight="600"
-              fontFamily="var(--font-plate-din), 'Bahnschrift', 'DIN Alternate', sans-serif"
-              filter={`url(#${embossId})`}
-            >
-              {pair.en}
-            </text>
+            <CarPlateArabicGlyph char={pair.ar} cx={cx} y={28} height={h} embossId={embossId} />
+            <CarPlateLatinGlyph char={pair.en} cx={cx} y={98} height={h} embossId={embossId} />
           </g>
         );
       })}
@@ -548,30 +578,8 @@ export function CarMountedPlate({
         const cx = 195 + (spLetterZoneW / letterCount) * (idx + 0.5);
         return (
           <g key={`sp-l-${idx}`}>
-            <text
-              x={cx}
-              y="65"
-              textAnchor="middle"
-              fill="#11151e"
-              fontSize={33}
-              fontWeight="700"
-              fontFamily="var(--font-plate-naskh), 'Noto Naskh Arabic', 'Traditional Arabic', serif"
-              filter={`url(#${embossId})`}
-            >
-              {pair.ar}
-            </text>
-            <text
-              x={cx}
-              y="138"
-              textAnchor="middle"
-              fill="#11151e"
-              fontSize={31}
-              fontWeight="600"
-              fontFamily="var(--font-plate-din), 'Bahnschrift', 'DIN Alternate', sans-serif"
-              filter={`url(#${embossId})`}
-            >
-              {pair.en}
-            </text>
+            <CarPlateArabicGlyph char={pair.ar} cx={cx} y={28} height={36} embossId={embossId} />
+            <CarPlateLatinGlyph char={pair.en} cx={cx} y={98} height={36} embossId={embossId} />
           </g>
         );
       })}

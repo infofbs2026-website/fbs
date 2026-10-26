@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 const DEFAULT_SAMPLE_PLATES = [
   { lettersAr: ['ب', 'ط', 'ل'], lettersEn: ['L', 'T', 'B'], numbers: '8888', plateType: 'خصوصي', title: 'ب ط ل 8888' },
   { lettersAr: ['ف', 'ب', 'س'], lettersEn: ['S', 'B', 'F'], numbers: '7', plateType: 'خصوصي', title: 'ف ب س 7' },
-  { lettersAr: ['ق', 'م', 'ر'], lettersEn: ['R', 'M', 'Q'], numbers: '1', plateType: 'صغيرة', title: 'ق م ر 1' },
-  { lettersAr: ['س', 'ع', 'د'], lettersEn: ['D', 'A', 'S'], numbers: '777', plateType: 'خصوصي', title: 'س ع د 777' },
-  { lettersAr: ['ن', 'ق', 'ل'], lettersEn: ['L', 'Q', 'N'], numbers: '100', plateType: 'نقل', title: 'ن ق ل 100' }
+  { lettersAr: ['ق', 'م', 'ر'], lettersEn: ['R', 'Z', 'G'], numbers: '1', plateType: 'صغيرة', title: 'ق م ر 1' },
+  { lettersAr: ['س', 'ع', 'د'], lettersEn: ['D', 'E', 'S'], numbers: '777', plateType: 'خصوصي', title: 'س ع د 777' },
+  { lettersAr: ['ن', 'ق', 'ل'], lettersEn: ['L', 'G', 'N'], numbers: '100', plateType: 'نقل', title: 'ن ق ل 100' }
 ];
 
 export default async function Studio3DPage({

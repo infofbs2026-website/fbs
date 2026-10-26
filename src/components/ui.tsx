@@ -7,7 +7,6 @@ import {
   Crown,
   Gavel,
   Heart,
-  MapPin,
   Palmtree,
   SearchX,
   ShieldCheck,
@@ -15,6 +14,7 @@ import {
   ShoppingCart
 } from 'lucide-react';
 import type { MarketplacePlate } from '@/modules/marketplace/types';
+import { SharePlateButton } from '@/components/share-plate-button';
 
 export function PageTitle({
   title,
@@ -192,7 +192,7 @@ export const SAUDI_PLATE_AR_TO_EN: Record<string, string> = {
 };
 
 export const SAUDI_PLATE_EN_TO_AR: Record<string, string> = {
-  A: 'أ',
+  A: 'ا',
   B: 'ب',
   J: 'ح',
   D: 'د',
@@ -446,6 +446,15 @@ export function parsePlateData(
       .filter(Boolean);
   }
 
+  // Normalize Hamza and Arabic forms to official 17 plate glyphs
+  cleanAr = cleanAr.map((ch) => {
+    if (ch === 'أ' || ch === 'إ' || ch === 'آ' || ch === 'ٱ' || ch === 'ء') return 'ا';
+    if (ch === 'ي' || ch === 'ئ' || ch === 'ى') return 'ى';
+    if (ch === 'ه' || ch === 'ة') return 'هـ';
+    if (ch === 'ک') return 'ك';
+    return ch;
+  });
+
   // Clean Latin letters: strict uppercase A-Z only, discard punctuation and stray characters
   let cleanEn: string[] = [];
   if (Array.isArray(lettersEn)) {
@@ -464,19 +473,25 @@ export function parsePlateData(
   // On authentic Saudi plates:
   // Column 0 (leftmost): Latin letter 0 is under Arabic letter corresponding to Latin 0.
   // Column N (rightmost, closest to pillar): Arabic reading starts here (first Arabic letter).
-  let displayAr = [...cleanAr];
-  let displayEn = [...cleanEn];
+  let displayAr: string[] = [];
+  let displayEn: string[] = [];
 
-  if (cleanAr.length > 0 && cleanEn.length > 0) {
+  const hasInvalidLatin = cleanEn.some((ch) => !PLATE_GLYPHS_EN[ch] && ch !== 'F');
+
+  if (cleanAr.length > 0) {
     const firstArMapped = SAUDI_PLATE_AR_TO_EN[cleanAr[0]];
-    const lastEn = cleanEn[cleanEn.length - 1];
-    if (firstArMapped && firstArMapped === lastEn && cleanAr.length > 1) {
+    if (cleanEn.length > 0 && !hasInvalidLatin && firstArMapped === cleanEn[0]) {
+      displayAr = [...cleanAr];
+      displayEn = [...cleanEn];
+    } else {
       displayAr = cleanAr.slice().reverse();
+      displayEn = displayAr.map((ch, idx) => {
+        const standard = SAUDI_PLATE_AR_TO_EN[ch];
+        if (standard) return standard;
+        return cleanEn[displayAr.length - 1 - idx] || ch;
+      });
     }
-  } else if (cleanAr.length > 0 && cleanEn.length === 0) {
-    displayAr = cleanAr.slice().reverse();
-    displayEn = displayAr.map((ch) => SAUDI_PLATE_AR_TO_EN[ch] || '');
-  } else if (cleanEn.length > 0 && cleanAr.length === 0) {
+  } else if (cleanEn.length > 0) {
     displayEn = [...cleanEn];
     displayAr = displayEn.map((ch) => SAUDI_PLATE_EN_TO_AR[ch] || '');
   }
@@ -504,7 +519,60 @@ export interface PlateVisualizerProps {
   compact?: boolean;
   dark?: boolean;
   plateType?: string;
+  plateSize?: 'long' | 'short' | 'sports' | 'standard';
   className?: string;
+}
+
+import { PLATE_GLYPHS_AR, normalizeSaudiPlateArChar } from '@/components/plate-glyphs-ar';
+import { PLATE_GLYPHS_EN, PLATE_GLYPHS_EN_FALLBACK, normalizeSaudiPlateEnChar } from '@/components/plate-glyphs-en';
+
+export function PlateArabicGlyph({
+  char,
+  className = ''
+}: {
+  char: string;
+  className?: string;
+}) {
+  const norm = normalizeSaudiPlateArChar(char);
+  const spec = PLATE_GLYPHS_AR[norm];
+  if (!spec) {
+    return <span className={className}>{char}</span>;
+  }
+  return (
+    <svg
+      viewBox={`0 0 ${spec.w} 72`}
+      className={`q-ar-svg-glyph ${className}`}
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d={spec.d} />
+    </svg>
+  );
+}
+
+export function PlateLatinGlyph({
+  char,
+  className = ''
+}: {
+  char: string;
+  className?: string;
+}) {
+  const norm = normalizeSaudiPlateEnChar(char);
+  const displayChar = Array.from(char.normalize('NFKC').trim().toUpperCase())[0] ?? '';
+  const spec = PLATE_GLYPHS_EN[norm] ?? PLATE_GLYPHS_EN_FALLBACK[displayChar];
+  if (!spec) {
+    return <span className={`q-char-fallback ${className}`}>{char}</span>;
+  }
+  return (
+    <svg
+      viewBox={`0 0 ${spec.w} 72`}
+      className={`q-en-svg-glyph ${className}`}
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d={spec.d} />
+    </svg>
+  );
 }
 
 /**
@@ -515,6 +583,7 @@ export interface PlateVisualizerProps {
  *   1. خصوصي (Private): White pillar + Dark Green Saudi Emblem + vertical K/S/A + silver foil + black circle (●)
  *   2. صغيرة (Small / Sports): White pillar + Black Saudi Emblem + vertical K/S/A + silver foil + black circle (●)
  *   3. نقل (Transport): Blue pillar + White Saudi Emblem + vertical K/S/A + silver foil + downward triangle (▼)
+ * - Authentic 27 Arabic vector glyphs (17 letters + 10 digits)
  */
 export function PlateVisualizer({
   lettersAr,
@@ -524,11 +593,14 @@ export function PlateVisualizer({
   compact = false,
   dark = false,
   plateType = 'private',
+  plateSize,
   className = ''
 }: PlateVisualizerProps) {
   const normType = normalizePlateType(plateType);
   const isTransport = normType === 'transport';
-  const isSmall = normType === 'small';
+  const isSmall = plateSize
+    ? (plateSize === 'short' || plateSize === 'sports' || plateSize === 'standard')
+    : normType === 'small';
 
   const { digitPairs, letterPairs } = parsePlateData(
     lettersAr,
@@ -586,7 +658,7 @@ export function PlateVisualizer({
           >
             {digitPairs.map((pair, idx) => (
               <span key={`ar-d-${idx}`} className="q-char-cell q-char-digit q-arabic-char">
-                {pair.ar}
+                <PlateArabicGlyph char={pair.ar} />
               </span>
             ))}
           </div>
@@ -598,7 +670,7 @@ export function PlateVisualizer({
           >
             {digitPairs.map((pair, idx) => (
               <span key={`en-d-${idx}`} className="q-char-cell q-char-digit q-latin-char">
-                {pair.en}
+                <PlateLatinGlyph char={pair.en} />
               </span>
             ))}
           </div>
@@ -619,7 +691,7 @@ export function PlateVisualizer({
           >
             {letterPairs.map((pair, idx) => (
               <span key={`ar-l-${idx}`} className="q-char-cell q-char-letter q-arabic-char">
-                {pair.ar}
+                <PlateArabicGlyph char={pair.ar} />
               </span>
             ))}
           </div>
@@ -631,7 +703,7 @@ export function PlateVisualizer({
           >
             {letterPairs.map((pair, idx) => (
               <span key={`en-l-${idx}`} className="q-char-cell q-char-letter q-latin-char">
-                {pair.en}
+                <PlateLatinGlyph char={pair.en} />
               </span>
             ))}
           </div>
@@ -767,6 +839,7 @@ export function PlateCard({
   const isTransport = normType === 'transport';
   const isSmall = normType === 'small';
   const typeLabel = isTransport ? 'نقل خاص' : isSmall ? 'صغيرة' : 'خصوصي';
+  const plateLabel = `${plate.lettersAr.join(' ')} ${plate.numbers}`;
 
   return (
     <article
@@ -778,29 +851,22 @@ export function PlateCard({
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#D9BB81]/40 to-transparent pointer-events-none" />
 
       {/* 1. Header:
-          - Store mode: Plate Type + City (Right) & Wishlist + Cart Actions (Left)
-          - Auction mode: Status Badge (Right) & Plate Type Badge (Left) */}
+          - Store mode: Plate Type (Right) & Wishlist + Cart + Share Actions (Left)
+          - Auction mode: Status Badge (Right) & Plate Type + Share Action (Left) */}
       <div className="flex items-center justify-between gap-1.5 pb-2 border-b border-[#ECE9E2] pf-type-micro whitespace-nowrap">
         {isStore ? (
           <>
-            <div className="flex items-center gap-1 min-w-0">
-              <span
-                className={`inline-flex items-center rounded-lg px-2 py-1 pf-type-micro font-bold shadow-2xs shrink-0 ${
-                  isTransport
-                    ? 'bg-amber-50 text-amber-800 border border-amber-200/80'
-                    : isSmall
-                      ? 'bg-slate-100 text-slate-700 border border-slate-200'
-                      : 'bg-[#FAF9F6] text-[#14243C] border border-[#E5E2D9]'
-                }`}
-              >
-                <span>{typeLabel}</span>
-              </span>
-
-              <span className="inline-flex items-center gap-1 rounded-lg bg-[#FAF7F0] border border-[#D9BB81]/50 px-2 py-1 pf-type-micro font-bold text-[#8C6B2D] shadow-2xs shrink-0">
-                <MapPin size={11} className="text-[#9E7B35] shrink-0" />
-                <span>{plate.city || 'الرياض'}</span>
-              </span>
-            </div>
+            <span
+              className={`inline-flex items-center rounded-lg px-2.5 py-1 pf-type-micro font-bold shadow-2xs shrink-0 ${
+                isTransport
+                  ? 'bg-amber-50 text-amber-800 border border-amber-200/80'
+                  : isSmall
+                    ? 'bg-slate-100 text-slate-700 border border-slate-200'
+                    : 'bg-[#FAF9F6] text-[#14243C] border border-[#E5E2D9]'
+              }`}
+            >
+              <span>{typeLabel}</span>
+            </span>
 
             <div className="flex items-center gap-1 shrink-0">
               <button
@@ -836,6 +902,8 @@ export function PlateCard({
               >
                 {isInCart ? <Check size={13} strokeWidth={2.5} /> : <ShoppingCart size={13} />}
               </button>
+
+              <SharePlateButton slug={plate.slug} plateLabel={plateLabel} size="sm" />
             </div>
           </>
         ) : (
@@ -859,17 +927,21 @@ export function PlateCard({
               </span>
             )}
 
-            <span
-              className={`inline-flex items-center rounded-lg px-2.5 py-1 pf-type-micro font-bold shadow-2xs ${
-                isTransport
-                  ? 'bg-amber-50 text-amber-800 border border-amber-200/80'
-                  : isSmall
-                    ? 'bg-slate-100 text-slate-700 border border-slate-200'
-                    : 'bg-[#FAF9F6] text-[#14243C] border border-[#E5E2D9]'
-              }`}
-            >
-              <span>{typeLabel}</span>
-            </span>
+            <div className="flex items-center gap-1 shrink-0">
+              <span
+                className={`inline-flex items-center rounded-lg px-2.5 py-1 pf-type-micro font-bold shadow-2xs ${
+                  isTransport
+                    ? 'bg-amber-50 text-amber-800 border border-amber-200/80'
+                    : isSmall
+                      ? 'bg-slate-100 text-slate-700 border border-slate-200'
+                      : 'bg-[#FAF9F6] text-[#14243C] border border-[#E5E2D9]'
+                }`}
+              >
+                <span>{typeLabel}</span>
+              </span>
+
+              <SharePlateButton slug={plate.slug} plateLabel={plateLabel} size="sm" />
+            </div>
           </>
         )}
       </div>
@@ -915,7 +987,7 @@ export function PlateCard({
             <button
               type="button"
               onClick={() => onBuyNow(plate)}
-              className="group/btn shrink-0 min-h-9 sm:min-h-[38px] py-2 px-4 rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white pf-type-micro font-bold shadow-2xs hover:shadow-xs active:scale-[0.98] transition-all inline-flex items-center justify-center gap-1.5"
+              className="group/btn shrink-0 min-h-9 sm:min-h-[38px] py-2 px-3 sm:px-3.5 rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white pf-type-micro font-bold shadow-2xs hover:shadow-xs active:scale-[0.98] transition-all inline-flex items-center justify-center gap-1.5"
             >
               <ShoppingBag size={13} className="text-[#D9BB81] shrink-0" />
               <span>شراء</span>
@@ -924,7 +996,7 @@ export function PlateCard({
           ) : (
             <Link
               href={`/plates/${plate.slug}`}
-              className="group/btn shrink-0 min-h-9 sm:min-h-[38px] py-2 px-4 rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white pf-type-micro font-bold shadow-2xs hover:shadow-xs active:scale-[0.98] transition-all inline-flex items-center justify-center gap-1.5"
+              className="group/btn shrink-0 min-h-9 sm:min-h-[38px] py-2 px-3 sm:px-3.5 rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white pf-type-micro font-bold shadow-2xs hover:shadow-xs active:scale-[0.98] transition-all inline-flex items-center justify-center gap-1.5"
             >
               <ShoppingBag size={13} className="text-[#D9BB81] shrink-0" />
               <span>شراء</span>
@@ -1010,9 +1082,9 @@ export function PlateCardSkeleton() {
   );
 }
 
-export function PlateCardSkeletonGrid({ count = 6 }: { count?: number }) {
+export function PlateCardSkeletonGrid({ count = 12 }: { count?: number }) {
   return (
-    <div className="grid gap-3.5 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-4">
       {Array.from({ length: count }).map((_, i) => (
         <PlateCardSkeleton key={i} />
       ))}

@@ -2,89 +2,60 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Layers, Eye, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { Layers, ArrowLeft, Box } from 'lucide-react';
 import { PlateVisualizer } from '@/components/ui';
 
 export interface PlateTierData {
   id: string;
   tabLabel: string;
+  rankTag: string;
   name: string;
   lettersAr: string[];
   lettersEn: string[];
   numbers: string;
-  scarcityIndex: string;
-  heritageRating: string;
-  cagrGrowth: string;
   description: string;
-  profile: string;
-  idealVehicle: string;
-  badge: string;
 }
 
 export const plateTiers: PlateTierData[] = [
   {
     id: 'sovereign',
-    tabLabel: 'الأحادية والملكية (Single-Digit)',
-    name: 'الفئة السيادية: أحادي الحرف والرقم',
+    tabLabel: 'الأحادية الملكية',
+    rankTag: 'المرتبة الأولى',
+    name: 'الأحادية الملكية',
     lettersAr: ['ق'],
     lettersEn: ['Q'],
     numbers: '1',
-    scarcityIndex: '0.001% (قمة الندرة المطلقة)',
-    heritageRating: 'أصول سيادية رفيعة',
-    cagrGrowth: '+28% سنوياً',
-    description:
-      'تمثل هذه الفئة ذروة الهيبة والوجاهة في تاريخ تسجيل المركبات في المملكة. لوحات أحادية مفردة لا تتكرر، وتعد من أكثر الأصول التراثية والاستثمارية طلباً بين كبار الشخصيات وصناع القرار.',
-    profile: 'نخبة المجتمع، المستثمرون الإستراتيجيون، مقتنو التحف التاريخية والسيادية.',
-    idealVehicle: 'رولز رويس فانتوم، بنتلي مولينير، أساطيل القصور الملكية والسيارات الرئاسية.',
-    badge: 'المرتبة السيادية الأولى'
+    description: 'تركيب مفرد للحرف والرقم يتصدر أندر المقتنيات بالمملكة.'
   },
   {
     id: 'duals',
-    tabLabel: 'الثنائية والمتشابهة (Prestige Duals)',
-    name: 'الفئة الثنائية: التناغم البصري الفخم',
+    tabLabel: 'الثنائية المتناغمة',
+    rankTag: 'تطابق بصري',
+    name: 'الثنائية المتناغمة',
     lettersAr: ['س', 'س'],
     lettersEn: ['S', 'S'],
     numbers: '7',
-    scarcityIndex: '0.02% (ندرة استثنائية)',
-    heritageRating: 'وجاهة وتوازن بصري مثالي',
-    cagrGrowth: '+22% سنوياً',
-    description:
-      'تتميز بتماثل الأحرف أو الأرقام الفردية الثنائية، ما يمنح المركبة بصمة بصرية لا تُنسى في شوارع العاصمة ومناسبات النخبة، مع قيمة سوقية تصاعدية ثابتة ومحمية من التضخم.',
-    profile: 'رواد الأعمال البارزون، الدبلوماسيون، وعشاق التميز البصري الكلاسيكي.',
-    idealVehicle: 'مرسيدس مايباخ، أستون مارتن، رينج روفر إس في أوتوبيوغرافي.',
-    badge: 'التطابق المتناغم'
+    description: 'تماثل هندسي للأحرف مع رقم فردي يمنح حضوراً متزناً.'
   },
   {
     id: 'iconic',
-    tabLabel: 'الكلمات الدلالية (Iconic Names)',
-    name: 'فئة المعنى والتفرد: لوحات الكلمات الشهيرة',
+    tabLabel: 'الكلمات الدلالية',
+    rankTag: 'دلالة عربية',
+    name: 'الكلمات الدلالية',
     lettersAr: ['ق', 'م', 'ر'],
     lettersEn: ['Q', 'M', 'R'],
     numbers: '1',
-    scarcityIndex: '0.08% (تفرد شخصي معنوي)',
-    heritageRating: 'هوية عربية أصيلة',
-    cagrGrowth: '+19% سنوياً',
-    description:
-      'لوحات تنطق بكلمات عربية ذات دلالات عميقة ترتبط بالجمال أو الأصالة أو القوة، متصلة برقم مميز كـ (1) أو (7) أو (777). تجمع بين الروح العربية والشخصية الفريدة لصاحبها.',
-    profile: 'عشاق الرموز الثقافية، الشخصيات الفنية والإعلامية، وأصحاب المجموعات الخاصة.',
-    idealVehicle: 'فيراري، بورش 911، لامبورغيني ريفويلتو.',
-    badge: 'البصمة المعنوية'
+    description: 'أحرف تشكل كلمة عربية مميزة مقترنة برقم أحادي فريد.'
   },
   {
     id: 'sports',
-    tabLabel: 'المثلث الرياضي (Sport Compact)',
-    name: 'الفئة الرياضية: لوحات المقاس المصغر',
+    tabLabel: 'الرياضية المصغرة',
+    rankTag: 'فئة السوبركار',
+    name: 'الرياضية المصغرة',
     lettersAr: ['ط', 'ط', 'ط'],
     lettersEn: ['T', 'T', 'T'],
     numbers: '9',
-    scarcityIndex: '0.04% (طلب متسارع جداً)',
-    heritageRating: 'طابع رياضي ديناميكي',
-    cagrGrowth: '+25% سنوياً',
-    description:
-      'مصممة خصيصاً للمركبات الخارقة والسيارات الرياضية الفارهة، وتتميز بتكرار الأحرف الثلاثية مع رقم فردي مميز وأبعاد مصغرة تزيد من انسيابية مقدمة ومؤخرة المركبة.',
-    profile: 'جيل الشباب المستثمر، مقتنو السيارات الخارقة، وأعضاء نوادي السيارات السريعة.',
-    idealVehicle: 'ماكلارين، بوجاتي، مرسيدس AMG GT بلاك سيريس.',
-    badge: 'الأداء الديناميكي'
+    description: 'أبعاد رياضية رسمية مصغرة تنسجم مع تصميم السيارات الخارقة.'
   }
 ];
 
@@ -93,142 +64,117 @@ export function AboutTiers() {
   const selectedTier = plateTiers.find((t) => t.id === selectedTierId) || plateTiers[0];
 
   return (
-    <section className="space-y-8 rounded-3xl border-2 border-slate-200/90 bg-white p-7 sm:p-12 shadow-md">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-100 pb-6">
-        <div>
-          {/* High-contrast crisp badge on light background */}
-          <span className="inline-flex items-center gap-2.5 rounded-full border border-gold/40 bg-[#131c31] text-[#faebd0] px-5 py-2 text-xs sm:text-sm font-bold shadow-xs">
-            <Layers size={16} className="text-gold" />
-            <span>تصنيف المقتنيات وفئات الندرة</span>
-          </span>
-          <h2 className="mt-3 text-2xl sm:text-3xl font-black text-[#0f172a]">
-            مستكشف درجات الندرة في فارس بن سعود
-          </h2>
-          <p className="mt-1 text-xs sm:text-sm text-[#475569] font-medium">
-            اختر الفئة لمعاينة نموذج لوحة مطابق للمواصفات الرسمية والاطلاع على خصائصها الاستثمارية
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
-          <Eye size={16} className="text-navy" />
-          <span>محاكاة دقيقة بأبعاد المرور الرسمية</span>
-        </div>
+    <section className="relative overflow-hidden bg-navy border-y border-gold/30 py-16 sm:py-22 text-white">
+      {/* Architectural Museum Vault Backdrop */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none select-none absolute inset-0 z-0 bg-navy bg-cover bg-center"
+        style={{ backgroundImage: 'url(/branding/about-hero-vault.jpg)' }}
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(6, 13, 27, 0.93) 0%, rgba(8, 20, 40, 0.82) 50%, rgba(6, 13, 27, 0.95) 100%)'
+          }}
+        />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
       </div>
 
-      {/* Interactive Tab Selectors with Generous Padding */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        {plateTiers.map((tier) => {
-          const isSelected = tier.id === selectedTierId;
-          return (
-            <button
-              key={tier.id}
-              type="button"
-              onClick={() => setSelectedTierId(tier.id)}
-              className={`flex flex-col items-start rounded-2xl border-2 p-4 sm:p-5 text-start transition-all ${
-                isSelected
-                  ? 'border-navy bg-gradient-to-br from-slate-900 to-navy text-white shadow-md ring-2 ring-gold/40'
-                  : 'border-slate-200/90 bg-slate-50/70 hover:border-slate-300 hover:bg-white text-slate-800'
-              }`}
-            >
-              <span
-                className={`rounded-full px-3.5 py-1 text-[11px] font-black ${
-                  isSelected
-                    ? 'bg-gold text-navy'
-                    : 'bg-slate-200 text-slate-700'
-                }`}
-              >
-                {tier.badge}
-              </span>
-              <span className={`mt-3 text-xs sm:text-sm font-black ${isSelected ? 'text-white' : 'text-[#0f172a]'}`}>
-                {tier.tabLabel}
-              </span>
-              <span className={`mt-1.5 text-[11px] font-bold ${isSelected ? 'text-gold-light' : 'text-emerald-700'}`}>
-                معدل النمو: {tier.cagrGrowth}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Selected Tier Spotlight Stage */}
-      <div className="rounded-3xl border-2 border-gold/40 bg-gradient-to-br from-[#1a2947] via-[#131f37] to-[#0e182c] p-6 sm:p-10 text-white shadow-xl">
-        <div className="grid gap-8 lg:grid-cols-12 items-center">
-          {/* Left: Die-stamped Plate Rendering Pedestal */}
-          <div className="lg:col-span-6 flex flex-col items-center justify-center space-y-4">
-            <span className="text-[11px] font-black uppercase tracking-wider text-gold-light border border-gold/40 rounded-full px-4 py-1.5 bg-gold/15">
-              معاينة مواصفات الفئة المختارة
-            </span>
-
-            <div className="w-full flex justify-center py-4">
-              <PlateVisualizer
-                lettersAr={selectedTier.lettersAr}
-                lettersEn={selectedTier.lettersEn}
-                numbers={selectedTier.numbers}
-                large={true}
-                plateType={selectedTier.id === 'sports' ? 'small' : 'private'}
-              />
+      <div className="container-fbs relative z-10 space-y-6">
+        {/* Header + Compact Segmented Selector (Centered on Mobile, Balanced Split on Desktop) */}
+        <div className="flex flex-col items-center text-center lg:flex-row lg:items-end lg:text-start justify-between gap-4">
+          <div className="min-w-0 flex flex-col items-center lg:items-start">
+            <div className="pf-type-micro inline-flex items-center gap-2 rounded-full border border-gold/35 bg-gold/10 px-3.5 py-1 font-bold text-gold-light">
+              <Layers size={13} className="text-gold shrink-0" />
+              <span>أرشيف الفئات</span>
             </div>
-
-            <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-slate-300">
-              <span className="flex items-center gap-1.5 font-bold text-white">
-                <CheckCircle2 size={15} className="text-emerald-400" />
-                أبعاد رسمية: {selectedTier.id === 'sports' ? '30.5 × 15.5 سم' : '52 × 11 سم'}
-              </span>
-              <span className="text-slate-500">•</span>
-              <span className="text-gold-light font-bold">شعار السيفين والنخلة البارز</span>
-            </div>
+            <h2 className="pf-type-h2 mt-2.5 font-black text-white tracking-tight">
+              تصنيف اللوحات المميزة
+            </h2>
+            <p className="pf-type-body mt-1.5 text-slate-300 font-normal">
+              أربع فئات نادرة مصنفة وفق التميز البصري والمقاس الرسمي.
+            </p>
           </div>
 
-          {/* Right: Detailed Characteristics */}
-          <div className="lg:col-span-6 space-y-5">
-            <div>
-              <span className="inline-block rounded-full bg-gold/20 px-4 py-1 text-xs font-black text-gold border border-gold/30">
-                {selectedTier.badge}
-              </span>
-              <h3 className="mt-2 text-xl sm:text-2xl font-black text-white">
+          <div className="grid grid-cols-2 sm:inline-flex sm:flex-wrap items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-navy/85 p-1.5 backdrop-blur-md self-center lg:self-auto">
+            {plateTiers.map((tier) => {
+              const isSelected = tier.id === selectedTierId;
+              return (
+                <button
+                  key={tier.id}
+                  type="button"
+                  aria-pressed={isSelected}
+                  onClick={() => setSelectedTierId(tier.id)}
+                  className={`min-w-0 rounded-lg px-3.5 py-2 text-xs font-bold transition-all text-center whitespace-nowrap ${
+                    isSelected
+                      ? 'btn-gold text-navy font-black shadow-xs'
+                      : 'text-slate-300 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {tier.tabLabel}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Sculpted Gallery Stage — Clean, Uncluttered, Zero Nested Box Bloat */}
+        <div
+          data-pf-audit="about-tier-stage"
+          className="glass-vision p-5 sm:p-8 lg:p-9"
+          style={{ backgroundColor: 'rgba(10, 20, 40, 0.8)' }}
+        >
+          <div className="pf-cq-split grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-center">
+            {/* Start Column (Right): Recessed Plate Pedestal + Plain Inline Tag Before Dimension */}
+            <div className="pf-cq-pad-inner plate-tray-recessed-dark min-w-0 flex flex-col items-center justify-center rounded-2xl p-5 sm:p-7">
+              <div className="w-full flex justify-center py-1.5">
+                <PlateVisualizer
+                  lettersAr={selectedTier.lettersAr}
+                  lettersEn={selectedTier.lettersEn}
+                  numbers={selectedTier.numbers}
+                  large={true}
+                  plateType={selectedTier.id === 'sports' ? 'small' : 'private'}
+                />
+              </div>
+
+              <div className="pf-type-micro mt-4 flex flex-wrap items-center justify-center gap-2 text-slate-300">
+                <span className="font-bold text-gold">{selectedTier.rankTag}</span>
+                <span className="text-white/25">•</span>
+                <span>
+                  المقاس المعتمد: {selectedTier.id === 'sports' ? '30.5 × 15.5 سم' : '52 × 11 سم'}
+                </span>
+              </div>
+            </div>
+
+            {/* End Column (Left): Clean Title, 1-Line Description & Compact Natural-Width Buttons */}
+            <div className="min-w-0 flex flex-col items-center text-center lg:items-start lg:text-start justify-center">
+              <h3 className="pf-type-h2 font-black text-white tracking-tight">
                 {selectedTier.name}
               </h3>
-              <p className="mt-2 text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+
+              <p className="pf-type-body mt-2 text-slate-300 font-normal">
                 {selectedTier.description}
               </p>
-            </div>
 
-            {/* Specs Metric Grid */}
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="rounded-xl border border-white/10 bg-white/5 p-3.5">
-                <span className="text-slate-400 block text-[11px]">مؤشر الندرة في المملكة</span>
-                <span className="mt-1 block font-bold text-gold text-xs sm:text-sm">
-                  {selectedTier.scarcityIndex}
-                </span>
-              </div>
-              <div className="rounded-xl border border-white/10 bg-white/5 p-3.5">
-                <span className="text-slate-400 block text-[11px]">معدل النمو السنوي التقديري</span>
-                <span className="mt-1 block font-bold text-emerald-400 text-xs sm:text-sm">
-                  {selectedTier.cagrGrowth}
-                </span>
-              </div>
-            </div>
+              <div className="mt-6 flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
+                <Link
+                  href="/plates"
+                  className="btn btn-gold min-h-10 rounded-xl px-5 py-2 text-xs font-black"
+                >
+                  <span>تصفح المتجر</span>
+                  <ArrowLeft size={14} className="shrink-0" />
+                </Link>
 
-            {/* Profile & Fitment */}
-            <div className="space-y-2.5 text-xs text-slate-300 border-t border-white/10 pt-4">
-              <div>
-                <strong className="text-white font-bold">الملف النموذجي للمقتني: </strong>
-                <span>{selectedTier.profile}</span>
+                <Link
+                  href="/studio-3d"
+                  className="btn btn-outline-gold min-h-10 rounded-xl px-4 py-2 text-xs font-bold"
+                >
+                  <Box size={14} className="text-gold shrink-0" />
+                  <span>معاينة 3D</span>
+                </Link>
               </div>
-              <div>
-                <strong className="text-white font-bold">التناسب المثالي مع المركبات: </strong>
-                <span className="text-gold-light">{selectedTier.idealVehicle}</span>
-              </div>
-            </div>
-
-            <div className="pt-2">
-              <Link
-                href="/plates"
-                className="btn btn-gold text-xs font-black py-3 px-6 shadow-md inline-flex items-center gap-2"
-              >
-                <span>استعراض لوحات هذه الفئة في الكتالوج</span>
-                <ArrowLeft size={15} />
-              </Link>
             </div>
           </div>
         </div>

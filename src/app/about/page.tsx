@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen w-full overflow-x-clip bg-paper">
+    <div className="min-h-screen w-full overflow-x-clip bg-paper">
       <AboutView />
-    </main>
+    </div>
   );
 }

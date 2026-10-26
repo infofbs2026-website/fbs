@@ -12,7 +12,7 @@ import {
   ArrowLeft,
   Gavel,
   ShieldCheck,
-  MapPin,
+  SlidersHorizontal,
   Clock,
   Search,
   X,
@@ -34,6 +34,7 @@ import {
   statusLabels
 } from '@/components/ui';
 import { CatalogFilters } from '@/components/catalog-filters';
+import { SharePlateButton } from '@/components/share-plate-button';
 import { SarSymbol, formatEnglishAmount } from '@/components/sar-symbol';
 
 export type ViewMode = 'grid' | 'wide' | 'table';
@@ -85,6 +86,7 @@ export function PlateCardWide({
   const isTransport = normType === 'transport';
   const isSmall = normType === 'small';
   const typeLabel = isTransport ? 'نقل خاص' : isSmall ? 'صغيرة' : 'خصوصي';
+  const plateLabel = `${plate.lettersAr.join(' ')} ${plate.numbers}`;
 
   return (
     <article
@@ -119,24 +121,17 @@ export function PlateCardWide({
             {/* Badges row */}
             <div className="flex flex-wrap items-center gap-2 mb-2.5">
               {isStore ? (
-                <>
-                  <span
-                    className={`inline-flex items-center rounded-lg px-2.5 py-1 pf-type-micro font-bold shadow-2xs ${
-                      isTransport
-                        ? 'bg-amber-50 text-amber-800 border border-amber-200/80'
-                        : isSmall
-                          ? 'bg-slate-100 text-slate-700 border border-slate-200'
-                          : 'bg-[#FAF9F6] text-[#14243C] border border-[#E5E2D9]'
-                    }`}
-                  >
-                    <span>{typeLabel}</span>
-                  </span>
-
-                  <span className="inline-flex items-center gap-1 rounded-lg bg-[#FAF7F0] border border-[#D9BB81]/50 px-2.5 py-1 pf-type-micro font-bold text-[#8C6B2D] shadow-2xs">
-                    <MapPin size={11} className="text-[#9E7B35] shrink-0" />
-                    <span>{plate.city || 'الرياض'}</span>
-                  </span>
-                </>
+                <span
+                  className={`inline-flex items-center rounded-lg px-2.5 py-1 pf-type-micro font-bold shadow-2xs ${
+                    isTransport
+                      ? 'bg-amber-50 text-amber-800 border border-amber-200/80'
+                      : isSmall
+                        ? 'bg-slate-100 text-slate-700 border border-slate-200'
+                        : 'bg-[#FAF9F6] text-[#14243C] border border-[#E5E2D9]'
+                  }`}
+                >
+                  <span>{typeLabel}</span>
+                </span>
               ) : (
                 <>
                   {isLive ? (
@@ -195,7 +190,7 @@ export function PlateCardWide({
 
       {/* Left: Price & Action Controls */}
       {isStore ? (
-        <div className="flex flex-wrap sm:flex-nowrap items-center justify-between xl:justify-end border-t xl:border-t-0 xl:border-s border-[#ECE9E2] pt-3 xl:pt-0 xl:ps-5 xl:min-w-[260px] gap-3 shrink-0">
+        <div className="flex flex-wrap sm:flex-nowrap items-center justify-between xl:justify-end border-t xl:border-t-0 xl:border-s border-[#ECE9E2] pt-3 xl:pt-0 xl:ps-5 xl:min-w-[295px] gap-3 shrink-0">
           <div>
             <span className="pf-type-micro font-semibold text-[#64748B] block mb-0.5">
               السعر المطلوب
@@ -237,6 +232,8 @@ export function PlateCardWide({
               {isInCart ? <Check size={15} strokeWidth={2.5} /> : <ShoppingCart size={15} />}
             </button>
 
+            <SharePlateButton slug={plate.slug} plateLabel={plateLabel} size="md" />
+
             <button
               type="button"
               onClick={() => onBuyNow?.(plate)}
@@ -249,7 +246,7 @@ export function PlateCardWide({
           </div>
         </div>
       ) : (
-        <div className="flex flex-col sm:flex-row xl:flex-col justify-between items-start sm:items-center xl:items-end border-t xl:border-t-0 xl:border-s border-[#ECE9E2] pt-3 xl:pt-0 xl:ps-5 xl:min-w-[205px] gap-3 shrink-0">
+        <div className="flex flex-col sm:flex-row xl:flex-col justify-between items-start sm:items-center xl:items-end border-t xl:border-t-0 xl:border-s border-[#ECE9E2] pt-3 xl:pt-0 xl:ps-5 xl:min-w-[235px] gap-3 shrink-0">
           <div className="flex flex-wrap items-center xl:items-end justify-between w-full sm:w-auto xl:w-full gap-2">
             <div>
               <span className="pf-type-micro font-semibold text-[#64748B] block text-start xl:text-end mb-0.5">
@@ -272,10 +269,11 @@ export function PlateCardWide({
             )}
           </div>
 
-          <div className="w-full sm:w-auto sm:min-w-[195px] xl:w-full">
+          <div className="flex items-center gap-2 w-full sm:w-auto xl:w-full">
+            <SharePlateButton slug={plate.slug} plateLabel={plateLabel} size="md" />
             <Link
               href={`/plates/${plate.slug}`}
-              className="group/btn w-full min-h-9 sm:min-h-[38px] py-2 px-4 rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white pf-type-micro font-bold shadow-2xs hover:shadow-xs active:scale-[0.99] transition-all flex items-center justify-center gap-1.5"
+              className="group/btn flex-1 sm:min-w-[185px] min-h-9 sm:min-h-[38px] py-2 px-4 rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white pf-type-micro font-bold shadow-2xs hover:shadow-xs active:scale-[0.99] transition-all flex items-center justify-center gap-1.5"
             >
               <Gavel size={13} className="text-[#D9BB81] shrink-0 transition-transform duration-200 group-hover/btn:-rotate-12" />
               <span>{plate.auction ? 'دخول المزاد والمزايدة' : 'تفاصيل اللوحة والشراء'}</span>
@@ -314,18 +312,18 @@ export function PlateTableView({
     <div className="rounded-3xl border-2 border-[#0c162d]/25 hover:border-[#0c162d]/50 bg-white shadow-sm overflow-hidden flex flex-col transition-all">
       {/* Outer Horizontal Scroller for smaller displays */}
       <div className="flex-1 flex flex-col min-h-0 overflow-x-auto table-scrollbar">
-        <div className="min-w-[810px] flex-1 flex flex-col min-h-0">
+        <div className="min-w-[820px] flex-1 flex flex-col min-h-0">
           {/* 1. TABLE HEADER */}
           <div className="bg-gradient-to-r from-[#070e1c] via-[#0c162d] to-[#070e1c] text-white border-b border-slate-700/60 shrink-0 select-none z-10">
             <div
               dir="rtl"
-              className="grid grid-cols-[268px_minmax(105px,0.9fr)_minmax(110px,0.95fr)_minmax(125px,1.05fr)_84px_128px] items-center pf-type-micro font-black"
+              className="grid grid-cols-[268px_minmax(96px,0.85fr)_minmax(110px,0.95fr)_minmax(120px,1fr)_108px_154px] items-center pf-type-micro font-black"
             >
               <div className="py-4 px-4 text-start">لوحة المركبة</div>
-              <div className="py-4 px-3 text-start">{isStore ? 'نوع اللوحة' : 'الفئة والمدينة'}</div>
-              <div className="py-4 px-3 text-start">{isStore ? 'المدينة' : 'حالة المزاد'}</div>
+              <div className="py-4 px-3 text-start">نوع اللوحة</div>
+              <div className="py-4 px-3 text-start">{isStore ? 'التوثيق' : 'حالة المزاد'}</div>
               <div className="py-4 px-3 text-start">{isStore ? 'السعر المطلوب' : 'المزايدة الحالية'}</div>
-              <div className="py-4 px-2 text-center">{isStore ? 'حفظ وسلة' : 'المزايدات'}</div>
+              <div className="py-4 px-2 text-center">{isStore ? 'حفظ ومشاركة' : 'المزايدات'}</div>
               <div className="py-4 px-3 text-center">الإجراء</div>
             </div>
           </div>
@@ -353,11 +351,12 @@ export function PlateTableView({
                   const isSmall = normType === 'small';
                   const isFavorite = wishlistIds.includes(plate.id);
                   const isInCart = cartIds.includes(plate.id);
+                  const plateLabel = `${plate.lettersAr.join(' ')} ${plate.numbers}`;
 
                   return (
                     <div
                       key={plate.id}
-                      className="grid grid-cols-[268px_minmax(105px,0.9fr)_minmax(110px,0.95fr)_minmax(125px,1.05fr)_84px_128px] items-center hover:bg-slate-50/90 transition-colors group/row py-3 pf-type-micro"
+                      className="grid grid-cols-[268px_minmax(96px,0.85fr)_minmax(110px,0.95fr)_minmax(120px,1fr)_108px_154px] items-center hover:bg-slate-50/90 transition-colors group/row py-3 pf-type-micro"
                     >
                       {/* Column 1: Plate Visualizer */}
                       <div className="py-1 px-3 w-[268px]">
@@ -377,7 +376,7 @@ export function PlateTableView({
                         </Link>
                       </div>
 
-                      {/* Column 2: Type (& City in auction mode) */}
+                      {/* Column 2: Plate Type */}
                       <div className="py-2 px-3">
                         <div className="flex flex-col gap-1.5 items-start">
                           {isTransport ? (
@@ -393,21 +392,15 @@ export function PlateTableView({
                               {plate.type || 'خصوصي'}
                             </span>
                           )}
-                          {!isStore && (
-                            <span className="inline-flex items-center gap-1 pf-type-micro font-semibold text-slate-500">
-                              <MapPin size={11} className="text-slate-400 shrink-0" />
-                              <span>{plate.city || 'الرياض'}</span>
-                            </span>
-                          )}
                         </div>
                       </div>
 
-                      {/* Column 3: City (Store) or Status (Auction) */}
+                      {/* Column 3: Verification (Store) or Status (Auction) */}
                       <div className="py-2 px-3">
                         {isStore ? (
-                          <span className="inline-flex items-center gap-1 rounded-lg bg-[#FAF7F0] border border-[#D9BB81]/50 px-2.5 py-1 pf-type-micro font-bold text-[#8C6B2D]">
-                            <MapPin size={11} className="text-[#9E7B35] shrink-0" />
-                            <span>{plate.city || 'الرياض'}</span>
+                          <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 border border-emerald-200/70 px-2.5 py-1 pf-type-micro font-bold text-emerald-700">
+                            <ShieldCheck size={12} className="text-emerald-600 shrink-0" />
+                            <span>موثّقة رسمياً</span>
                           </span>
                         ) : (
                           <div className="flex flex-col gap-1 items-start">
@@ -447,10 +440,10 @@ export function PlateTableView({
                         </div>
                       </div>
 
-                      {/* Column 5: Wishlist/Cart (Store) or Bid Count (Auction) */}
+                      {/* Column 5: Wishlist/Cart/Share (Store) or Bid Count (Auction) */}
                       <div className="py-2 px-2 text-center">
                         {isStore ? (
-                          <div className="inline-flex items-center justify-center gap-1.5">
+                          <div className="inline-flex items-center justify-center gap-1">
                             <button
                               type="button"
                               onClick={() => onToggleFavorite?.(plate)}
@@ -475,6 +468,7 @@ export function PlateTableView({
                             >
                               {isInCart ? <Check size={13} strokeWidth={2.5} /> : <ShoppingCart size={13} />}
                             </button>
+                            <SharePlateButton slug={plate.slug} plateLabel={plateLabel} size="sm" />
                           </div>
                         ) : plate.auction?.bidCount !== undefined && plate.auction.bidCount > 0 ? (
                           <span className="inline-flex items-center gap-1 rounded-xl bg-slate-100 px-2.5 py-1 pf-type-micro font-black text-slate-800 border border-slate-200/80">
@@ -499,13 +493,16 @@ export function PlateTableView({
                             <ArrowLeft size={11} className="text-[#D9BB81] shrink-0" />
                           </button>
                         ) : (
-                          <Link
-                            href={`/plates/${plate.slug}`}
-                            className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#070e1c] to-navy text-white hover:text-gold-light px-3 py-2 pf-type-micro font-black border border-[#0c162d]/40 hover:border-[#0c162d] shadow-2xs hover:shadow-xs transition-all active:scale-95 whitespace-nowrap"
-                          >
-                            <span>دخول المزاد</span>
-                            <ArrowLeft size={12} strokeWidth={2.5} className="shrink-0" />
-                          </Link>
+                          <div className="inline-flex items-center justify-center gap-1.5">
+                            <SharePlateButton slug={plate.slug} plateLabel={plateLabel} size="sm" />
+                            <Link
+                              href={`/plates/${plate.slug}`}
+                              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#070e1c] to-navy text-white hover:text-gold-light px-3 py-2 pf-type-micro font-black border border-[#0c162d]/40 hover:border-[#0c162d] shadow-2xs hover:shadow-xs transition-all active:scale-95 whitespace-nowrap"
+                            >
+                              <span>دخول المزاد</span>
+                              <ArrowLeft size={12} strokeWidth={2.5} className="shrink-0" />
+                            </Link>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -560,6 +557,25 @@ export function CatalogStage({
   // Local state for instant zero-latency UI response
   const [viewMode, setViewMode] = useState<ViewMode>(urlMode);
   const [searchQ, setSearchQ] = useState<string>(clean.q || '');
+  const [isFiltersOpen, setIsFiltersOpen] = useState<boolean>(false);
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (
+      searchParams.get('minPrice') ||
+      searchParams.get('maxPrice') ||
+      searchParams.get('priceRange')
+    ) {
+      count++;
+    }
+    if (searchParams.get('lettersPattern')) count++;
+    if (searchParams.get('digitsCount') || searchParams.get('numbersPattern')) count++;
+    if (searchParams.get('city')) count++;
+    if (searchParams.get('featured')) count++;
+    const sort = searchParams.get('sort');
+    if (sort && sort !== 'newest') count++;
+    return count;
+  }, [searchParams]);
 
   // Store Wishlist & Cart state (persisted in localStorage)
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
@@ -592,42 +608,36 @@ export function CatalogStage({
   }, []);
 
   const toggleWishlist = (plate: MarketplacePlate) => {
-    setWishlistIds((prev) => {
-      const next = prev.includes(plate.id)
-        ? prev.filter((id) => id !== plate.id)
-        : [...prev, plate.id];
-      try {
-        localStorage.setItem('fbs_store_wishlist', JSON.stringify(next));
-        if (typeof window !== 'undefined') window.dispatchEvent(new Event('fbs_store_updated'));
-      } catch {}
-      return next;
-    });
+    const next = wishlistIds.includes(plate.id)
+      ? wishlistIds.filter((id) => id !== plate.id)
+      : [...wishlistIds, plate.id];
+    setWishlistIds(next);
+    try {
+      localStorage.setItem('fbs_store_wishlist', JSON.stringify(next));
+      if (typeof window !== 'undefined') window.dispatchEvent(new Event('fbs_store_updated'));
+    } catch {}
   };
 
   const toggleCart = (plate: MarketplacePlate) => {
     setCheckoutDone(false);
-    setCartIds((prev) => {
-      const next = prev.includes(plate.id)
-        ? prev.filter((id) => id !== plate.id)
-        : [...prev, plate.id];
-      try {
-        localStorage.setItem('fbs_store_cart', JSON.stringify(next));
-        if (typeof window !== 'undefined') window.dispatchEvent(new Event('fbs_store_updated'));
-      } catch {}
-      return next;
-    });
+    const next = cartIds.includes(plate.id)
+      ? cartIds.filter((id) => id !== plate.id)
+      : [...cartIds, plate.id];
+    setCartIds(next);
+    try {
+      localStorage.setItem('fbs_store_cart', JSON.stringify(next));
+      if (typeof window !== 'undefined') window.dispatchEvent(new Event('fbs_store_updated'));
+    } catch {}
   };
 
   const handleBuyNow = (plate: MarketplacePlate) => {
     setCheckoutDone(false);
-    setCartIds((prev) => {
-      const next = prev.includes(plate.id) ? prev : [...prev, plate.id];
-      try {
-        localStorage.setItem('fbs_store_cart', JSON.stringify(next));
-        if (typeof window !== 'undefined') window.dispatchEvent(new Event('fbs_store_updated'));
-      } catch {}
-      return next;
-    });
+    const next = cartIds.includes(plate.id) ? cartIds : [...cartIds, plate.id];
+    setCartIds(next);
+    try {
+      localStorage.setItem('fbs_store_cart', JSON.stringify(next));
+      if (typeof window !== 'undefined') window.dispatchEvent(new Event('fbs_store_updated'));
+    } catch {}
     setDrawerTab('cart');
   };
 
@@ -709,76 +719,113 @@ export function CatalogStage({
   return (
     <div className="container-fbs">
       {/* ============================================================== */}
-      {/* FULL-WIDTH STAGE BAR (بحث سريع بلون رمادي محايد + خيارات العرض) */}
+      {/* FULL-WIDTH STAGE BAR (زر الفلاتر + بحث سريع + خيارات العرض)    */}
       {/* ============================================================== */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-neutral-200/90 bg-white p-3 sm:px-4 sm:py-3 shadow-[0_4px_20px_-6px_rgba(0,0,0,0.05)]">
-        {/* 1. Quick Search Input (Neutral Gray styling + Shortened placeholder) */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSearchSubmit(searchQ);
-          }}
-          className="flex flex-1 items-center gap-1.5 min-w-[210px] max-w-md rounded-xl border border-neutral-300 bg-neutral-100/90 focus-within:bg-white focus-within:border-neutral-500 focus-within:ring-2 focus-within:ring-neutral-200 p-1 transition-all"
-        >
-          <Search size={15} className="ms-2 text-neutral-500 shrink-0" />
-          <input
-            id="header-search-q"
-            type="text"
-            value={searchQ}
-            onChange={(e) => setSearchQ(e.target.value)}
-            placeholder="ابحث بالحروف أو الأرقام..."
-            className="flex-1 min-w-0 bg-transparent border-0 py-1 px-1.5 pf-type-micro font-semibold text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-0"
-          />
-          {searchQ && (
-            <button
-              type="button"
-              onClick={() => {
-                setSearchQ('');
-                handleSearchSubmit(null);
-              }}
-              className="shrink-0 p-1 rounded-lg text-neutral-400 hover:text-rose-600 hover:bg-neutral-200/60 transition-colors"
-              title="مسح البحث"
-            >
-              <X size={13} />
-            </button>
-          )}
+      <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-2.5 sm:gap-3 rounded-2xl border border-neutral-200/90 bg-white p-3 sm:px-4 sm:py-3 shadow-[0_4px_20px_-6px_rgba(0,0,0,0.05)]">
+        {/* Right/Start Group: Filter Toggle Button (Before Search Bar) + Quick Search Input */}
+        <div className="flex flex-1 items-center gap-2 sm:gap-2.5 min-w-0">
+          {/* 1. Filter Toggle Button — right BEFORE the Search Bar */}
           <button
-            type="submit"
-            className="shrink-0 rounded-lg bg-neutral-800 hover:bg-neutral-900 text-white px-3.5 py-1.5 pf-type-micro font-bold transition-all active:scale-95 shadow-xs"
+            type="button"
+            onClick={() => setIsFiltersOpen((prev) => !prev)}
+            aria-expanded={isFiltersOpen}
+            aria-controls="catalog-filters-panel"
+            data-pf-action="toggle-filters"
+            className={`inline-flex h-10 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border px-3 sm:px-3.5 pf-type-micro font-bold transition-all active:scale-95 shrink-0 ${
+              isFiltersOpen
+                ? 'border-[#14243C] bg-[#14243C] text-[#D9BB81] shadow-xs'
+                : activeFilterCount > 0
+                  ? 'border-[#D9BB81] bg-[#FAF7F0] text-[#14243C] hover:bg-[#F3ECE0]'
+                  : 'border-neutral-300 bg-neutral-100/90 text-[#14243C] hover:border-[#D9BB81] hover:bg-[#FAF7F0]'
+            }`}
           >
-            بحث
+            <SlidersHorizontal
+              size={15}
+              className={isFiltersOpen ? 'text-[#D9BB81] shrink-0' : 'text-[#9E7B35] shrink-0'}
+            />
+            <span>الفلاتر</span>
+            {activeFilterCount > 0 && (
+              <span
+                className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 font-norwester text-[11px] font-black leading-none ${
+                  isFiltersOpen
+                    ? 'bg-[#D9BB81] text-[#14243C]'
+                    : 'bg-[#14243C] text-[#D9BB81]'
+                }`}
+              >
+                {activeFilterCount}
+              </span>
+            )}
           </button>
-        </form>
 
-        {/* 2. Left side: View Mode Toggle */}
-        <div className="flex items-center gap-1 rounded-xl bg-neutral-100 p-1 border border-neutral-200 shrink-0">
+          {/* 2. Quick Search Input */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSearchSubmit(searchQ);
+            }}
+            className="flex flex-1 items-center gap-1 sm:gap-1.5 min-w-0 md:max-w-md h-10 rounded-xl border border-neutral-300 bg-neutral-100/90 focus-within:bg-white focus-within:border-neutral-500 focus-within:ring-2 focus-within:ring-neutral-200 px-1 transition-all"
+          >
+            <Search size={15} className="ms-1.5 sm:ms-2 text-neutral-500 shrink-0" />
+            <input
+              id="header-search-q"
+              type="text"
+              value={searchQ}
+              onChange={(e) => setSearchQ(e.target.value)}
+              placeholder="ابحث بالحروف أو الأرقام..."
+              className="flex-1 min-w-0 bg-transparent border-0 py-1 px-1 sm:px-1.5 pf-type-micro font-semibold text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-0"
+            />
+            {searchQ && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQ('');
+                  handleSearchSubmit(null);
+                }}
+                className="shrink-0 p-1 rounded-lg text-neutral-400 hover:text-rose-600 hover:bg-neutral-200/60 transition-colors"
+                title="مسح البحث"
+              >
+                <X size={13} />
+              </button>
+            )}
+            <button
+              type="submit"
+              className="shrink-0 rounded-lg bg-neutral-800 hover:bg-neutral-900 text-white px-2.5 sm:px-3.5 py-1.5 pf-type-micro font-bold transition-all active:scale-95 shadow-xs"
+            >
+              بحث
+            </button>
+          </form>
+        </div>
+
+        {/* Left/End side: View Mode Toggle */}
+        <div className="grid grid-cols-3 md:flex items-center gap-1 rounded-xl bg-neutral-100 p-1 border border-neutral-200 md:shrink-0">
           {/* Option 1: Grid */}
           <button
             type="button"
             onClick={() => handleModeChange('grid')}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 pf-type-micro font-bold transition-all ${
+            className={`flex items-center justify-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-1.5 pf-type-micro font-bold whitespace-nowrap transition-all ${
               viewMode === 'grid'
                 ? 'bg-[#14243C] text-[#D9BB81] shadow-2xs'
                 : 'text-neutral-600 hover:text-neutral-900 hover:bg-white'
             }`}
-            title="عرض شبكة (3 كروت)"
+            title={isFiltersOpen ? 'عرض شبكة (3 كروت)' : 'عرض شبكة (4 كروت)'}
           >
-            <LayoutGrid size={14} />
-            <span className="hidden sm:inline">شبكة</span>
+            <LayoutGrid size={14} className="shrink-0" />
+            <span>شبكة</span>
           </button>
 
           {/* Option 2: Wide Card */}
           <button
             type="button"
             onClick={() => handleModeChange('wide')}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 pf-type-micro font-bold transition-all ${
+            className={`flex items-center justify-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-1.5 pf-type-micro font-bold whitespace-nowrap transition-all ${
               viewMode === 'wide'
                 ? 'bg-[#14243C] text-[#D9BB81] shadow-2xs'
                 : 'text-neutral-600 hover:text-neutral-900 hover:bg-white'
             }`}
             title="عرض كروت عريضة"
           >
-            <RectangleHorizontal size={14} />
+            <RectangleHorizontal size={14} className="shrink-0" />
+            <span className="sm:hidden">كروت</span>
             <span className="hidden sm:inline">كروت عريضة</span>
           </button>
 
@@ -786,39 +833,56 @@ export function CatalogStage({
           <button
             type="button"
             onClick={() => handleModeChange('table')}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 pf-type-micro font-bold transition-all ${
+            className={`flex items-center justify-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-1.5 pf-type-micro font-bold whitespace-nowrap transition-all ${
               viewMode === 'table'
                 ? 'bg-[#14243C] text-[#D9BB81] shadow-2xs'
                 : 'text-neutral-600 hover:text-neutral-900 hover:bg-white'
             }`}
             title="عرض جدول تفصيلي"
           >
-            <TableIcon size={14} />
+            <TableIcon size={14} className="shrink-0" />
+            <span className="sm:hidden">جدول</span>
             <span className="hidden sm:inline">جدول تفصيلي</span>
           </button>
         </div>
       </div>
 
       {/* ============================================================== */}
-      {/* 2-COLUMN MAIN CONTENT: STICKY FILTERS & 3-COLUMN PLATES STAGE   */}
+      {/* MAIN CONTENT: 4-COLUMN DEFAULT OR STICKY FILTERS + 3-COLUMN    */}
       {/* ============================================================== */}
-      <div className="grid gap-4 xl:gap-5 lg:grid-cols-[255px_minmax(0,1fr)] xl:grid-cols-[265px_minmax(0,1fr)] items-start">
-        {/* Sticky Filter Sidebar */}
-        <aside className="lg:sticky lg:top-24 self-start min-w-0">
-          <CatalogFilters
-            initialQuery={clean}
-            cities={cities}
-            types={types}
-            currentPath={currentPath}
-          />
-        </aside>
+      <div
+        className={
+          isFiltersOpen
+            ? 'grid gap-4 xl:gap-5 lg:grid-cols-[255px_minmax(0,1fr)] xl:grid-cols-[265px_minmax(0,1fr)] items-start'
+            : 'w-full'
+        }
+      >
+        {/* Collapsible Sticky Filter Sidebar (Shown when Filter button is clicked) */}
+        {isFiltersOpen && (
+          <aside
+            id="catalog-filters-panel"
+            className="lg:sticky lg:top-24 self-start min-w-0 animate-fade-in-up"
+          >
+            <CatalogFilters
+              initialQuery={clean}
+              cities={cities}
+              types={types}
+              currentPath={currentPath}
+              onClose={() => setIsFiltersOpen(false)}
+            />
+          </aside>
+        )}
 
         {/* Selected View Mode Stage */}
         <div className="flex flex-col min-w-0" style={{ containerType: 'inline-size' }}>
           {plates.length ? (
             <>
               {viewMode === 'grid' && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 items-stretch">
+                <div
+                  className={`grid grid-cols-1 sm:grid-cols-2 ${
+                    isFiltersOpen ? 'lg:grid-cols-3' : 'md:grid-cols-3 lg:grid-cols-4'
+                  } gap-3.5 sm:gap-4 items-stretch`}
+                >
                   {plates.map((plate, idx) => (
                     <div
                       key={plate.id}
@@ -1086,10 +1150,6 @@ export function CatalogStage({
                           <div className="flex items-center gap-1.5 mb-1">
                             <span className="rounded-md bg-white border border-[#E5E2D9] px-2 py-0.5 pf-type-micro font-bold text-[#14243C]">
                               {item.type || 'خصوصي'}
-                            </span>
-                            <span className="inline-flex items-center gap-0.5 pf-type-micro font-bold text-[#8C6B2D]">
-                              <MapPin size={10} />
-                              {item.city || 'الرياض'}
                             </span>
                           </div>
 
