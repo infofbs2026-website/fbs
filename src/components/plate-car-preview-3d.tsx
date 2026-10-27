@@ -1,22 +1,17 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
   ArrowRight,
-  Camera,
   Car,
-  Check,
   ChevronDown,
   ChevronUp,
   Maximize2,
   Minimize2,
-  SlidersHorizontal,
-  Sparkles,
-  Sun
+  Sparkles
 } from 'lucide-react';
-import { PlateVisualizer } from '@/components/ui';
 import { PlateFace } from '@/components/plate-face';
 import { getPlateGeometry, normalizePlateType, parsePlateData } from '@/lib/plate-data';
 
@@ -88,28 +83,25 @@ export const SAMPLE_STUDIO_PLATES = [
 ];
 
 export type PlateSize = 'long' | 'standard';
-type CameraMode = 'full' | 'closeup' | 'hero';
-type LightingMode = 'night' | 'warm' | 'day';
+export type CameraMode = 'full' | 'closeup';
+export type LightingMode = 'night' | 'day';
 
 const CAMERA_OPTIONS: { value: CameraMode; label: string }[] = [
   { value: 'full', label: 'كامل السيارة' },
-  { value: 'closeup', label: 'قريب على اللوحة' },
-  { value: 'hero', label: 'زاوية سينمائية' }
+  { value: 'closeup', label: 'قريب على اللوحة' }
 ];
 
 const LIGHTING_OPTIONS: { value: LightingMode; label: string }[] = [
   { value: 'night', label: 'ليلي' },
-  { value: 'warm', label: 'ذهبي دافئ' },
   { value: 'day', label: 'نهاري' }
 ];
 
 const LIGHTING_FILTERS: Record<LightingMode, string> = {
   night: 'brightness(0.92) contrast(1.15) saturate(0.95)',
-  warm: 'sepia(0.20) saturate(1.22) brightness(1.05) contrast(1.06)',
   day: 'brightness(1.36) contrast(1.10) saturate(1.10)'
 };
 
-/** Uses the same paths, geometry, ink and emboss as the catalog plate. */
+/** Uses the catalog's plate details and finish without the FBS mark on a car. */
 export function CarMountedPlate({ lettersAr, lettersEn, numbers, plateType = 'خصوصي', size = 'long' }: {
   lettersAr: string[] | string;
   lettersEn: string[] | string;
@@ -117,7 +109,7 @@ export function CarMountedPlate({ lettersAr, lettersEn, numbers, plateType = 'خ
   plateType?: string;
   size?: PlateSize;
 }) {
-  return <PlateFace plate={parsePlateData(lettersAr, lettersEn, numbers)} type={normalizePlateType(plateType)} format={size} />;
+  return <PlateFace plate={parsePlateData(lettersAr, lettersEn, numbers)} type={normalizePlateType(plateType)} format={size} showBrand={false} />;
 }
 
 /* ============================================================== */
@@ -126,92 +118,46 @@ export function CarMountedPlate({ lettersAr, lettersEn, numbers, plateType = 'خ
 
 function StudioSelect<T extends string>({
   label,
-  icon: Icon,
   value,
   options,
   onChange
 }: {
   label: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
   value: T;
   options: { value: T; label: string; hint?: string }[];
   onChange: (value: T) => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const current = options.find((o) => o.value === value);
-
-  useEffect(() => {
-    if (!open) return;
-    const onPointer = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
-    };
-    document.addEventListener('mousedown', onPointer);
-    window.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('mousedown', onPointer);
-      window.removeEventListener('keydown', onKey);
-    };
-  }, [open]);
-
   return (
-    <div ref={rootRef} className="relative">
-      <button
-        type="button"
-        aria-haspopup="listbox"
-        aria-expanded={open}
+    <span className="relative inline-flex max-w-full items-center">
+      <select
         aria-label={label}
-        onClick={() => setOpen((o) => !o)}
-        className={`inline-flex h-9 items-center gap-2 rounded-xl border px-3 text-xs font-bold transition-all ${
-          open
-            ? 'border-gold/60 bg-gold/15 text-gold-light shadow-[0_0_15px_rgba(217,187,129,0.25)]'
-            : 'border-white/15 bg-white/[0.08] text-slate-100 hover:border-gold/40 hover:bg-white/[0.12]'
-        }`}
+        value={value}
+        onChange={(event) => onChange(event.target.value as T)}
+        className="min-h-10 max-w-full cursor-pointer appearance-none rounded-lg bg-transparent py-1 ps-2 pe-6 text-xs font-bold text-slate-200 transition-colors hover:bg-white/[0.08] hover:text-gold-light focus-visible:outline-2 focus-visible:outline-gold"
       >
-        <Icon size={14} className="text-gold shrink-0" />
-        <span className="whitespace-nowrap">{current?.label}</span>
-        <ChevronDown
-          size={13}
-          className={`shrink-0 text-slate-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-        />
-      </button>
+        {options.map((option) => <option key={option.value} value={option.value} className="bg-[#091224] text-white">{option.label}</option>)}
+      </select>
+      <ChevronDown size={13} className="pointer-events-none absolute end-1.5 text-gold" />
+    </span>
+  );
+}
 
-      {open && (
-        <ul
-          role="listbox"
-          aria-label={label}
-          className="absolute top-full end-0 z-50 mt-2 w-max min-w-[170px] rounded-2xl border border-gold/30 bg-[#091224]/95 p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.85)] backdrop-blur-2xl animate-fade-in-up"
-        >
-          {options.map((o) => {
-            const selected = o.value === value;
-            return (
-              <li key={o.value}>
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={selected}
-                  onClick={() => {
-                    onChange(o.value);
-                    setOpen(false);
-                  }}
-                  className={`flex w-full items-center justify-between gap-4 rounded-xl px-3 py-2 text-start text-xs font-bold transition-colors ${
-                    selected ? 'bg-gold/20 text-gold-light' : 'text-slate-200 hover:bg-white/[0.08]'
-                  }`}
-                >
-                  <span className="flex flex-col">
-                    <span className="whitespace-nowrap">{o.label}</span>
-                    {o.hint && <span className="text-[10px] font-medium text-slate-400">{o.hint}</span>}
-                  </span>
-                  {selected && <Check size={14} className="text-gold shrink-0" />}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+function StudioControls({ carId, plateSize, cameraMode, lighting, onCar, onSize, onCamera, onLighting }: {
+  carId: CarModelId;
+  plateSize: PlateSize;
+  cameraMode: CameraMode;
+  lighting: LightingMode;
+  onCar: (value: CarModelId) => void;
+  onSize: (value: PlateSize) => void;
+  onCamera: (value: CameraMode) => void;
+  onLighting: (value: LightingMode) => void;
+}) {
+  return (
+    <div aria-label="خيارات معاينة السيارة" className="flex flex-wrap items-center gap-x-1">
+      <StudioSelect label="موديل السيارة" value={carId} options={CAR_STUDIO_MODELS.map((car) => ({ value: car.id, label: car.nameAr }))} onChange={onCar} />
+      <StudioSelect label="حجم اللوحة" value={plateSize} options={[{ value: 'long', label: 'لوحة طويلة' }, { value: 'standard', label: 'لوحة صغيرة' }]} onChange={onSize} />
+      <StudioSelect label="زاوية الرؤية" value={cameraMode} options={CAMERA_OPTIONS} onChange={onCamera} />
+      <StudioSelect label="الإضاءة" value={lighting} options={LIGHTING_OPTIONS} onChange={onLighting} />
     </div>
   );
 }
@@ -232,6 +178,8 @@ export interface PlateCarPreview3DProps {
   variant?: 'inline' | 'page';
   initialCarId?: string;
   initialSize?: PlateSize;
+  initialCamera?: CameraMode;
+  initialLighting?: LightingMode;
   backHref?: string;
 }
 
@@ -239,7 +187,7 @@ export function PlateCarPreview3D(props: PlateCarPreview3DProps) {
   // A different source plate starts a fresh scene. Local preset/car selections
   // stay intact when the parent re-renders with the same plate data.
   const plate = props.initialPlate;
-  const sceneKey = JSON.stringify([plate?.lettersAr, plate?.lettersEn, plate?.numbers, plate?.plateType, plate?.slug, props.initialCarId, props.initialSize]);
+  const sceneKey = JSON.stringify([plate?.lettersAr, plate?.lettersEn, plate?.numbers, plate?.plateType, plate?.slug, props.initialCarId, props.initialSize, props.initialCamera, props.initialLighting]);
   return <PlateCarPreviewScene key={sceneKey} {...props} />;
 }
 
@@ -248,6 +196,8 @@ function PlateCarPreviewScene({
   variant = 'inline',
   initialCarId,
   initialSize = 'long',
+  initialCamera = 'full',
+  initialLighting = 'night',
   backHref
 }: PlateCarPreview3DProps) {
   const [currentPlate, setCurrentPlate] = useState({
@@ -267,14 +217,10 @@ function PlateCarPreviewScene({
     return isInitialTransport ? 'sierra' : 'g-class';
   });
   const [plateSize, setPlateSize] = useState<PlateSize>(initialSize);
-  const [cameraMode, setCameraMode] = useState<CameraMode>('full');
-  const [lighting, setLighting] = useState<LightingMode>('night');
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const [cameraMode, setCameraMode] = useState<CameraMode>(initialCamera);
+  const [lighting, setLighting] = useState<LightingMode>(initialLighting);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showPresetsTray, setShowPresetsTray] = useState(true);
-
-  const sceneRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const car = useMemo(
     () => CAR_STUDIO_MODELS.find((c) => c.id === carId) ?? CAR_STUDIO_MODELS[0],
@@ -295,31 +241,18 @@ function PlateCarPreviewScene({
       numbers: currentPlate.numbers,
       type: currentPlate.plateType,
       car: carId,
-      size: plateSize
+      size: plateSize,
+      camera: cameraMode,
+      lighting
     });
     if (currentPlate.slug) params.set('from', currentPlate.slug);
     return `/studio-3d?${params.toString()}`;
-  }, [currentPlate, carId, plateSize]);
-
-  // Cinematic subtle tilt
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (cameraMode !== 'hero' || !sceneRef.current) return;
-    const rect = sceneRef.current.getBoundingClientRect();
-    setTilt({
-      x: (e.clientX - rect.left) / rect.width - 0.5,
-      y: (e.clientY - rect.top) / rect.height - 0.5
-    });
-  };
+  }, [currentPlate, carId, plateSize, cameraMode, lighting]);
 
   const sceneTransform: React.CSSProperties =
     cameraMode === 'closeup'
       ? { transform: 'scale(2.35)', transformOrigin: `${b.centerX}% ${b.centerY}%` }
-      : cameraMode === 'hero'
-        ? {
-            transform: `perspective(1400px) rotateX(${2 - tilt.y * 4}deg) rotateY(${tilt.x * 6}deg) scale(1.05)`,
-            transformOrigin: '50% 50%'
-          }
-        : { transform: 'none', transformOrigin: '50% 50%' };
+      : { transform: 'none', transformOrigin: '50% 50%' };
 
   // Fullscreen API toggle
   const toggleFullscreen = () => {
@@ -345,10 +278,7 @@ function PlateCarPreviewScene({
   /* ============================================================== */
   if (isPage) {
     return (
-      <div
-        ref={containerRef}
-        className="fixed inset-0 z-30 h-[100dvh] w-screen overflow-hidden bg-[#030712] select-none flex flex-col justify-between"
-      >
+      <div className="fixed inset-0 z-30 flex h-[100dvh] w-screen select-none flex-col justify-between overflow-hidden bg-[#030712]">
         {/* Dynamic Ambient Luxury Lighting matching car environment */}
         <div
           className={`pointer-events-none absolute inset-0 bg-cover bg-center blur-3xl scale-125 transition-all duration-700 ${
@@ -377,9 +307,6 @@ function PlateCarPreviewScene({
         {/* 16:9 Studio Stage: Occupies maximum screen area without distortion */}
         <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
           <div
-            ref={sceneRef}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={() => setTilt({ x: 0, y: 0 })}
             className="relative flex aspect-video h-full w-full max-h-[56.25vw] max-w-[177.78vh] items-center justify-center overflow-hidden transition-[transform,filter] duration-500 ease-out"
             style={{ ...sceneTransform, filter: LIGHTING_FILTERS[lighting] }}
           >
@@ -402,9 +329,6 @@ function PlateCarPreviewScene({
             )}
             {lighting === 'night' && (
               <div className="pointer-events-none absolute inset-0 z-5 mix-blend-multiply opacity-55 transition-opacity duration-700 bg-radial-[at_50%_60%] from-transparent via-black/45 to-black/85" />
-            )}
-            {lighting === 'warm' && (
-              <div className="pointer-events-none absolute inset-0 z-5 mix-blend-color-dodge opacity-25 transition-opacity duration-700 bg-[radial-gradient(ellipse_at_50%_50%,rgba(217,184,127,0.45),transparent_70%)]" />
             )}
 
             {/* Bracket Mounted Plate with exact proportions & sub-millimeter anchor */}
@@ -438,107 +362,30 @@ function PlateCarPreviewScene({
         {/* Overlay UI with Safe Area Margins from screen edges */}
         <div className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-between p-3 sm:p-5 lg:p-6">
           {/* Top Bar (Safe from edges) */}
-          <header className="pointer-events-auto flex flex-wrap items-center justify-between gap-2.5 rounded-2xl border border-white/10 bg-[#091224]/85 px-3 py-2 sm:px-4 sm:py-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-xl">
-            {/* Right: Back button & Title */}
-            <div className="flex items-center gap-3">
-              <Link
-                href={backHref || '/plates'}
-                className="inline-flex h-9 items-center gap-2 rounded-xl border border-gold/40 bg-gold/15 px-3.5 text-xs font-bold text-gold-light transition-all hover:border-gold hover:bg-gold/25 shadow-sm active:scale-95"
-              >
-                <ArrowRight size={15} className="text-gold" />
+          <header className="pointer-events-auto rounded-2xl border border-white/10 bg-[#091224]/90 px-3 py-2 shadow-xl backdrop-blur-xl sm:px-4">
+            <div className="flex items-center justify-between gap-2">
+              <Link href={backHref || '/plates'} className="inline-flex min-h-10 items-center gap-2 text-xs font-bold text-gold-light hover:text-white">
+                <ArrowRight size={16} />
                 <span>{backHref ? 'رجوع للوحة' : 'العودة للمتجر'}</span>
               </Link>
-
-              <div className="hidden h-5 w-px bg-white/10 sm:block" />
-
-              <div className="hidden items-center gap-2 sm:flex">
-                <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-xs font-black tracking-tight text-white">استوديو المعاينة 3D</span>
-              </div>
-            </div>
-
-            {/* Left: Interactive Controls Bar */}
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-              <StudioSelect
-                label="موديل السيارة"
-                icon={Car}
-                value={carId}
-                options={CAR_STUDIO_MODELS.map((c) => ({ value: c.id, label: c.nameAr, hint: c.categoryAr }))}
-                onChange={(v) => setCarId(v)}
-              />
-              <StudioSelect
-                label="حجم اللوحة"
-                icon={SlidersHorizontal}
-                value={plateSize}
-                options={[
-                  { value: 'long', label: 'لوحة طويلة (كبيرة)', hint: 'المقاس الأوروبي 520×110' },
-                  { value: 'standard', label: 'لوحة عادية / صغيرة', hint: 'المقاس القياسي 335×170' }
-                ]}
-                onChange={(v) => setPlateSize(v as PlateSize)}
-              />
-              <StudioSelect
-                label="زاوية الرؤية"
-                icon={Camera}
-                value={cameraMode}
-                options={CAMERA_OPTIONS}
-                onChange={(v) => {
-                  setCameraMode(v);
-                  setTilt({ x: 0, y: 0 });
-                }}
-              />
-              <StudioSelect
-                label="الإضاءة"
-                icon={Sun}
-                value={lighting}
-                options={LIGHTING_OPTIONS}
-                onChange={(v) => setLighting(v)}
-              />
-
-              {/* Fullscreen Button */}
-              <button
-                type="button"
-                onClick={toggleFullscreen}
-                aria-label="تبديل ملء الشاشة"
-                title="تبديل ملء الشاشة"
-                className="hidden h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-white/[0.08] text-slate-200 transition-colors hover:border-gold/40 hover:text-gold sm:inline-flex"
-              >
-                {isFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
+              <button type="button" onClick={toggleFullscreen} aria-label="تبديل ملء الشاشة" title="تبديل ملء الشاشة" className="hidden h-10 w-10 items-center justify-center text-slate-200 hover:text-gold sm:inline-flex">
+                {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
               </button>
             </div>
+            <StudioControls carId={carId} plateSize={plateSize} cameraMode={cameraMode} lighting={lighting} onCar={setCarId} onSize={setPlateSize} onCamera={setCameraMode} onLighting={setLighting} />
           </header>
 
           {/* Bottom Bar: Presets & Plate Info (Safe from edges) */}
           <footer className="pointer-events-auto mx-auto w-full max-w-4xl">
             {backHref ? (
               /* When previewing a specific plate */
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gold/30 bg-[#091224]/90 p-3 shadow-2xl backdrop-blur-xl">
-                <div className="flex items-center gap-3">
-                  <div className="w-24 shrink-0 sm:w-28">
-                    <PlateVisualizer
-                      lettersAr={currentPlate.lettersAr}
-                      lettersEn={currentPlate.lettersEn}
-                      numbers={currentPlate.numbers}
-                      plateType={currentPlate.plateType}
-                      compact
-                    />
-                  </div>
-                  <div>
-                    <span className="block text-[11px] font-medium text-slate-400">معاينة واقعية حية</span>
-                    <span className="text-xs font-black text-white sm:text-sm">
-                      {currentPlate.lettersAr.join(' ')} {currentPlate.numbers}
-                    </span>
-                  </div>
+              <div className="flex items-center justify-between gap-4 rounded-2xl border border-gold/30 bg-[#091224]/90 px-4 py-3 shadow-xl backdrop-blur-xl">
+                <div className={plateSize === 'standard' ? 'w-[min(45vw,12rem)]' : 'w-[min(65vw,22rem)]'}>
+                  <CarMountedPlate lettersAr={currentPlate.lettersAr} lettersEn={currentPlate.lettersEn} numbers={currentPlate.numbers} plateType={currentPlate.plateType} size={plateSize} />
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <Link
-                    href={backHref}
-                    className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-gold px-4 text-xs font-bold text-navy transition-transform hover:scale-[1.02] active:scale-95 shadow-md"
-                  >
-                    <span>تفاصيل وحجز اللوحة</span>
-                    <ArrowRight size={14} />
-                  </Link>
-                </div>
+                <Link href={backHref} aria-label="العودة لتفاصيل اللوحة" title="العودة لتفاصيل اللوحة" className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold text-navy transition-colors hover:bg-gold-light">
+                  <ArrowRight size={19} />
+                </Link>
               </div>
             ) : (
               /* Preset Plates Floating Selector */
@@ -588,12 +435,11 @@ function PlateCarPreviewScene({
                               : 'border-white/10 bg-white/[0.04] hover:border-gold/50 hover:bg-white/[0.08]'
                           }`}
                         >
-                          <PlateVisualizer
+                          <CarMountedPlate
                             lettersAr={sample.lettersAr}
                             lettersEn={sample.lettersEn}
                             numbers={sample.numbers}
                             plateType={sample.plateType}
-                            compact
                           />
                           <span
                             className={`mt-1 block text-center text-[10px] font-bold ${
@@ -620,67 +466,18 @@ function PlateCarPreviewScene({
   /* ============================================================== */
   return (
     <div className="relative rounded-2xl border border-gold/25 bg-gradient-to-b from-[#0a1222] to-[#060b16] p-3 text-white shadow-[0_16px_40px_-16px_rgba(6,11,22,0.6)]">
-      {/* Header: Controls */}
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <h3 className="flex items-center gap-2 text-sm font-black text-white">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-gold/40 bg-gold/10 text-gold">
-            <Car size={14} />
-          </span>
-          <span>معاينة على السيارة</span>
-        </h3>
-
-        <div className="flex flex-wrap items-center gap-1.5">
-          <StudioSelect
-            label="موديل السيارة"
-            icon={Car}
-            value={carId}
-            options={CAR_STUDIO_MODELS.map((c) => ({ value: c.id, label: c.nameAr, hint: c.categoryAr }))}
-            onChange={(v) => setCarId(v)}
-          />
-          <StudioSelect
-            label="حجم اللوحة"
-            icon={SlidersHorizontal}
-            value={plateSize}
-            options={[
-              { value: 'long', label: 'لوحة طويلة (كبيرة)', hint: '520×110' },
-              { value: 'standard', label: 'لوحة عادية / صغيرة', hint: '335×170' }
-            ]}
-            onChange={(v) => setPlateSize(v as PlateSize)}
-          />
-          <StudioSelect
-            label="زاوية الرؤية"
-            icon={Camera}
-            value={cameraMode}
-            options={CAMERA_OPTIONS}
-            onChange={(v) => {
-              setCameraMode(v);
-              setTilt({ x: 0, y: 0 });
-            }}
-          />
-          <StudioSelect
-            label="الإضاءة"
-            icon={Sun}
-            value={lighting}
-            options={LIGHTING_OPTIONS}
-            onChange={(v) => setLighting(v)}
-          />
-
-          <Link
-            href={expandHref}
-            title="عرض مكبر ملء الشاشة"
-            aria-label="عرض مكبر ملء الشاشة"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-white/[0.08] text-slate-200 transition-colors hover:border-gold/40 hover:text-gold"
-          >
-            <Maximize2 size={15} />
-          </Link>
-        </div>
+      <div className="mb-2 flex items-center justify-between gap-3 px-1">
+        <h2 className="flex items-center gap-2 text-sm font-black text-white"><Car size={17} className="text-gold" />معاينة على السيارة</h2>
+        <Link href={expandHref} title="فتح معرض السيارات" aria-label="فتح معرض السيارات" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-gold-light transition-colors hover:bg-white/10">
+          <ArrowRight size={19} />
+        </Link>
+      </div>
+      <div className="mb-2 border-t border-white/10 pt-1">
+        <StudioControls carId={carId} plateSize={plateSize} cameraMode={cameraMode} lighting={lighting} onCar={setCarId} onSize={setPlateSize} onCamera={setCameraMode} onLighting={setLighting} />
       </div>
 
       {/* Viewer: Fixed 16:9 Frame */}
       <div
-        ref={sceneRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={() => setTilt({ x: 0, y: 0 })}
         className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-black"
       >
         <div
@@ -705,9 +502,6 @@ function PlateCarPreviewScene({
           )}
           {lighting === 'night' && (
             <div className="pointer-events-none absolute inset-0 z-5 mix-blend-multiply opacity-55 transition-opacity duration-700 bg-radial-[at_50%_60%] from-transparent via-black/45 to-black/85" />
-          )}
-          {lighting === 'warm' && (
-            <div className="pointer-events-none absolute inset-0 z-5 mix-blend-color-dodge opacity-25 transition-opacity duration-700 bg-[radial-gradient(ellipse_at_50%_50%,rgba(217,184,127,0.45),transparent_70%)]" />
           )}
 
           {/* Mounted Vector Plate */}

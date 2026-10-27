@@ -582,6 +582,7 @@ export function CatalogStage({
   const [cartIds, setCartIds] = useState<string[]>([]);
   const [drawerTab, setDrawerTab] = useState<'cart' | 'wishlist' | null>(null);
   const [checkoutDone, setCheckoutDone] = useState(false);
+  const requestedDrawer = searchParams.get('drawer');
 
   useEffect(() => {
     if (!isStore) return;
@@ -594,6 +595,20 @@ export function CatalogStage({
       // ignore storage errors
     }
   }, [isStore]);
+
+  useEffect(() => {
+    if (!isStore || (requestedDrawer !== 'cart' && requestedDrawer !== 'wishlist')) return;
+    // The drawer renders in a portal, so open it only after the client mounts.
+    const timer = window.setTimeout(() => {
+      setCheckoutDone(false);
+      setDrawerTab(requestedDrawer);
+      const next = new URLSearchParams(searchParams.toString());
+      next.delete('drawer');
+      const query = next.toString();
+      router.replace(query ? `${currentPath}?${query}` : currentPath, { scroll: false });
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [currentPath, isStore, requestedDrawer, router, searchParams]);
 
   useEffect(() => {
     const onOpenDrawer = (e: Event) => {

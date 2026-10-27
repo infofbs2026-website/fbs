@@ -62,17 +62,23 @@ export function PlateFace({
   type,
   format = 'long',
   className = '',
+  showBrand = true,
 }: {
   plate: ParsedPlateData;
   type: SaudiPlateType;
   format?: PlateFormat;
   className?: string;
+  showBrand?: boolean;
 }) {
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const id = (part: string) => `pf-${uid}-${part}`;
   const geometry = getPlateGeometry(type, format);
   const { width, height, pillarX, pillarWidth, rows } = geometry;
   const long = format === 'long';
+  const fieldStart = long ? 14 : 10;
+  const middle = (fieldStart + pillarX) / 2;
+  const digitsZone = showBrand ? geometry.digits : { x: fieldStart, width: middle - fieldStart - 4 };
+  const lettersZone = showBrand ? geometry.letters : { x: middle + 4, width: pillarX - middle - 12 };
   const small = type === 'small';
   const transport = type === 'transport';
   const cx = pillarX + pillarWidth / 2;
@@ -240,7 +246,7 @@ export function PlateFace({
         <GlyphRow
           pairs={digits}
           language="ar"
-          zone={geometry.digits}
+          zone={digitsZone}
           y={rows.arabicY}
           height={digitHeight}
           brandDemo={false}
@@ -248,20 +254,22 @@ export function PlateFace({
         <GlyphRow
           pairs={digits}
           language="en"
-          zone={geometry.digits}
+          zone={digitsZone}
           y={rows.latinY}
           height={Math.min(digitHeight, 40)}
           brandDemo={false}
         />
       </g>
-      <g data-pf-part="fbs-logo" transform={`translate(${geometry.logo.x} ${geometry.logo.y})`}>
-        <FbsPlateEmblem width={geometry.logo.width} height={geometry.logo.height} />
-      </g>
+      {showBrand ? (
+        <g data-pf-part="fbs-logo" transform={`translate(${geometry.logo.x} ${geometry.logo.y})`}>
+          <FbsPlateEmblem width={geometry.logo.width} height={geometry.logo.height} />
+        </g>
+      ) : null}
       <g data-pf-part="letters" filter={`url(#${id('emboss')})`}>
         <GlyphRow
           pairs={letters}
           language="ar"
-          zone={geometry.letters}
+          zone={lettersZone}
           y={rows.arabicY}
           height={rows.letterHeight}
           brandDemo={brandDemo}
@@ -269,7 +277,7 @@ export function PlateFace({
         <GlyphRow
           pairs={letters}
           language="en"
-          zone={geometry.letters}
+          zone={lettersZone}
           y={rows.latinY}
           height={rows.letterHeight}
           brandDemo={brandDemo}

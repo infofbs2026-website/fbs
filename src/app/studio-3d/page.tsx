@@ -25,6 +25,8 @@ export default async function Studio3DPage({
     preview?: string;
     car?: string;
     size?: string;
+    camera?: string;
+    lighting?: string;
     from?: string;
   }>;
 }) {
@@ -67,6 +69,8 @@ export default async function Studio3DPage({
       initialPlate={initialPlate}
       initialCarId={initialCar}
       initialSize={sp.size === 'standard' ? 'standard' : 'long'}
+      initialCamera={sp.camera === 'closeup' ? 'closeup' : 'full'}
+      initialLighting={sp.lighting === 'day' ? 'day' : 'night'}
       backHref={backHref}
     />
   );

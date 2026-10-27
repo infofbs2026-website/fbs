@@ -1,27 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import {
-  ArrowLeft,
-  CheckCircle2,
-  Clock,
-  ExternalLink,
-  Gavel,
-  History,
-  Info,
-  Landmark,
-  Lock,
-  Radio,
-  Share2,
-  ShieldCheck,
-  Award,
-  Trophy
-} from 'lucide-react';
+import { ArrowLeft, Clock, Gavel, ShieldCheck, Tag } from 'lucide-react';
 import { getPlateBySlug } from '@/modules/marketplace/service';
 import { FbsStageWatermark, PlateVisualizer, statusLabels, EmptyState } from '@/components/ui';
 import { PlateCarPreview3D } from '@/components/plate-car-preview-3d';
-import { ActionButton } from '@/components/forms';
-import { SarPrice, SarSymbol, formatEnglishAmount } from '@/components/sar-symbol';
+import { StorePlateActions } from '@/components/store-plate-actions';
+import { SarSymbol, formatEnglishAmount } from '@/components/sar-symbol';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const result = await getPlateBySlug((await params).slug);
@@ -32,13 +17,24 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
+function Price({ amount, large = false }: { amount: string; large?: boolean }) {
+  return (
+    <span className={`inline-flex items-center gap-2 ${large ? 'text-3xl sm:text-4xl' : 'text-sm'}`} dir="rtl">
+      <bdi dir="ltr" className="font-norwester font-black tabular-nums tracking-tight text-navy">
+        {formatEnglishAmount(amount)}
+      </bdi>
+      <SarSymbol ariaHidden={false} className={`${large ? 'h-6 w-6' : 'h-3.5 w-3.5'} shrink-0 text-gold-accent`} />
+    </span>
+  );
+}
+
 export default async function Detail({ params }: { params: Promise<{ slug: string }> }) {
   const result = await getPlateBySlug((await params).slug);
 
   if (!result.available) {
     return (
       <div className="container-fbs py-20">
-        <EmptyState title="تفاصيل اللوحة غير متاحة حاليًا" description="يرجى إعادة المحاولة لاحقًا أو استكشاف المزادات المتاحة." />
+        <EmptyState title="تفاصيل اللوحة غير متاحة حاليًا" description="يرجى إعادة المحاولة لاحقًا أو استكشاف اللوحات المتاحة." />
       </div>
     );
   }
@@ -48,267 +44,115 @@ export default async function Detail({ params }: { params: Promise<{ slug: strin
   const isLive = p.auction?.status === 'LIVE';
   const isUpcoming = p.auction?.status === 'SCHEDULED' || p.auction?.status === 'REGISTRATION_OPEN';
   const statusText = statusLabels[p.auction?.status ?? p.status] ?? p.status;
-  const rawCurrentPrice = p.auction?.currentPriceHalalas ?? p.priceHalalas ?? '0';
+  const price = p.auction?.currentPriceHalalas ?? p.priceHalalas;
+  const code = `${p.lettersEn.join('')}-${p.numbers}`;
 
   return (
     <>
-      {/* ============================================================== */}
-      {/* 1. LUXURY BREADCRUMB & AMBIENT BANNER                          */}
-      {/* ============================================================== */}
-      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#D9BB81]/30 pt-26 sm:pt-30 pb-10 sm:pb-14 text-white">
+      <section className="hero-luxury-ambient relative overflow-hidden border-b border-gold/30 pb-8 pt-24 text-white sm:pb-12 sm:pt-30">
         <div className="container-fbs relative z-10">
-          {/* Breadcrumb Navigation */}
-          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-gold-light mb-4">
-            <Link href="/" className="hover:text-white transition-colors">الرئيسية</Link>
-            <span>/</span>
-            <Link href="/plates" className="hover:text-white transition-colors">اللوحات المميزة</Link>
-            <span>/</span>
-            <span className="text-white">
-              لوحة {p.lettersAr.join(' ')} {p.numbers}
-            </span>
-          </div>
+          <nav aria-label="مسار الصفحة" className="mb-4 flex flex-wrap items-center gap-2 text-xs font-semibold text-gold-light">
+            <Link href="/" className="transition-colors hover:text-white">الرئيسية</Link>
+            <span aria-hidden="true">/</span>
+            <Link href={p.auction ? '/auctions' : '/plates'} className="transition-colors hover:text-white">
+              {p.auction ? 'المزادات' : 'المتجر'}
+            </Link>
+            <span aria-hidden="true">/</span>
+            <span className="text-white">تفاصيل اللوحة</span>
+          </nav>
 
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-3">
-                <span className="inline-flex items-center gap-1.5 rounded-lg border border-gold/40 bg-gold/15 px-3 py-1 text-xs font-black text-gold-light">
-                  <Trophy size={13} className="text-gold" />
-                  <span>لوحة {p.numbers.length === 1 ? 'أحادية ملكية' : p.numbers.length === 2 ? 'ثنائية مميزة' : 'نخبة'}</span>
-                </span>
-                {isLive ? (
-                  <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 text-xs font-bold text-emerald-400">
-                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse-live shadow-[0_0_8px_#34d399]" />
-                    <span>مباشر الآن ⚡</span>
-                  </span>
-                ) : isUpcoming ? (
-                  <span className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500/15 border border-amber-500/30 px-3 py-1 text-xs font-bold text-amber-300">
-                    <Clock size={13} />
-                    <span>{statusText}</span>
-                  </span>
-                ) : null}
-              </div>
+          <h1 className="text-2xl font-black leading-snug tracking-tight sm:text-4xl">
+            لوحة {p.lettersAr.join(' ')} <bdi>{p.numbers}</bdi>
+          </h1>
+          <p className="mt-2 text-xs font-semibold leading-6 text-slate-300 sm:text-sm">
+            {p.type || 'خصوصي'} <span aria-hidden="true">·</span> {p.city || 'الرياض'}
+            <span aria-hidden="true"> · </span> كود اللوحة: <bdi className="font-norwester text-gold-light" dir="ltr">{code}</bdi>
+          </p>
 
-              <h1 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl text-white">
-                لوحة مركبة: {p.lettersAr.join(' ')} {p.numbers}
-              </h1>
-              <p className="mt-1 text-xs font-semibold text-slate-300">
-                تسجيل رسمي: {p.type || 'خصوصي'} · منطقة {p.city || 'الرياض'} · كود اللوحة: <span className="font-norwester text-gold-light" dir="ltr">{p.lettersEn.join('')}-{p.numbers}</span>
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <span className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-bold text-slate-200 backdrop-blur-md">
-                <ShieldCheck size={16} className="text-emerald-400" />
-                <span>ملكية مفحوصة ومطابقة</span>
+          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-bold">
+            {p.featured ? <span className="inline-flex items-center gap-1.5 text-gold-light"><Tag size={14} />لوحة مميزة</span> : null}
+            {isLive ? (
+              <span className="inline-flex items-center gap-1.5 text-emerald-400">
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />مزاد مباشر
               </span>
-            </div>
+            ) : isUpcoming ? (
+              <span className="inline-flex items-center gap-1.5 text-amber-300"><Clock size={14} />{statusText}</span>
+            ) : null}
+            {p.verified ? <span className="inline-flex items-center gap-1.5 text-slate-200"><ShieldCheck size={15} className="text-emerald-400" />ملكية مفحوصة ومطابقة</span> : null}
           </div>
         </div>
       </section>
 
-      {/* ============================================================== */}
-      {/* 2. MAIN SHOWCASE: PEDESTAL & AUCTION COMMAND DASHBOARD         */}
-      {/* ============================================================== */}
-      <div className="container-fbs py-10 sm:py-16">
-        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] items-start">
-          
-          {/* Left Column: 3D Plate Display & Specifications */}
-          <div className="space-y-8">
-            {/* Skeuomorphic Plate Presentation Pedestal */}
-            <div className="luxury-card p-6 sm:p-10 text-center relative overflow-hidden">
-              <div className="plate-tray-recessed relative overflow-hidden rounded-3xl p-8 sm:p-14 flex items-center justify-center"><FbsStageWatermark />
-                <div className="relative z-10 w-full max-w-[460px] transition-transform duration-300 hover:scale-[1.02]">
-                  <PlateVisualizer
-                    lettersAr={p.lettersAr}
-                    lettersEn={p.lettersEn}
-                    numbers={p.numbers}
-                    plateType={p.type}
-                    large
-                  />
-                </div>
-              </div>
-
-              <div className="mt-4 flex items-center justify-between text-xs text-slate-500 px-2">
-                <span className="flex items-center gap-1.5 font-medium">
-                  <ShieldCheck size={14} className="text-emerald-600" />
-                  <span>طبعة ألمنيوم بارزة ثلاثية الأبعاد بختم الليزر الأمني المعتمد</span>
-                </span>
-                <span className="font-norwester font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md" dir="ltr">
-                  OFFICIAL DIE-STAMP
-                </span>
+      <div className="container-fbs py-7 sm:py-12">
+        <div className="grid grid-cols-1 items-start gap-5 sm:gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="luxury-card relative overflow-hidden p-4 text-center sm:p-8 lg:col-start-1 lg:row-start-1">
+            <div className="plate-tray-recessed relative flex items-center justify-center overflow-hidden rounded-2xl p-5 sm:rounded-3xl sm:p-12">
+              <FbsStageWatermark />
+              <div className="relative z-10 w-full max-w-[460px]">
+                <PlateVisualizer lettersAr={p.lettersAr} lettersEn={p.lettersEn} numbers={p.numbers} plateType={p.type} large />
               </div>
             </div>
-
-            {/* Plate Description & Heritage */}
-            <div className="luxury-card p-6 sm:p-8">
-              <h2 className="flex items-center gap-2 text-base font-black text-navy mb-4">
-                <Award size={18} className="text-gold-accent" />
-                <span>عن هذه اللوحة الاستثنائية</span>
-              </h2>
-              <p className="whitespace-pre-wrap text-sm leading-8 text-slate-700">
-                {p.description ||
-                  'لوحة مركبة سعودية استثنائية تتميز بتناسق حروفها وأرقامها البارزة. خضعت لفحص الملكية والتدقيق النظامي عبر فريق منصة فارس بن سعود، وهي جاهزة للمزايدة ونقل الملكية الفوري عبر منصة أبشر والمعارض المعتمدة.'}
-              </p>
-
-              {/* Plate Technical Specifications */}
-              <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-slate-100 pt-6 text-xs">
-                <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3">
-                  <span className="block text-slate-400 font-medium">فئة اللوحة</span>
-                  <span className="mt-1 block font-black text-navy text-sm">
-                    {p.type || 'خصوصي'}
-                  </span>
-                </div>
-                <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3">
-                  <span className="block text-slate-400 font-medium">المدينة المسجلة</span>
-                  <span className="mt-1 block font-black text-navy text-sm">{p.city || 'الرياض'}</span>
-                </div>
-                <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3">
-                  <span className="block text-slate-400 font-medium">خانة الأرقام</span>
-                  <span className="mt-1 block font-black text-navy text-sm font-norwester">
-                    {p.numbers.length} {p.numbers.length === 1 ? 'رقم فردي' : 'أرقام'}
-                  </span>
-                </div>
-                <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3">
-                  <span className="block text-slate-400 font-medium">حالة الملكية</span>
-                  <span className="mt-1 block font-black text-emerald-700 text-sm">موثّقة 100%</span>
-                </div>
-              </div>
-            </div>
-
-            {/* 3D Realistic Vehicle Mounting Studio */}
-            <PlateCarPreview3D
-              initialPlate={{
-                lettersAr: p.lettersAr,
-                lettersEn: p.lettersEn,
-                numbers: p.numbers,
-                plateType: p.type,
-                slug: p.slug
-              }}
-            />
+            <p className="mt-3 flex items-center justify-center gap-1.5 text-[11px] font-medium leading-5 text-slate-500 sm:text-xs">
+              <ShieldCheck size={14} className="shrink-0 text-emerald-600" />
+              <span>ألمنيوم بارز ثلاثي الأبعاد بختم ليزر أمني</span>
+            </p>
           </div>
 
-          {/* Right Column: Bidding Command Box & Financial Protections */}
-          <div className="lg:sticky lg:top-24 space-y-6">
-            <div className="luxury-card p-6 sm:p-8 border-gold/40 shadow-xl">
-              {/* Header Status Bar */}
-              <div className="mb-6 flex items-center justify-between border-b border-slate-100 pb-4">
-                <span className="flex items-center gap-2 text-xs font-bold text-emerald-700">
-                  <ShieldCheck size={16} />
-                  <span>توثيق رسمي ومعتمد</span>
-                </span>
-                <span className="rounded-lg bg-slate-100 px-3 py-1 font-norwester text-xs font-bold text-slate-800" dir="ltr">
-                  FBS-{p.slug.toUpperCase()}
-                </span>
-              </div>
+          <aside className="luxury-card border-gold/40 p-5 sm:p-7 lg:sticky lg:top-24 lg:col-start-2 lg:row-span-3 lg:row-start-1">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600">
+                {p.verified ? <ShieldCheck size={16} className="text-emerald-700" /> : <Tag size={16} className="text-gold-accent" />}
+                {p.verified ? 'ملكية مفحوصة' : 'تفاصيل العرض'}
+              </span>
+              <span dir="ltr" className="font-norwester text-xs font-bold text-slate-500">{code}</span>
+            </div>
 
-              {/* Price Banner */}
-              <p className="text-xs font-semibold text-slate-500">
-                {p.auction ? 'المزايدة الحالية المسجلة' : 'السعر المطلوب'}
-              </p>
-              <div className="my-3 flex items-baseline gap-2 text-3xl sm:text-4xl font-black text-navy" dir="ltr">
-                <span className="tabular-nums tracking-tight font-norwester font-black text-slate-950">
-                  {formatEnglishAmount(rawCurrentPrice)}
-                </span>
-                <SarSymbol className="w-6 h-6 text-gold-accent inline-block self-center" />
-              </div>
+            <div className="py-4">
+              <p className="mb-2 text-xs font-semibold text-slate-500">{p.auction ? 'المزايدة الحالية' : 'السعر المطلوب'}</p>
+              {price !== null ? <Price amount={price} large /> : <span className="text-lg font-bold text-navy">السعر عند الطلب</span>}
+            </div>
 
-              {p.auction && (
-                <>
-                  {/* Auction Key Figures */}
-                  <dl className="my-6 grid grid-cols-2 gap-4 rounded-2xl border border-slate-100 bg-slate-50/80 p-4 text-xs">
-                    <div>
-                      <dt className="text-slate-400 font-medium">سعر الافتتاح</dt>
-                      <dd className="mt-1 text-sm font-bold text-navy">
-                        <SarPrice amount={p.auction.startingPriceHalalas} symbolClassName="w-3.5 h-3.5 text-gold-accent" />
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-slate-400 font-medium">عدد المزايدات</dt>
-                      <dd className="mt-1 font-norwester text-sm font-bold text-navy flex items-center gap-1">
-                        <Gavel size={14} className="text-gold-accent" />
-                        <span>{p.auction.bidCount}</span>
-                        <span className="text-[11px] text-slate-500">مزايدة</span>
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-slate-400 font-medium">التأمين المطلوب</dt>
-                      <dd className="mt-1 text-sm font-bold text-navy">
-                        <SarPrice amount={p.auction.depositAmountHalalas} symbolClassName="w-3.5 h-3.5 text-gold-accent" />
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-slate-400 font-medium">أقل زيادة للمزايدة</dt>
-                      <dd className="mt-1 text-sm font-bold text-navy">
-                        <SarPrice amount={p.auction.minimumIncrementHalalas} symbolClassName="w-3.5 h-3.5 text-gold-accent" />
-                      </dd>
-                    </div>
-                  </dl>
-
-                  {/* Primary CTA Button */}
-                  <Link
-                    href={`/auction-room/${p.auction.id}`}
-                    className="btn btn-gold w-full py-4 text-sm font-black shadow-lg shadow-gold/25 hover:shadow-gold/40 flex items-center justify-center gap-2 mb-3"
-                  >
-                    <span>الدخول إلى غرفة المزاد المباشر</span>
-                    <ArrowLeft size={16} />
-                  </Link>
-                </>
-              )}
-
-              {/* Action Buttons */}
-              <div className="space-y-3 pt-2 border-t border-slate-100">
-                <ActionButton
-                  endpoint="/api/v1/favorites"
-                  body={{ plateId: p.id }}
-                  label="حفظ في المفضلة"
-                />
-              </div>
-
-              {/* Bank Guarantee & Escrow Notice */}
-              <div className="mt-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-xs text-slate-700 space-y-2">
-                <div className="flex items-center gap-2 font-bold text-emerald-800">
-                  <Landmark size={15} />
-                  <span>ضمان التأمين البنكي المعتمد</span>
-                </div>
-                <p className="text-[11px] leading-relaxed text-slate-600">
-                  لا يتم استقطاع مبلغ التأمين البنكي، بل يتم حجزه (Pre-Authorization) فقط ويُفك الحجز تلقائياً فور انتهاء المزاد لجميع المشاركين غير الفائزين.
-                </p>
-              </div>
-
-              {/* Terms Link */}
-              <p className="mt-5 text-center text-[11px] text-slate-400">
-                تخضع المشاركة إلى{' '}
-                <Link href="/auction-policy" className="font-semibold text-navy underline hover:text-gold">
-                  شروط المزادات
-                </Link>{' '}
-                و{' '}
-                <Link href="/deposit-policy" className="font-semibold text-navy underline hover:text-gold">
-                  سياسة التأمين المالي
+            {p.auction ? (
+              <>
+                <dl className="mb-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-slate-100 pt-4 text-xs">
+                  <div><dt className="text-slate-500">سعر الافتتاح</dt><dd className="mt-1"><Price amount={p.auction.startingPriceHalalas} /></dd></div>
+                  <div><dt className="text-slate-500">عدد المزايدات</dt><dd className="mt-1 font-bold text-navy">{p.auction.bidCount} مزايدة</dd></div>
+                  <div><dt className="text-slate-500">التأمين المطلوب</dt><dd className="mt-1"><Price amount={p.auction.depositAmountHalalas} /></dd></div>
+                  <div><dt className="text-slate-500">أقل زيادة</dt><dd className="mt-1"><Price amount={p.auction.minimumIncrementHalalas} /></dd></div>
+                </dl>
+                <Link href={`/auction-room/${p.auction.id}`} className="btn btn-gold w-full font-bold">
+                  <Gavel size={17} />
+                  <span>دخول المزاد</span>
+                  <ArrowLeft size={16} />
                 </Link>
-                .
-              </p>
-            </div>
+                <p className="mt-4 text-xs leading-6 text-slate-500">
+                  يُحجز التأمين للمزاد ويُفك لغير الفائزين وفق <Link href="/deposit-policy" className="font-bold text-navy underline">سياسة التأمين</Link>.
+                </p>
+              </>
+            ) : (
+              <>
+                <StorePlateActions plateId={p.id} />
+                <p className="mt-4 text-xs leading-6 text-slate-500">بيع مباشر مع إجراءات نقل الملكية عبر أبشر.</p>
+              </>
+            )}
+          </aside>
 
-            {/* Concierge Contact Support Card */}
-            <div className="luxury-card p-5 text-xs text-slate-600 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/15 text-gold-accent font-black">
-                  FBS
-                </span>
-                <div>
-                  <h4 className="font-bold text-navy">استفسار خاص عن اللوحة؟</h4>
-                  <p className="text-[11px] text-slate-400">فريق الكونسيرج متاح على مدار الساعة</p>
-                </div>
-              </div>
-              <Link href="/contact" className="btn btn-navy text-xs !px-4 !py-2 font-bold">
-                تواصل معنا
-              </Link>
-            </div>
+          <section className="luxury-card p-5 sm:p-7 lg:col-start-1 lg:row-start-2">
+            <h2 className="text-base font-black text-navy">تفاصيل اللوحة</h2>
+            {p.description ? <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-700">{p.description}</p> : null}
+            <dl className="mt-4 grid grid-cols-2 gap-x-5 gap-y-4 border-t border-slate-100 pt-4 text-xs sm:grid-cols-4">
+              <div><dt className="text-slate-500">الفئة</dt><dd className="mt-1 font-bold text-navy">{p.type || 'خصوصي'}</dd></div>
+              <div><dt className="text-slate-500">المدينة</dt><dd className="mt-1 font-bold text-navy">{p.city || 'الرياض'}</dd></div>
+              <div><dt className="text-slate-500">الأرقام</dt><dd className="mt-1 font-bold text-navy">{p.numbers.length} {p.numbers.length === 1 ? 'رقم' : 'أرقام'}</dd></div>
+              {p.verified ? <div><dt className="text-slate-500">الملكية</dt><dd className="mt-1 font-bold text-emerald-700">مفحوصة</dd></div> : null}
+            </dl>
+          </section>
+
+          <div className="lg:col-start-1 lg:row-start-3">
+            <PlateCarPreview3D initialPlate={{ lettersAr: p.lettersAr, lettersEn: p.lettersEn, numbers: p.numbers, plateType: p.type, slug: p.slug }} />
           </div>
-
         </div>
       </div>
     </>
   );
 }
-

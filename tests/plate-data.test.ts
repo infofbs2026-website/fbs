@@ -113,10 +113,11 @@ describe('Plate identity and input normalization', () => {
 describe('Shared vector face contract', () => {
   const props = { lettersAr: ['ب', 'ط', 'ل'], lettersEn: ['L', 'T', 'B'], numbers: '8888' };
   const signatures = (html: string) =>
-    html.match(/data-plate-char="[^"]*"[^>]*transform="[^"]*">\s*<path[^>]*>/g);
+    [...html.matchAll(/data-plate-char="([^"]*)"[^>]*>\s*(<path[^>]*>)/g)]
+      .map((match) => `${match[1]}:${match[2]}`);
 
   it.each(['خصوصي', 'صغيرة', 'نقل'])(
-    'draws identical glyph geometry and ink in the card and car for %s',
+    'preserves the glyphs and frame while leaving the car plate unbranded for %s',
     (plateType) => {
       for (const format of ['long', 'standard'] as const) {
         const card = renderToStaticMarkup(
@@ -127,7 +128,11 @@ describe('Shared vector face contract', () => {
         );
         expect(signatures(card)).toHaveLength(14);
         expect(signatures(card)).toEqual(signatures(car));
+        expect(card).toContain('data-pf-part="fbs-logo"');
+        expect(car).not.toContain('data-pf-part="fbs-logo"');
+        expect(car).toContain('data-pf-part="pillar"');
         expect(card).toContain(format === 'long' ? 'viewBox="0 0 520 110"' : 'viewBox="0 0 335 170"');
+        expect(car).toContain(format === 'long' ? 'viewBox="0 0 520 110"' : 'viewBox="0 0 335 170"');
       }
     },
   );
@@ -155,6 +160,20 @@ describe('Shared vector face contract', () => {
     );
     expect(html).toContain('data-plate-face="standard"');
     expect(html).toContain('size=standard');
+  });
+
+  it('keeps the chosen view and lighting when opening the full-screen preview', () => {
+    const html = renderToStaticMarkup(
+      createElement(PlateCarPreview3D, {
+        initialPlate: { ...props, plateType: 'خصوصي' },
+        initialCamera: 'closeup',
+        initialLighting: 'day',
+      }),
+    );
+    expect(html).toContain('camera=closeup');
+    expect(html).toContain('lighting=day');
+    expect(html).not.toContain('زاوية سينمائية');
+    expect(html).not.toContain('ذهبي دافئ');
   });
 
   it('shows a neutral vector for a conflicting pair and exposes an accessible explanation', () => {
