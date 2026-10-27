@@ -843,109 +843,93 @@ export function Footer() {
           </div>
         </div>
 
-        {/* 2. Simplified, Elegant Executive Contact & Channels Strip */}
-        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 backdrop-blur-md mb-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 text-center md:text-start">
-            
-            {/* Direct Line / Hotline */}
+        {/* Contact details and social links belong directly to the footer. */}
+        <div className="flex flex-col items-start justify-between gap-4 border-t border-white/10 py-5 text-start md:flex-row md:items-center md:gap-6 sm:py-6">
+          <div className="flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-8 sm:gap-y-3">
             <a
               href="https://wa.me/966500000000"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-2.5 text-slate-200 hover:text-gold transition-colors"
+              className="group inline-flex min-h-8 items-center gap-2 text-slate-300 transition-colors hover:text-gold"
             >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gold/15 text-gold border border-gold/30">
-                <Phone size={16} />
-              </div>
-              <div className="text-start">
-                <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
-                  <span>الخط الساخن والمستشار الخاص</span>
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                </div>
-                <div className="font-norwester text-base sm:text-lg font-bold text-white group-hover:text-gold transition-colors tracking-wide" dir="ltr">
-                  +966 50 000 0000
-                </div>
-              </div>
+              <Phone size={16} className="shrink-0 text-gold" aria-hidden="true" />
+              <span className="text-xs font-medium">الخط الساخن</span>
+              <span className="font-norwester text-base font-bold tracking-wide text-white group-hover:text-gold" dir="ltr">
+                +966 50 000 0000
+              </span>
             </a>
-
-            {/* Headquarters Location */}
-            <div className="flex items-center gap-2.5 text-slate-300 text-xs sm:text-[13px]">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/5 text-gold border border-white/10">
-                <MapPin size={16} />
-              </div>
-              <div className="text-start">
-                <div className="text-[11px] text-slate-400 font-medium">المقر الرئيسي</div>
-                <div className="font-semibold text-white">الرياض • برج المملكة المالي</div>
-              </div>
+            <div className="inline-flex min-h-8 items-center gap-2 text-xs text-slate-300 sm:text-[13px]">
+              <MapPin size={16} className="shrink-0 text-gold" aria-hidden="true" />
+              <span className="font-medium">المقر الرئيسي:</span>
+              <span className="font-semibold text-white">الرياض • برج المملكة المالي</span>
             </div>
-
-            {/* Social Media Channels */}
-            <div className="flex items-center gap-2">
-              {/* X */}
-              <a
-                href="https://x.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="X"
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 hover:border-gold/50 hover:bg-gold/15 hover:text-gold transition-all"
-              >
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-              </a>
-              {/* Instagram */}
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 hover:border-gold/50 hover:bg-gold/15 hover:text-gold transition-all"
-              >
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
-                </svg>
-              </a>
-              {/* Snapchat */}
-              <a
-                href="https://snapchat.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Snapchat"
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 hover:border-gold/50 hover:bg-gold/15 hover:text-gold transition-all"
-              >
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12.29 2c-3.67 0-6.19 2.76-6.19 5.86 0 .86.26 1.74.45 2.37.07.24.12.43.1.53-.06.22-.44.47-.89.65-.67.28-1.28.66-1.28 1.48 0 .85.74 1.34 1.5 1.57.34.1.66.14.93.18.06.01.12.02.16.03.35.08.47.37.38.74-.26 1.05-.98 1.4-1.8 1.73-.39.15-.81.33-1.07.65-.29.35-.38.8-.24 1.25.17.54.68.85 1.29.85.34 0 .73-.1 1.15-.28.84-.36 1.83-.78 3.25-.19.46.19.98.3 1.54.3.56 0 1.08-.11 1.54-.3 1.42-.59 2.41-.17 3.25.19.42.18.81.28 1.15.28.61 0 1.12-.31 1.29-.85.14-.45.05-.9-.24-1.25-.26-.32-.68-.5-1.07-.65-.82-.33-1.54-.68-1.8-1.73-.09-.37.03-.66.38-.74.04-.01.1-.02.16-.03.27-.04.59-.08.93-.18.76-.23 1.5-.72 1.5-1.57 0-.82-.61-1.2-1.28-1.48-.45-.18-.83-.43-.89-.65-.02-.1.03-.29.1-.53.19-.63.45-1.51.45-2.37C18.48 4.76 15.96 2 12.29 2z"/>
-                </svg>
-              </a>
-              {/* TikTok */}
-              <a
-                href="https://tiktok.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="TikTok"
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 hover:border-gold/50 hover:bg-gold/15 hover:text-gold transition-all"
-              >
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.85.12V9.4a6.33 6.33 0 0 0-.85-.06A6.34 6.34 0 0 0 3.1 15.68a6.34 6.34 0 0 0 10.74 4.49 6.27 6.27 0 0 0 1.94-4.5V8.87a8.28 8.28 0 0 0 5.25 1.83V7.27a4.82 4.82 0 0 1-1.44-.58z"/>
-                </svg>
-              </a>
-              {/* YouTube */}
-              <a
-                href="https://youtube.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="YouTube"
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 hover:border-gold/50 hover:bg-gold/15 hover:text-gold transition-all"
-              >
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                </svg>
-              </a>
-            </div>
-
           </div>
+
+          {/* Social Media Channels */}
+          <nav className="flex flex-wrap items-center gap-2" aria-label="روابط التواصل الاجتماعي">
+            {/* X */}
+            <a
+              href="https://x.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="X"
+              className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 transition-colors hover:border-gold/50 hover:bg-gold/15 hover:text-gold"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </a>
+            {/* Instagram */}
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 transition-colors hover:border-gold/50 hover:bg-gold/15 hover:text-gold"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+              </svg>
+            </a>
+            {/* Snapchat */}
+            <a
+              href="https://snapchat.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Snapchat"
+              className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 transition-colors hover:border-gold/50 hover:bg-gold/15 hover:text-gold"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.29 2c-3.67 0-6.19 2.76-6.19 5.86 0 .86.26 1.74.45 2.37.07.24.12.43.1.53-.06.22-.44.47-.89.65-.67.28-1.28.66-1.28 1.48 0 .85.74 1.34 1.5 1.57.34.1.66.14.93.18.06.01.12.02.16.03.35.08.47.37.38.74-.26 1.05-.98 1.4-1.8 1.73-.39.15-.81.33-1.07.65-.29.35-.38.8-.24 1.25.17.54.68.85 1.29.85.34 0 .73-.1 1.15-.28.84-.36 1.83-.78 3.25-.19.46.19.98.3 1.54.3.56 0 1.08-.11 1.54-.3 1.42-.59 2.41-.17 3.25.19.42.18.81.28 1.15.28.61 0 1.12-.31 1.29-.85.14-.45.05-.9-.24-1.25-.26-.32-.68-.5-1.07-.65-.82-.33-1.54-.68-1.8-1.73-.09-.37.03-.66.38-.74.04-.01.1-.02.16-.03.27-.04.59-.08.93-.18.76-.23 1.5-.72 1.5-1.57 0-.82-.61-1.2-1.28-1.48-.45-.18-.83-.43-.89-.65-.02-.1.03-.29.1-.53.19-.63.45-1.51.45-2.37C18.48 4.76 15.96 2 12.29 2z"/>
+              </svg>
+            </a>
+            {/* TikTok */}
+            <a
+              href="https://tiktok.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="TikTok"
+              className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 transition-colors hover:border-gold/50 hover:bg-gold/15 hover:text-gold"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.85.12V9.4a6.33 6.33 0 0 0-.85-.06A6.34 6.34 0 0 0 3.1 15.68a6.34 6.34 0 0 0 10.74 4.49 6.27 6.27 0 0 0 1.94-4.5V8.87a8.28 8.28 0 0 0 5.25 1.83V7.27a4.82 4.82 0 0 1-1.44-.58z"/>
+              </svg>
+            </a>
+            {/* YouTube */}
+            <a
+              href="https://youtube.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="YouTube"
+              className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 transition-colors hover:border-gold/50 hover:bg-gold/15 hover:text-gold"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+              </svg>
+            </a>
+          </nav>
         </div>
       </div>
 

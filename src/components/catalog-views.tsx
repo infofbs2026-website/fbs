@@ -1130,61 +1130,64 @@ export function CatalogStage({
                     return (
                       <div
                         key={item.id}
-                        className="flex items-center justify-between gap-3 rounded-2xl border border-[#E7E5DF] bg-[#FAF9F6] p-3"
+                        className="rounded-2xl border border-[#E7E5DF] bg-[#FAF9F6] p-3"
                       >
                         <Link
                           href={`/plates/${item.slug}`}
                           onClick={() => setDrawerTab(null)}
-                          className="w-[140px] shrink-0 rounded-xl bg-white p-1.5 border border-[#E5E2D9]"
+                          className="flex w-full items-center justify-center rounded-xl border border-[#E5E2D9] bg-gradient-to-b from-white via-[#F8FAFD] to-[#EDF1F7] px-2.5 py-3"
+                          aria-label={`عرض تفاصيل اللوحة ${item.lettersAr.join(' ')} ${item.numbers}`}
                         >
-                          <PlateVisualizer
-                            lettersAr={item.lettersAr}
-                            lettersEn={item.lettersEn}
-                            numbers={item.numbers}
-                            plateType={item.type}
-                            compact
-                          />
+                          <div className="w-full max-w-[360px]">
+                            <PlateVisualizer
+                              lettersAr={item.lettersAr}
+                              lettersEn={item.lettersEn}
+                              numbers={item.numbers}
+                              plateType={item.type}
+                            />
+                          </div>
                         </Link>
 
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5 mb-1">
-                            <span className="rounded-md bg-white border border-[#E5E2D9] px-2 py-0.5 pf-type-micro font-bold text-[#14243C]">
+                        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+                            <span className="whitespace-nowrap rounded-md border border-[#E5E2D9] bg-white px-2 py-0.5 pf-type-micro font-bold text-[#14243C]">
                               {item.type || 'خصوصي'}
                             </span>
+                            <div className="flex items-baseline gap-1 text-[#14243C]" dir="rtl">
+                              <span
+                                className="whitespace-nowrap font-norwester text-lg font-black text-[#14243C]"
+                                dir="ltr"
+                              >
+                                {formatEnglishAmount(itemPrice)}
+                              </span>
+                              <SarSymbol className="w-3 h-3 text-[#9E7B35]" />
+                            </div>
                           </div>
 
-                          <div className="flex items-baseline gap-1 text-[#14243C]" dir="rtl">
-                            <span
-                              className="font-norwester text-base font-black text-[#14243C]"
-                              dir="ltr"
-                            >
-                              {formatEnglishAmount(itemPrice)}
-                            </span>
-                            <SarSymbol className="w-3 h-3 text-[#9E7B35]" />
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col items-center gap-1.5 shrink-0">
-                          {drawerTab === 'wishlist' && !cartIds.includes(item.id) && (
+                          <div className="flex shrink-0 items-center gap-1.5">
+                            {drawerTab === 'wishlist' && !cartIds.includes(item.id) && (
+                              <button
+                                type="button"
+                                onClick={() => toggleCart(item)}
+                                className="min-h-11 rounded-lg bg-[#14243C] px-3 pf-type-micro font-bold text-white hover:bg-[#08162B]"
+                                aria-label={`إضافة إلى السلة: ${item.lettersAr.join(' ')} ${item.numbers}`}
+                                title="إضافة إلى السلة"
+                              >
+                                + للسلة
+                              </button>
+                            )}
                             <button
                               type="button"
-                              onClick={() => toggleCart(item)}
-                              className="rounded-lg bg-[#14243C] px-2.5 py-1 pf-type-micro font-bold text-white hover:bg-[#08162B]"
-                              title="نقل إلى السلة"
+                              onClick={() =>
+                                drawerTab === 'cart' ? toggleCart(item) : toggleWishlist(item)
+                              }
+                              className="flex h-11 w-11 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
+                              aria-label={`${drawerTab === 'cart' ? 'إزالة من السلة' : 'إزالة من المفضلة'}: ${item.lettersAr.join(' ')} ${item.numbers}`}
+                              title="حذف"
                             >
-                              + للسلة
+                              <Trash2 size={16} aria-hidden="true" />
                             </button>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() =>
-                              drawerTab === 'cart' ? toggleCart(item) : toggleWishlist(item)
-                            }
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                            title="حذف"
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                          </div>
                         </div>
                       </div>
                     );
