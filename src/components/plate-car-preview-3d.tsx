@@ -158,6 +158,22 @@ function StudioSelect<T extends string>({
   );
 }
 
+function LightingToggle({ lighting, onChange, className = '' }: {
+  lighting: LightingMode;
+  onChange: (value: LightingMode) => void;
+  className?: string;
+}) {
+  return (
+    <div role="group" aria-label="الإضاءة" className={`grid grid-cols-2 gap-1 rounded-lg bg-[#07111f]/80 p-0.5 ${className}`}>
+      {([{ value: 'night', label: 'ليلي', icon: Moon }, { value: 'day', label: 'نهاري', icon: Sun }] as const).map(({ value, label, icon: LightingIcon }) => (
+        <button key={value} type="button" aria-pressed={lighting === value} onClick={() => onChange(value)} className={`flex min-h-10 min-w-0 items-center justify-center gap-1 rounded-md px-1 text-[11px] font-bold transition-colors focus-visible:outline-2 focus-visible:outline-gold ${lighting === value ? 'bg-gold/20 text-gold-light' : 'text-slate-400 hover:bg-white/[0.08] hover:text-white'}`}>
+          <LightingIcon size={13} className="shrink-0" aria-hidden="true" />{label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function StudioControls({ carId, plateSize, cameraMode, lighting, onCar, onSize, onCamera, onLighting }: {
   carId: CarModelId;
   plateSize: PlateSize;
@@ -176,13 +192,7 @@ function StudioControls({ carId, plateSize, cameraMode, lighting, onCar, onSize,
         <StudioSelect label="العرض" icon={Car} value={cameraMode} options={CAMERA_OPTIONS} onChange={onCamera} />
         <div className="flex min-h-[76px] min-w-0 flex-col justify-center gap-1 px-3 py-2">
           <span className="text-[10px] font-semibold leading-4 text-slate-400">الإضاءة</span>
-          <div role="group" aria-label="الإضاءة" className="grid grid-cols-2 gap-1 rounded-lg bg-[#07111f]/80 p-0.5">
-            {([{ value: 'night', label: 'ليلي', icon: Moon }, { value: 'day', label: 'نهاري', icon: Sun }] as const).map(({ value, label, icon: LightingIcon }) => (
-              <button key={value} type="button" aria-pressed={lighting === value} onClick={() => onLighting(value)} className={`flex min-h-10 min-w-0 items-center justify-center gap-1 rounded-md px-1 text-[11px] font-bold transition-colors focus-visible:outline-2 focus-visible:outline-gold ${lighting === value ? 'bg-gold/20 text-gold-light' : 'text-slate-400 hover:bg-white/[0.08] hover:text-white'}`}>
-                <LightingIcon size={13} className="shrink-0" aria-hidden="true" />{label}
-              </button>
-            ))}
-          </div>
+          <LightingToggle lighting={lighting} onChange={onLighting} />
         </div>
       </div>
     </div>
@@ -482,14 +492,14 @@ function PlateCarPreviewScene({
   /* ============================================================== */
   return (
     <div className="relative rounded-2xl border border-gold/25 bg-gradient-to-b from-[#0a1222] to-[#060b16] p-3 text-white shadow-[0_16px_40px_-16px_rgba(6,11,22,0.6)]">
-      <div className="mb-2 flex items-center justify-between gap-3 px-1">
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2 px-1">
         <h2 className="flex items-center gap-2 text-sm font-black text-white"><Car size={17} className="text-gold" />معاينة على السيارة</h2>
-        <Link href={expandHref} title="فتح معرض السيارات" aria-label="فتح معرض السيارات" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-gold-light transition-colors hover:bg-white/10">
-          <ArrowRight size={19} />
-        </Link>
-      </div>
-      <div className="mb-3">
-        <StudioControls carId={carId} plateSize={plateSize} cameraMode={cameraMode} lighting={lighting} onCar={setCarId} onSize={setPlateSize} onCamera={setCameraMode} onLighting={setLighting} />
+        <div className="flex items-center gap-1.5">
+          <LightingToggle lighting={lighting} onChange={setLighting} className="w-28" />
+          <Link href={expandHref} title="فتح معرض السيارات" aria-label="فتح معرض السيارات" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-gold-light transition-colors hover:bg-white/10">
+            <ArrowRight size={19} />
+          </Link>
+        </div>
       </div>
 
       {/* Viewer: Fixed 16:9 Frame */}
