@@ -98,57 +98,61 @@ export default async function Detail({ params }: { params: Promise<{ slug: strin
             </p>
           </div>
 
-          <aside className="luxury-card border-gold/40 p-5 sm:p-7 lg:sticky lg:top-24 lg:col-start-2 lg:row-span-3 lg:row-start-1">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4">
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600">
-                {p.verified ? <ShieldCheck size={16} className="text-emerald-700" /> : <Tag size={16} className="text-gold-accent" />}
-                {p.verified ? 'ملكية مفحوصة' : 'تفاصيل العرض'}
-              </span>
-              <span dir="ltr" className="font-norwester text-xs font-bold text-slate-500">{code}</span>
-            </div>
-
-            <div className="py-4">
-              <p className="mb-2 text-xs font-semibold text-slate-500">{p.auction ? 'المزايدة الحالية' : 'السعر المطلوب'}</p>
-              {price !== null ? <Price amount={price} large /> : <span className="text-lg font-bold text-navy">السعر عند الطلب</span>}
-            </div>
-
-            {p.auction ? (
-              <>
-                <dl className="mb-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-slate-100 pt-4 text-xs">
-                  <div><dt className="text-slate-500">سعر الافتتاح</dt><dd className="mt-1"><Price amount={p.auction.startingPriceHalalas} /></dd></div>
-                  <div><dt className="text-slate-500">عدد المزايدات</dt><dd className="mt-1 font-bold text-navy">{p.auction.bidCount} مزايدة</dd></div>
-                  <div><dt className="text-slate-500">التأمين المطلوب</dt><dd className="mt-1"><Price amount={p.auction.depositAmountHalalas} /></dd></div>
-                  <div><dt className="text-slate-500">أقل زيادة</dt><dd className="mt-1"><Price amount={p.auction.minimumIncrementHalalas} /></dd></div>
+          <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-stretch">
+            <aside aria-label="تفاصيل اللوحة والسعر" tabIndex={0} className="space-y-5 sm:space-y-6 lg:sticky lg:top-24 lg:-mx-2 lg:-mt-2 lg:max-h-[calc(100dvh-6.5rem)] lg:overflow-y-auto lg:px-2 lg:py-2">
+              <section className="luxury-card p-5 sm:p-7">
+                <h2 className="text-base font-black text-navy">تفاصيل اللوحة</h2>
+                {p.description ? <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-700">{p.description}</p> : null}
+                <dl className="mt-4 grid grid-cols-2 gap-x-5 gap-y-4 border-t border-slate-100 pt-4 text-xs sm:grid-cols-4">
+                  <div><dt className="text-slate-500">الفئة</dt><dd className="mt-1 font-bold text-navy">{p.type || 'خصوصي'}</dd></div>
+                  <div><dt className="text-slate-500">المدينة</dt><dd className="mt-1 font-bold text-navy">{p.city || 'الرياض'}</dd></div>
+                  <div><dt className="text-slate-500">الأرقام</dt><dd className="mt-1 font-bold text-navy">{p.numbers.length} {p.numbers.length === 1 ? 'رقم' : 'أرقام'}</dd></div>
+                  {p.verified ? <div><dt className="text-slate-500">الملكية</dt><dd className="mt-1 font-bold text-emerald-700">مفحوصة</dd></div> : null}
                 </dl>
-                <Link href={`/auction-room/${p.auction.id}`} className="btn btn-gold w-full font-bold">
-                  <Gavel size={17} />
-                  <span>دخول المزاد</span>
-                  <ArrowLeft size={16} />
-                </Link>
-                <p className="mt-4 text-xs leading-6 text-slate-500">
-                  يُحجز التأمين للمزاد ويُفك لغير الفائزين وفق <Link href="/deposit-policy" className="font-bold text-navy underline">سياسة التأمين</Link>.
-                </p>
-              </>
-            ) : (
-              <>
-                <StorePlateActions plateId={p.id} />
-                <p className="mt-4 text-xs leading-6 text-slate-500">بيع مباشر مع إجراءات نقل الملكية عبر أبشر.</p>
-              </>
-            )}
-          </aside>
+              </section>
 
-          <section className="luxury-card p-5 sm:p-7 lg:col-start-1 lg:row-start-2">
-            <h2 className="text-base font-black text-navy">تفاصيل اللوحة</h2>
-            {p.description ? <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-700">{p.description}</p> : null}
-            <dl className="mt-4 grid grid-cols-2 gap-x-5 gap-y-4 border-t border-slate-100 pt-4 text-xs sm:grid-cols-4">
-              <div><dt className="text-slate-500">الفئة</dt><dd className="mt-1 font-bold text-navy">{p.type || 'خصوصي'}</dd></div>
-              <div><dt className="text-slate-500">المدينة</dt><dd className="mt-1 font-bold text-navy">{p.city || 'الرياض'}</dd></div>
-              <div><dt className="text-slate-500">الأرقام</dt><dd className="mt-1 font-bold text-navy">{p.numbers.length} {p.numbers.length === 1 ? 'رقم' : 'أرقام'}</dd></div>
-              {p.verified ? <div><dt className="text-slate-500">الملكية</dt><dd className="mt-1 font-bold text-emerald-700">مفحوصة</dd></div> : null}
-            </dl>
-          </section>
+              <section className="luxury-card border-gold/40 p-5 sm:p-7">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600">
+                    {p.verified ? <ShieldCheck size={16} className="text-emerald-700" /> : <Tag size={16} className="text-gold-accent" />}
+                    {p.verified ? 'ملكية مفحوصة' : 'تفاصيل العرض'}
+                  </span>
+                  <span dir="ltr" className="font-norwester text-xs font-bold text-slate-500">{code}</span>
+                </div>
 
-          <div className="lg:col-start-1 lg:row-start-3">
+                <div className="py-4">
+                  <p className="mb-2 text-xs font-semibold text-slate-500">{p.auction ? 'المزايدة الحالية' : 'السعر المطلوب'}</p>
+                  {price !== null ? <Price amount={price} large /> : <span className="text-lg font-bold text-navy">السعر عند الطلب</span>}
+                </div>
+
+                {p.auction ? (
+                  <>
+                    <dl className="mb-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-slate-100 pt-4 text-xs">
+                      <div><dt className="text-slate-500">سعر الافتتاح</dt><dd className="mt-1"><Price amount={p.auction.startingPriceHalalas} /></dd></div>
+                      <div><dt className="text-slate-500">عدد المزايدات</dt><dd className="mt-1 font-bold text-navy">{p.auction.bidCount} مزايدة</dd></div>
+                      <div><dt className="text-slate-500">التأمين المطلوب</dt><dd className="mt-1"><Price amount={p.auction.depositAmountHalalas} /></dd></div>
+                      <div><dt className="text-slate-500">أقل زيادة</dt><dd className="mt-1"><Price amount={p.auction.minimumIncrementHalalas} /></dd></div>
+                    </dl>
+                    <Link href={`/auction-room/${p.auction.id}`} className="btn btn-gold w-full font-bold">
+                      <Gavel size={17} />
+                      <span>دخول المزاد</span>
+                      <ArrowLeft size={16} />
+                    </Link>
+                    <p className="mt-4 text-xs leading-6 text-slate-500">
+                      يُحجز التأمين للمزاد ويُفك لغير الفائزين وفق <Link href="/deposit-policy" className="font-bold text-navy underline">سياسة التأمين</Link>.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <StorePlateActions plateId={p.id} />
+                    <p className="mt-4 text-xs leading-6 text-slate-500">بيع مباشر مع إجراءات نقل الملكية عبر أبشر.</p>
+                  </>
+                )}
+              </section>
+            </aside>
+          </div>
+
+          <div className="lg:col-start-1 lg:row-start-2">
             <PlateCarPreview3D initialPlate={{ lettersAr: p.lettersAr, lettersEn: p.lettersEn, numbers: p.numbers, plateType: p.type, slug: p.slug }} />
           </div>
         </div>
