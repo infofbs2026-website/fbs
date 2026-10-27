@@ -114,7 +114,7 @@ export function AboutHero() {
             <div className="pf-cq-pad-inner plate-tray-recessed-dark my-5 rounded-2xl p-5 sm:p-6 flex flex-col items-center justify-center">
               <PlateVisualizer
                 lettersAr={['ق']}
-                lettersEn={['Q']}
+                lettersEn={['G']}
                 numbers="1"
                 plateType="private"
               />
