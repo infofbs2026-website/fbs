@@ -1,0 +1,35 @@
+.controlsContainer {
+  min-width: 0;
+  container-type: inline-size;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid rgb(217 187 129 / 22%);
+  border-radius: 0.875rem;
+  background: rgb(17 29 48 / 95%);
+}
+
+.controls > :nth-child(even) {
+  border-inline-start: 1px solid rgb(255 255 255 / 10%);
+}
+
+.controls > :nth-child(-n + 2) {
+  border-bottom: 1px solid rgb(255 255 255 / 10%);
+}
+
+@container (min-width: 680px) {
+  .controls {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1.3fr);
+  }
+
+  .controls > :nth-child(-n + 2) {
+    border-bottom: 0;
+  }
+
+  .controls > :not(:first-child) {
+    border-inline-start: 1px solid rgb(255 255 255 / 10%);
+  }
+}

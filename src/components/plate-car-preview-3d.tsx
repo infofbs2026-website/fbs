@@ -6,14 +6,19 @@ import Link from 'next/link';
 import {
   ArrowRight,
   Car,
+  CarFront,
   ChevronDown,
   ChevronUp,
   Maximize2,
   Minimize2,
+  Moon,
+  RectangleHorizontal,
+  Sun,
   Sparkles
 } from 'lucide-react';
 import { PlateFace } from '@/components/plate-face';
 import { getPlateGeometry, normalizePlateType, parsePlateData } from '@/lib/plate-data';
+import styles from './plate-car-preview-3d.module.css';
 
 /* ============================================================== */
 /* STUDIO DATA                                                     */
@@ -91,15 +96,18 @@ const CAMERA_OPTIONS: { value: CameraMode; label: string }[] = [
   { value: 'closeup', label: 'قريب على اللوحة' }
 ];
 
-const LIGHTING_OPTIONS: { value: LightingMode; label: string }[] = [
-  { value: 'night', label: 'ليلي' },
-  { value: 'day', label: 'نهاري' }
-];
-
 const LIGHTING_FILTERS: Record<LightingMode, string> = {
-  night: 'brightness(0.92) contrast(1.15) saturate(0.95)',
-  day: 'brightness(1.36) contrast(1.10) saturate(1.10)'
+  night: 'brightness(1.02) contrast(1.03) saturate(0.98)',
+  day: 'sepia(0.20) saturate(1.22) brightness(1.05) contrast(1.06)'
 };
+
+function SceneLighting({ mode }: { mode: LightingMode }) {
+  return mode === 'day' ? (
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-5 bg-[radial-gradient(ellipse_at_50%_50%,rgba(217,184,127,0.45),transparent_70%)] opacity-25 mix-blend-color-dodge transition-opacity duration-700" />
+  ) : (
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-5 bg-radial-[at_50%_60%] from-transparent via-black/15 to-black/55 opacity-25 mix-blend-multiply transition-opacity duration-700" />
+  );
+}
 
 /** Uses the catalog's plate details and finish without the FBS mark on a car. */
 export function CarMountedPlate({ lettersAr, lettersEn, numbers, plateType = 'خصوصي', size = 'long' }: {
@@ -118,27 +126,35 @@ export function CarMountedPlate({ lettersAr, lettersEn, numbers, plateType = 'خ
 
 function StudioSelect<T extends string>({
   label,
+  icon: Icon,
   value,
   options,
   onChange
 }: {
   label: string;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
   value: T;
-  options: { value: T; label: string; hint?: string }[];
+  options: { value: T; label: string }[];
   onChange: (value: T) => void;
 }) {
   return (
-    <span className="relative inline-flex max-w-full items-center">
+    <label className="group relative flex min-h-[76px] min-w-0 cursor-pointer flex-col justify-center gap-1 px-3 py-2.5 transition-colors hover:bg-white/[0.04] focus-within:bg-white/[0.06] focus-within:ring-2 focus-within:ring-inset focus-within:ring-gold">
+      <span className="flex min-w-0 items-center gap-1.5 text-[10px] font-semibold leading-4 text-slate-400" aria-hidden="true">
+        <Icon size={14} className="shrink-0 text-gold/90" />{label}
+      </span>
+      <span className="flex min-w-0 items-center gap-1.5" aria-hidden="true">
+        <ChevronDown size={14} className="shrink-0 text-gold" />
+        <span className="truncate text-xs font-bold leading-5 text-slate-100">{options.find((option) => option.value === value)?.label}</span>
+      </span>
       <select
         aria-label={label}
         value={value}
         onChange={(event) => onChange(event.target.value as T)}
-        className="min-h-10 max-w-full cursor-pointer appearance-none rounded-lg bg-transparent py-1 ps-2 pe-6 text-xs font-bold text-slate-200 transition-colors hover:bg-white/[0.08] hover:text-gold-light focus-visible:outline-2 focus-visible:outline-gold"
+        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
       >
         {options.map((option) => <option key={option.value} value={option.value} className="bg-[#091224] text-white">{option.label}</option>)}
       </select>
-      <ChevronDown size={13} className="pointer-events-none absolute end-1.5 text-gold" />
-    </span>
+    </label>
   );
 }
 
@@ -153,11 +169,22 @@ function StudioControls({ carId, plateSize, cameraMode, lighting, onCar, onSize,
   onLighting: (value: LightingMode) => void;
 }) {
   return (
-    <div aria-label="خيارات معاينة السيارة" className="flex flex-wrap items-center gap-x-1">
-      <StudioSelect label="موديل السيارة" value={carId} options={CAR_STUDIO_MODELS.map((car) => ({ value: car.id, label: car.nameAr }))} onChange={onCar} />
-      <StudioSelect label="حجم اللوحة" value={plateSize} options={[{ value: 'long', label: 'لوحة طويلة' }, { value: 'standard', label: 'لوحة صغيرة' }]} onChange={onSize} />
-      <StudioSelect label="زاوية الرؤية" value={cameraMode} options={CAMERA_OPTIONS} onChange={onCamera} />
-      <StudioSelect label="الإضاءة" value={lighting} options={LIGHTING_OPTIONS} onChange={onLighting} />
+    <div className={styles.controlsContainer}>
+      <div role="group" aria-label="خيارات معاينة السيارة" className={styles.controls}>
+        <StudioSelect label="السيارة" icon={CarFront} value={carId} options={CAR_STUDIO_MODELS.map((car) => ({ value: car.id, label: car.nameAr }))} onChange={onCar} />
+        <StudioSelect label="نوع اللوحة" icon={RectangleHorizontal} value={plateSize} options={[{ value: 'long', label: 'لوحة طويلة' }, { value: 'standard', label: 'لوحة صغيرة' }]} onChange={onSize} />
+        <StudioSelect label="العرض" icon={Car} value={cameraMode} options={CAMERA_OPTIONS} onChange={onCamera} />
+        <div className="flex min-h-[76px] min-w-0 flex-col justify-center gap-1 px-3 py-2">
+          <span className="text-[10px] font-semibold leading-4 text-slate-400">الإضاءة</span>
+          <div role="group" aria-label="الإضاءة" className="grid grid-cols-2 gap-1 rounded-lg bg-[#07111f]/80 p-0.5">
+            {([{ value: 'night', label: 'ليلي', icon: Moon }, { value: 'day', label: 'نهاري', icon: Sun }] as const).map(({ value, label, icon: LightingIcon }) => (
+              <button key={value} type="button" aria-pressed={lighting === value} onClick={() => onLighting(value)} className={`flex min-h-10 min-w-0 items-center justify-center gap-1 rounded-md px-1 text-[11px] font-bold transition-colors focus-visible:outline-2 focus-visible:outline-gold ${lighting === value ? 'bg-gold/20 text-gold-light' : 'text-slate-400 hover:bg-white/[0.08] hover:text-white'}`}>
+                <LightingIcon size={13} className="shrink-0" aria-hidden="true" />{label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -282,7 +309,7 @@ function PlateCarPreviewScene({
         {/* Dynamic Ambient Luxury Lighting matching car environment */}
         <div
           className={`pointer-events-none absolute inset-0 bg-cover bg-center blur-3xl scale-125 transition-all duration-700 ${
-            lighting === 'day' ? 'opacity-45 brightness-150' : 'opacity-25'
+            lighting === 'day' ? 'opacity-30 brightness-110' : 'opacity-25'
           }`}
           style={{ backgroundImage: `url(${car.studioImage})` }}
         />
@@ -300,10 +327,6 @@ function PlateCarPreviewScene({
               : 'from-[#030712]/80 via-transparent to-[#030712]/80'
           }`}
         />
-        {lighting === 'day' && (
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_90%_at_50%_0%,rgba(255,255,255,0.22),transparent_75%)] transition-opacity duration-700" />
-        )}
-
         {/* 16:9 Studio Stage: Occupies maximum screen area without distortion */}
         <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
           <div
@@ -320,16 +343,7 @@ function PlateCarPreviewScene({
               className="select-none object-cover object-center"
             />
 
-            {/* Dynamic Lighting Ambience Overlays */}
-            {lighting === 'day' && (
-              <>
-                <div className="pointer-events-none absolute inset-0 z-5 mix-blend-screen opacity-80 transition-opacity duration-700 bg-[radial-gradient(ellipse_100%_80%_at_50%_0%,rgba(255,255,255,0.52),rgba(255,250,240,0.25)_50%,transparent_80%)]" />
-                <div className="pointer-events-none absolute inset-0 z-5 mix-blend-overlay opacity-40 transition-opacity duration-700 bg-gradient-to-b from-sky-100/70 via-white/30 to-transparent" />
-              </>
-            )}
-            {lighting === 'night' && (
-              <div className="pointer-events-none absolute inset-0 z-5 mix-blend-multiply opacity-55 transition-opacity duration-700 bg-radial-[at_50%_60%] from-transparent via-black/45 to-black/85" />
-            )}
+            <SceneLighting mode={lighting} />
 
             {/* Bracket Mounted Plate with exact proportions & sub-millimeter anchor */}
             <div
@@ -362,17 +376,19 @@ function PlateCarPreviewScene({
         {/* Overlay UI with Safe Area Margins from screen edges */}
         <div className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-between p-3 sm:p-5 lg:p-6">
           {/* Top Bar (Safe from edges) */}
-          <header className="pointer-events-auto mx-auto w-full max-w-5xl rounded-2xl border border-white/10 bg-[#091224]/90 px-3 py-2 shadow-xl backdrop-blur-xl sm:flex sm:items-center sm:justify-between sm:gap-3 sm:px-4">
-            <div className="flex items-center justify-between gap-2 sm:justify-start">
-              <Link href={backHref || '/plates'} className="inline-flex min-h-10 items-center gap-2 text-xs font-bold text-gold-light hover:text-white">
+          <header className="pointer-events-auto mx-auto flex w-full max-w-5xl flex-col gap-2 lg:flex-row lg:items-start">
+            <div className="flex items-center justify-between gap-2 lg:shrink-0">
+              <Link href={backHref || '/plates'} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/10 bg-[#091224]/90 px-3 text-xs font-bold text-gold-light shadow-lg backdrop-blur-xl hover:text-white">
                 <ArrowRight size={16} />
                 <span>{backHref ? 'رجوع للوحة' : 'العودة للمتجر'}</span>
               </Link>
-              <button type="button" onClick={toggleFullscreen} aria-label="تبديل ملء الشاشة" title="تبديل ملء الشاشة" className="hidden h-10 w-10 items-center justify-center text-slate-200 hover:text-gold sm:inline-flex">
+              <button type="button" onClick={toggleFullscreen} aria-label="تبديل ملء الشاشة" title="تبديل ملء الشاشة" className="hidden h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-[#091224]/90 text-slate-200 shadow-lg hover:text-gold sm:inline-flex">
                 {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
               </button>
             </div>
-            <StudioControls carId={carId} plateSize={plateSize} cameraMode={cameraMode} lighting={lighting} onCar={setCarId} onSize={setPlateSize} onCamera={setCameraMode} onLighting={setLighting} />
+            <div className="min-w-0 lg:flex-1">
+              <StudioControls carId={carId} plateSize={plateSize} cameraMode={cameraMode} lighting={lighting} onCar={setCarId} onSize={setPlateSize} onCamera={setCameraMode} onLighting={setLighting} />
+            </div>
           </header>
 
           {/* Bottom Bar: Presets & Plate Info (Safe from edges) */}
@@ -472,7 +488,7 @@ function PlateCarPreviewScene({
           <ArrowRight size={19} />
         </Link>
       </div>
-      <div className="mb-2 border-t border-white/10 pt-1">
+      <div className="mb-3">
         <StudioControls carId={carId} plateSize={plateSize} cameraMode={cameraMode} lighting={lighting} onCar={setCarId} onSize={setPlateSize} onCamera={setCameraMode} onLighting={setLighting} />
       </div>
 
@@ -493,16 +509,7 @@ function PlateCarPreviewScene({
             className="select-none object-cover object-center animate-fade-in-up"
           />
 
-          {/* Dynamic Lighting Ambience Overlays */}
-          {lighting === 'day' && (
-            <>
-              <div className="pointer-events-none absolute inset-0 z-5 mix-blend-screen opacity-80 transition-opacity duration-700 bg-[radial-gradient(ellipse_100%_80%_at_50%_0%,rgba(255,255,255,0.52),rgba(255,250,240,0.25)_50%,transparent_80%)]" />
-              <div className="pointer-events-none absolute inset-0 z-5 mix-blend-overlay opacity-40 transition-opacity duration-700 bg-gradient-to-b from-sky-100/70 via-white/30 to-transparent" />
-            </>
-          )}
-          {lighting === 'night' && (
-            <div className="pointer-events-none absolute inset-0 z-5 mix-blend-multiply opacity-55 transition-opacity duration-700 bg-radial-[at_50%_60%] from-transparent via-black/45 to-black/85" />
-          )}
+          <SceneLighting mode={lighting} />
 
           {/* Mounted Vector Plate */}
           <div
