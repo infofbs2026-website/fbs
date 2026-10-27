@@ -362,8 +362,8 @@ function PlateCarPreviewScene({
         {/* Overlay UI with Safe Area Margins from screen edges */}
         <div className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-between p-3 sm:p-5 lg:p-6">
           {/* Top Bar (Safe from edges) */}
-          <header className="pointer-events-auto rounded-2xl border border-white/10 bg-[#091224]/90 px-3 py-2 shadow-xl backdrop-blur-xl sm:px-4">
-            <div className="flex items-center justify-between gap-2">
+          <header className="pointer-events-auto mx-auto w-full max-w-5xl rounded-2xl border border-white/10 bg-[#091224]/90 px-3 py-2 shadow-xl backdrop-blur-xl sm:flex sm:items-center sm:justify-between sm:gap-3 sm:px-4">
+            <div className="flex items-center justify-between gap-2 sm:justify-start">
               <Link href={backHref || '/plates'} className="inline-flex min-h-10 items-center gap-2 text-xs font-bold text-gold-light hover:text-white">
                 <ArrowRight size={16} />
                 <span>{backHref ? 'رجوع للوحة' : 'العودة للمتجر'}</span>
@@ -376,11 +376,11 @@ function PlateCarPreviewScene({
           </header>
 
           {/* Bottom Bar: Presets & Plate Info (Safe from edges) */}
-          <footer className="pointer-events-auto mx-auto w-full max-w-4xl">
+          <footer className={`pointer-events-auto mx-auto ${backHref ? 'w-fit max-w-full' : 'w-full max-w-4xl'}`}>
             {backHref ? (
               /* When previewing a specific plate */
-              <div className="flex items-center justify-between gap-4 rounded-2xl border border-gold/30 bg-[#091224]/90 px-4 py-3 shadow-xl backdrop-blur-xl">
-                <div className={plateSize === 'standard' ? 'w-[min(45vw,12rem)]' : 'w-[min(65vw,22rem)]'}>
+              <div className="flex items-center justify-between gap-3 rounded-2xl border border-gold/30 bg-[#091224]/90 px-3 py-3 shadow-xl backdrop-blur-xl">
+                <div className={plateSize === 'standard' ? 'w-[min(45vw,12rem)]' : 'w-[min(60vw,22rem)]'}>
                   <CarMountedPlate lettersAr={currentPlate.lettersAr} lettersEn={currentPlate.lettersEn} numbers={currentPlate.numbers} plateType={currentPlate.plateType} size={plateSize} />
                 </div>
                 <Link href={backHref} aria-label="العودة لتفاصيل اللوحة" title="العودة لتفاصيل اللوحة" className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold text-navy transition-colors hover:bg-gold-light">
