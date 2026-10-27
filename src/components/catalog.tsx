@@ -20,6 +20,7 @@ import { EmptyState, PlateCard, PlateCardSkeletonGrid, PlateVisualizer, Skeleton
 import { CatalogFilters } from './catalog-filters';
 import { CatalogStage } from './catalog-views';
 import { StoreHeaderActions } from './store-header-actions';
+import styles from './catalog-type-selector.module.css';
 import { getMarketplace, getReferenceData } from '@/modules/marketplace/service';
 import type { MarketplaceQuery } from '@/modules/marketplace/types';
 
@@ -132,6 +133,10 @@ export async function Catalog({
   ]);
 
   const isStoreMode = !auctionFilter;
+  const selectorItemPadding = isStoreMode ? 'py-1' : 'py-1.5';
+  const selectorLabelMargin = isStoreMode ? 'mt-1.5' : 'mt-2.5';
+  const standardPreviewSize = isStoreMode ? styles.storePreview : 'w-full max-w-[272px] sm:max-w-[286px]';
+  const sportsPreviewSize = isStoreMode ? styles.storePreview : 'w-full max-w-[260px] sm:max-w-[274px]';
   const isLive = auctionFilter === 'LIVE';
   const isUpcoming = auctionFilter === 'UPCOMING';
   const isCompleted = auctionFilter === 'COMPLETED';
@@ -374,8 +379,8 @@ export async function Catalog({
       <div className="relative bg-[#F2F0EA] flow-root">
 
         {/* 2. AUTHENTIC SAUDI PLATE TYPE VISUAL SELECTOR (نوع اللوحة)      */}
-        <section aria-label="نوع اللوحة المعتمدة" className="container-fbs relative z-30 -mt-12 sm:-mt-15 lg:-mt-18 mb-7 sm:mb-9">
-        <div className="relative overflow-hidden rounded-3xl border border-[#D9BB81]/35 bg-gradient-to-b from-[#0A162C] via-[#071020] to-[#050B16] px-4 py-4 sm:px-6 sm:py-5 shadow-[0_22px_50px_-14px_rgba(4,9,20,0.65)]">
+        <section aria-label="نوع اللوحة المعتمدة" className={`container-fbs relative z-30 -mt-12 sm:-mt-15 lg:-mt-18 mb-7 sm:mb-9 ${isStoreMode ? styles.storeSelector : ''}`}>
+        <div className={`relative overflow-hidden rounded-3xl border border-[#D9BB81]/35 bg-gradient-to-b from-[#0A162C] via-[#071020] to-[#050B16] px-4 sm:px-6 ${isStoreMode ? 'py-3 sm:py-3.5' : 'py-4 sm:py-5'} shadow-[0_22px_50px_-14px_rgba(4,9,20,0.65)]`}>
           {/* Top Luxury Gold Accent Line */}
           <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#d9b87f]/80 to-transparent pointer-events-none" />
 
@@ -395,14 +400,14 @@ export async function Catalog({
           )}
 
           {/* 3 Frameless Plate Selectors - Direct Plate + Concise Label Underneath */}
-          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 items-center">
+          <div className={`relative z-10 grid grid-cols-1 sm:grid-cols-3 ${isStoreMode ? 'gap-3 sm:gap-4' : 'gap-4 sm:gap-5'} items-center`}>
             {/* Plate 1: خصوصي */}
             <Link
               href={makeTypeUrl('خصوصي')}
-              className="group relative flex flex-col items-center justify-center py-1.5 transition-all duration-300 cursor-pointer"
+              className={`group relative flex flex-col items-center justify-center ${selectorItemPadding} transition-all duration-300 cursor-pointer`}
             >
               <div
-                className={`w-full max-w-[272px] sm:max-w-[286px] transition-all duration-300 group-hover:-translate-y-1 ${
+                className={`${standardPreviewSize} transition-all duration-300 group-hover:-translate-y-1 ${
                   clean.type === 'خصوصي'
                     ? 'scale-[1.03] drop-shadow-[0_0_18px_rgba(217,184,127,0.55)]'
                     : 'opacity-92 group-hover:opacity-100'
@@ -419,7 +424,7 @@ export async function Catalog({
               </div>
 
               <div
-                className={`mt-2.5 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 pf-type-caption font-bold transition-all ${
+                className={`${selectorLabelMargin} inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 pf-type-caption font-bold transition-all ${
                   clean.type === 'خصوصي'
                     ? 'bg-gradient-to-r from-[#d9b87f] via-[#ecd5a5] to-[#cb9b48] text-navy-deep font-black shadow-sm'
                     : 'text-slate-200 group-hover:text-gold-light'
@@ -433,10 +438,10 @@ export async function Catalog({
             {/* Plate 2: صغيرة رياضية */}
             <Link
               href={makeTypeUrl('صغيرة')}
-              className="group relative flex flex-col items-center justify-center py-1.5 transition-all duration-300 cursor-pointer"
+              className={`group relative flex flex-col items-center justify-center ${selectorItemPadding} transition-all duration-300 cursor-pointer`}
             >
               <div
-                className={`w-full max-w-[260px] sm:max-w-[274px] transition-all duration-300 group-hover:-translate-y-1 ${
+                className={`${sportsPreviewSize} transition-all duration-300 group-hover:-translate-y-1 ${
                   clean.type === 'صغيرة'
                     ? 'scale-[1.03] drop-shadow-[0_0_18px_rgba(217,184,127,0.55)]'
                     : 'opacity-92 group-hover:opacity-100'
@@ -453,7 +458,7 @@ export async function Catalog({
               </div>
 
               <div
-                className={`mt-2.5 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 pf-type-caption font-bold transition-all ${
+                className={`${selectorLabelMargin} inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 pf-type-caption font-bold transition-all ${
                   clean.type === 'صغيرة'
                     ? 'bg-gradient-to-r from-[#d9b87f] via-[#ecd5a5] to-[#cb9b48] text-navy-deep font-black shadow-sm'
                     : 'text-slate-200 group-hover:text-gold-light'
@@ -467,10 +472,10 @@ export async function Catalog({
             {/* Plate 3: نقل خاص */}
             <Link
               href={makeTypeUrl('نقل')}
-              className="group relative flex flex-col items-center justify-center py-1.5 transition-all duration-300 cursor-pointer"
+              className={`group relative flex flex-col items-center justify-center ${selectorItemPadding} transition-all duration-300 cursor-pointer`}
             >
               <div
-                className={`w-full max-w-[272px] sm:max-w-[286px] transition-all duration-300 group-hover:-translate-y-1 ${
+                className={`${standardPreviewSize} transition-all duration-300 group-hover:-translate-y-1 ${
                   clean.type === 'نقل'
                     ? 'scale-[1.03] drop-shadow-[0_0_18px_rgba(217,184,127,0.55)]'
                     : 'opacity-92 group-hover:opacity-100'
@@ -487,7 +492,7 @@ export async function Catalog({
               </div>
 
               <div
-                className={`mt-2.5 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 pf-type-caption font-bold transition-all ${
+                className={`${selectorLabelMargin} inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 pf-type-caption font-bold transition-all ${
                   clean.type === 'نقل'
                     ? 'bg-gradient-to-r from-[#d9b87f] via-[#ecd5a5] to-[#cb9b48] text-navy-deep font-black shadow-sm'
                     : 'text-slate-200 group-hover:text-gold-light'
@@ -650,7 +655,7 @@ export async function Catalog({
   );
 }
 
-export function CatalogSkeleton() {
+export function CatalogSkeleton({ store = false }: { store?: boolean }) {
   return (
     <>
       {/* 1. Luxury Hero Skeleton with Shimmer */}
@@ -671,13 +676,17 @@ export function CatalogSkeleton() {
 
       {/* 2. Overlapping 3-Plate Type Selector Skeleton + Full-Width Stage Bar + Full-Height 2-Column Skeleton */}
       <div className="relative bg-[#F2F0EA] flow-root pb-16 sm:pb-24">
-        <section className="container-fbs relative z-30 -mt-12 sm:-mt-15 lg:-mt-18 mb-7 sm:mb-9">
-          <div className="rounded-3xl border border-[#D9BB81]/35 bg-[#071020] px-4 py-5 sm:px-6 sm:py-6 shadow-xl">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 items-center">
+        <section className={`container-fbs relative z-30 -mt-12 sm:-mt-15 lg:-mt-18 mb-7 sm:mb-9 ${store ? styles.storeSelector : ''}`}>
+          <div className={`rounded-3xl border border-[#D9BB81]/35 bg-[#071020] px-4 sm:px-6 ${store ? 'py-3 sm:py-3.5' : 'py-5 sm:py-6'} shadow-xl`}>
+            <div className={`grid grid-cols-1 sm:grid-cols-3 ${store ? 'gap-3 sm:gap-4' : 'gap-4 sm:gap-6'} items-center`}>
               {[1, 2, 3].map((i) => (
-                <div key={i} className="flex flex-col items-center gap-2.5">
-                  <div className="h-[68px] w-full max-w-[220px] rounded-xl skeleton-shimmer-dark" />
-                  <div className="h-5 w-24 rounded-full skeleton-shimmer-dark" />
+                <div key={i} className={`flex flex-col items-center ${store ? 'gap-1.5 py-1' : 'gap-2.5'}`}>
+                  {store ? (
+                    <div className={`${styles.storePreview} aspect-[52/11] rounded-xl skeleton-shimmer-dark`} />
+                  ) : (
+                    <div className="h-[68px] w-full max-w-[220px] rounded-xl skeleton-shimmer-dark" />
+                  )}
+                  <div className={`${store ? 'h-7' : 'h-5'} w-24 rounded-full skeleton-shimmer-dark`} />
                 </div>
               ))}
             </div>
