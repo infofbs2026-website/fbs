@@ -34,6 +34,7 @@ export async function getMarketplace(input: MarketplaceQuery = {}): Promise<Mark
     return {
       configured: false,
       available: true,
+      source: 'demo',
       plates: filtered.slice((page - 1) * pageSize, page * pageSize),
       total: filtered.length,
       page,
@@ -48,6 +49,7 @@ export async function getMarketplace(input: MarketplaceQuery = {}): Promise<Mark
       return {
         configured: true,
         available: true,
+        source: 'demo',
         plates: filtered.slice((page - 1) * pageSize, page * pageSize),
         total: filtered.length,
         page,
@@ -61,7 +63,7 @@ export async function getMarketplace(input: MarketplaceQuery = {}): Promise<Mark
       const active = await aq.limit(1000);
       if (active.error || !active.data?.length) {
         const filtered = filterFallbackPlates(fallbackPlates, input);
-        return { configured: true, available: true, plates: filtered.slice((page - 1) * pageSize, page * pageSize), total: filtered.length, page, pageSize };
+        return { configured: true, available: true, source: 'demo', plates: filtered.slice((page - 1) * pageSize, page * pageSize), total: filtered.length, page, pageSize };
       }
       query = query.in('id', active.data.map(a => a.plate_id));
     }
@@ -91,7 +93,7 @@ export async function getMarketplace(input: MarketplaceQuery = {}): Promise<Mark
     const { data, error, count } = await query.range((page - 1) * pageSize, page * pageSize - 1);
     if (error || !data?.length) {
       const filtered = filterFallbackPlates(fallbackPlates, input);
-      return { configured: true, available: true, plates: filtered.slice((page - 1) * pageSize, page * pageSize), total: filtered.length, page, pageSize };
+      return { configured: true, available: true, source: 'demo', plates: filtered.slice((page - 1) * pageSize, page * pageSize), total: filtered.length, page, pageSize };
     }
     const rows = (data ?? []) as Row[];
     const ids = rows.map((row) => text(row.id));
@@ -99,10 +101,10 @@ export async function getMarketplace(input: MarketplaceQuery = {}): Promise<Mark
     const mappedAuctions = ((auctions.data ?? []) as Row[]).map(mapAuction);
     let plates = rows.map((row) => mapPlate(row, mappedAuctions.find((auction) => auction.plateId === row.id) ?? null));
     if (input.sort === 'ending') plates = plates.sort((a, b) => (a.auction?.endsAt ?? 'z').localeCompare(b.auction?.endsAt ?? 'z'));
-    return { configured: true, available: true, plates, total: count ?? plates.length, page, pageSize };
+    return { configured: true, available: true, source: 'database', plates, total: count ?? plates.length, page, pageSize };
   } catch {
     const filtered = filterFallbackPlates(fallbackPlates, input);
-    return { configured: true, available: true, plates: filtered.slice((page - 1) * pageSize, page * pageSize), total: filtered.length, page, pageSize };
+    return { configured: true, available: true, source: 'demo', plates: filtered.slice((page - 1) * pageSize, page * pageSize), total: filtered.length, page, pageSize };
   }
 }
 

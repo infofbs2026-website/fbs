@@ -29,6 +29,7 @@ export type MarketplaceQuery = {
 export type MarketplaceResult = {
   configured: boolean;
   available: boolean;
+  source: 'database' | 'demo';
   plates: MarketplacePlate[];
   total: number;
   page: number;

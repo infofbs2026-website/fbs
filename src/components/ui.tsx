@@ -191,6 +191,7 @@ export function PlateCard({
   mode = 'auction',
   isFavorite = false,
   isInCart = false,
+  demo = false,
   onToggleFavorite,
   onToggleCart,
   onBuyNow
@@ -199,15 +200,16 @@ export function PlateCard({
   mode?: 'auction' | 'store';
   isFavorite?: boolean;
   isInCart?: boolean;
+  demo?: boolean;
   onToggleFavorite?: (plate: MarketplacePlate) => void;
   onToggleCart?: (plate: MarketplacePlate) => void;
   onBuyNow?: (plate: MarketplacePlate) => void;
 }) {
   const isStore = mode === 'store';
-  const isLive = plate.auction?.status === 'LIVE';
+  const isLive = !demo && plate.auction?.status === 'LIVE';
   const isUpcoming =
-    plate.auction?.status === 'SCHEDULED' || plate.auction?.status === 'REGISTRATION_OPEN';
-  const statusText = statusLabels[plate.auction?.status ?? plate.status] ?? plate.status;
+    !demo && (plate.auction?.status === 'SCHEDULED' || plate.auction?.status === 'REGISTRATION_OPEN');
+  const statusText = demo ? 'مثال توضيحي' : (statusLabels[plate.auction?.status ?? plate.status] ?? plate.status);
   const rawPrice = isStore
     ? plate.priceHalalas ?? plate.auction?.currentPriceHalalas ?? '0'
     : plate.auction?.currentPriceHalalas ?? plate.priceHalalas ?? '0';
@@ -386,7 +388,7 @@ export function PlateCard({
           <div className="flex flex-wrap items-center justify-between gap-2 min-w-0">
             <div className="min-w-0">
               <span className="pf-type-micro font-semibold text-[#64748B] block leading-tight mb-0.5">
-                {plate.auction ? 'المزايدة الحالية' : 'السعر المطلوب'}
+                {demo ? 'سعر توضيحي' : plate.auction ? 'المزايدة الحالية' : 'السعر المطلوب'}
               </span>
               <div className="flex items-baseline gap-1 text-[#14243C]" dir="rtl">
                 <span
@@ -399,13 +401,13 @@ export function PlateCard({
               </div>
             </div>
 
-            {plate.auction?.bidCount !== undefined && plate.auction.bidCount > 0 ? (
+            {!demo && plate.auction?.bidCount !== undefined && plate.auction.bidCount > 0 ? (
               <span className="inline-flex items-center gap-1 rounded-xl bg-[#FAF9F6] border border-[#E5E2D9] px-2.5 py-1 pf-type-micro font-bold text-[#14243C] shrink-0">
                 <Gavel size={12} className="text-[#9E7B35] shrink-0" />
                 <span className="font-norwester font-black">{plate.auction.bidCount}</span>
                 <span className="text-[#64748B]">مزايدة</span>
               </span>
-            ) : plate.verified ? (
+            ) : !demo && plate.verified ? (
               <span className="inline-flex items-center gap-1 pf-type-micro font-bold text-slate-600 bg-slate-50 px-2.5 py-1 rounded-xl border border-slate-200/70 shrink-0">
                 <ShieldCheck size={13} className="text-emerald-600 shrink-0" />
                 <span>موثّقة</span>
@@ -419,7 +421,7 @@ export function PlateCard({
           >
             <Gavel size={13} className="text-[#D9BB81] shrink-0 transition-transform duration-200 group-hover/btn:-rotate-12" />
             <span className="text-center">
-              {plate.auction ? 'دخول المزاد والمزايدة' : 'تفاصيل اللوحة والشراء'}
+              {demo ? 'تفاصيل اللوحة' : plate.auction ? 'دخول المزاد والمزايدة' : 'تفاصيل اللوحة والشراء'}
             </span>
             <ArrowLeft size={13} className="text-[#D9BB81] shrink-0 transition-transform duration-200 group-hover/btn:-translate-x-1" />
           </Link>
