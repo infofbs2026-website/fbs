@@ -1,4 +1,5 @@
 import type { MarketplacePlate } from './types';
+import { matchesPlateSearch, parsePlateSearch } from './plate-search';
 
 export const fallbackPlates: MarketplacePlate[] = [
   {
@@ -577,18 +578,8 @@ export function filterFallbackPlates(
   }
 
   if (filter.q?.trim()) {
-    const q = filter.q.trim().toLowerCase().replace(/\s+/g, '');
-    list = list.filter((p) => {
-      const allText = [
-        ...p.lettersAr,
-        ...p.lettersEn,
-        p.numbers,
-        p.city,
-        p.type,
-        p.description
-      ].join('').toLowerCase().replace(/\s+/g, '');
-      return allText.includes(q);
-    });
+    const search = parsePlateSearch(filter.q);
+    list = list.filter((plate) => matchesPlateSearch(plate, search));
   }
 
   if (filter.sort === 'price_asc') {

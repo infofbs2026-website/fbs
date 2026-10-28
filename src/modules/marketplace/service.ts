@@ -2,6 +2,7 @@ import 'server-only';
 import { createAdminClient } from '@/lib/supabase/server';
 import type { MarketplaceAuction, MarketplacePlate, MarketplaceQuery, MarketplaceResult } from './types';
 import { fallbackPlates, filterFallbackPlates } from './mock-data';
+import { parsePlateSearch } from './plate-search';
 
 type Row = Record<string, unknown>;
 const text = (value: unknown) => typeof value === 'string' ? value : String(value ?? '');
@@ -69,7 +70,21 @@ export async function getMarketplace(input: MarketplaceQuery = {}): Promise<Mark
     }
     if (input.digitsCount && /^[1-4]$/.test(input.digitsCount)) query = query.eq('digits_count', Number(input.digitsCount));
     if (input.featured === 'true') query = query.eq('featured', true);
-    if (input.q?.trim()) query = query.ilike('search_text', `%${input.q.trim().replace(/[%_\\]/g, '')}%`);
+    if (input.q?.trim()) {
+      const search = parsePlateSearch(input.q);
+      if (!search.valid) return { configured: true, available: true, source: 'database', plates: [], total: 0, page, pageSize };
+      // search_text contains only digits and the three Arabic and Latin letters.
+      // Keep the queried letters adjacent and ignore unrelated plate metadata.
+      if (search.arabic) query = query.ilike('search_text', `%${Array.from(search.arabic).join(' ')}%`);
+      if (search.latin) {
+        const forward = Array.from(search.latin).join(' ');
+        const reverse = Array.from(search.latin).reverse().join(' ');
+        query = forward === reverse
+          ? query.ilike('search_text', `%${forward}%`)
+          : query.or(`search_text.ilike.%${forward}%,search_text.ilike.%${reverse}%`);
+      }
+      if (search.digits) query = query.ilike('numbers', `%${search.digits}%`);
+    }
     if (input.type) {
       const t = input.type.trim();
       if (t === 'نقل' || t === 'transport') query = query.ilike('type', '%نقل%');
@@ -91,7 +106,7 @@ export async function getMarketplace(input: MarketplaceQuery = {}): Promise<Mark
       : input.sort === 'price_desc' ? query.order('price_minor', { ascending: false, nullsFirst: false })
       : query.order('created_at', { ascending: false });
     const { data, error, count } = await query.range((page - 1) * pageSize, page * pageSize - 1);
-    if (error || !data?.length) {
+    if (error || (!data?.length && !input.q?.trim() && page === 1)) {
       const filtered = filterFallbackPlates(fallbackPlates, input);
       return { configured: true, available: true, source: 'demo', plates: filtered.slice((page - 1) * pageSize, page * pageSize), total: filtered.length, page, pageSize };
     }
