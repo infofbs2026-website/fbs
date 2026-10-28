@@ -53,6 +53,33 @@ interface CatalogStageProps {
   mode?: 'auction' | 'store';
 }
 
+function PaginationControl({ direction, href }: { direction: 'previous' | 'next'; href?: string }) {
+  const isPrevious = direction === 'previous';
+  const label = isPrevious ? 'الصفحة السابقة' : 'الصفحة التالية';
+  const baseClass = 'inline-flex min-h-11 w-full sm:w-36 items-center justify-center gap-2 rounded-xl border px-4 py-2 pf-type-micro font-bold transition-all';
+  const content = (
+    <>
+      {isPrevious && <ArrowRight size={14} aria-hidden="true" />}
+      <span>{label}</span>
+      {!isPrevious && <ArrowLeft size={14} aria-hidden="true" />}
+    </>
+  );
+
+  if (!href) {
+    return (
+      <button type="button" disabled className={`${baseClass} cursor-not-allowed border-neutral-200 bg-neutral-100/70 text-neutral-400`}>
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <Link href={href} className={`${baseClass} border-neutral-200 bg-white text-neutral-800 shadow-xs hover:border-[#9E7B35] hover:bg-[#FAF7F0] active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9E7B35]`}>
+      {content}
+    </Link>
+  );
+}
+
 /**
  * 1. Wide Luxury Plate Card (كارت عريض كبير ومميز)
  */
@@ -971,23 +998,18 @@ export function CatalogStage({
           {total > 0 && (
             <nav
               aria-label="صفحات النتائج والمعروض"
-              className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-neutral-200/90 pt-6"
+              className="mt-10 grid grid-cols-2 items-center gap-3 border-t border-neutral-200/90 pt-6 sm:grid-cols-[1fr_auto_1fr] sm:gap-4"
             >
               {/* Previous Page (RTL: Previous button on right) */}
-              <div className="w-36 flex justify-start">
-                {page > 1 ? (
-                  <Link
-                    className="flex items-center gap-2 rounded-xl bg-white border border-neutral-200 hover:border-[#9E7B35] hover:bg-[#FAF7F0] text-neutral-800 px-4 py-2 pf-type-micro font-bold shadow-xs transition-all active:scale-95"
-                    href={`?${new URLSearchParams({ ...clean, page: String(page - 1) })}`}
-                  >
-                    <ArrowRight size={14} className="text-[#9E7B35]" />
-                    <span>الصفحة السابقة</span>
-                  </Link>
-                ) : null}
+              <div className="order-2 flex justify-start sm:order-1">
+                <PaginationControl
+                  direction="previous"
+                  href={page > 1 ? `?${new URLSearchParams({ ...clean, page: String(page - 1) })}` : undefined}
+                />
               </div>
 
               {/* Center: Unified Compact Summary Card (Count + Page in one pill) */}
-              <div className="inline-flex items-center gap-2.5 rounded-xl bg-[#FAF9F6] border border-[#E5E2D9] px-4 py-2 pf-type-micro text-[#14243C] shadow-2xs">
+              <div className="order-1 col-span-2 inline-flex min-h-11 items-center justify-self-center gap-2.5 rounded-xl bg-[#FAF9F6] border border-[#E5E2D9] px-4 py-2 pf-type-micro text-[#14243C] shadow-2xs sm:order-2 sm:col-span-1">
                 <div className="flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-[#9E7B35] shrink-0" />
                   <span className="text-neutral-500 font-semibold">المعروض:</span>
@@ -1008,16 +1030,11 @@ export function CatalogStage({
               </div>
 
               {/* Next Page (RTL: Next button on left) */}
-              <div className="w-36 flex justify-end">
-                {page * pageSize < total ? (
-                  <Link
-                    className="flex items-center gap-2 rounded-xl bg-white border border-neutral-200 hover:border-[#9E7B35] hover:bg-[#FAF7F0] text-neutral-800 px-4 py-2 pf-type-micro font-bold shadow-xs transition-all active:scale-95"
-                    href={`?${new URLSearchParams({ ...clean, page: String(page + 1) })}`}
-                  >
-                    <span>الصفحة التالية</span>
-                    <ArrowLeft size={14} className="text-[#9E7B35]" />
-                  </Link>
-                ) : null}
+              <div className="order-3 flex justify-end">
+                <PaginationControl
+                  direction="next"
+                  href={page < totalPages ? `?${new URLSearchParams({ ...clean, page: String(page + 1) })}` : undefined}
+                />
               </div>
             </nav>
           )}

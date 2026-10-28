@@ -1,31 +1,31 @@
-.storePreview {
+.preview {
   width: min(100%, 272px);
 }
 
 @supports (width: 1cqw) {
-  .storeSelector {
+  .selector {
     container-type: inline-size;
   }
 
-  /* Match the store card's image space after its grid gaps, borders, and padding. */
-  .storePreview {
+  /* Match the catalog card's image space after its grid gaps, borders, and padding. */
+  .preview {
     width: min(100%, 272px, max(0px, calc(100cqw - 48px)));
   }
 
   @media (min-width: 40rem) {
-    .storePreview {
+    .preview {
       width: min(100%, 288px, max(0px, calc(50cqw - 64px)));
     }
   }
 
   @media (min-width: 48rem) {
-    .storePreview {
+    .preview {
       width: min(100%, 288px, max(0px, calc(33.333333cqw - 66.666667px)));
     }
   }
 
   @media (min-width: 64rem) {
-    .storePreview {
+    .preview {
       width: min(100%, 288px, max(0px, calc(25cqw - 68px)));
     }
   }

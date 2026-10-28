@@ -25,6 +25,7 @@ import {
   LogOut,
   LayoutDashboard,
   Gavel,
+  Store,
   Bookmark,
   Crown,
   X
@@ -33,78 +34,6 @@ import {
 /* ============================================================== */
 /* BESPOKE SVG ICONS FOR HEADER NAVIGATION TABS                    */
 /* ============================================================== */
-
-/**
- * 1. المزادات (Auctions):
- * Luxury Auction Gavel at 45° angle resting above a sound pedestal,
- * accented with dynamic live auction radiance sparks.
- */
-export function AuctionsNavIcon({ className = 'w-4 h-4' }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden="true"
-    >
-      {/* Sound Block / Anvil Pedestal */}
-      <path d="M2.5 20.5h9" strokeWidth="2" />
-      <path d="M4 20.5v-1.8a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1.8" fill="currentColor" fillOpacity="0.2" />
-      {/* Luxury Gavel Head at 45 deg */}
-      <path d="m13.8 6.2 4 4-2.4 2.4-4-4 2.4-2.4Z" fill="currentColor" fillOpacity="0.25" />
-      <path d="m12.2 4.6 2.8 2.8" />
-      <path d="m16.6 9 2.8 2.8" />
-      {/* Gavel Handle */}
-      <path d="m11.4 11.4-6.2 6.2a1.4 1.4 0 0 1-2-2l6.2-6.2" />
-      {/* Dynamic Live Bid Radiance */}
-      <path d="M19.5 4.5v3" strokeWidth="1.5" />
-      <path d="M18 6h3" strokeWidth="1.5" />
-      <circle cx="20.5" cy="15.5" r="1" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
-/**
- * 2. المتجر (Plates Store):
- * Authentic Saudi Vehicle License Plate silhouette:
- * Embossed perimeter, Kingdom Pillar divider with palm/swords,
- * security seal dot, and embossed character rows.
- */
-export function PlatesStoreNavIcon({ className = 'w-4 h-4' }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden="true"
-    >
-      {/* Outer Plate Frame */}
-      <rect x="1.5" y="5.5" width="21" height="13" rx="2.5" fill="currentColor" fillOpacity="0.1" strokeWidth="1.75" />
-      {/* Vertical Kingdom Pillar Divider */}
-      <line x1="17.5" y1="5.5" x2="17.5" y2="18.5" strokeWidth="1.5" />
-      {/* Horizontal Divider Line in main section */}
-      <line x1="1.5" y1="12" x2="17.5" y2="12" strokeWidth="1.2" strokeDasharray="1 1" />
-      {/* Saudi Palm & Crossed Swords motif in pillar */}
-      <path d="M19.8 8.5v2" strokeWidth="1.2" />
-      <path d="M18.8 9.5h2" strokeWidth="1.2" />
-      {/* Hologram / Security Seal Dot in pillar */}
-      <circle cx="19.8" cy="15" r="0.9" fill="currentColor" stroke="none" />
-      {/* Embossed Characters Bars (Arabic Top, Latin Bottom) */}
-      <rect x="4.5" y="8" width="3" height="1.8" rx="0.5" fill="currentColor" stroke="none" />
-      <rect x="10.5" y="8" width="4.5" height="1.8" rx="0.5" fill="currentColor" stroke="none" />
-      <rect x="4.5" y="14" width="3" height="1.8" rx="0.5" fill="currentColor" stroke="none" />
-      <rect x="10.5" y="14" width="4.5" height="1.8" rx="0.5" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
 
 /**
  * 3. عن FBS (About FBS):
@@ -188,14 +117,14 @@ export function Studio3DNavIcon({ className = 'w-4 h-4' }: { className?: string 
 }
 
 const primaryNav = [
-  { href: '/auctions', label: 'المزادات', icon: AuctionsNavIcon },
-  { href: '/plates', label: 'المتجر', icon: PlatesStoreNavIcon },
+  { href: '/auctions', label: 'المزادات', icon: Gavel },
+  { href: '/plates', label: 'المتجر', icon: Store },
   { href: '/about', label: 'عن FBS', icon: AboutFbsNavIcon }
 ];
 
 const allNav = [
-  { href: '/auctions', label: 'المزادات', icon: AuctionsNavIcon },
-  { href: '/plates', label: 'المتجر', icon: PlatesStoreNavIcon },
+  { href: '/auctions', label: 'المزادات', icon: Gavel },
+  { href: '/plates', label: 'المتجر', icon: Store },
   { href: '/sell-your-plate', label: 'اعرض لوحتك', icon: SellPlateNavIcon },
   { href: '/about', label: 'عن FBS', icon: AboutFbsNavIcon }
 ];
@@ -388,7 +317,7 @@ export function Header() {
           {/* Brand Logo */}
           <Brand />
 
-          {/* Clean Centered Desktop Navigation with Fluid Spacing & Custom Bespoke SVGs */}
+          {/* Clean Centered Desktop Navigation */}
           <nav aria-label="التنقل الرئيسي" className="hidden items-center gap-[clamp(0.85rem,0.4rem+1vw,1.6rem)] lg:flex">
             {primaryNav.map((item) => {
               const isActive = item.href === '/' ? pathname === '/' : pathname === item.href || pathname.startsWith(item.href);
