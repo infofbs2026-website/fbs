@@ -1,6 +1,8 @@
 import { PGlite } from '@electric-sql/pglite';
 import { readFile,readdir } from 'node:fs/promises';
 import { beforeAll,afterAll,describe,it,expect } from 'vitest';
+import { matchesPlateSearch, parsePlateSearch } from '@/modules/marketplace/plate-search';
+import { mapPlate } from '@/modules/marketplace/service';
 let db:PGlite;
 const seller='10000000-0000-4000-8000-000000000001',bidder='10000000-0000-4000-8000-000000000002',other='10000000-0000-4000-8000-000000000003',admin='10000000-0000-4000-8000-000000000004';
 let plateId:string,auctionId:string;
@@ -14,13 +16,33 @@ for(const file of (await readdir('supabase/migrations')).filter(f=>f.endsWith('.
 await db.exec(await readFile('supabase/seed.sql','utf8'));
 await db.query("insert into auth.users(id,email_confirmed_at) select x::uuid,now() from unnest($1::text[]) x",[[seller,bidder,other,admin]]);
 await db.query("update auth.users set raw_app_meta_data='{"+'"role":"super_admin"'+"}' where id=$1",[admin]);
-const plate=await db.query<{id:string}>("insert into plates(owner_id,type_id,letter_1_id,letter_2_id,letter_3_id,digits,verification_status,listing_status) select $1,id,1,2,3,'777','APPROVED','PUBLISHED' from plate_types limit 1 returning id",[seller]);plateId=plate.rows[0].id;
+const plate=await db.query<{id:string}>("insert into plates(owner_id,type_id,letter_1_id,letter_2_id,letter_3_id,digits,verification_status,listing_status) select $1,id,1,2,3,'777','APPROVED','PUBLISHED' from plate_types where code='private' returning id",[seller]);plateId=plate.rows[0].id;
 const auction=await db.query<{id:string}>(`insert into auctions(plate_id,status,starting_price,current_price,increment_mode,minimum_increment,deposit_type,registration_start_at,registration_end_at,start_at,scheduled_end_at,effective_end_at,anti_sniping_enabled,extension_window_seconds,extension_duration_seconds,max_extensions,commission_type)
 values($1,'LIVE',10000,10000,'FIXED',1000,'NONE',now()-interval '3 hours',now()-interval '2 hours',now()-interval '1 hour',now()+interval '15 seconds',now()+interval '15 seconds',true,30,60,3,'NONE') returning id`,[plateId]);auctionId=auction.rows[0].id;
 await db.query("insert into auction_registrations(auction_id,user_id,status,required_deposit_minor,terms_version) values($1,$2,'QUALIFIED',0,'test'),($1,$3,'QUALIFIED',0,'test')",[auctionId,bidder,other]);
 },60000);
 afterAll(async()=>{await db?.close();});
 describe('PostgreSQL migration and authorization',()=>{
+ it.each([
+   ['أ ب ح ٧٧٧', true],
+   ['ابح777', true],
+   ['J B A 777', true],
+   ['A B J 777', false],
+   ['ا ب ح ٨٨٨', false],
+   ['ح ب ا ٧٧٧', false],
+   ['ص', false],
+ ])('matches the rendered plate against the database view for %s',async(term, expected)=>{
+   const search=parsePlateSearch(term);
+   const row=await db.query<Record<string,unknown>>('select * from public.public_plates where id=$1',[plateId]);
+   expect(row.rows).toHaveLength(1);
+   expect(row.rows[0].type).toBe('خصوصي');
+   expect(matchesPlateSearch(mapPlate(row.rows[0]),search)).toBe(expected);
+   const ar=search.arabic?`%${Array.from(search.arabic).join(' ')}%`:null;
+   const en=search.latin?`%${Array.from(search.latin).reverse().join(' ')}%`:null;
+   const digits=search.digits?`%${search.digits}%`:null;
+   const result=await db.query('select id from public.public_plates where id=$1 and ($2::text is null or search_text ilike $2) and ($3::text is null or search_text ilike $3) and ($4::text is null or numbers ilike $4)',[plateId,ar,en,digits]);
+   expect(result.rows.length>0).toBe(expected);
+ });
  it('enables RLS on every public table',async()=>{const r=await db.query("select tablename from pg_tables where schemaname='public' and not rowsecurity");expect(r.rows).toEqual([]);});
  it('blocks client bid insert and privileged RPC calls',async()=>{expect((await db.query<{ok:boolean}>("select has_table_privilege('authenticated','bids','INSERT') as ok")).rows[0].ok).toBe(false);expect((await db.query<{ok:boolean}>("select has_function_privilege('authenticated','fbs_bid(uuid,uuid,bigint,uuid,bigint)','EXECUTE') as ok")).rows[0].ok).toBe(false);});
  it('does not trust user-editable role metadata',async()=>{await db.query("update auth.users set raw_user_meta_data='{"+'"role":"super_admin"'+"}' where id=$1",[bidder]);const result=await db.query<{ok:boolean}>("select private.fbs_has_permission($1,'payment.capture') as ok",[bidder]);expect(result.rows[0].ok).toBe(false);});
