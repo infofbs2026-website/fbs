@@ -77,11 +77,10 @@ export async function getMarketplace(input: MarketplaceQuery = {}): Promise<Mark
       // Keep the queried letters adjacent and ignore unrelated plate metadata.
       if (search.arabic) query = query.ilike('search_text', `%${Array.from(search.arabic).join(' ')}%`);
       if (search.latin) {
-        const forward = Array.from(search.latin).join(' ');
+        // The view stores Latin letters in Arabic reading order, while the
+        // plate renderer displays them left-to-right in the reverse order.
         const reverse = Array.from(search.latin).reverse().join(' ');
-        query = forward === reverse
-          ? query.ilike('search_text', `%${forward}%`)
-          : query.or(`search_text.ilike.%${forward}%,search_text.ilike.%${reverse}%`);
+        query = query.ilike('search_text', `%${reverse}%`);
       }
       if (search.digits) query = query.ilike('numbers', `%${search.digits}%`);
     }

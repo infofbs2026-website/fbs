@@ -44,9 +44,8 @@ export function matchesPlateSearch(plate: MarketplacePlate, search: PlateSearch)
   const drawn = parsePlateData(plate.lettersAr, plate.lettersEn, plate.numbers);
   const ar = drawn.letterPairs.map((pair) => pair.ar.replace(/ـ/g, '') || '\0').reverse().join('');
   const en = drawn.letterPairs.map((pair) => pair.en.toUpperCase() || '\0').join('');
-  const enReverse = Array.from(en).reverse().join('');
   const numbers = drawn.digitPairs.map((pair) => pair.en || '\0').join('');
   return (!search.arabic || ar.includes(search.arabic)) &&
-    (!search.latin || en.includes(search.latin) || enReverse.includes(search.latin)) &&
+    (!search.latin || en.includes(search.latin)) &&
     (!search.digits || numbers.includes(search.digits));
 }

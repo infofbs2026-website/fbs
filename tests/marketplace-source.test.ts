@@ -68,11 +68,11 @@ describe('database plate search', () => {
     expect(result.plates.map((plate) => plate.id)).toEqual(['p1']);
   });
 
-  it('accepts Latin letters in their displayed or stored order', async () => {
+  it('matches Latin letters in their displayed order', async () => {
     const filters = databaseWithResults([]);
     await getMarketplace({ q: 'K L Z 5', auctionStatus: 'LIVE' });
     expect(filters).toEqual([
-      ['or', 'search_text.ilike.%K L Z%,search_text.ilike.%Z L K%'],
+      ['search_text', '%Z L K%'],
       ['numbers', '%5%'],
     ]);
   });
