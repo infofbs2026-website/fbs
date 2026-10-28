@@ -31,7 +31,10 @@ export async function POST(request:Request,{params}:{params:Promise<{action:stri
   const client=await createSessionClient();
   if(!client){
     if(action==='logout')return success({redirect:'/'});
-    if(action==='login'||action==='register'||action==='verify-otp'||action==='reset-password-otp')return success({redirect:'/account'});
+    if(action==='login')return success({redirect:'/account'});
+    if(['register','verify','verify-otp','resend-otp','forgot-password','reset-password-otp'].includes(action)){
+      throw new DomainError('SYSTEM_DEGRADED','خدمة المصادقة غير متاحة حالياً. يرجى المحاولة لاحقاً.',{},503);
+    }
     return success({message:'تمت العملية بنجاح (وضع المعاينة).'});
   }
 
@@ -85,26 +88,14 @@ export async function POST(request:Request,{params}:{params:Promise<{action:stri
       throw new DomainError('INVALID_INPUT','هذا البريد الإلكتروني مسجل بالفعل. يرجى تسجيل الدخول مباشرة أو استعادة كلمة المرور.');
     }
 
-    // 3. Generate OTP via Admin API (bypasses Supabase 3/hr email rate limit)
-    let devOtp: string | undefined;
-    if(admin){
-      try{
-        const linkRes=await admin.auth.admin.generateLink({type:'signup',email:values.email,password:values.password});
-        const otp=linkRes.data?.properties?.email_otp;
-        if(otp){
-          const emailRes=await sendOtpEmail({email:values.email,otp,type:'signup'});
-          devOtp=emailRes.devOtp;
-        }
-      }catch(err){
-        console.error('Failed to generate signup OTP:', err);
-      }
-    }
+    // Supabase sends the signup code through the confirmation template. Creating
+    // another token here can invalidate that email before the user receives it.
+    if(data.session)return success({redirect:'/account'});
 
     return success({
       step:'otp',
       email:values.email,
-      devOtp,
-      message:'تم إنشاء الحساب! أدخل رمز التحقق (OTP) المرسل إلى بريدك الإلكتروني.'
+      message:'تحقق من بريدك الإلكتروني وأدخل رمز التفعيل لإكمال التسجيل.'
     });
   }
 
@@ -147,6 +138,7 @@ export async function POST(request:Request,{params}:{params:Promise<{action:stri
 
     const otp=linkRes.data.properties.email_otp;
     const emailRes=await sendOtpEmail({email,otp,type:'recovery'});
+    if(!emailRes.sent&&!emailRes.devOtp)throw new DomainError('SYSTEM_DEGRADED','تعذر إرسال رمز الاستعادة. يرجى المحاولة لاحقاً.',{},503);
 
     return success({
       step:'reset',
@@ -190,17 +182,22 @@ export async function POST(request:Request,{params}:{params:Promise<{action:stri
       type:z.enum(['signup','recovery']).default('signup')
     }).parse(body);
 
+    if(values.type==='signup'){
+      const {error}=await client.auth.resend({type:'signup',email:values.email,options:{emailRedirectTo:`${siteOrigin()}/auth/callback`}});
+      if(error)throw new DomainError('INVALID_INPUT','تعذر إعادة إرسال رمز التفعيل. يرجى الانتظار قليلاً والمحاولة مجدداً.');
+      return success({message:'إذا كان الحساب بانتظار التفعيل، فسيصلك رمز جديد على بريدك الإلكتروني.'});
+    }
+
     const admin=createAdminClient();
     if(!admin) throw new DomainError('SYSTEM_DEGRADED','خدمة المصادقة غير متاحة حالياً.');
 
-    const linkRes=values.type==='recovery'
-      ? await admin.auth.admin.generateLink({type:'recovery',email:values.email})
-      : await admin.auth.admin.generateLink({type:'magiclink',email:values.email});
+    const linkRes=await admin.auth.admin.generateLink({type:'recovery',email:values.email});
 
     if(linkRes.error) throw new DomainError('INVALID_INPUT','تعذر إعادة إرسال الرمز حاليًا. حاول لاحقًا.');
 
     const otp=linkRes.data.properties.email_otp;
     const emailRes=await sendOtpEmail({email:values.email,otp,type:values.type});
+    if(!emailRes.sent&&!emailRes.devOtp)throw new DomainError('SYSTEM_DEGRADED','تعذر إرسال رمز الاستعادة. يرجى المحاولة لاحقاً.',{},503);
 
     return success({
       devOtp:emailRes.devOtp,
@@ -220,8 +217,8 @@ export async function POST(request:Request,{params}:{params:Promise<{action:stri
   if(action==='verify'){
     const {email}=z.object({email:z.email().max(254)}).parse(body);
     const {error}=await client.auth.resend({type:'signup',email,options:{emailRedirectTo:`${siteOrigin()}/auth/callback`}});
-    if(error) throw new DomainError('INVALID_INPUT', error.message || 'تعذر إعادة إرسال رابط التفعيل.');
-    return success({message:'تم إرسال رابط التفعيل بنجاح إذا كان الحساب بانتظار التأكيد.'});
+    if(error) throw new DomainError('INVALID_INPUT','تعذر إعادة إرسال رمز التفعيل. يرجى الانتظار قليلاً والمحاولة مجدداً.');
+    return success({step:'otp',email,message:'إذا كان الحساب بانتظار التفعيل، فسيصلك رمز جديد على بريدك الإلكتروني.'});
   }
 
   return new Response(null,{status:404});

@@ -13,13 +13,6 @@ export async function sendOtpEmail({
   const apiKey = process.env.RESEND_API_KEY?.trim();
   const isDev = process.env.NODE_ENV !== 'production';
 
-  console.log(`\n========================================`);
-  console.log(`📧 [FBS AUTH OTP]`);
-  console.log(`Type: ${type.toUpperCase()}`);
-  console.log(`To: ${email}`);
-  console.log(`OTP Code: ${otp}`);
-  console.log(`========================================\n`);
-
   if (!apiKey) {
     return { sent: false, devOtp: isDev ? otp : undefined };
   }

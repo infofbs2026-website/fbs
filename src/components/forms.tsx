@@ -222,7 +222,7 @@ export function AuthForm({
         try {
           const result = await sendJson(`/api/v1/auth/${mode}`, data);
 
-          if (mode === 'register' && result?.step === 'otp') {
+          if ((mode === 'register' || mode === 'verify') && result?.step === 'otp') {
             setStep('otp');
             setOtpEmail(String(data.email || ''));
             setDevOtp(result.devOtp ?? null);
@@ -296,6 +296,8 @@ export function AuthForm({
                 name="otpToken"
                 type="text"
                 dir="ltr"
+                inputMode="numeric"
+                autoComplete="one-time-code"
                 value={otpToken}
                 onChange={(e) => setOtpToken(e.target.value.trim())}
                 required
@@ -773,6 +775,10 @@ export function AuthForm({
                   >
                     إنشاء حساب جديد
                   </Link>
+                  {' · '}
+                  <Link href="/verify" className="text-gold font-bold hover:underline transition-colors">
+                    تفعيل الحساب
+                  </Link>
                 </p>
               ) : mode === 'register' ? (
                 <p>
@@ -782,6 +788,10 @@ export function AuthForm({
                     className="text-gold font-bold hover:underline transition-colors"
                   >
                     تسجيل الدخول
+                  </Link>
+                  {' · '}
+                  <Link href="/verify" className="text-gold font-bold hover:underline transition-colors">
+                    تفعيل الحساب
                   </Link>
                 </p>
               ) : (
