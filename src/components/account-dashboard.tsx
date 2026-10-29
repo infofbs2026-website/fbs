@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
 import { MfaSetup } from '@/components/mfa';
-import { PlateCard, PlateVisualizer } from '@/components/ui';
+import { FbsStageWatermark, PlateCard, PlateVisualizer } from '@/components/ui';
 import { SarSymbol, formatEnglishAmount } from '@/components/sar-symbol';
 import type { MarketplacePlate } from '@/modules/marketplace/types';
 import styles from './account-dashboard.module.css';
@@ -243,7 +243,7 @@ export function AccountDashboard({
               {details.action?.href ? <ArrowLeft size={16} aria-hidden="true" /> : <Plus size={17} aria-hidden="true" />}
               <span>{details.action?.label ?? 'اعرض لوحتك'}</span>
             </Link>
-            <span className={styles.greetingMark} aria-hidden="true">FBS</span>
+            <div className={styles.greetingWatermark} aria-hidden="true"><FbsStageWatermark /></div>
           </div>
 
           {dataState === 'demo' && <div className={styles.notice} role="status">وضع المعاينة: بيانات الحساب الظاهرة أمثلة توضيحية.</div>}
