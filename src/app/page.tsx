@@ -2,7 +2,6 @@ import dynamic from 'next/dynamic';
 import { HeroCinematic } from '@/components/hero-cinematic';
 import { HomeEndingSoon } from '@/components/home/home-ending-soon';
 import { getMarketplace } from '@/modules/marketplace/service';
-import { fallbackPlates } from '@/modules/marketplace/mock-data';
 
 // Dynamic lazy imports for deeper below-the-fold sections:
 // HomeEndingSoon is imported statically above because it sits directly at the Hero fold boundary,
@@ -18,10 +17,6 @@ const HomeHowItWorks = dynamic(
   { ssr: true }
 );
 
-const HomeStats = dynamic(
-  () => import('@/components/home/home-stats').then((m) => m.HomeStats),
-  { ssr: true }
-);
 
 const HomeWhyFbs = dynamic(
   () => import('@/components/home/home-why-fbs').then((m) => m.HomeWhyFbs),
@@ -40,15 +35,13 @@ export const revalidate = 60;
 
 export default async function Home() {
   const market = await getMarketplace({ pageSize: 12 });
-  const displayPlates = market.plates.length > 0 ? market.plates : fallbackPlates;
+  const displayPlates = market.plates;
   const liveAuctions = displayPlates.filter((p) => p.auction?.status === 'LIVE');
-  const endingSoonCandidates = displayPlates.filter(
-    (p) => p.auction && (p.auction.status === 'LIVE' || p.auction.status === 'REGISTRATION_OPEN' || p.auction.status === 'SCHEDULED')
-  );
+  const endingSoonCandidates = liveAuctions;
   const carouselAuctions =
     endingSoonCandidates.length >= 4
       ? endingSoonCandidates
-      : displayPlates.filter((p) => p.auction || p.priceHalalas).slice(0, 8);
+      : endingSoonCandidates;
 
   return (
     <>
@@ -56,14 +49,14 @@ export default async function Home() {
       {/* 01. HERO CINEMATIC (MIDNIGHT NAVY #08162B)                     */}
       {/* ============================================================== */}
       <HeroCinematic
-        initialPlate={liveAuctions[0] || displayPlates[0]}
-        allLivePlates={liveAuctions.length > 0 ? liveAuctions : displayPlates.filter((p) => p.auction).slice(0, 5)}
+        initialPlate={liveAuctions[0]}
+        allLivePlates={liveAuctions}
       />
 
       {/* ============================================================== */}
       {/* 02. مزادات اللحظات الأخيرة (PURE WHITE #FFFFFF)                */}
       {/* ============================================================== */}
-      <HomeEndingSoon endingSoonAuctions={carouselAuctions} />
+      {carouselAuctions.length > 0 && <HomeEndingSoon endingSoonAuctions={carouselAuctions} />}
 
       {/* ============================================================== */}
       {/* 03. كيف تعمل المنصة (SOFT GRAY #F0F1F2 + CALM ICONS)           */}
@@ -78,7 +71,7 @@ export default async function Home() {
       {/* ============================================================== */}
       {/* 05. مزادات حصرية / الإحصائيات (MIDNIGHT NAVY #08162B + GOLD)   */}
       {/* ============================================================== */}
-      <HomeStats />
+
 
       {/* ============================================================== */}
       {/* 06. الثقة والمميزات (WARM IVORY #F7F6F3 + WHITE CARDS)         */}

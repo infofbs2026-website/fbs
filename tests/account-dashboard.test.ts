@@ -12,8 +12,8 @@ import { AccountDashboard, type AccountDashboardProps } from '@/components/accou
 
 const props: AccountDashboardProps = {
   user: { id: 'user-1', email: 'member@example.com', displayName: 'عضو' },
-  activeSectionKey: 'overview', rowsData: [], initialTheme: 'light', dataState: 'demo',
-  featuredPlates: [fallbackPlates[0]], marketplaceSource: 'demo',
+  activeSectionKey: 'overview', rowsData: [], initialTheme: 'light', dataState: 'ready',
+  featuredPlates: [fallbackPlates[0]], marketplaceSource: 'database',
   counts: { auctions: null, plates: null, favorites: null },
   profilePhone: null, profileEditable: false
 };
@@ -23,18 +23,11 @@ function render(changes: Partial<AccountDashboardProps> = {}) {
 }
 
 describe('account dashboard', () => {
-  it('uses the shared plate face and labels examples without inventing account figures', () => {
+  it('uses the shared plate face without sample labels', () => {
     const html = render();
     expect(html).toContain('data-pf-proportional="saudi-plate"');
     expect(html).toContain('/plates/fbs-1');
-    expect(html).toContain('وضع المعاينة');
-    expect(html).toContain('لوحة تجريبية');
-    expect(html).toContain('سعر توضيحي');
-    expect(html).toContain('مثال توضيحي');
-    expect(html).not.toContain('مباشر الآن');
-    expect(html).not.toContain('موثّقة');
-    expect(html).not.toContain('مزايدة سريعة');
-    expect(html).not.toContain('سقف ضمانك');
+    expect(html).not.toContain('تجريب');
   });
 
   it('renders each chosen theme and actual zero counts', () => {
@@ -52,7 +45,7 @@ describe('account dashboard', () => {
     expect(html).toContain('href="/plates/search"');
     expect(html).toContain('href="/auctions"');
     expect(html).toContain('href="/sell-your-plate"');
-    expect(html).toContain('data-demo="true"');
+    expect(html).toContain('لوحة في المزاد');
   });
 
   it('reports unavailable data instead of presenting fake account records', () => {
@@ -71,8 +64,8 @@ describe('account dashboard', () => {
   it('shows the identity and password structure as a local-only preview without country or language selectors', () => {
     const html = render({ activeSectionKey: 'profile', dataState: 'ready', featuredPlates: [] });
     expect(html).toContain('إثبات الهوية');
-    expect(html).toContain('إرسال للمراجعة التجريبية');
-    expect(html).toContain('لا تُرسل الملفات أو تُحفظ');
+    expect(html).toContain('جارٍ تحميل حالة الهوية');
+    expect(html).not.toContain('تجريب');
     expect(html).toContain('href="/forgot-password"');
     expect(html).not.toContain('لغة التواصل');
     expect(html).not.toContain('الدولة');
@@ -87,12 +80,9 @@ describe('account dashboard', () => {
     expect(html).not.toContain('العمليات المالية الحساسة ومزايدات النخبة تتطلب');
   });
 
-  it('distinguishes unavailable security settings from the demo and does not offer enrollment in either case', () => {
+  it('does not offer enrollment when security is unavailable', () => {
     const unavailable = render({ activeSectionKey: 'security', dataState: 'unavailable', featuredPlates: [] });
-    const demo = render({ activeSectionKey: 'security', dataState: 'demo', featuredPlates: [] });
     expect(unavailable).toContain('تعذر تحميل إعدادات التحقق بخطوتين');
-    expect(demo).toContain('إعداد التحقق بخطوتين غير متاح في وضع المعاينة');
     expect(unavailable).not.toContain('إعداد أو تأكيد تطبيق المصادقة');
-    expect(demo).not.toContain('إعداد أو تأكيد تطبيق المصادقة');
   });
 });

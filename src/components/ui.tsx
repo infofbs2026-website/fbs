@@ -232,7 +232,7 @@ export function PlateCard({
   const isLive = !demo && plate.auction?.status === 'LIVE';
   const isUpcoming =
     !demo && (plate.auction?.status === 'SCHEDULED' || plate.auction?.status === 'REGISTRATION_OPEN');
-  const statusText = demo ? 'مثال توضيحي' : (statusLabels[plate.auction?.status ?? plate.status] ?? plate.status);
+  const statusText = statusLabels[plate.auction?.status ?? plate.status] ?? plate.status;
   const rawPrice = isStore
     ? plate.priceHalalas ?? plate.auction?.currentPriceHalalas ?? '0'
     : plate.auction?.currentPriceHalalas ?? plate.priceHalalas ?? '0';
@@ -411,7 +411,7 @@ export function PlateCard({
           <div className="flex flex-wrap items-center justify-between gap-2 min-w-0">
             <div className="min-w-0">
               <span className="pf-type-micro font-semibold text-[#64748B] block leading-tight mb-0.5">
-                {demo ? 'سعر توضيحي' : plate.auction ? 'المزايدة الحالية' : 'السعر المطلوب'}
+                {plate.auction ? 'المزايدة الحالية' : 'السعر المطلوب'}
               </span>
               <div className="flex items-baseline gap-1 text-[#14243C]" dir="rtl">
                 <span

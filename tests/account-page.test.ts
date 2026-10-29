@@ -70,11 +70,11 @@ describe('account data boundaries', () => {
     expect(result.props.rowsData).toEqual([]);
   });
 
-  it('marks the explicitly unconfigured account as a demo', async () => {
+  it('reports an unconfigured account without inventing records', async () => {
     mocks.createSessionClient.mockResolvedValue(null);
     const result = await AccountPage({ params: Promise.resolve({ section: ['deposits'] }) });
-    expect(result.props.dataState).toBe('demo');
-    expect(result.props.rowsData.length).toBeGreaterThan(0);
+    expect(result.props.dataState).toBe('unavailable');
+    expect(result.props.rowsData).toEqual([]);
   });
 
   it('counts only the current user and retains marketplace source information', async () => {

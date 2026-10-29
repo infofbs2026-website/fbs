@@ -7,17 +7,18 @@ import { getMarketplace } from '@/modules/marketplace/service';
 beforeEach(() => vi.clearAllMocks());
 
 describe('marketplace data provenance', () => {
-  it('marks fallback listings as examples when the service is not configured', async () => {
+  it('returns no listings when the service is not configured', async () => {
     mocks.admin.mockReturnValue(null);
     const result = await getMarketplace({ auctionStatus: 'LIVE', pageSize: 2 });
-    expect(result.source).toBe('demo');
-    expect(result.plates.length).toBeGreaterThan(0);
+    expect(result.available).toBe(false);
+    expect(result.plates).toEqual([]);
   });
 
-  it('marks fallback listings when the database query fails', async () => {
+  it('returns no listings when the database query fails', async () => {
     mocks.admin.mockReturnValue({ from: () => ({ select: () => ({ eq: () => ({ limit: async () => ({ data: null, error: { message: 'failed' } }) }) }) }) });
     const result = await getMarketplace({ auctionStatus: 'LIVE', pageSize: 2 });
-    expect(result.source).toBe('demo');
+    expect(result.available).toBe(false);
+    expect(result.plates).toEqual([]);
   });
 
   it('marks successfully loaded marketplace listings as database data', async () => {

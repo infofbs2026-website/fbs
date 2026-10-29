@@ -29,14 +29,7 @@ export async function POST(request:Request,{params}:{params:Promise<{action:stri
   assertOrigin(request);
   const {action}=await params;
   const client=await createSessionClient();
-  if(!client){
-    if(action==='logout')return success({redirect:'/'});
-    if(action==='login')return success({redirect:'/account'});
-    if(['register','verify','verify-otp','resend-otp','forgot-password','reset-password-otp'].includes(action)){
-      throw new DomainError('SYSTEM_DEGRADED','خدمة المصادقة غير متاحة حالياً. يرجى المحاولة لاحقاً.',{},503);
-    }
-    return success({message:'تمت العملية بنجاح (وضع المعاينة).'});
-  }
+  if(!client) throw new DomainError('SYSTEM_DEGRADED','خدمة المصادقة غير متاحة حالياً. يرجى المحاولة لاحقاً.',{},503);
 
   const body=await readJson(request);
   await rateLimit('auth',request.headers.get('x-forwarded-for')?.split(',')[0]??'unknown');

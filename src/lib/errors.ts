@@ -8,6 +8,7 @@ export const errorMessages = {
   AUCTION_PAUSED: "المزاد متوقف مؤقتاً.",
   AUCTION_ENDED: "انتهى وقت المزايدة.",
   REGISTRATION_REQUIRED: "سجّل في المزاد أولاً.",
+  IDENTITY_REQUIRED: "يجب اعتماد الهوية من الملف الشخصي قبل المشاركة في المزاد.",
   NOT_QUALIFIED: "لم تكتمل متطلبات المشاركة في المزاد.",
   DEPOSIT_REQUIRED: "يلزم تفويض مبلغ التأمين للمشاركة.",
   DEPOSIT_EXPIRED: "تفويض التأمين لا يغطي مدة المزاد الحالية.",

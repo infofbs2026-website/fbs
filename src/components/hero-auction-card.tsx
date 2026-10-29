@@ -45,9 +45,9 @@ export function HeroAuctionCard({
 
   // Real-time Countdown Timer State (calculated from endsAt)
   const calculateInitialSeconds = (plate: MarketplacePlate) => {
-    if (!plate.auction?.endsAt) return 4 * 3600 + 18 * 60 + 22; // 04:18:22 fallback
+    if (!plate.auction?.endsAt) return 0;
     const diff = Math.floor((new Date(plate.auction.endsAt).getTime() - Date.now()) / 1000);
-    return diff > 0 ? diff : 4 * 3600 + 18 * 60 + 22;
+    return Number.isFinite(diff) ? Math.max(0, diff) : 0;
   };
 
   const [timeLeft, setTimeLeft] = useState(() => calculateInitialSeconds(currentPlate));
@@ -55,7 +55,7 @@ export function HeroAuctionCard({
 
   // Real-time Bidding Price State
   const [currentPriceHalalas, setCurrentPriceHalalas] = useState<string>(
-    currentPlate.auction?.currentPriceHalalas || '75000000'
+    currentPlate.auction?.currentPriceHalalas || '0'
   );
   const [priceFlash, setPriceFlash] = useState(false);
 
@@ -70,7 +70,7 @@ export function HeroAuctionCard({
   // When changing current plate, reset timer, price, and progress bar
   useEffect(() => {
     setTimeLeft(calculateInitialSeconds(currentPlate));
-    setCurrentPriceHalalas(currentPlate.auction?.currentPriceHalalas || '75000000');
+    setCurrentPriceHalalas(currentPlate.auction?.currentPriceHalalas || '0');
     setPriceFlash(false);
     setProgress(0);
   }, [currentIndex, currentPlate]);

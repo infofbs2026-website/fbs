@@ -71,75 +71,6 @@ const tableConfigs: Record<string, TableConfig> = {
   security: {}
 };
 
-const demoAccountData: Record<string, Record<string, unknown>[]> = {
-  auctions: [
-    {
-      auction_id: 'لوحة ف ب س 1 (FBS-1)',
-      status: 'مؤهل للمزايدة (QUALIFIED)',
-      created_at: '2026-10-04'
-    },
-    {
-      auction_id: 'لوحة ر ق م 7 (RQM-7)',
-      status: 'مؤهل للمزايدة (QUALIFIED)',
-      created_at: '2026-10-04'
-    }
-  ],
-  bids: [
-    {
-      auction_id: 'لوحة ف ب س 1',
-      amount_minor: '75,000,000 هللة (750,000 ر.س)',
-      sequence_no: 28,
-      accepted_at: 'اليوم 18:40'
-    },
-    {
-      auction_id: 'لوحة ر ق م 7',
-      amount_minor: '52,000,000 هللة (520,000 ر.س)',
-      sequence_no: 19,
-      accepted_at: 'اليوم 16:15'
-    }
-  ],
-  plates: [
-    {
-      digits: 'م ج د 777',
-      verification_status: 'تحت المراجعة والتوثيق',
-      listing_status: 'مسودة معتمدة',
-      created_at: '2026-10-03'
-    }
-  ],
-  favorites: [
-    { plate_id: 'لوحة ف ب س 1', created_at: '2026-10-04' },
-    { plate_id: 'لوحة ك ن غ 1', created_at: '2026-10-02' }
-  ],
-  deposits: [
-    {
-      auction_id: 'مزاد لوحة ف ب س 1',
-      amount_minor: '25,000 ر.س (مفوض بنكياً)',
-      status: 'حجز مؤقت (AUTHORIZED)',
-      expires_at: '2026-10-05'
-    }
-  ],
-  payments: [
-    {
-      id: 'TXN-984210',
-      status: 'مكتمل بنجاح',
-      captured_amount_minor: '0 ر.س (حجز تفويض فقط)',
-      refunded_amount_minor: '0'
-    }
-  ],
-  notifications: [
-    {
-      title: 'تأكيد التسجيل في مزاد النخبة',
-      body: 'تم قبول طلبك والتأهيل المباشر لمزاد لوحة ف ب س 1.',
-      created_at: 'اليوم'
-    },
-    {
-      title: 'مزايدة جديدة مسجلة',
-      body: 'تم تسجيل مزايدتك بنجاح برقم تسلسلي معتمد.',
-      created_at: 'قبل قليل'
-    }
-  ]
-};
-
 export default async function AccountPage({
   params
 }: {
@@ -164,7 +95,7 @@ export default async function AccountPage({
     cookies()
   ]);
   let rowsData: Record<string, unknown>[] = [];
-  let dataState: 'ready' | 'demo' | 'unavailable' = db ? 'ready' : 'demo';
+  let dataState: 'ready' | 'unavailable' = db ? 'ready' : 'unavailable';
   let profilePhone: string | null = null;
   let profileEditable = false;
   const counts: { auctions: number | null; plates: number | null; favorites: number | null } = {
@@ -187,8 +118,6 @@ export default async function AccountPage({
       } catch {
         dataState = 'unavailable';
       }
-    } else {
-      rowsData = demoAccountData[key] ?? [];
     }
   }
 

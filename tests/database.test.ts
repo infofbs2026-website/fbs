@@ -16,6 +16,7 @@ for(const file of (await readdir('supabase/migrations')).filter(f=>f.endsWith('.
 await db.exec(await readFile('supabase/seed.sql','utf8'));
 await db.query("insert into auth.users(id,email_confirmed_at) select x::uuid,now() from unnest($1::text[]) x",[[seller,bidder,other,admin]]);
 await db.query("update auth.users set raw_app_meta_data='{"+'"role":"super_admin"'+"}' where id=$1",[admin]);
+await db.query("update public.profiles set kyc_status='VERIFIED' where id in ($1,$2)",[bidder,other]);
 const plate=await db.query<{id:string}>("insert into plates(owner_id,type_id,letter_1_id,letter_2_id,letter_3_id,digits,verification_status,listing_status) select $1,id,1,2,3,'777','APPROVED','PUBLISHED' from plate_types where code='private' returning id",[seller]);plateId=plate.rows[0].id;
 const auction=await db.query<{id:string}>(`insert into auctions(plate_id,status,starting_price,current_price,increment_mode,minimum_increment,deposit_type,registration_start_at,registration_end_at,start_at,scheduled_end_at,effective_end_at,anti_sniping_enabled,extension_window_seconds,extension_duration_seconds,max_extensions,commission_type)
 values($1,'LIVE',10000,10000,'FIXED',1000,'NONE',now()-interval '3 hours',now()-interval '2 hours',now()-interval '1 hour',now()+interval '15 seconds',now()+interval '15 seconds',true,30,60,3,'NONE') returning id`,[plateId]);auctionId=auction.rows[0].id;
@@ -44,6 +45,27 @@ describe('PostgreSQL migration and authorization',()=>{
    expect(result.rows.length>0).toBe(expected);
  });
  it('enables RLS on every public table',async()=>{const r=await db.query("select tablename from pg_tables where schemaname='public' and not rowsecurity");expect(r.rows).toEqual([]);});
+ it('keeps identity documents private and only the server can read submissions',async()=>{
+   const bucket=await db.query<{public:boolean}>("select public from storage.buckets where id='identity-documents'");
+   expect(bucket.rows[0].public).toBe(false);
+   expect((await db.query<{ok:boolean}>("select has_table_privilege('authenticated','identity_verification_requests','SELECT') as ok")).rows[0].ok).toBe(false);
+   expect((await db.query<{ok:boolean}>("select has_function_privilege('authenticated','fbs_review_identity(uuid,uuid,text,text)','EXECUTE') as ok")).rows[0].ok).toBe(false);
+ });
+ it('requires actual identity approval for registration and bidding',async()=>{
+   const id='30000000-0000-4000-8000-000000000001';
+   const details={fullName:'اسم كامل',nationalId:'1234567890',birthDate:'2000-01-01',phone:'0500000000',email:'sample@example.com',city:'الرياض'};
+   await expect(db.query("insert into auction_registrations(auction_id,user_id,status,required_deposit_minor,terms_version) values($1,$2,'QUALIFIED',0,'terms')",[auctionId,seller])).rejects.toThrow('IDENTITY_REQUIRED');
+   await db.query('select fbs_submit_identity($1,$2,$3::jsonb,$4,$5)',[id,seller,JSON.stringify(details),`${seller}/${id}/front.jpg`,`${seller}/${id}/back.jpg`]);
+   expect((await db.query<{kyc_status:string}>('select kyc_status from profiles where id=$1',[seller])).rows[0].kyc_status).toBe('PENDING');
+   await expect(db.query("select fbs_review_identity($1,$2,'VERIFIED','')",[id,bidder])).rejects.toThrow('FORBIDDEN');
+   await expect(db.query("select fbs_review_identity($1,$2,'VERIFIED','')",[id,seller])).rejects.toThrow('FORBIDDEN');
+   await db.query("select fbs_review_identity($1,$2,'VERIFIED','')",[id,admin]);
+   expect((await db.query<{kyc_status:string}>('select kyc_status from profiles where id=$1',[seller])).rows[0].kyc_status).toBe('VERIFIED');
+   await expect(db.query("select fbs_review_identity($1,$2,'REJECTED','سبب الرفض')",[id,admin])).rejects.toThrow('INVALID_TRANSITION');
+   await db.query("update profiles set kyc_status='PENDING' where id=$1",[bidder]);
+   await expect(db.query('select fbs_bid($1,$2,10000,gen_random_uuid(),0)',[auctionId,bidder])).rejects.toThrow('IDENTITY_REQUIRED');
+   await db.query("update profiles set kyc_status='VERIFIED' where id=$1",[bidder]);
+ });
  it('blocks client bid insert and privileged RPC calls',async()=>{expect((await db.query<{ok:boolean}>("select has_table_privilege('authenticated','bids','INSERT') as ok")).rows[0].ok).toBe(false);expect((await db.query<{ok:boolean}>("select has_function_privilege('authenticated','fbs_bid(uuid,uuid,bigint,uuid,bigint)','EXECUTE') as ok")).rows[0].ok).toBe(false);});
  it('does not trust user-editable role metadata',async()=>{await db.query("update auth.users set raw_user_meta_data='{"+'"role":"super_admin"'+"}' where id=$1",[bidder]);const result=await db.query<{ok:boolean}>("select private.fbs_has_permission($1,'payment.capture') as ok",[bidder]);expect(result.rows[0].ok).toBe(false);});
  it('isolates private profiles using actual RLS',async()=>{await db.exec(`set role authenticated;set request.jwt.claim.sub='${bidder}';`);try{const r=await db.query<{id:string}>('select id from profiles');expect(r.rows.map(r=>r.id)).toEqual([bidder]);await expect(db.query("update profiles set status='SUSPENDED' where id=$1",[bidder])).rejects.toThrow();}finally{await db.exec('reset role;');}});

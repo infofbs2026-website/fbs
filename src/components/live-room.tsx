@@ -13,7 +13,6 @@ import {
   Radio,
   RefreshCw,
   ShieldCheck,
-  Play,
   Trophy,
   UserCheck,
   Volume2,
@@ -54,28 +53,7 @@ export function LiveRoom({
 
   const [priceFlash, setPriceFlash] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [demoBiddingUnlocked, setDemoBiddingUnlocked] = useState(false);
-  const [isEndedSimulated, setIsEndedSimulated] = useState(false);
-  const [bidHistory, setBidHistory] = useState<BidHistoryItem[]>([
-    {
-      id: 'b-1',
-      bidder: 'المزايد س*** 9',
-      amount: '75000000',
-      timeAgo: 'قبل 4 دقائق'
-    },
-    {
-      id: 'b-2',
-      bidder: 'المزايد ن*** 2',
-      amount: '74500000',
-      timeAgo: 'قبل 9 دقائق'
-    },
-    {
-      id: 'b-3',
-      bidder: 'المزايد ف*** 5',
-      amount: '74000000',
-      timeAgo: 'قبل 15 دقيقة'
-    }
-  ]);
+  const [bidHistory, setBidHistory] = useState<BidHistoryItem[]>([]);
 
   const sync = useRef({ at: 0, remaining: 0 });
 
@@ -102,27 +80,6 @@ export function LiveRoom({
     }
   };
 
-  const playVictoryFanfare = () => {
-    if (!soundEnabled) return;
-    try {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
-      const notes = [523.25, 659.25, 783.99, 1046.50];
-      notes.forEach((freq, index) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, ctx.currentTime + index * 0.12);
-        gain.gain.setValueAtTime(0.18, ctx.currentTime + index * 0.12);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + index * 0.12 + 0.4);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(ctx.currentTime + index * 0.12);
-        osc.stop(ctx.currentTime + index * 0.12 + 0.4);
-      });
-    } catch {}
-  };
 
   useEffect(() => {
     let stopped = false;
@@ -259,7 +216,7 @@ export function LiveRoom({
       try {
         const r = await fetch(`/api/v1/bids/${command.bidRequestId}`);
         const j = await r.json();
-        if (r.ok && j.data?.resolved) {
+        if (r.ok && j.data?.resolved && j.data?.result) {
           setSnapshot(j.data.result);
           setPending(null);
           sessionStorage.removeItem(`fbs:pending:${auctionId}`);
@@ -277,7 +234,7 @@ export function LiveRoom({
     }
   }
 
-  const isEligibleToBid = signedIn || demoBiddingUnlocked;
+  const isEligibleToBid = signedIn;
   const canBid = Boolean(snapshot && snapshot.status === 'LIVE' && connected && isEligibleToBid && !pending);
   const hours = Math.floor(seconds / 3600).toString().padStart(2, '0');
   const minutes = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
@@ -386,7 +343,7 @@ export function LiveRoom({
       </div>
 
       {/* Action Zone: Bid Submission or Registration or Demo Unlock */}
-      {!signedIn && !demoBiddingUnlocked ? (
+      {!signedIn ? (
         <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-6 text-center space-y-3">
           <Lock size={28} className="mx-auto text-gold-accent" />
           <h3 className="text-sm font-bold text-navy">يلزم تسجيل الدخول للمشاركة في المزاد</h3>
@@ -395,14 +352,7 @@ export function LiveRoom({
             <Link href="/login" className="btn btn-navy flex-1 text-xs font-bold py-3 shadow-md">
               تسجيل الدخول للمشاركة
             </Link>
-            <button
-              type="button"
-              onClick={() => setDemoBiddingUnlocked(true)}
-              className="btn btn-gold flex-1 text-xs font-black py-3 shadow-md flex items-center justify-center gap-1.5"
-            >
-              <Play size={14} />
-              <span>تجربة المزايدة (وضع المعاينة)</span>
-            </button>
+
           </div>
         </div>
       ) : snapshot?.status === 'REGISTRATION_OPEN' ? (
@@ -437,7 +387,7 @@ export function LiveRoom({
               setBusy(true);
               try {
                 const r = await sendJson(`/api/v1/auctions/${auctionId}/register`, {
-                  termsVersion: snapshot?.termsVersion ?? 'demo-terms'
+                  termsVersion: snapshot?.termsVersion ?? ''
                 });
                 setMessage(
                   r?.status === 'QUALIFIED'
@@ -454,88 +404,8 @@ export function LiveRoom({
             {busy ? 'جارٍ التسجيل…' : 'تأكيد التسجيل ودخول المزاد'}
           </button>
         </div>
-      ) : isEndedSimulated ? (
-        <div className="rounded-3xl border-2 border-gold/70 bg-gradient-to-b from-[#0a1224] via-[#060b17] to-[#0a1224] p-6 sm:p-8 text-center text-white shadow-[0_20px_60px_rgba(217,184,127,0.25)] relative overflow-hidden space-y-5 animate-fade-in">
-          {/* Golden Ambient Glow */}
-          <div className="pointer-events-none absolute -top-16 start-1/2 -translate-x-1/2 h-36 w-72 rounded-full bg-gold/20 blur-3xl" />
-
-          <div className="inline-flex items-center gap-2 rounded-full border border-gold/50 bg-gold/10 px-4 py-1.5 text-xs font-bold text-gold-light shadow-sm">
-            <Trophy size={16} className="text-gold animate-bounce" />
-            <span>جلسة المزاد اكتملت بنجاح · تمت الترسية الرسمية</span>
-          </div>
-
-          <div className="space-y-1.5">
-            <h3 className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#fff3db] via-[#e2bd78] to-[#be903e]">
-              👑 مبارك للفائز باللوحة الاستثنائية!
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-300">
-              رست اللوحة رسمياً على صاحب العرض الأعلى:{' '}
-              <strong className="text-gold font-norwester text-sm sm:text-base">
-                {snapshot?.highestBidderMasked || 'أنت (المزايد الفائز)'}
-              </strong>
-            </p>
-          </div>
-
-          {/* Final Winning Price Card */}
-          <div className="rounded-2xl border border-gold/40 bg-white/5 p-4 max-w-sm mx-auto backdrop-blur-md shadow-inner">
-            <span className="text-[11px] text-slate-400 block font-medium">سعر الترسية النهائي</span>
-            <div className="mt-1 flex items-baseline justify-center gap-2 text-3xl sm:text-4xl font-black text-white" dir="ltr">
-              <span className="font-norwester text-gold-light">
-                {snapshot ? formatEnglishAmount(snapshot.currentBid) : '75,000,000'}
-              </span>
-              <SarSymbol className="w-6 h-6 text-gold inline-block self-center" />
-            </div>
-          </div>
-
-          {/* Settlement & Absher Next Steps */}
-          <div className="rounded-xl border border-slate-700/60 bg-[#0e172a]/70 p-4 text-start space-y-2 text-xs text-slate-300">
-            <div className="flex items-center gap-2 font-bold text-emerald-400">
-              <ShieldCheck size={16} />
-              <span>إجراءات التسوية ونقل الملكية الضامنة (Escrow):</span>
-            </div>
-            <ul className="space-y-1.5 text-[11px] text-slate-300 list-disc list-inside leading-relaxed">
-              <li>تم حجز وتأكيد محضر الترسية الإلكتروني برقم مرجعي معتمد.</li>
-              <li>يُسدد المتبقي عبر الحساب البنكي الضامن المعتمد للمنصة خلال 48 ساعة.</li>
-              <li>يتم نقل ملكية اللوحة فورياً وسلاسة عبر منصة أبشر المرور وإصدار رخصة السير.</li>
-            </ul>
-          </div>
-
-          {/* Reset Demo Simulation Button */}
-          <button
-            type="button"
-            onClick={() => {
-              setIsEndedSimulated(false);
-              setSeconds(3600);
-            }}
-            className="btn btn-gold w-full py-3.5 text-xs font-black shadow-lg flex items-center justify-center gap-2"
-          >
-            <RefreshCw size={14} />
-            <span>إعادة تشغيل المحاكاة والمزايدة مجدداً 🔄</span>
-          </button>
-        </div>
       ) : (
         <div className="space-y-4">
-          {/* Simulation Notice Tag with Crown Winner Instant Trigger */}
-          {demoBiddingUnlocked && (
-            <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-amber-500/10 border border-amber-500/30 p-3 text-xs font-bold text-amber-800">
-              <span className="flex items-center gap-1.5">
-                <Radio size={13} className="text-amber-600 animate-pulse" />
-                <span>وضع المحاكاة المباشر نشط</span>
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsEndedSimulated(true);
-                  playVictoryFanfare();
-                }}
-                className="rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 text-xs font-black shadow-sm transition-all hover:scale-[1.02] flex items-center gap-1.5 cursor-pointer"
-              >
-                <Trophy size={13} className="text-gold-light" />
-                <span>إنهاء المزاد وتتويج الفائز الآن 🏆</span>
-              </button>
-            </div>
-          )}
-
           {/* Next Minimum Bid Pill */}
           <div className="flex items-center justify-between rounded-xl bg-slate-100 p-3.5 text-xs font-semibold text-slate-700">
             <span>الحد الأدنى للمزايدة القادمة:</span>

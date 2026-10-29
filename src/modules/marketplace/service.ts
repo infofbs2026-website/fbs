@@ -1,7 +1,6 @@
 import 'server-only';
 import { createAdminClient } from '@/lib/supabase/server';
 import type { MarketplaceAuction, MarketplacePlate, MarketplaceQuery, MarketplaceResult } from './types';
-import { fallbackPlates, filterFallbackPlates } from './mock-data';
 import { parsePlateSearch } from './plate-search';
 
 type Row = Record<string, unknown>;
@@ -30,42 +29,23 @@ export async function getMarketplace(input: MarketplaceQuery = {}): Promise<Mark
   const pageSize = Math.max(1, Math.min(48, Math.floor(Number(input.pageSize) || 12)));
   const db = createAdminClient();
 
-  if (!db) {
-    const filtered = filterFallbackPlates(fallbackPlates, input);
-    return {
-      configured: false,
-      available: true,
-      source: 'demo',
-      plates: filtered.slice((page - 1) * pageSize, page * pageSize),
-      total: filtered.length,
-      page,
-      pageSize
-    };
-  }
+  if (!db) return { configured: false, available: false, source: 'database', plates: [], total: 0, page, pageSize };
 
   try {
     let query = db.from('public_plates').select('*', { count: 'exact' });
     if (input.auctionStatus === 'DIRECT') {
-      const filtered = filterFallbackPlates(fallbackPlates, input);
-      return {
-        configured: true,
-        available: true,
-        source: 'demo',
-        plates: filtered.slice((page - 1) * pageSize, page * pageSize),
-        total: filtered.length,
-        page,
-        pageSize
-      };
+      const direct = await db.from('plates').select('id').in('sale_mode', ['FIXED_PRICE', 'AUCTION_WITH_BUY_NOW']).eq('listing_status', 'PUBLISHED').eq('verification_status', 'APPROVED').limit(1000);
+      if (direct.error) throw direct.error;
+      if (!direct.data?.length) return { configured: true, available: true, source: 'database', plates: [], total: 0, page, pageSize };
+      query = query.in('id', direct.data.map(item => item.id));
     } else if (input.auctionStatus) {
       let aq = db.from('public_auctions').select('plate_id');
       if (input.auctionStatus === 'LIVE') aq = aq.eq('status', 'LIVE');
       else if (input.auctionStatus === 'UPCOMING') aq = aq.in('status', ['SCHEDULED', 'REGISTRATION_OPEN', 'WAITING_ROOM']);
       else if (input.auctionStatus === 'COMPLETED') aq = aq.in('status', ['ENDED', 'COMPLETED', 'RESERVE_NOT_MET']);
       const active = await aq.limit(1000);
-      if (active.error || !active.data?.length) {
-        const filtered = filterFallbackPlates(fallbackPlates, input);
-        return { configured: true, available: true, source: 'demo', plates: filtered.slice((page - 1) * pageSize, page * pageSize), total: filtered.length, page, pageSize };
-      }
+      if (active.error) throw active.error;
+      if (!active.data?.length) return { configured: true, available: true, source: 'database', plates: [], total: 0, page, pageSize };
       query = query.in('id', active.data.map(a => a.plate_id));
     }
     if (input.digitsCount && /^[1-4]$/.test(input.digitsCount)) query = query.eq('digits_count', Number(input.digitsCount));
@@ -105,10 +85,7 @@ export async function getMarketplace(input: MarketplaceQuery = {}): Promise<Mark
       : input.sort === 'price_desc' ? query.order('price_minor', { ascending: false, nullsFirst: false })
       : query.order('created_at', { ascending: false });
     const { data, error, count } = await query.range((page - 1) * pageSize, page * pageSize - 1);
-    if (error || (!data?.length && !input.q?.trim() && page === 1)) {
-      const filtered = filterFallbackPlates(fallbackPlates, input);
-      return { configured: true, available: true, source: 'demo', plates: filtered.slice((page - 1) * pageSize, page * pageSize), total: filtered.length, page, pageSize };
-    }
+    if (error) throw error;
     const rows = (data ?? []) as Row[];
     const ids = rows.map((row) => text(row.id));
     const auctions = ids.length ? await db.from('public_auctions').select('*').in('plate_id', ids).order('starts_at', { ascending: false }) : { data: [], error: null };
@@ -117,28 +94,21 @@ export async function getMarketplace(input: MarketplaceQuery = {}): Promise<Mark
     if (input.sort === 'ending') plates = plates.sort((a, b) => (a.auction?.endsAt ?? 'z').localeCompare(b.auction?.endsAt ?? 'z'));
     return { configured: true, available: true, source: 'database', plates, total: count ?? plates.length, page, pageSize };
   } catch {
-    const filtered = filterFallbackPlates(fallbackPlates, input);
-    return { configured: true, available: true, source: 'demo', plates: filtered.slice((page - 1) * pageSize, page * pageSize), total: filtered.length, page, pageSize };
+    return { configured: true, available: false, source: 'database', plates: [], total: 0, page, pageSize };
   }
 }
 
 export async function getPlateBySlug(slug: string) {
   const db = createAdminClient();
-  if (!db) {
-    const found = fallbackPlates.find((p) => p.slug === slug);
-    return { configured: false, available: true, plate: found ?? null };
-  }
+  if (!db) return { configured: false, available: false, plate: null };
   try {
     const { data, error } = await db.from('public_plates').select('*').eq('slug', slug).maybeSingle();
-    if (error || !data) {
-      const found = fallbackPlates.find((p) => p.slug === slug);
-      return { configured: true, available: true, plate: found ?? null };
-    }
+    if (error) throw error;
+    if (!data) return { configured: true, available: true, plate: null };
     const auctions = await db.from('public_auctions').select('*').eq('plate_id', data.id).order('starts_at', { ascending: false }).limit(1).maybeSingle();
     return { configured: true, available: true, plate: mapPlate(data, auctions.data ? mapAuction(auctions.data) : null) };
   } catch {
-    const found = fallbackPlates.find((p) => p.slug === slug);
-    return { configured: true, available: true, plate: found ?? null };
+    return { configured: true, available: false, plate: null };
   }
 }
 

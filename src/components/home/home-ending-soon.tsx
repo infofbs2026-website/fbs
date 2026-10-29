@@ -30,24 +30,12 @@ function formatSar(halalas?: string | number | null) {
  * Deterministic auction time formatting (hours and minutes only).
  * Updated calmly every 30 seconds to completely eliminate React render storms.
  */
-function getAuctionTime(seed: number) {
-  const baseMinutes = seed % 3 === 0 ? 35 : seed % 3 === 1 ? 155 : 290;
-  const initialOffset = (seed * 17) % 35;
-  const totalMinutes = Math.max(8, baseMinutes + initialOffset);
-
+function getAuctionTime(endsAt?: string) {
+  if (!endsAt || !Number.isFinite(Date.parse(endsAt))) return { text: '—', color: 'text-[#14243C]' };
+  const totalMinutes = Math.max(0, Math.floor((Date.parse(endsAt) - Date.now()) / 60000));
   const hours = Math.floor(totalMinutes / 60);
   const mins = totalMinutes % 60;
-
-  if (hours > 0) {
-    return {
-      text: `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')} س`,
-      color: hours <= 1 ? 'text-amber-600 font-bold' : 'text-[#14243C] font-semibold'
-    };
-  }
-  return {
-    text: `${mins} دقيقة`,
-    color: mins <= 15 ? 'text-rose-500 font-bold' : 'text-amber-600 font-bold'
-  };
+  return { text: `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')} س`, color: totalMinutes <= 60 ? 'text-amber-600 font-bold' : 'text-[#14243C] font-semibold' };
 }
 
 /**
@@ -615,7 +603,7 @@ export function HomeEndingSoon({ endingSoonAuctions }: HomeEndingSoonProps) {
                 }
                 plate={item.plate}
                 lotNum={item.lotNum}
-                timeInfo={getAuctionTime(item.lotNum)}
+                timeInfo={getAuctionTime(item.plate.auction?.endsAt)}
               />
             ))}
           </div>

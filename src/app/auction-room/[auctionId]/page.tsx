@@ -8,7 +8,6 @@ import { LiveRoom } from '@/components/live-room';
 import { createAdminClient } from '@/lib/supabase/server';
 import { getViewer } from '@/lib/auth';
 import { mapPlate } from '@/modules/marketplace/service';
-import { fallbackPlates } from '@/modules/marketplace/mock-data';
 
 export const metadata: Metadata = { title: 'غرفة المزاد المباشر', robots: { index: false, follow: false } };
 
@@ -32,17 +31,7 @@ export default async function Room({ params }: { params: Promise<{ auctionId: st
     }
   }
 
-  // Graceful fallback to rich mock data for local demo and preview testing
-  if (!plate) {
-    const found = fallbackPlates.find(
-      (p) =>
-        p.auction?.id === auctionId ||
-        p.auction?.slug === auctionId ||
-        p.slug === auctionId ||
-        p.id === auctionId
-    );
-    plate = found ?? fallbackPlates[0];
-  }
+  if (!plate) notFound();
 
   const viewer = await getViewer();
 

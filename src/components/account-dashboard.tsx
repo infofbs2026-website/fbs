@@ -11,8 +11,7 @@ import {
 } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
 import { MfaSetup } from '@/components/mfa';
-import { IdentityDemo } from '@/components/identity-demo';
-import { clearIdentityDemo } from '@/components/identity-demo-store';
+import { IdentityVerification } from '@/components/identity-verification';
 import { FbsStageWatermark, PlateCard, PlateVisualizer } from '@/components/ui';
 import { SarSymbol, formatEnglishAmount } from '@/components/sar-symbol';
 import type { MarketplacePlate } from '@/modules/marketplace/types';
@@ -25,7 +24,7 @@ export interface UserViewer {
   role?: string;
 }
 
-type DataState = 'ready' | 'demo' | 'unavailable';
+type DataState = 'ready' | 'unavailable';
 type AccountCounts = { auctions: number | null; plates: number | null; favorites: number | null };
 
 export interface AccountDashboardProps {
@@ -143,7 +142,7 @@ function ProfileForm({ user, phone, editable }: { user: UserViewer; phone: strin
 
 export function AccountDashboard({
   user, activeSectionKey, rowsData, columns, initialTheme = 'light', dataState,
-  featuredPlates, marketplaceSource, counts, profilePhone, profileEditable
+  featuredPlates, counts, profilePhone, profileEditable
 }: AccountDashboardProps) {
   const router = useRouter();
   const [theme, setTheme] = useState<'light' | 'dark'>(initialTheme);
@@ -153,7 +152,6 @@ export function AccountDashboard({
   const name = user.displayName?.trim() || '';
   const initial = (user.displayName?.trim() || user.email || 'ح').charAt(0);
   const featured = featuredPlates[0];
-  const isDemoMarket = marketplaceSource === 'demo';
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -181,7 +179,6 @@ export function AccountDashboard({
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}'
       });
       if (!response.ok) throw new Error('تعذر تسجيل الخروج، حاول مرة أخرى.');
-      clearIdentityDemo();
       router.push('/');
       router.refresh();
     } catch {
@@ -249,7 +246,6 @@ export function AccountDashboard({
             <div className={styles.greetingWatermark} aria-hidden="true"><FbsStageWatermark engravedFilterId="account-greeting-engraving" engravingTone={theme} /></div>
           </div>
 
-          {dataState === 'demo' && <div className={styles.notice} role="status">وضع المعاينة: بيانات الحساب الظاهرة أمثلة توضيحية.</div>}
 
           {activeSectionKey === 'overview' ? (
             <>
@@ -277,14 +273,14 @@ export function AccountDashboard({
                       <Link href="/auctions" className={styles.spotlightLink}>جميع المزادات <ArrowLeft size={15} aria-hidden="true" /></Link>
                     </div>
                     <div className={styles.auctionInfo}>
-                      <span className={styles.liveBadge} data-demo={isDemoMarket}><span />{isDemoMarket ? 'لوحة تجريبية' : 'لوحة في المزاد'}</span>
+                      <span className={styles.liveBadge}><span />لوحة في المزاد</span>
                       <h2>لوحة مميزة في المزاد</h2>
                       <p>{featured.type} · {featured.city}</p>
                       <div className={styles.auctionStats}>
-                        <div><span>{isDemoMarket ? 'سعر توضيحي' : 'المزايدة الحالية'}</span><strong dir="ltr">{featured.auction?.currentPriceHalalas ? formatEnglishAmount(featured.auction.currentPriceHalalas) : '—'} <SarSymbol className={styles.riyal} /></strong></div>
-                        <div><span>الوقت المتبقي</span><strong><Countdown endsAt={isDemoMarket ? undefined : featured.auction?.endsAt} /></strong></div>
+                        <div><span>المزايدة الحالية</span><strong dir="ltr">{featured.auction?.currentPriceHalalas ? formatEnglishAmount(featured.auction.currentPriceHalalas) : '—'} <SarSymbol className={styles.riyal} /></strong></div>
+                        <div><span>الوقت المتبقي</span><strong><Countdown endsAt={featured.auction?.endsAt} /></strong></div>
                       </div>
-                      <Link href={`/plates/${featured.slug}`} className={styles.goldButton}>{isDemoMarket ? 'تفاصيل اللوحة' : 'عرض المزاد'} <ArrowLeft size={17} aria-hidden="true" /></Link>
+                      <Link href={`/plates/${featured.slug}`} className={styles.goldButton}>عرض المزاد <ArrowLeft size={17} aria-hidden="true" /></Link>
                     </div>
                     <div className={styles.auctionVisual}>
                       <span className={styles.visualLabel}>معاينة اللوحة</span>
@@ -308,8 +304,8 @@ export function AccountDashboard({
               </section>
 
               <section className={styles.listSection} aria-labelledby="featured-plates-title">
-                <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>اكتشف المزيد</p><h2 id="featured-plates-title">لوحات مميزة</h2>{isDemoMarket && <p className={styles.sectionHint}>نماذج توضيحية للعرض</p>}</div><Link href="/auctions" className={styles.textLink}>عرض جميع المزادات <ArrowLeft size={15} aria-hidden="true" /></Link></div>
-                {featuredPlates.length ? <div className={styles.plateGrid}>{featuredPlates.slice(0, 4).map((plate) => <PlateCard key={plate.id} plate={plate} mode="auction" demo={isDemoMarket} />)}</div> : <div className={styles.empty}>لا توجد لوحات للعرض حاليًا.</div>}
+                <div className={styles.sectionHeading}><div><p className={styles.eyebrow}>اكتشف المزيد</p><h2 id="featured-plates-title">لوحات مميزة</h2></div><Link href="/auctions" className={styles.textLink}>عرض جميع المزادات <ArrowLeft size={15} aria-hidden="true" /></Link></div>
+                {featuredPlates.length ? <div className={styles.plateGrid}>{featuredPlates.slice(0, 4).map((plate) => <PlateCard key={plate.id} plate={plate} mode="auction" />)}</div> : <div className={styles.empty}>لا توجد لوحات للعرض حاليًا.</div>}
               </section>
             </>
           ) : activeSectionKey === 'profile' ? (
@@ -324,7 +320,7 @@ export function AccountDashboard({
                 <Link href="/forgot-password" className={styles.outlineButton}>استعادة كلمة المرور <ArrowLeft size={15} aria-hidden="true" /></Link>
                 <Link href="/account/security" className={styles.textLink}>إعدادات الأمان <ArrowLeft size={15} aria-hidden="true" /></Link>
               </section>
-              <IdentityDemo ownerId={user.id} adminLink={user.role === 'admin' || user.role === 'super_admin'} />
+              <IdentityVerification email={user.email} phone={profilePhone} />
             </div>
           ) : activeSectionKey === 'security' ? (
             <div className={styles.securityArea}>
@@ -349,7 +345,7 @@ export function AccountDashboard({
                     <span className={styles.panelIcon}><KeyRound size={20} aria-hidden="true" /></span>
                     <div><h2 id="security-mfa-unavailable-heading">التحقق بخطوتين</h2><p>إعداد تطبيق المصادقة.</p></div>
                   </div>
-                  <p className={styles.securityDescription}>{dataState === 'demo' ? 'إعداد التحقق بخطوتين غير متاح في وضع المعاينة.' : 'تعذر تحميل إعدادات التحقق بخطوتين حاليًا. حاول مرة أخرى لاحقًا.'}</p>
+                  <p className={styles.securityDescription}>تعذر تحميل إعدادات التحقق بخطوتين حاليًا. حاول مرة أخرى لاحقًا.</p>
                 </section>
               )}
 

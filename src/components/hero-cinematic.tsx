@@ -45,7 +45,7 @@ function SvgPlatePlus({ className = 'w-5 h-5' }: { className?: string }) {
 }
 
 interface HeroCinematicProps {
-  initialPlate: MarketplacePlate;
+  initialPlate?: MarketplacePlate;
   allLivePlates: MarketplacePlate[];
 }
 
@@ -271,10 +271,10 @@ export function HeroCinematic({ initialPlate, allLivePlates }: HeroCinematicProp
               : 'opacity-0 translate-y-4 scale-98 pointer-events-none'
               }`}
           >
-            <HeroAuctionCard
+            {initialPlate && <HeroAuctionCard
               initialPlate={initialPlate}
               allLivePlates={allLivePlates}
-            />
+            />}
           </div>
         </div>
       </section>
