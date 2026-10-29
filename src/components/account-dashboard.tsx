@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
 import { MfaSetup } from '@/components/mfa';
+import { IdentityDemo } from '@/components/identity-demo';
+import { clearIdentityDemo } from '@/components/identity-demo-store';
 import { FbsStageWatermark, PlateCard, PlateVisualizer } from '@/components/ui';
 import { SarSymbol, formatEnglishAmount } from '@/components/sar-symbol';
 import type { MarketplacePlate } from '@/modules/marketplace/types';
@@ -179,6 +181,7 @@ export function AccountDashboard({
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}'
       });
       if (!response.ok) throw new Error('تعذر تسجيل الخروج، حاول مرة أخرى.');
+      clearIdentityDemo();
       router.push('/');
       router.refresh();
     } catch {
@@ -243,7 +246,7 @@ export function AccountDashboard({
               {details.action?.href ? <ArrowLeft size={16} aria-hidden="true" /> : <Plus size={17} aria-hidden="true" />}
               <span>{details.action?.label ?? 'اعرض لوحتك'}</span>
             </Link>
-            <div className={styles.greetingWatermark} aria-hidden="true"><FbsStageWatermark engravedFilterId={theme === 'dark' ? 'account-greeting-engraving' : undefined} /></div>
+            <div className={styles.greetingWatermark} aria-hidden="true"><FbsStageWatermark engravedFilterId="account-greeting-engraving" engravingTone={theme} /></div>
           </div>
 
           {dataState === 'demo' && <div className={styles.notice} role="status">وضع المعاينة: بيانات الحساب الظاهرة أمثلة توضيحية.</div>}
@@ -310,7 +313,19 @@ export function AccountDashboard({
               </section>
             </>
           ) : activeSectionKey === 'profile' ? (
-            <section className={styles.panel}><div className={styles.panelHeading}><span className={styles.panelIcon}><UserRound size={19} /></span><div><h2>البيانات الشخصية</h2><p>راجع بياناتك وحدّث طرق التواصل.</p></div></div><ProfileForm user={user} phone={profilePhone} editable={profileEditable} /></section>
+            <div className={styles.profileArea}>
+              <section className={styles.panel}>
+                <div className={styles.panelHeading}><span className={styles.panelIcon}><UserRound size={19} aria-hidden="true" /></span><div><h2>البيانات الشخصية</h2><p>راجع بياناتك وحدّث طرق التواصل.</p></div></div>
+                <ProfileForm user={user} phone={profilePhone} editable={profileEditable} />
+              </section>
+              <section className={`${styles.panel} ${styles.profilePassword}`} aria-labelledby="profile-password-heading">
+                <span className={styles.panelIcon}><LockKeyhole size={19} aria-hidden="true" /></span>
+                <div><h2 id="profile-password-heading">كلمة المرور والأمان</h2><p>استعد كلمة المرور أو راجع إعدادات الأمان.</p></div>
+                <Link href="/forgot-password" className={styles.outlineButton}>استعادة كلمة المرور <ArrowLeft size={15} aria-hidden="true" /></Link>
+                <Link href="/account/security" className={styles.textLink}>إعدادات الأمان <ArrowLeft size={15} aria-hidden="true" /></Link>
+              </section>
+              <IdentityDemo ownerId={user.id} adminLink={user.role === 'admin' || user.role === 'super_admin'} />
+            </div>
           ) : activeSectionKey === 'security' ? (
             <div className={styles.securityArea}>
               <section className={`${styles.panel} ${styles.securityCard}`} aria-labelledby="security-password-heading">

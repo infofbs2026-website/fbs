@@ -84,7 +84,7 @@ export function EmptyState({
  * and anchors the lower stage below the plate with the custom FBS monogram.
  * An engraving filter ID opts into a compact, recessed mark for the dashboard.
  */
-export function FbsStageWatermark({ className = '', engravedFilterId }: { className?: string; engravedFilterId?: string }) {
+export function FbsStageWatermark({ className = '', engravedFilterId, engravingTone = 'dark' }: { className?: string; engravedFilterId?: string; engravingTone?: 'light' | 'dark' }) {
   return (
     <div
       aria-hidden="true"
@@ -104,11 +104,11 @@ export function FbsStageWatermark({ className = '', engravedFilterId }: { classN
               <feGaussianBlur in="SourceAlpha" stdDeviation="1.2" result="softEdge" />
               <feOffset in="softEdge" dy="1.1" result="loweredEdge" />
               <feComposite in="SourceAlpha" in2="loweredEdge" operator="out" result="upperCut" />
-              <feFlood floodColor="#020a14" floodOpacity="0.9" result="shadowColor" />
+              <feFlood floodColor={engravingTone === 'light' ? '#7d694d' : '#020a14'} floodOpacity={engravingTone === 'light' ? '0.58' : '0.9'} result="shadowColor" />
               <feComposite in="shadowColor" in2="upperCut" operator="in" result="innerShadow" />
               <feOffset in="softEdge" dy="-1.1" result="raisedEdge" />
               <feComposite in="SourceAlpha" in2="raisedEdge" operator="out" result="lowerCut" />
-              <feFlood floodColor="#b8cbd6" floodOpacity="0.45" result="lightColor" />
+              <feFlood floodColor={engravingTone === 'light' ? '#fffef9' : '#b8cbd6'} floodOpacity={engravingTone === 'light' ? '0.82' : '0.45'} result="lightColor" />
               <feComposite in="lightColor" in2="lowerCut" operator="in" result="innerHighlight" />
               <feMerge>
                 <feMergeNode in="SourceGraphic" />

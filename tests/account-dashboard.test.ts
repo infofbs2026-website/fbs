@@ -68,6 +68,16 @@ describe('account dashboard', () => {
     expect(html).not.toContain('1088492001');
   });
 
+  it('shows the identity and password structure as a local-only preview without country or language selectors', () => {
+    const html = render({ activeSectionKey: 'profile', dataState: 'ready', featuredPlates: [] });
+    expect(html).toContain('إثبات الهوية');
+    expect(html).toContain('إرسال للمراجعة التجريبية');
+    expect(html).toContain('لا تُرسل الملفات أو تُحفظ');
+    expect(html).toContain('href="/forgot-password"');
+    expect(html).not.toContain('لغة التواصل');
+    expect(html).not.toContain('الدولة');
+  });
+
   it('shows account security actions and the actual account email without claiming MFA is already enabled', () => {
     const html = render({ activeSectionKey: 'security', initialTheme: 'dark', dataState: 'ready', featuredPlates: [] });
     expect(html).toContain('member@example.com');
