@@ -82,8 +82,9 @@ export function EmptyState({
  * Luxury Etched Platinum FBS Stage Watermark for Plate Showcase Trays:
  * Crowns the upper stage above the plate with the sleek GT Coupé silhouette
  * and anchors the lower stage below the plate with the custom FBS monogram.
+ * An engraving filter ID opts into a compact, recessed mark for the dashboard.
  */
-export function FbsStageWatermark({ className = '' }: { className?: string }) {
+export function FbsStageWatermark({ className = '', engravedFilterId }: { className?: string; engravedFilterId?: string }) {
   return (
     <div
       aria-hidden="true"
@@ -93,27 +94,49 @@ export function FbsStageWatermark({ className = '' }: { className?: string }) {
           GT Coupé silhouette crowns cleanly above the plate & wheel arches kiss top edge;
           Connected FBS monogram emerges boldly below the plate's bottom edge */}
       <svg
-        viewBox="4 -12 252 180"
+        viewBox={engravedFilterId ? '4 -18 252 152' : '4 -12 252 180'}
         className="w-[78%] max-w-[330px] h-[94%] object-contain text-[#94A3B8]/[0.26]"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <g fill="currentColor" transform="translate(0, -14)">
-          <path d="M 10,25.5 C 21,29 33,27.5 50,22 C 78,12.5 103,7.5 127,8.2 C 149,8.8 168,15.5 188,26.8 L 183.5,28.2 C 164,18.5 146,13.2 126.5,12.8 C 103,12.2 79,17 51,26.5 C 34,32 21,33.5 10,25.5 Z" />
-          <path d="M 22,33.2 C 42,27.8 66,26.8 98,30.5 C 70,31.2 46,31.5 27,36.2 C 23,37 19.5,35.5 22,33.2 Z" />
-          <path d="M 65,25.8 C 105,30.8 147,31.4 185,32 C 213,32.5 234,38 250,49.5 C 232,42.5 212,37.8 184.5,37 C 145,36 103,35 65,27.6 Z" />
-          <path d="M 94,46.2 C 127,40.2 165,39.8 202,42.6 C 166,44 128,44.6 94,46.2 Z" />
-          <path d="M 212,42.2 C 221,41.8 233,45.5 242,51.6 C 231,50.8 221,48.2 215,44.8 Z" />
-          <path d="M 39,62.5 C 40.2,49.2 48,43 57.5,43 C 67,43 74.8,49.2 76,62.5 C 73.2,52.2 66.2,47.5 57.5,47.5 C 48.8,47.5 41.8,52.2 39,62.5 Z" />
-          <path d="M 180,65 C 181.2,51.8 189,45.6 198.5,45.6 C 208,45.6 215.8,51.8 217,65 C 214.2,54.8 207.2,50.1 198.5,50.1 C 189.8,50.1 182.8,54.8 180,65 Z" />
-          <path d="M 83,62.5 C 113,64.2 144,65 173,64.8 C 144,67.6 113,66.6 83,62.5 Z" />
-        </g>
+        {engravedFilterId && (
+          <defs>
+            <filter id={engravedFilterId} x="-10%" y="-10%" width="120%" height="120%" colorInterpolationFilters="sRGB">
+              <feGaussianBlur in="SourceAlpha" stdDeviation="1.2" result="softEdge" />
+              <feOffset in="softEdge" dy="1.1" result="loweredEdge" />
+              <feComposite in="SourceAlpha" in2="loweredEdge" operator="out" result="upperCut" />
+              <feFlood floodColor="#020a14" floodOpacity="0.9" result="shadowColor" />
+              <feComposite in="shadowColor" in2="upperCut" operator="in" result="innerShadow" />
+              <feOffset in="softEdge" dy="-1.1" result="raisedEdge" />
+              <feComposite in="SourceAlpha" in2="raisedEdge" operator="out" result="lowerCut" />
+              <feFlood floodColor="#b8cbd6" floodOpacity="0.45" result="lightColor" />
+              <feComposite in="lightColor" in2="lowerCut" operator="in" result="innerHighlight" />
+              <feMerge>
+                <feMergeNode in="SourceGraphic" />
+                <feMergeNode in="innerShadow" />
+                <feMergeNode in="innerHighlight" />
+              </feMerge>
+            </filter>
+          </defs>
+        )}
+        <g filter={engravedFilterId ? `url(#${engravedFilterId})` : undefined}>
+          <g fill="currentColor" transform="translate(0, -14)">
+            <path d="M 10,25.5 C 21,29 33,27.5 50,22 C 78,12.5 103,7.5 127,8.2 C 149,8.8 168,15.5 188,26.8 L 183.5,28.2 C 164,18.5 146,13.2 126.5,12.8 C 103,12.2 79,17 51,26.5 C 34,32 21,33.5 10,25.5 Z" />
+            <path d="M 22,33.2 C 42,27.8 66,26.8 98,30.5 C 70,31.2 46,31.5 27,36.2 C 23,37 19.5,35.5 22,33.2 Z" />
+            <path d="M 65,25.8 C 105,30.8 147,31.4 185,32 C 213,32.5 234,38 250,49.5 C 232,42.5 212,37.8 184.5,37 C 145,36 103,35 65,27.6 Z" />
+            <path d="M 94,46.2 C 127,40.2 165,39.8 202,42.6 C 166,44 128,44.6 94,46.2 Z" />
+            <path d="M 212,42.2 C 221,41.8 233,45.5 242,51.6 C 231,50.8 221,48.2 215,44.8 Z" />
+            <path d="M 39,62.5 C 40.2,49.2 48,43 57.5,43 C 67,43 74.8,49.2 76,62.5 C 73.2,52.2 66.2,47.5 57.5,47.5 C 48.8,47.5 41.8,52.2 39,62.5 Z" />
+            <path d="M 180,65 C 181.2,51.8 189,45.6 198.5,45.6 C 208,45.6 215.8,51.8 217,65 C 214.2,54.8 207.2,50.1 198.5,50.1 C 189.8,50.1 182.8,54.8 180,65 Z" />
+            <path d="M 83,62.5 C 113,64.2 144,65 173,64.8 C 144,67.6 113,66.6 83,62.5 Z" />
+          </g>
 
-        <g fill="currentColor" transform="translate(0, 16)">
-          <path
-            fillRule="evenodd"
-            d="M 22,79 H 131 C 142.2,79 149.8,86 149.8,96.5 C 149.8,103.6 145.6,109.2 139,111.6 C 147.2,114.2 152.2,120.8 152.2,129.4 C 152.2,139 144.2,145.5 133,145.5 H 90 V 98.2 H 110 V 104.8 H 130 C 133.6,104.8 135.8,102.3 135.8,99.4 C 135.8,96.5 133.6,94 130,94 H 42 V 104.8 H 83 L 72,119.8 H 42 V 145.5 H 22 Z M 110,119.8 H 131.5 C 135.6,119.8 138.2,122.4 138.2,125.2 C 138.2,128.1 135.6,130.5 131.5,130.5 H 110 Z"
-          />
-          <path d="M 182,79 H 238 L 227,94 H 183 C 178.4,94 176,96.5 176,99.4 C 176,102.3 178.4,104.8 183,104.8 H 214 C 228.2,104.8 238.2,113.4 238.2,125.2 C 238.2,137 228.2,145.5 214,145.5 H 165.5 C 161,145.5 158,142.1 158,138 C 158,133.9 161,130.5 165.5,130.5 H 213 C 217.6,130.5 220.2,128.1 220.2,125.2 C 220.2,122.4 217.6,119.8 213,119.8 H 182 C 167.8,119.8 158,111.2 158,99.4 C 158,87.6 167.8,79 182,79 Z" />
+          <g fill="currentColor" transform={engravedFilterId ? 'translate(0, -20)' : 'translate(0, 16)'}>
+            <path
+              fillRule="evenodd"
+              d="M 22,79 H 131 C 142.2,79 149.8,86 149.8,96.5 C 149.8,103.6 145.6,109.2 139,111.6 C 147.2,114.2 152.2,120.8 152.2,129.4 C 152.2,139 144.2,145.5 133,145.5 H 90 V 98.2 H 110 V 104.8 H 130 C 133.6,104.8 135.8,102.3 135.8,99.4 C 135.8,96.5 133.6,94 130,94 H 42 V 104.8 H 83 L 72,119.8 H 42 V 145.5 H 22 Z M 110,119.8 H 131.5 C 135.6,119.8 138.2,122.4 138.2,125.2 C 138.2,128.1 135.6,130.5 131.5,130.5 H 110 Z"
+            />
+            <path d="M 182,79 H 238 L 227,94 H 183 C 178.4,94 176,96.5 176,99.4 C 176,102.3 178.4,104.8 183,104.8 H 214 C 228.2,104.8 238.2,113.4 238.2,125.2 C 238.2,137 228.2,145.5 214,145.5 H 165.5 C 161,145.5 158,142.1 158,138 C 158,133.9 161,130.5 165.5,130.5 H 213 C 217.6,130.5 220.2,128.1 220.2,125.2 C 220.2,122.4 217.6,119.8 213,119.8 H 182 C 167.8,119.8 158,111.2 158,99.4 C 158,87.6 167.8,79 182,79 Z" />
+          </g>
         </g>
       </svg>
     </div>
