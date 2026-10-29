@@ -46,6 +46,15 @@ describe('account dashboard', () => {
     expect(html).toContain('مشاركاتي');
   });
 
+  it('provides real quick links and identifies a sample featured plate', () => {
+    const html = render();
+    expect(html).toContain('aria-label="وصول سريع"');
+    expect(html).toContain('href="/plates/search"');
+    expect(html).toContain('href="/auctions"');
+    expect(html).toContain('href="/sell-your-plate"');
+    expect(html).toContain('data-demo="true"');
+  });
+
   it('reports unavailable data instead of presenting fake account records', () => {
     const html = render({ activeSectionKey: 'deposits', dataState: 'unavailable', featuredPlates: [] });
     expect(html).toContain('تعذر تحميل البيانات حاليًا');

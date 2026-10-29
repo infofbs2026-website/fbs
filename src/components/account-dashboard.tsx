@@ -5,9 +5,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  ArrowLeft, Bell, Bookmark, Car, ChevronDown, Clock, CreditCard, Gavel,
+  ArrowLeft, Bell, Bookmark, Car, Clock, Compass, CreditCard, Gavel,
   Headphones, Home, LayoutDashboard, LogOut, Menu, Moon, Plus, Search,
-  ShieldCheck, Sun, UserRound, Wallet, X
+  ShieldCheck, Sparkles, Sun, UserRound, Wallet, X
 } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
 import { MfaSetup } from '@/components/mfa';
@@ -193,8 +193,9 @@ export function AccountDashboard({
         <div className={styles.sidebarInner}>
           <Link href="/" className={styles.brand} onClick={() => setMenuOpen(false)} aria-label="FBS، العودة للرئيسية">
             <Image src="/brand/fbs-logo-official.svg" alt="فارس بن سعود للوحات المميزة" width={170} height={45} priority />
+            <span className={styles.brandCaption}>بوابة الأعضاء <span aria-hidden="true">·</span> FBS</span>
           </Link>
-          <span className={styles.navCaption}>حسابك في FBS</span>
+          <span className={styles.navCaption}>مساحتك الخاصة</span>
           <nav className={styles.navigation} aria-label="أقسام الحساب">
             {primaryLinks.map(({ key, href, label, icon: Icon }) => (
               <Link key={key} href={href} aria-current={activeSectionKey === key ? 'page' : undefined} onClick={() => setMenuOpen(false)}>
@@ -203,6 +204,7 @@ export function AccountDashboard({
             ))}
           </nav>
           <div className={styles.sidebarBottom}>
+            <span className={styles.navCaption}>الحساب والمساعدة</span>
             <Link href="/account/profile" onClick={() => setMenuOpen(false)} aria-current={activeSectionKey === 'profile' ? 'page' : undefined}><UserRound size={19} aria-hidden="true" /><span>الملف الشخصي</span></Link>
             <Link href="/faq" onClick={() => setMenuOpen(false)}><Headphones size={19} aria-hidden="true" /><span>المساعدة</span></Link>
             <button type="button" onClick={logout}><LogOut size={19} aria-hidden="true" /><span>تسجيل الخروج</span></button>
@@ -226,13 +228,13 @@ export function AccountDashboard({
               <button type="button" aria-label="الوضع الداكن" aria-pressed={theme === 'dark'} onClick={() => changeTheme('dark')}><Moon size={16} aria-hidden="true" /><span>داكن</span></button>
             </div>
             <Link href="/account/notifications" className={styles.iconButton} aria-label="الإشعارات"><Bell size={19} aria-hidden="true" /></Link>
-            <Link href="/account/profile" className={styles.userLink} aria-label="الملف الشخصي"><span className={styles.avatar}>{initial}</span><span className={styles.userName}>{name || 'حسابي'}</span><ChevronDown size={14} aria-hidden="true" /></Link>
+            <Link href="/account/profile" className={styles.userLink} aria-label="الملف الشخصي"><span className={styles.avatar}>{initial}</span><span className={styles.userName}>{name || 'حسابي'}</span></Link>
           </div>
         </header>
 
         <div className={styles.content}>
           <div className={styles.greeting}>
-            <div>
+            <div className={styles.greetingCopy}>
               <p className={styles.eyebrow}>حسابك في فارس بن سعود</p>
               <h1>{activeSectionKey === 'overview' ? (name ? `مرحبًا، ${name}` : 'مرحبًا بك') : details.title}</h1>
               <p className={styles.intro}>{details.description}</p>
@@ -241,12 +243,14 @@ export function AccountDashboard({
               {details.action?.href ? <ArrowLeft size={16} aria-hidden="true" /> : <Plus size={17} aria-hidden="true" />}
               <span>{details.action?.label ?? 'اعرض لوحتك'}</span>
             </Link>
+            <span className={styles.greetingMark} aria-hidden="true">FBS</span>
           </div>
 
           {dataState === 'demo' && <div className={styles.notice} role="status">وضع المعاينة: بيانات الحساب الظاهرة أمثلة توضيحية.</div>}
 
           {activeSectionKey === 'overview' ? (
             <>
+              <div className={styles.summaryHeading}><span className={styles.headingOrnament} aria-hidden="true" /><h2>حسابك في لمحة</h2><span className={styles.headingRule} aria-hidden="true" /></div>
               <section className={styles.metrics} aria-label="ملخص الحساب">
                 {[
                   { label: 'مشاركاتي', value: counts.auctions, href: '/account/auctions', icon: Gavel },
@@ -257,7 +261,7 @@ export function AccountDashboard({
                   <Link href={href} className={styles.metric} key={href}>
                     <span className={styles.metricIcon}><Icon size={20} strokeWidth={1.7} aria-hidden="true" /></span>
                     <span className={styles.metricCopy}><span>{label}</span><strong>{value === null ? 'عرض التفاصيل' : value}</strong></span>
-                    <ArrowLeft className={styles.metricArrow} size={15} aria-hidden="true" />
+                    <span className={styles.metricArrow}><ArrowLeft size={15} aria-hidden="true" /></span>
                   </Link>
                 ))}
               </section>
@@ -265,8 +269,12 @@ export function AccountDashboard({
               <section className={styles.auctionSection} aria-label="لوحة مميزة في المزاد">
                 {featured ? (
                   <>
+                    <div className={styles.auctionTopline}>
+                      <span className={styles.spotlightLabel}><Sparkles size={15} aria-hidden="true" /> اختيار من المزادات</span>
+                      <Link href="/auctions" className={styles.spotlightLink}>جميع المزادات <ArrowLeft size={15} aria-hidden="true" /></Link>
+                    </div>
                     <div className={styles.auctionInfo}>
-                      <span className={styles.liveBadge}><span />{isDemoMarket ? 'لوحة تجريبية' : 'لوحة في المزاد'}</span>
+                      <span className={styles.liveBadge} data-demo={isDemoMarket}><span />{isDemoMarket ? 'لوحة تجريبية' : 'لوحة في المزاد'}</span>
                       <h2>لوحة مميزة في المزاد</h2>
                       <p>{featured.type} · {featured.city}</p>
                       <div className={styles.auctionStats}>
@@ -283,6 +291,17 @@ export function AccountDashboard({
                 ) : (
                   <div className={styles.noAuction}><h2>اكتشف اللوحات المميزة</h2><p>تصفح اللوحات والمزادات المتاحة على المنصة.</p><Link href="/auctions" className={styles.goldButton}>تصفح المزادات <ArrowLeft size={17} /></Link></div>
                 )}
+              </section>
+
+              <section className={styles.quickBar} aria-label="وصول سريع">
+                <div className={styles.quickIntro}><span className={styles.quickIntroIcon}><Compass size={19} aria-hidden="true" /></span><h2>وصول سريع</h2></div>
+                <div className={styles.quickLinks}>
+                  {[
+                    { href: '/plates/search', label: 'ابحث عن لوحة', icon: Search },
+                    { href: '/auctions', label: 'استكشف المزادات', icon: Gavel },
+                    { href: '/sell-your-plate', label: 'اعرض لوحتك', icon: Plus }
+                  ].map(({ href, label, icon: Icon }) => <Link key={href} href={href}><span className={styles.quickIcon}><Icon size={17} aria-hidden="true" /></span><span>{label}</span><ArrowLeft size={15} aria-hidden="true" /></Link>)}
+                </div>
               </section>
 
               <section className={styles.listSection} aria-labelledby="featured-plates-title">
