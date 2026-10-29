@@ -67,4 +67,22 @@ describe('account dashboard', () => {
     expect(html).toContain('disabled=""');
     expect(html).not.toContain('1088492001');
   });
+
+  it('shows account security actions and the actual account email without claiming MFA is already enabled', () => {
+    const html = render({ activeSectionKey: 'security', initialTheme: 'dark', dataState: 'ready', featuredPlates: [] });
+    expect(html).toContain('member@example.com');
+    expect(html).toContain('href="/forgot-password"');
+    expect(html).toContain('إعداد أو تأكيد تطبيق المصادقة');
+    expect(html).toContain('نصائح لحماية حسابك');
+    expect(html).not.toContain('العمليات المالية الحساسة ومزايدات النخبة تتطلب');
+  });
+
+  it('distinguishes unavailable security settings from the demo and does not offer enrollment in either case', () => {
+    const unavailable = render({ activeSectionKey: 'security', dataState: 'unavailable', featuredPlates: [] });
+    const demo = render({ activeSectionKey: 'security', dataState: 'demo', featuredPlates: [] });
+    expect(unavailable).toContain('تعذر تحميل إعدادات التحقق بخطوتين');
+    expect(demo).toContain('إعداد التحقق بخطوتين غير متاح في وضع المعاينة');
+    expect(unavailable).not.toContain('إعداد أو تأكيد تطبيق المصادقة');
+    expect(demo).not.toContain('إعداد أو تأكيد تطبيق المصادقة');
+  });
 });

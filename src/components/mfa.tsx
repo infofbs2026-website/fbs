@@ -2,88 +2,97 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import { AlertCircle, CheckCircle2, KeyRound, LoaderCircle, Smartphone } from 'lucide-react';
 import { sendJson } from './forms';
-import { ShieldCheck, LoaderCircle, CheckCircle2, AlertCircle, KeyRound } from 'lucide-react';
+import styles from './account-dashboard.module.css';
 
-export function MfaSetup({ theme = 'light' }: { theme?: 'light' | 'dark' }) {
+/** Accept both the SDK's SVG data URL and a raw SVG without encoding either twice. */
+export function mfaQrImageSource(qr: string): string {
+  let svg = qr.trim();
+  if (svg.toLowerCase().startsWith('data:image/svg+xml')) {
+    const comma = svg.indexOf(',');
+    if (comma < 0) return '';
+    const header = svg.slice(0, comma);
+    const data = svg.slice(comma + 1);
+    if (/;base64$/i.test(header)) {
+      return /^[a-z0-9+/]+={0,2}$/i.test(data) ? `data:image/svg+xml;base64,${data}` : '';
+    }
+    try {
+      svg = decodeURIComponent(data).trim();
+    } catch {
+      svg = data.trim();
+    }
+  }
+  if (!/^(?:<\?xml[^>]*\?>\s*)?<svg(?:\s|>)/i.test(svg)) return '';
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+export function MfaSetup() {
   const [factor, setFactor] = useState<{ id: string; qr: string } | null>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState(false);
   const [busy, setBusy] = useState(false);
-
-  const isDark = theme === 'dark';
+  const qrSource = factor?.qr ? mfaQrImageSource(factor.qr) : '';
 
   return (
-    <div
-      className={
-        isDark
-          ? 'mt-6 rounded-2xl border border-white/10 bg-[#091122]/90 backdrop-blur-xl p-6 sm:p-8 shadow-2xl'
-          : 'panel mt-6'
-      }
-    >
-      <div className="flex items-center gap-3 mb-4">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold/15 border border-gold/30 text-gold">
-          <KeyRound size={20} />
-        </span>
-        <div>
-          <h2 className={isDark ? 'text-lg font-black text-white' : 'font-bold'}>
-            التحقق بخطوتين (2FA)
-          </h2>
-          <p className={isDark ? 'text-xs text-slate-400' : 'text-xs text-muted'}>
-            حماية إضافية لحسابك وأرصدتك المالية
-          </p>
-        </div>
+    <section className={`${styles.panel} ${styles.securityCard}`} aria-labelledby="security-mfa-heading">
+      <div className={styles.panelHeading}>
+        <span className={styles.panelIcon}><KeyRound size={20} aria-hidden="true" /></span>
+        <div><h2 id="security-mfa-heading">التحقق بخطوتين</h2><p>إعداد تطبيق المصادقة.</p></div>
       </div>
 
-      <p className={isDark ? 'mb-5 text-xs sm:text-sm leading-relaxed text-slate-300' : 'mb-5 text-sm leading-7 text-muted'}>
-        اربط تطبيق المصادقة (مثل Google Authenticator أو 1Password) بحسابك. العمليات المالية الحساسة ومزايدات النخبة تتطلب جلسة موثقة برمز التحقق.
-      </p>
+      <p className={styles.securityDescription}>اربط تطبيق مصادقة بحسابك لإعداد رمز تحقق إضافي أو تأكيده.</p>
+      <div className={styles.securityDetail}>
+        <Smartphone size={18} aria-hidden="true" />
+        <span><small>طريقة التحقق</small><strong>تطبيق مصادقة</strong></span>
+      </div>
 
-      <button
-        className={
-          isDark
-            ? 'btn btn-outline-gold text-xs sm:text-sm font-bold'
-            : 'btn btn-outline'
-        }
-        disabled={busy}
-        onClick={async () => {
-          setBusy(true);
-          setError(false);
-          try {
-            const r = await sendJson('/api/v1/security/enroll', {});
-            setFactor(r);
-            setMessage(
-              r.qr
-                ? 'امسح رمز الاستجابة السريعة (QR) بتطبيق المصادقة، ثم أدخل الرمز المكون من 6 أرقام أدناه.'
-                : 'أدخل الكود المباشر من تطبيق المصادقة المرتبط.'
-            );
-          } catch (e) {
-            setError(true);
-            setMessage(e instanceof Error ? e.message : 'تعذر إعداد المصادقة.');
-          } finally {
-            setBusy(false);
-          }
-        }}
-      >
-        {busy ? (
-          <span className="flex items-center gap-2">
-            <LoaderCircle size={16} className="animate-spin" />
-            <span>جارٍ الإعداد…</span>
-          </span>
-        ) : (
-          'إعداد أو تأكيد تطبيق المصادقة'
-        )}
-      </button>
+      <div className={styles.securityAction}>
+        <button
+          type="button"
+          className={styles.outlineButton}
+          disabled={busy || Boolean(factor)}
+          onClick={async () => {
+            setBusy(true);
+            setError(false);
+            setMessage('');
+            try {
+              const result = await sendJson('/api/v1/security/enroll', {});
+              if (!result || typeof result.id !== 'string' || typeof result.qr !== 'string' || (result.qr && !mfaQrImageSource(result.qr))) {
+                throw new Error('تعذر عرض إعداد تطبيق المصادقة. حاول مرة أخرى.');
+              }
+              setFactor(result);
+              setMessage(result.qr
+                ? 'امسح رمز QR بتطبيق المصادقة، ثم أدخل الرمز المكون من 6 أرقام.'
+                : 'أدخل الرمز من تطبيق المصادقة المرتبط.');
+            } catch (e) {
+              setError(true);
+              setMessage(e instanceof Error ? e.message : 'تعذر إعداد المصادقة.');
+            } finally {
+              setBusy(false);
+            }
+          }}
+        >
+          {busy && !factor ? <><LoaderCircle size={16} className="animate-spin" aria-hidden="true" /> جارٍ الإعداد…</> : 'إعداد أو تأكيد تطبيق المصادقة'}
+        </button>
+      </div>
+
+      {message && (
+        <div role={error ? 'alert' : 'status'} className={`${styles.mfaMessage} ${error ? styles.mfaError : styles.mfaSuccess}`}>
+          {error ? <AlertCircle size={16} aria-hidden="true" /> : <CheckCircle2 size={16} aria-hidden="true" />}
+          <span>{message}</span>
+        </div>
+      )}
 
       {factor && (
         <form
-          className="mt-6 space-y-4 rounded-xl border border-gold/20 bg-white/[0.03] p-5"
-          onSubmit={async (e) => {
-            e.preventDefault();
+          className={styles.mfaForm}
+          onSubmit={async (event) => {
+            event.preventDefault();
             setBusy(true);
             setError(false);
             try {
-              const code = new FormData(e.currentTarget).get('code');
+              const code = new FormData(event.currentTarget).get('code');
               await sendJson('/api/v1/security/verify', { factorId: factor.id, code });
               setMessage('تم تأكيد وربط المصادقة بخطوتين بنجاح.');
               setFactor(null);
@@ -95,77 +104,22 @@ export function MfaSetup({ theme = 'light' }: { theme?: 'light' | 'dark' }) {
             }
           }}
         >
-          {factor.qr && (
-            <div className="flex flex-col items-center justify-center p-3 bg-white rounded-2xl w-fit mx-auto border border-gold/40 shadow-lg">
-              <Image
-                src={`data:image/svg+xml;utf8,${encodeURIComponent(factor.qr)}`}
-                alt="رمز ربط تطبيق المصادقة"
-                width={180}
-                height={180}
-                unoptimized
-              />
-              <span className="mt-2 text-[11px] font-bold text-navy">امسح الكود عبر الكاميرا</span>
+          {factor.qr && (qrSource ? (
+            <div className={styles.mfaQr}>
+              <Image src={qrSource} alt="رمز ربط تطبيق المصادقة" width={180} height={180} unoptimized />
+              <span>امسح الرمز بتطبيق المصادقة</span>
             </div>
-          )}
+          ) : <p className={styles.mfaError} role="alert">تعذر عرض رمز QR. حاول إعداد تطبيق المصادقة مجددًا.</p>)}
 
-          <div>
-            <label
-              htmlFor="code"
-              className={
-                isDark
-                  ? 'mb-2 block text-xs font-bold uppercase tracking-wider text-slate-200'
-                  : 'label'
-              }
-            >
-              رمز التحقق (6 أرقام)
-            </label>
-            <input
-              name="code"
-              id="code"
-              inputMode="numeric"
-              pattern="[0-9]{6}"
-              maxLength={6}
-              required
-              className={
-                isDark
-                  ? 'w-full rounded-xl border border-white/15 bg-white/[0.06] px-4 py-3 text-center text-lg tracking-widest font-mono text-white focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold'
-                  : 'field'
-              }
-              autoComplete="one-time-code"
-              placeholder="000000"
-            />
-          </div>
-
-          <button
-            className={
-              isDark
-                ? 'btn btn-gold w-full py-3 text-sm font-black text-navy shadow-lg shadow-gold/20'
-                : 'btn btn-navy'
-            }
-            disabled={busy}
-          >
+          <label className={styles.mfaField} htmlFor="mfa-code">
+            <span>رمز التحقق (6 أرقام)</span>
+            <input name="code" id="mfa-code" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} required autoComplete="one-time-code" placeholder="000000" dir="ltr" />
+          </label>
+          <button className={styles.primaryButton} type="submit" disabled={busy}>
             {busy ? 'جارٍ التحقق…' : 'تأكيد الرمز والتفعيل'}
           </button>
         </form>
       )}
-
-      {message && (
-        <div
-          role={error ? 'alert' : 'status'}
-          className={`mt-4 flex items-center gap-2 p-3.5 rounded-xl text-xs sm:text-sm font-semibold border ${
-            isDark
-              ? error
-                ? 'border-red-500/30 bg-red-950/40 text-red-300'
-                : 'border-emerald-500/30 bg-emerald-950/40 text-emerald-300'
-              : error
-              ? 'border-red-200 bg-red-50 text-red-700'
-              : 'border-emerald-200 bg-emerald-50 text-emerald-700'
-          }`}
-        >
-          {error ? <AlertCircle size={16} /> : <CheckCircle2 size={16} />}
-          <span>{message}</span>
-        </div>
-      )}
-    </div>
+    </section>
   );
 }

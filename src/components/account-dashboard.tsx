@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeft, Bell, Bookmark, Car, Clock, Compass, CreditCard, Gavel,
-  Headphones, Home, LayoutDashboard, LogOut, Menu, Moon, Plus, Search,
-  ShieldCheck, Sparkles, Sun, UserRound, Wallet, X
+  Headphones, Home, KeyRound, LayoutDashboard, LockKeyhole, LogOut, Mail, Menu, Moon, Plus, Search,
+  ShieldCheck, Smartphone, Sparkles, Sun, UserRound, Wallet, X
 } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
 import { MfaSetup } from '@/components/mfa';
@@ -312,7 +312,45 @@ export function AccountDashboard({
           ) : activeSectionKey === 'profile' ? (
             <section className={styles.panel}><div className={styles.panelHeading}><span className={styles.panelIcon}><UserRound size={19} /></span><div><h2>البيانات الشخصية</h2><p>راجع بياناتك وحدّث طرق التواصل.</p></div></div><ProfileForm user={user} phone={profilePhone} editable={profileEditable} /></section>
           ) : activeSectionKey === 'security' ? (
-            <section className={styles.securityArea}><div className={styles.panel}><div className={styles.panelHeading}><span className={styles.panelIcon}><ShieldCheck size={19} /></span><div><h2>كلمة المرور</h2><p>يمكنك استعادة كلمة المرور عبر البريد الإلكتروني.</p></div></div><Link href="/forgot-password" className={styles.outlineButton}>استعادة كلمة المرور <ArrowLeft size={15} aria-hidden="true" /></Link></div>{dataState === 'ready' ? <MfaSetup theme={theme} /> : <div className={`${styles.panel} ${styles.securityNotice}`}>إعداد التحقق بخطوتين غير متاح في وضع المعاينة.</div>}</section>
+            <div className={styles.securityArea}>
+              <section className={`${styles.panel} ${styles.securityCard}`} aria-labelledby="security-password-heading">
+                <div className={styles.panelHeading}>
+                  <span className={styles.panelIcon}><LockKeyhole size={20} aria-hidden="true" /></span>
+                  <div><h2 id="security-password-heading">كلمة المرور</h2><p>حافظ على أمان تسجيل الدخول.</p></div>
+                </div>
+                <p className={styles.securityDescription}>إذا نسيت كلمة المرور، يمكنك استعادتها باستخدام بريد حسابك.</p>
+                <div className={styles.securityDetail}>
+                  <Mail size={18} aria-hidden="true" />
+                  <span><small>البريد المرتبط بالحساب</small><strong dir="ltr">{user.email || 'غير متاح'}</strong></span>
+                </div>
+                <div className={styles.securityAction}>
+                  <Link href="/forgot-password" className={styles.outlineButton}>استعادة كلمة المرور <ArrowLeft size={15} aria-hidden="true" /></Link>
+                </div>
+              </section>
+
+              {dataState === 'ready' ? <MfaSetup /> : (
+                <section className={`${styles.panel} ${styles.securityCard}`} aria-labelledby="security-mfa-unavailable-heading">
+                  <div className={styles.panelHeading}>
+                    <span className={styles.panelIcon}><KeyRound size={20} aria-hidden="true" /></span>
+                    <div><h2 id="security-mfa-unavailable-heading">التحقق بخطوتين</h2><p>إعداد تطبيق المصادقة.</p></div>
+                  </div>
+                  <p className={styles.securityDescription}>{dataState === 'demo' ? 'إعداد التحقق بخطوتين غير متاح في وضع المعاينة.' : 'تعذر تحميل إعدادات التحقق بخطوتين حاليًا. حاول مرة أخرى لاحقًا.'}</p>
+                </section>
+              )}
+
+              <section className={`${styles.panel} ${styles.securityTips}`} aria-labelledby="security-tips-heading">
+                <div className={styles.securityTipsHeading}>
+                  <span className={styles.panelIcon}><ShieldCheck size={20} aria-hidden="true" /></span>
+                  <div><h2 id="security-tips-heading">نصائح لحماية حسابك</h2><p>خطوات بسيطة تحافظ على بياناتك.</p></div>
+                  <Link href="/faq" className={styles.textLink}>مركز المساعدة <ArrowLeft size={15} aria-hidden="true" /></Link>
+                </div>
+                <ul className={styles.securityTipsList}>
+                  <li><LockKeyhole size={18} aria-hidden="true" /><span>استخدم كلمة مرور فريدة لحسابك.</span></li>
+                  <li><KeyRound size={18} aria-hidden="true" /><span>لا تشارك رموز التحقق مع أي شخص.</span></li>
+                  <li><Smartphone size={18} aria-hidden="true" /><span>احتفظ بالوصول إلى بريدك وتطبيق المصادقة.</span></li>
+                </ul>
+              </section>
+            </div>
           ) : (
             <section className={styles.panel}><div className={styles.sectionHeading}><div><h2>{details.title}</h2><p className={styles.sectionHint}>{details.description}</p></div></div>{dataState === 'unavailable' ? <div className={styles.empty} role="alert">تعذر تحميل البيانات حاليًا. حاول مرة أخرى لاحقًا.</div> : <DataTable rows={rowsData} columns={columns} theme={theme} />}</section>
           )}

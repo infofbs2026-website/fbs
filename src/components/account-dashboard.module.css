@@ -378,8 +378,38 @@
 .panelHeading h2 { margin: 0; font-size: 18px; font-weight: 800; }
 .panelHeading p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
 .empty { padding: 36px 18px; border: 1px dashed var(--line); border-radius: 15px; color: var(--muted); background: var(--surface-soft); text-align: center; font-size: 13px; }
-.securityArea { max-width: 920px; }
-.securityNotice { margin-top: 20px; color: var(--muted); font-size: 13px; }
+.securityArea { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
+.securityCard { display: flex; flex-direction: column; min-width: 0; }
+.securityDescription { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.9; }
+.securityDetail { display: flex; align-items: center; gap: 12px; min-width: 0; margin-top: 20px; padding: 14px 0; border-block: 1px solid var(--line); color: var(--gold); }
+.securityDetail > span { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0; }
+.securityDetail small { color: var(--muted); font-size: 11px; }
+.securityDetail strong { max-width: 100%; color: var(--ink); font-size: 13px; font-weight: 700; overflow-wrap: anywhere; }
+.securityAction { margin-top: auto; padding-top: 22px; }
+.securityAction .outlineButton { max-width: 100%; text-align: center; cursor: pointer; }
+.securityAction .outlineButton:disabled { opacity: .6; cursor: default; transform: none; }
+.securityTips { grid-column: 1 / -1; }
+.securityTipsHeading { display: flex; align-items: center; gap: 13px; }
+.securityTipsHeading > div { flex: 1; min-width: 0; }
+.securityTipsHeading h2 { margin: 0; font-size: 17px; font-weight: 800; }
+.securityTipsHeading p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+.securityTipsList { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin: 20px 0 0; padding: 20px 0 0; border-top: 1px solid var(--line); list-style: none; }
+.securityTipsList li { display: flex; align-items: flex-start; gap: 9px; min-width: 0; color: var(--muted); font-size: 12px; line-height: 1.8; }
+.securityTipsList svg { flex: none; margin-top: 2px; color: var(--gold); }
+.mfaMessage { display: flex; align-items: flex-start; gap: 9px; margin-top: 18px; padding: 12px 14px; border: 1px solid; border-radius: 12px; font-size: 12px; line-height: 1.8; }
+.mfaMessage svg { flex: none; margin-top: 2px; }
+.mfaError { color: #a32727; }
+.mfaMessage.mfaError { background: #fff2f1; border-color: #efc8c5; }
+.mfaSuccess { color: #126d56; background: #edf9f4; border-color: #bde5d5; }
+.dashboard[data-account-theme='dark'] .mfaError { color: #ffc3bc; }
+.dashboard[data-account-theme='dark'] .mfaMessage.mfaError { background: rgba(111, 30, 28, .3); border-color: rgba(241, 140, 129, .3); }
+.dashboard[data-account-theme='dark'] .mfaSuccess { color: #a8f0d4; background: rgba(12, 94, 70, .3); border-color: rgba(106, 218, 173, .3); }
+.mfaForm { display: grid; gap: 16px; margin-top: 16px; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface-soft); }
+.mfaQr { display: grid; justify-items: center; gap: 8px; width: fit-content; max-width: 100%; margin: 0 auto; padding: 12px; border-radius: 14px; background: #fff; color: #12223b; font-size: 11px; font-weight: 700; }
+.mfaQr img { display: block; max-width: 100%; height: auto; }
+.mfaField { display: grid; gap: 7px; color: var(--ink); font-size: 12px; font-weight: 700; }
+.mfaField input { width: 100%; min-height: 46px; padding: 10px 13px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); text-align: center; letter-spacing: .2em; }
+.mfaForm .primaryButton { width: 100%; cursor: pointer; }
 .profileForm { display: grid; justify-items: start; gap: 18px; }
 .formGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; width: 100%; }
 .field { display: grid; gap: 7px; min-width: 0; color: var(--ink); font-size: 12px; font-weight: 700; }
@@ -415,6 +445,12 @@
   .mobileMenu { display: inline-grid; }
   .header { border-end-end-radius: 20px; }
   .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .securityArea { grid-template-columns: 1fr; gap: 14px; }
+  .securityTipsHeading { flex-wrap: wrap; }
+  .securityTipsHeading .textLink { margin-inline-start: auto; }
+  .securityTipsList { grid-template-columns: 1fr; gap: 12px; }
 }
 @media (max-width: 640px) {
   .header { min-height: 68px; padding: 10px 14px; gap: 6px; }
