@@ -58,6 +58,7 @@ export function HeroAuctionCard({
     currentPlate.auction?.currentPriceHalalas || '0'
   );
   const [priceFlash, setPriceFlash] = useState(false);
+  const [bidCount, setBidCount] = useState(currentPlate.auction?.bidCount ?? 0);
 
   // Manual Pause & Hover-to-Pause States
   const [isManualPaused, setIsManualPaused] = useState(false);
@@ -69,8 +70,11 @@ export function HeroAuctionCard({
 
   // When changing current plate, reset timer, price, and progress bar
   useEffect(() => {
+    // Reset the carousel display when the selected auction changes.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTimeLeft(calculateInitialSeconds(currentPlate));
     setCurrentPriceHalalas(currentPlate.auction?.currentPriceHalalas || '0');
+    setBidCount(currentPlate.auction?.bidCount ?? 0);
     setPriceFlash(false);
     setProgress(0);
   }, [currentIndex, currentPlate]);
@@ -92,29 +96,39 @@ export function HeroAuctionCard({
     return () => clearInterval(timer);
   }, [timeLeft]);
 
-  // 2. Simulated Dynamic Real-Time Bids for the active plate
+  // Keep the featured price and end time in sync with the auction ledger.
   useEffect(() => {
-    if (isEnded) return;
-
-    const intervalTime = Math.floor(Math.random() * 8000) + 14000;
-    const bidInterval = setInterval(() => {
-      const increments = [1000000n, 1500000n, 2000000n, 2500000n];
-      const randomInc = increments[Math.floor(Math.random() * increments.length)];
-
-      setCurrentPriceHalalas((prev) => {
-        try {
-          return (BigInt(prev) + randomInc).toString();
-        } catch {
-          return prev;
+    const auctionId = currentPlate.auction?.id;
+    if (!auctionId) return;
+    const controller = new AbortController();
+    let lastPrice = currentPlate.auction?.currentPriceHalalas;
+    let flashTimer: ReturnType<typeof setTimeout> | undefined;
+    async function refresh() {
+      try {
+        const response = await fetch(`/api/v1/auctions/${auctionId}/snapshot`, { cache: 'no-store', signal: controller.signal });
+        if (!response.ok) return;
+        const result = await response.json();
+        const snapshot = result.data;
+        if (!snapshot || controller.signal.aborted) return;
+        if (typeof snapshot.currentBid === 'string') {
+          if (lastPrice && lastPrice !== snapshot.currentBid) {
+            setPriceFlash(true);
+            if (flashTimer) clearTimeout(flashTimer);
+            flashTimer = setTimeout(() => setPriceFlash(false), 2000);
+          }
+          lastPrice = snapshot.currentBid;
+          setCurrentPriceHalalas(snapshot.currentBid);
         }
-      });
-
-      setPriceFlash(true);
-      setTimeout(() => setPriceFlash(false), 2000);
-    }, intervalTime);
-
-    return () => clearInterval(bidInterval);
-  }, [isEnded, currentPlate.id]);
+        if (typeof snapshot.bidCount === 'number') setBidCount(snapshot.bidCount);
+        const end = Date.parse(snapshot.effectiveEndAt);
+        const serverTime = Date.parse(snapshot.serverTime);
+        if (Number.isFinite(end) && Number.isFinite(serverTime)) setTimeLeft(Math.max(0, Math.floor((end - serverTime) / 1000)));
+      } catch { /* Keep the last confirmed price if the connection is interrupted. */ }
+    }
+    void refresh();
+    const interval = setInterval(() => void refresh(), 15000);
+    return () => { controller.abort(); clearInterval(interval); if (flashTimer) clearTimeout(flashTimer); };
+  }, [currentPlate.auction?.id, currentPlate.auction?.currentPriceHalalas]);
 
   // Touch Swiping & Gesture States for Mobile
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -149,7 +163,7 @@ export function HeroAuctionCard({
     setIsTouching(true);
   };
 
-  const handleTouchMove = (_e: React.TouchEvent) => {
+  const handleTouchMove = () => {
     // Keep touch-pan-y active so page scroll continues naturally
   };
 
@@ -315,7 +329,7 @@ export function HeroAuctionCard({
               <div className="flex flex-col items-center justify-center text-center px-1">
                 <div className="flex items-center justify-center gap-1.5 text-[10.5px] sm:text-[11px] font-bold text-slate-300">
                   <TrendingUp size={11.5} className="text-gold shrink-0" />
-                  <span>{!isEnded ? 'أعلى مزايدة' : 'سعر الترسية'}</span>
+                  <span>{isEnded ? 'السعر الأخير' : bidCount > 0 ? 'أعلى مزايدة' : 'سعر البداية'}</span>
                 </div>
                 <div
                   className={`mt-0.5 flex items-baseline justify-center gap-1 font-bold transition-all duration-300 rounded-lg px-1 ${
@@ -351,7 +365,7 @@ export function HeroAuctionCard({
                     }`}
                     dir="ltr"
                   >
-                    {!isEnded ? formatTime(timeLeft) : 'منتهي (تم الرسو)'}
+                    {!isEnded ? formatTime(timeLeft) : 'انتهى الوقت'}
                   </span>
                 </div>
               </div>

@@ -121,7 +121,7 @@ export default async function Detail({ params }: { params: Promise<{ slug: strin
                 </div>
 
                 <div className="py-4">
-                  <p className="mb-2 text-xs font-semibold text-slate-500">{p.auction ? 'المزايدة الحالية' : 'السعر المطلوب'}</p>
+                  <p className="mb-2 text-xs font-semibold text-slate-500">{p.auction ? (p.auction.bidCount ? 'المزايدة الحالية' : 'سعر البداية') : 'السعر المطلوب'}</p>
                   {price !== null ? <Price amount={price} large /> : <span className="text-lg font-bold text-navy">السعر عند الطلب</span>}
                 </div>
 
@@ -139,7 +139,7 @@ export default async function Detail({ params }: { params: Promise<{ slug: strin
                       <ArrowLeft size={16} />
                     </Link>
                     <p className="mt-4 text-xs leading-6 text-slate-500">
-                      يُحجز التأمين للمزاد ويُفك لغير الفائزين وفق <Link href="/deposit-policy" className="font-bold text-navy underline">سياسة التأمين</Link>.
+                      {Number(p.auction.depositAmountHalalas) > 0 ? <>يُحجز التأمين للمزاد ويُفك لغير الفائزين وفق <Link href="/deposit-policy" className="font-bold text-navy underline">سياسة التأمين</Link>.</> : 'لا يتطلب هذا المزاد تأمينًا.'}
                     </p>
                   </>
                 ) : (

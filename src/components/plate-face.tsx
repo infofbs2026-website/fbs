@@ -16,7 +16,7 @@ export function plateAccessibleLabel(plate: ParsedPlateData, type: SaudiPlateTyp
     .map((pair) => pair.ar || '—')
     .join(' ');
   const numbers = plate.digitPairs.map((pair) => pair.ar || '—').join('');
-  const prefix = plate.status === 'demo' ? 'نموذج FBS التصوري' : 'لوحة مركبة سعودية';
+  const prefix = plate.status === 'demo' ? 'لوحة FBS' : 'لوحة مركبة سعودية';
   return `${prefix} (${category}): ${letters} ${numbers}${plate.status === 'invalid' ? '، يرجى مراجعة بيانات اللوحة' : ''}`;
 }
 

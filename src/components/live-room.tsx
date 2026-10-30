@@ -301,7 +301,7 @@ export function LiveRoom({
           ? 'border-gold bg-amber-50/90 shadow-[0_0_20px_rgba(217,184,127,0.4)]'
           : 'border-slate-200/90 bg-slate-50/90 shadow-[inset_0_2px_4px_rgba(15,23,42,0.04)]'
       }`}>
-        <span className="block text-xs font-semibold text-slate-500">أعلى مزايدة مسجلة حاليًا</span>
+        <span className="block text-xs font-semibold text-slate-500">{snapshot?.bidCount ? 'أعلى مزايدة مسجلة حاليًا' : 'سعر البداية'}</span>
         <div className="my-2 flex items-baseline justify-center gap-2 text-4xl sm:text-5xl font-black text-navy" dir="ltr">
           <span className="tabular-nums tracking-tight font-norwester font-black text-slate-950">
             {snapshot ? formatEnglishAmount(snapshot.currentBid) : '—'}
@@ -347,7 +347,7 @@ export function LiveRoom({
         <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-6 text-center space-y-3">
           <Lock size={28} className="mx-auto text-gold-accent" />
           <h3 className="text-sm font-bold text-navy">يلزم تسجيل الدخول للمشاركة في المزاد</h3>
-          <p className="text-xs text-slate-500">سجّل دخولك لتفويض التأمين وتقديم مزايداتك المباشرة.</p>
+          <p className="text-xs text-slate-500">سجّل دخولك واستكمل متطلبات المشاركة لتقديم مزايداتك.</p>
           <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
             <Link href="/login" className="btn btn-navy flex-1 text-xs font-bold py-3 shadow-md">
               تسجيل الدخول للمشاركة

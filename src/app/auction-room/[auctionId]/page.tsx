@@ -92,7 +92,7 @@ export default async function Room({ params }: { params: Promise<{ auctionId: st
                   {plate.type || 'خصوصي'} · {plate.city || 'الرياض'}
                 </span>
                 <span className="font-norwester font-bold text-gold-dark" dir="ltr">
-                  FBS-{plate.slug.toUpperCase()}
+                  {plate.slug.toLowerCase().startsWith('fbs-') ? plate.slug.toUpperCase() : `FBS-${plate.slug.toUpperCase()}`}
                 </span>
               </div>
             </div>
