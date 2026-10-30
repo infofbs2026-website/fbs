@@ -34,7 +34,10 @@ const HomeConciergeCta = dynamic(
 export const revalidate = 60;
 
 export default async function Home() {
-  const market = await getMarketplace({ pageSize: 12 });
+  const [market, store] = await Promise.all([
+    getMarketplace({ auctionStatus: 'LIVE', pageSize: 12 }),
+    getMarketplace({ auctionStatus: 'DIRECT', pageSize: 8 })
+  ]);
   const displayPlates = market.plates;
   const liveAuctions = displayPlates.filter((p) => p.auction?.status === 'LIVE');
   const endingSoonCandidates = liveAuctions;
@@ -66,7 +69,7 @@ export default async function Home() {
       {/* ============================================================== */}
       {/* 04. اللوحات المميزة (WARM IVORY #F7F6F3 + 2x4 COMPACT CARDS)   */}
       {/* ============================================================== */}
-      <HomeLiveAuctions liveAuctions={displayPlates.slice(0, 8)} />
+      <HomeLiveAuctions liveAuctions={store.plates} />
 
       {/* ============================================================== */}
       {/* 05. مزادات حصرية / الإحصائيات (MIDNIGHT NAVY #08162B + GOLD)   */}
