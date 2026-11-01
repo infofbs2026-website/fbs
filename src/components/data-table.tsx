@@ -51,9 +51,9 @@ export function DataTable({
   if (!rows.length) {
     if (isDark) {
       return (
-        <div className="flex min-h-60 flex-col items-center justify-center rounded-2xl border border-white/10 bg-[#091122]/90 backdrop-blur-xl p-8 text-center shadow-xl">
+        <div className="flex min-h-60 flex-col items-center justify-center rounded-2xl border border-[#D9BB81]/28 bg-[#060E1B] p-8 text-center shadow-[inset_0_4px_10px_rgba(0,0,0,0.82),0_1px_0_rgba(255,255,255,0.08)]">
           <p className="text-base font-bold text-white">لا توجد سجلات مسجلة حتى الآن</p>
-          <p className="mt-1 text-xs text-slate-400">ستظهر هنا تفاصيلك فور بدء النشاط أو التوثيق.</p>
+          <p className="mt-1.5 text-xs font-medium text-slate-300">ستظهر هنا تفاصيلك فور بدء النشاط أو التوثيق.</p>
         </div>
       );
     }
@@ -71,15 +71,15 @@ export function DataTable({
     <div
       className={
         isDark
-          ? 'max-w-full overflow-x-auto rounded-2xl border border-white/10 bg-[#091122]/90 backdrop-blur-xl shadow-2xl'
-          : 'max-w-full overflow-x-auto rounded-lg border border-line bg-white'
+          ? 'max-w-full overflow-x-auto rounded-2xl border border-[#D9BB81]/30 bg-[#08162B] shadow-[inset_0_3px_8px_rgba(0,0,0,0.78),0_1px_0_rgba(255,255,255,0.08)]'
+          : 'max-w-full overflow-x-auto rounded-2xl border border-[#E7E4DC] bg-white'
       }
     >
       <table className="w-full text-start text-sm">
         <thead
           className={
             isDark
-              ? 'bg-white/[0.04] border-b border-white/10 text-gold-light'
+              ? 'bg-[#14243C] border-b border-[#D9BB81]/28 text-[#FAEBD0]'
               : 'bg-paper text-navy'
           }
         >
@@ -94,13 +94,13 @@ export function DataTable({
             ))}
           </tr>
         </thead>
-        <tbody className={isDark ? 'divide-y divide-white/5 text-slate-200' : ''}>
+        <tbody className={isDark ? 'divide-y divide-white/10 text-slate-100' : ''}>
           {rows.map((r, i) => (
             <tr
               key={String(r.id ?? r.key ?? i)}
               className={
                 isDark
-                  ? 'hover:bg-white/[0.03] transition-colors'
+                  ? 'hover:bg-[#14243C]/65 transition-colors'
                   : 'border-t border-line hover:bg-slate-50/50'
               }
             >

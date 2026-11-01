@@ -27,6 +27,7 @@ describe('account dashboard', () => {
     const html = render();
     expect(html).toContain('data-pf-proportional="saudi-plate"');
     expect(html).toContain('/plates/fbs-1');
+    expect(html).toContain('#C5B9A8');
     expect(html).not.toContain('تجريب');
   });
 
@@ -37,6 +38,11 @@ describe('account dashboard', () => {
     expect(html).not.toContain('وضع المعاينة');
     expect(html).not.toContain('سعر توضيحي');
     expect(html).toContain('مشاركاتي');
+    expect(html).toContain('#1C3656');
+    expect(html).toContain('#CBD5E1');
+    expect(html).not.toContain('#FAEBD0');
+    expect(html).not.toContain('plate-dark-pedestal');
+    expect(html).toContain('data-pf-audit="plate-card"');
   });
 
   it('provides real quick links and identifies a sample featured plate', () => {
@@ -45,7 +51,25 @@ describe('account dashboard', () => {
     expect(html).toContain('href="/plates/search"');
     expect(html).toContain('href="/auctions"');
     expect(html).toContain('href="/sell-your-plate"');
-    expect(html).toContain('لوحة في المزاد');
+    expect(html).not.toContain('لوحة في المزاد');
+    expect(html).toContain('اختيار من المزادات');
+    expect(html).toContain('المزادات والمقتنيات');
+    expect(html).toContain('المحفظة والحماية');
+    expect(html).toContain('/brand/logo.svg');
+    expect(html).toContain('aria-label="البحث الشامل في الموقع"');
+    expect(html).toContain('طي القائمة الجانبية');
+    expect(html.match(/aria-controls="account-navigation"/g)).toHaveLength(1);
+    expect(html).not.toContain('aria-label="فتح القائمة"');
+    expect(html).not.toContain('aria-label="طي القائمة"');
+    expect(html).toContain('fbs-greeting-deboss');
+    expect(html).not.toContain('/ نظرة عامة');
+    expect(html).toContain('خصوصي · الرياض');
+    expect(html).toContain('لوحة ف ب س 1');
+    expect(html).not.toContain('معاينة اللوحة المعتمدة');
+    expect(html).toContain('>يوم<');
+    expect(html).toContain('>ساعة<');
+    expect(html).toContain('>دقيقة<');
+    expect(html).toContain('>ثانية<');
   });
 
   it('reports unavailable data instead of presenting fake account records', () => {

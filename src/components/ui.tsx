@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { PlateFace } from '@/components/plate-face';
 import { PlateGlyphIcon } from '@/components/plate-vector-glyph';
 import { getPlateGeometry, normalizePlateType, parsePlateData } from '@/lib/plate-data';
@@ -12,7 +15,6 @@ import {
   Gavel,
   Heart,
   SearchX,
-  ShieldCheck,
   ShoppingBag,
   ShoppingCart
 } from 'lucide-react';
@@ -95,7 +97,7 @@ export function FbsStageWatermark({ className = '', engravedFilterId, engravingT
           Connected FBS monogram emerges boldly below the plate's bottom edge */}
       <svg
         viewBox={engravedFilterId ? '4 -18 252 152' : '4 -12 252 180'}
-        className="w-[78%] max-w-[330px] h-[94%] object-contain text-[#94A3B8]/[0.26]"
+        className="w-[78%] max-w-[330px] h-[94%] object-contain text-[#94A3B8]/[0.18]"
         xmlns="http://www.w3.org/2000/svg"
       >
         {engravedFilterId && (
@@ -208,6 +210,63 @@ export const statusLabels: Record<string, string> = {
   PAYMENT_PENDING: 'بانتظار التأمين',
   AUTHORIZED: 'التأمين مفوّض'
 };
+
+
+/**
+ * 4-Unit Real-time Countdown for Plate Cards:
+ * Clear, spacious numbers across the full card width with zero redundant text.
+ */
+export function PlateCardCountdown({ endsAt }: { endsAt?: string }) {
+  const [now, setNow] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!endsAt || !Number.isFinite(Date.parse(endsAt))) return;
+    const end = Date.parse(endsAt);
+    const initial = window.setTimeout(() => setNow(Date.now()), 0);
+    const timer = window.setInterval(() => {
+      const current = Date.now();
+      setNow(current);
+      if (current >= end) window.clearInterval(timer);
+    }, 1000);
+    return () => {
+      window.clearTimeout(initial);
+      window.clearInterval(timer);
+    };
+  }, [endsAt]);
+
+  const valid = Boolean(endsAt && now !== null && Number.isFinite(Date.parse(endsAt)));
+  const totalSeconds = valid && endsAt && now !== null ? Math.max(0, Math.floor((Date.parse(endsAt) - now) / 1000)) : null;
+
+  const days = totalSeconds === null ? '—' : String(Math.floor(totalSeconds / 86400)).padStart(2, '0');
+  const hours = totalSeconds === null ? '—' : String(Math.floor((totalSeconds % 86400) / 3600)).padStart(2, '0');
+  const minutes = totalSeconds === null ? '—' : String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+  const seconds = totalSeconds === null ? '—' : String(totalSeconds % 60).padStart(2, '0');
+
+  const units = [
+    { key: 'days', label: 'يوم', value: days },
+    { key: 'hours', label: 'ساعة', value: hours },
+    { key: 'minutes', label: 'دقيقة', value: minutes },
+    { key: 'seconds', label: 'ثانية', value: seconds }
+  ];
+
+  return (
+    <div className="grid grid-cols-4 gap-1.5 w-full font-norwester" dir="ltr">
+      {units.map((unit) => (
+        <div
+          key={unit.key}
+          className="flex flex-col items-center justify-center py-1.5 px-1 rounded-xl bg-white border border-[#E2DDD3] shadow-[0_1px_3px_rgba(20,36,60,0.04),inset_0_1px_0_#ffffff] transition-all hover:border-[#D9BB81]/80"
+        >
+          <span className="font-norwester font-black text-sm sm:text-[15px] text-[#14243C] tabular-nums leading-tight" dir="ltr">
+            {unit.value}
+          </span>
+          <span className="text-[10px] font-sans font-bold text-[#8C6B2D] leading-none mt-0.5">
+            {unit.label}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export function PlateCard({
   plate,
@@ -408,7 +467,15 @@ export function PlateCard({
         </div>
       ) : (
         <div className="pt-2 sm:pt-2.5 border-t border-[#ECE9E2] flex flex-col gap-2">
-          <div className="flex flex-wrap items-center justify-between gap-2 min-w-0">
+          {/* Full-Width Countdown Chamber: Spacious, No Redundant Text */}
+          {plate.auction?.endsAt ? (
+            <div className="w-full rounded-2xl bg-gradient-to-b from-[#FAF9F5] to-[#F4EFE6] border border-[#E7E2D6] p-1.5 shadow-[inset_0_1px_2px_rgba(20,36,60,0.03)]">
+              <PlateCardCountdown endsAt={plate.auction.endsAt} />
+            </div>
+          ) : null}
+
+          {/* Action Row: Price on Right (without card), CTA Button on Left */}
+          <div className="flex items-center justify-between gap-2 pt-0.5 min-w-0">
             <div className="min-w-0">
               <span className="pf-type-micro font-semibold text-[#64748B] block leading-tight mb-0.5">
                 {plate.auction ? 'المزايدة الحالية' : 'السعر المطلوب'}
@@ -424,30 +491,17 @@ export function PlateCard({
               </div>
             </div>
 
-            {!demo && plate.auction?.bidCount !== undefined && plate.auction.bidCount > 0 ? (
-              <span className="inline-flex items-center gap-1 rounded-xl bg-[#FAF9F6] border border-[#E5E2D9] px-2.5 py-1 pf-type-micro font-bold text-[#14243C] shrink-0">
-                <Gavel size={12} className="text-[#9E7B35] shrink-0" />
-                <span className="font-norwester font-black">{plate.auction.bidCount}</span>
-                <span className="text-[#64748B]">مزايدة</span>
+            <Link
+              href={`/plates/${plate.slug}`}
+              className="group/btn shrink-0 min-h-9 sm:min-h-[38px] py-2 px-3 sm:px-3.5 rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white pf-type-micro font-bold shadow-2xs hover:shadow-xs active:scale-[0.98] transition-all inline-flex items-center justify-center gap-1.5"
+            >
+              <Gavel size={13} className="text-[#D9BB81] shrink-0 transition-transform duration-200 group-hover/btn:-rotate-12" />
+              <span className="text-center">
+                {demo ? 'تفاصيل' : plate.auction ? 'دخول المزاد' : 'تفاصيل'}
               </span>
-            ) : !demo && plate.verified ? (
-              <span className="inline-flex items-center gap-1 pf-type-micro font-bold text-slate-600 bg-slate-50 px-2.5 py-1 rounded-xl border border-slate-200/70 shrink-0">
-                <ShieldCheck size={13} className="text-emerald-600 shrink-0" />
-                <span>موثّقة</span>
-              </span>
-            ) : null}
+              <ArrowLeft size={12} className="text-[#D9BB81] shrink-0 transition-transform duration-200 group-hover/btn:-translate-x-0.5" />
+            </Link>
           </div>
-
-          <Link
-            href={`/plates/${plate.slug}`}
-            className="group/btn w-full min-h-9 sm:min-h-[38px] py-2 px-3 rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white pf-type-micro font-bold shadow-2xs hover:shadow-xs active:scale-[0.99] transition-all flex items-center justify-center gap-1.5 mt-0.5"
-          >
-            <Gavel size={13} className="text-[#D9BB81] shrink-0 transition-transform duration-200 group-hover/btn:-rotate-12" />
-            <span className="text-center">
-              {demo ? 'تفاصيل اللوحة' : plate.auction ? 'دخول المزاد والمزايدة' : 'تفاصيل اللوحة والشراء'}
-            </span>
-            <ArrowLeft size={13} className="text-[#D9BB81] shrink-0 transition-transform duration-200 group-hover/btn:-translate-x-1" />
-          </Link>
         </div>
       )}
     </article>
