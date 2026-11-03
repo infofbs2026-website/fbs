@@ -64,7 +64,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="font-sans antialiased text-[#14243C] bg-[#F7F6F3] overflow-x-clip selection:bg-gold/30 selection:text-[#14243C]">
+      <body
+        suppressHydrationWarning
+        className="font-sans antialiased text-[#14243C] bg-[#F7F6F3] overflow-x-clip selection:bg-gold/30 selection:text-[#14243C]"
+      >
         <GlobalAtmosphere />
         <a href="#main" className="fixed start-4 top-2 z-50 -translate-y-24 rounded bg-gold p-3 text-navy focus:translate-y-0">
           تخطي إلى المحتوى
