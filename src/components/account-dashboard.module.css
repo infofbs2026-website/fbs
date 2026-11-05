@@ -6,17 +6,17 @@
    ========================================================================== */
 
 .dashboard {
-  /* Light Theme Defaults — Luminous Creamy White Canvas */
-  --page: #fdfcfa;
+  /* Light Theme Defaults — Sovereign Warm Travertine Canvas & Sculpted Slabs with Cool Platinum Card Depths */
+  --page: #f5f1e8;
   --surface: #ffffff;
   --surface-grad: linear-gradient(180deg, #ffffff 0%, #fcfbf8 68%, #f7f4ec 100%);
   --surface-soft: #faf8f3;
-  --well-bg: linear-gradient(180deg, #ebe6d9 0%, #f4f1e8 54%, #faf8f3 100%);
-  --well-border: #ddd6c5;
+  --well-bg: linear-gradient(180deg, #dde4ee 0%, #eaeff6 52%, #f3f6fa 100%);
+  --well-border: #cfd8e5;
   --well-shadow:
-    inset 0 4px 10px rgba(20, 36, 60, 0.085),
-    inset 0 1.5px 3px rgba(20, 36, 60, 0.055),
-    0 1.5px 0 #ffffff;
+    inset 0 4px 10px rgba(15, 23, 42, 0.09),
+    inset 0 1.5px 3px rgba(15, 23, 42, 0.06),
+    0 1px 0 #ffffff;
   --ink: #14243c;
   --ink-strong: #08162b;
   --muted: #5b6b82;
@@ -47,8 +47,8 @@
   background-color: var(--page);
   background-image:
     radial-gradient(70% 42% at 50% 0%, #ffffff 0%, rgba(255, 255, 255, 0) 72%),
-    radial-gradient(48% 36% at 12% 8%, rgba(217, 187, 129, 0.09) 0%, transparent 70%),
-    linear-gradient(180deg, #fffefc 0%, #fdfcfa 55%, #f9f7f1 100%);
+    radial-gradient(48% 36% at 12% 8%, rgba(217, 187, 129, 0.12) 0%, transparent 70%),
+    linear-gradient(180deg, #faf7f0 0%, #f5f1e8 55%, #ede7dc 100%);
   color: var(--ink);
   font-family: var(--font-sans);
 }
@@ -203,7 +203,7 @@
   position: fixed;
   inset-block: 16px;
   inset-inline-start: 16px;
-  width: 274px;
+  width: 298px;
   z-index: 55;
   color: var(--ink);
   background: var(--surface-grad);
@@ -241,7 +241,7 @@
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 14px 13px;
+  padding: 15px 13px;
   border-radius: 27px;
   scrollbar-width: none;
 }
@@ -255,11 +255,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 11px 12px;
-  margin-bottom: 12px;
-  border-radius: 20px;
-  border: 1px solid var(--well-border);
+  padding: 16px 14px;
+  margin-bottom: 16px;
+  border-radius: 22px;
+  border: 1.5px solid #94a3b8;
   background: var(--well-bg);
   box-shadow: var(--well-shadow);
 }
@@ -280,11 +279,11 @@
 .brandMark {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 12px;
 }
 
 .brandEmblem {
-  height: 34px;
+  height: 42px;
   width: auto;
   flex: none;
   object-fit: contain;
@@ -296,18 +295,18 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 4px;
 }
 
 .brandCalligraphy {
-  height: 19px;
+  height: 23px;
   width: auto;
   object-fit: contain;
   filter: brightness(0.60) contrast(1.36) saturate(1.25) drop-shadow(0 1px 0 #ffffff);
 }
 
 .brandSubtitle {
-  height: 8.5px;
+  height: 10px;
   width: auto;
   object-fit: contain;
   filter: contrast(1.1) drop-shadow(0 1px 0 #ffffff);
@@ -398,12 +397,12 @@
 .navigation {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .navSection {
   display: grid;
-  gap: 6px;
+  gap: 7px;
 }
 
 .navCaption {
@@ -430,28 +429,50 @@
 .navTrack {
   display: grid;
   gap: 4px;
-  padding: 6px;
-  border-radius: 20px;
-  border: 1px solid var(--well-border);
+  padding: 7px;
+  border-radius: 22px;
+  border: 1.5px solid #94a3b8;
   background: var(--well-bg);
   box-shadow: var(--well-shadow);
 }
 
-.navTrack a {
+.navTrack a,
+.navTrack button {
   position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
-  min-height: 42px;
-  padding: 0 10px;
+  width: 100%;
+  min-height: 45px;
+  padding: 0 11px;
   border: 1px solid transparent;
   border-radius: 14px;
   color: var(--muted);
   background: transparent;
   text-decoration: none;
-  font-size: 13px;
+  font-family: inherit;
+  font-size: 13.5px;
   font-weight: 700;
+  text-align: start;
+  cursor: pointer;
+  appearance: none;
   transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.navExternalHint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  opacity: 0.55;
+  margin-inline-start: auto;
+  transition: opacity 0.2s ease, transform 0.2s ease, color 0.2s ease;
+}
+
+.navTrack a:hover .navExternalHint {
+  opacity: 1;
+  color: var(--gold);
+  transform: translate(-1.5px, -1.5px);
 }
 
 .navIconWrap {
@@ -489,17 +510,20 @@
   font-variant-numeric: tabular-nums;
 }
 
-.navTrack a:hover {
+.navTrack a:hover,
+.navTrack button:hover {
   color: var(--ink-strong);
   background: rgba(217, 187, 129, 0.12);
 }
 
-.navTrack a:hover .navIconWrap {
+.navTrack a:hover .navIconWrap,
+.navTrack button:hover .navIconWrap {
   color: var(--gold);
 }
 
 /* Raised 3D Keycap Active State */
-.navTrack a[aria-current='page'] {
+.navTrack a[aria-current='page'],
+.navTrack button[aria-current='page'] {
   color: var(--ink-strong);
   font-weight: 800;
   border-color: var(--line-hover);
@@ -510,14 +534,16 @@
     inset 0 1.5px 0 #ffffff;
 }
 
-.dashboard[data-account-theme='dark'] .navTrack a[aria-current='page'] {
+.dashboard[data-account-theme='dark'] .navTrack a[aria-current='page'],
+.dashboard[data-account-theme='dark'] .navTrack button[aria-current='page'] {
   background: linear-gradient(180deg, #16263e 0%, #0d1a2e 100%);
   box-shadow:
     0 8px 18px -4px rgba(0, 0, 0, 0.65),
     inset 0 1px 0 rgba(255, 255, 255, 0.14);
 }
 
-.navTrack a[aria-current='page']::before {
+.navTrack a[aria-current='page']::before,
+.navTrack button[aria-current='page']::before {
   content: '';
   position: absolute;
   inset-inline-start: -1px;
@@ -529,7 +555,8 @@
   box-shadow: 0 0 8px rgba(217, 187, 129, 0.55);
 }
 
-.navTrack a[aria-current='page'] .navIconWrap {
+.navTrack a[aria-current='page'] .navIconWrap,
+.navTrack button[aria-current='page'] .navIconWrap {
   color: #08162b;
   background: linear-gradient(145deg, #f8e6c1 0%, #d9bb81 58%, #bc9548 100%);
   box-shadow:
@@ -537,7 +564,8 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
-.navTrack a[aria-current='page'] .navBadge {
+.navTrack a[aria-current='page'] .navBadge,
+.navTrack button[aria-current='page'] .navBadge {
   border-color: rgba(158, 123, 53, 0.45);
   background: rgba(217, 187, 129, 0.22);
   color: var(--gold);
@@ -546,42 +574,66 @@
 /* Bottom Concierge Utility Pod */
 .sidebarBottom {
   margin-top: auto;
-  padding-top: 14px;
+  padding-top: 16px;
 }
 
 .dockTray {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 5px;
-  padding: 5px;
-  border-radius: 19px;
-  border: 1px solid var(--well-border);
+  gap: 0;
+  padding: 6px;
+  min-height: 68px;
+  border-radius: 20px;
+  border: 1.5px solid #94a3b8;
   background: var(--well-bg);
   box-shadow: var(--well-shadow);
 }
 
 .dockTray a,
 .dockTray button {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  min-height: 50px;
-  padding: 6px 4px;
+  gap: 5px;
+  min-height: 56px;
+  padding: 7px 4px;
   border: 1px solid transparent;
-  border-radius: 13px;
+  border-radius: 14px;
   background: transparent;
   color: var(--muted);
   text-decoration: none;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 700;
   cursor: pointer;
   transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.dockTray a:not(:last-child)::after,
+.dockTray button:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  inset-inline-end: 0;
+  top: 10%;
+  height: 80%;
+  width: 1px;
+  background: linear-gradient(180deg, transparent 4%, rgba(20, 36, 60, 0.35) 20%, rgba(20, 36, 60, 0.35) 80%, transparent 96%);
+  box-shadow: 1px 0 0 #ffffff;
+  pointer-events: none;
+}
+
+.dashboard[data-account-theme='dark'] .dockTray a:not(:last-child)::after,
+.dashboard[data-account-theme='dark'] .dockTray button:not(:last-child)::after {
+  background: linear-gradient(180deg, transparent 4%, rgba(255, 255, 255, 0.30) 20%, rgba(255, 255, 255, 0.30) 80%, transparent 96%);
+  box-shadow: 1px 0 0 rgba(0, 0, 0, 0.60);
+}
+
 .dockTray a:hover,
-.dockTray a[aria-current='page'] {
+.dockTray button:hover,
+.dockTray a[aria-current='page'],
+.dockTray button[aria-current='page'] {
   color: var(--ink-strong);
   border-color: var(--line);
   background: var(--surface);
@@ -597,6 +649,12 @@
 .dashboard[data-account-theme='dark'] .dockLogout:hover {
   color: #fda4af !important;
   background: rgba(244, 63, 94, 0.16) !important;
+}
+
+.dashboard[data-account-theme='dark'] .brandPlaque,
+.dashboard[data-account-theme='dark'] .navTrack,
+.dashboard[data-account-theme='dark'] .dockTray {
+  border-color: var(--well-border);
 }
 
 /* Desktop Collapsed Rail Mode (> 960px) */
@@ -616,6 +674,7 @@
   .sidebarCollapsed .memberMeta,
   .sidebarCollapsed .navCaption,
   .sidebarCollapsed .navLabel,
+  .sidebarCollapsed .navExternalHint,
   .sidebarCollapsed .dockTray span {
     display: none;
   }
@@ -642,7 +701,8 @@
     justify-items: center;
   }
 
-  .sidebarCollapsed .navTrack a {
+  .sidebarCollapsed .navTrack a,
+  .sidebarCollapsed .navTrack button {
     width: 48px;
     min-height: 44px;
     padding: 0;
@@ -664,6 +724,11 @@
     width: 100%;
   }
 
+  .sidebarCollapsed .dockTray a::after,
+  .sidebarCollapsed .dockTray button::after {
+    display: none;
+  }
+
   .sidebarCollapsed .dockTray a,
   .sidebarCollapsed .dockTray button {
     min-height: 40px;
@@ -675,7 +740,8 @@
     overflow: visible;
   }
 
-  .sidebarCollapsed .navTrack a::after {
+  .sidebarCollapsed .navTrack a::after,
+  .sidebarCollapsed .navTrack button::after {
     content: attr(data-tooltip);
     position: absolute;
     inset-inline-end: calc(100% + 14px);
@@ -696,7 +762,8 @@
     transition: opacity 0.16s ease, transform 0.16s ease;
   }
 
-  .sidebarCollapsed .navTrack a:hover::after {
+  .sidebarCollapsed .navTrack a:hover::after,
+  .sidebarCollapsed .navTrack button:hover::after {
     opacity: 1;
     transform: translateY(-50%) translateX(0);
   }
@@ -721,7 +788,7 @@
 .workspace {
   min-width: 0;
   min-height: 100dvh;
-  margin-inline-start: 290px;
+  margin-inline-start: 314px;
   transition: margin-inline-start 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1276,9 +1343,14 @@
   margin-bottom: 26px;
   padding: 6px;
   border-radius: 28px;
-  border: 1px solid var(--line);
-  background: var(--well-bg);
+  border: 1px solid #ddd6c5;
+  background: linear-gradient(180deg, #ebe6d9 0%, #f4f1e8 54%, #faf8f3 100%);
   box-shadow: var(--slab-shadow);
+}
+
+.dashboard[data-account-theme='dark'] .greeting {
+  border-color: rgba(148, 163, 184, 0.20);
+  background: linear-gradient(180deg, #030710 0%, #06101e 55%, #091628 100%);
 }
 
 .greeting::before {
@@ -1446,6 +1518,7 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   margin-bottom: 26px;
+  align-items: stretch;
 }
 
 .metric {
@@ -1455,6 +1528,7 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 14px;
+  height: 100%;
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 24px;
@@ -1543,17 +1617,24 @@
   transform: translate(-2px, -2px);
 }
 
-/* Recessed Carved Value Chamber inside each Metric Card */
+/* Recessed Carved Value Chamber inside each Metric Card — Equalized Fixed Height */
 .metricVault {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  justify-content: center;
+  gap: 4px;
   min-width: 0;
-  padding: 13px 15px;
+  flex: 1;
+  min-height: 112px;
+  padding: 14px 16px;
   border-radius: 17px;
-  border: 1px solid var(--well-border);
+  border: 1.5px solid #94a3b8;
   background: var(--well-bg);
   box-shadow: var(--well-shadow);
+}
+
+.dashboard[data-account-theme='dark'] .metricVault {
+  border-color: rgba(148, 163, 184, 0.15);
 }
 
 .metricNumber {
@@ -1577,6 +1658,9 @@
   font-size: 15.5px;
   line-height: 1.35;
   font-weight: 800;
+  min-height: 33px;
+  display: flex;
+  align-items: center;
 }
 
 .metricTitle {
@@ -1602,7 +1686,7 @@
   align-items: stretch;
 }
 
-/* Featured Auction Card: Stays Authentic Midnight Navy in BOTH Light & Dark Themes */
+/* Featured Auction Card: Warm Sovereign Travertine & Sand in Light Mode, Midnight Obsidian in Dark Mode */
 .auctionSection {
   position: relative;
   overflow: hidden;
@@ -1611,17 +1695,13 @@
   justify-content: space-between;
   gap: 20px;
   padding: clamp(22px, 2.4vw, 30px);
-  border: 1px solid rgba(217, 187, 129, 0.32);
+  border: 1.5px solid #d3c7b3;
   border-radius: 28px;
-  color: #f8fafc;
+  color: var(--ink);
   background:
-    radial-gradient(65% 75% at 86% 6%, rgba(217, 187, 129, 0.08) 0%, transparent 62%),
-    linear-gradient(160deg, #14243c 0%, #08162b 58%, #050d1a 100%);
-  box-shadow:
-    0 26px 56px -12px rgba(8, 22, 43, 0.38),
-    0 8px 20px -4px rgba(8, 22, 43, 0.20),
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.14),
-    inset 0 -4px 10px rgba(1, 4, 10, 0.78);
+    radial-gradient(65% 75% at 86% 6%, rgba(217, 187, 129, 0.12) 0%, transparent 62%),
+    var(--surface-grad);
+  box-shadow: var(--slab-shadow);
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -1634,6 +1714,7 @@
     0 30px 62px -10px rgba(0, 2, 7, 0.92),
     inset 0 1.5px 0 rgba(255, 255, 255, 0.15),
     inset 0 -4px 10px rgba(1, 4, 10, 0.88);
+  color: #f8fafc;
 }
 
 .auctionSection::before {
@@ -1654,7 +1735,11 @@
   justify-content: space-between;
   gap: 14px;
   padding-bottom: 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+  border-bottom: 1px solid var(--well-border);
+}
+
+.dashboard[data-account-theme='dark'] .auctionTopline {
+  border-bottom-color: rgba(255, 255, 255, 0.11);
 }
 
 .spotlightLabel,
@@ -1667,24 +1752,42 @@
 }
 
 .spotlightLabel {
+  color: var(--gold);
+}
+
+.dashboard[data-account-theme='dark'] .spotlightLabel {
   color: #d9bb81;
 }
 
 .spotlightLink {
   padding: 6px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: linear-gradient(180deg, #16263e 0%, #0b182b 100%);
-  color: #f8fafc;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-strong);
   text-decoration: none;
   box-shadow:
-    0 6px 14px rgba(0, 2, 7, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    0 2px 6px rgba(20, 36, 60, 0.05),
+    inset 0 1px 0 #ffffff;
   transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
 
 .spotlightLink:hover {
   transform: translateY(-1px);
+  border-color: var(--gold-bright);
+  color: var(--gold);
+}
+
+.dashboard[data-account-theme='dark'] .spotlightLink {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: linear-gradient(180deg, #16263e 0%, #0b182b 100%);
+  color: #f8fafc;
+  box-shadow:
+    0 6px 14px rgba(0, 2, 7, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.dashboard[data-account-theme='dark'] .spotlightLink:hover {
   border-color: rgba(217, 187, 129, 0.65);
   color: #faebd0;
 }
@@ -1748,15 +1851,27 @@
   letter-spacing: -0.02em;
 }
 
-/* Ensure Title Inside Always-Dark Auction Card Uses Crisp Platinum + Champagne Gold */
 .auctionSection .carvedInk {
+  color: var(--ink-strong);
+  text-shadow: 0 1.5px 0 #ffffff;
+}
+
+.auctionSection .carvedGold {
+  background: linear-gradient(180deg, #96722c 0%, #b89047 54%, #805c1b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 0 #ffffff);
+}
+
+.dashboard[data-account-theme='dark'] .auctionSection .carvedInk {
   color: #ffffff;
   text-shadow:
     0 -1px 0 rgba(0, 0, 0, 0.90),
     0 2px 8px rgba(0, 0, 0, 0.55);
 }
 
-.auctionSection .carvedGold {
+.dashboard[data-account-theme='dark'] .auctionSection .carvedGold {
   background: linear-gradient(180deg, #f5e3be 0%, #d9bb81 54%, #b58d40 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -1770,10 +1885,16 @@
 .auctionInfo p,
 .noAuction p {
   margin: 0;
-  color: #cbd5e1;
+  color: var(--muted);
   font-size: 13.5px;
   font-weight: 500;
   line-height: 1.7;
+}
+
+.dashboard[data-account-theme='dark'] .auctionLead,
+.dashboard[data-account-theme='dark'] .auctionInfo p,
+.dashboard[data-account-theme='dark'] .noAuction p {
+  color: #cbd5e1;
 }
 
 /* Highly Legible Elevated Telemetry Chambers (Price & 4-Unit Countdown) */
@@ -1785,29 +1906,40 @@
   width: 100%;
   margin: 18px 0 16px;
   padding: 12px 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(217, 187, 129, 0.35);
+  border-radius: 10px;
+  border: 1.5px solid #94a3b8;
+  background: var(--well-bg);
+  box-shadow: var(--well-shadow);
+  transition: border-color 0.2s ease;
+}
+
+.auctionTimerChamber:hover {
+  border-color: var(--line-hover);
+}
+
+.dashboard[data-account-theme='dark'] .auctionTimerChamber {
+  border-color: rgba(217, 187, 129, 0.35);
   background: linear-gradient(180deg, rgba(22, 38, 62, 0.90) 0%, rgba(10, 22, 38, 0.96) 100%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.16),
     0 10px 24px -6px rgba(0, 2, 7, 0.65);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  transition: border-color 0.2s ease;
 }
 
-.auctionTimerChamber:hover {
+.dashboard[data-account-theme='dark'] .auctionTimerChamber:hover {
   border-color: rgba(217, 187, 129, 0.58);
 }
 
-/* Action Row: Price on Right (without card), CTA Button on Left */
+/* Action Row: Price on Right (without card), CTA Button on Left — Locked to Single Row */
 .auctionActionRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-top: 6px;
+  gap: clamp(12px, 1.6vw, 20px);
+  flex-wrap: nowrap;
+  margin-top: 10px;
+  width: 100%;
 }
 
 .auctionPriceInline {
@@ -1815,13 +1947,26 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 2px;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.auctionActionRow .goldButton,
+.auctionActionRow a,
+.auctionActionRow button {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .auctionInlinePriceLabel {
-  color: #cbd5e1;
+  color: var(--muted);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.02em;
+}
+
+.dashboard[data-account-theme='dark'] .auctionInlinePriceLabel {
+  color: #cbd5e1;
 }
 
 /* Right-Aligned Price with SAR Symbol AFTER the Number (RTL Reading Order) */
@@ -1830,69 +1975,90 @@
   align-items: baseline;
   justify-content: flex-start;
   gap: 6px;
-  color: #ffffff;
+  color: var(--ink-strong);
   font-family: var(--font-norwester), var(--font-sans);
   font-size: clamp(22px, 2vw, 28px);
   line-height: 1.1;
   font-weight: 900;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+  text-shadow: 0 1.5px 0 #ffffff;
+}
+
+.dashboard[data-account-theme='dark'] .auctionPriceValue {
+  color: #ffffff;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
 }
 
-/* 4-Unit Executive Countdown Telemetry: Clear, Large, Symmetrical & Free of Colons */
+/* Unified Single-Card Countdown Telemetry: 4 Segments with Subtle Carved Vertical Dividers */
 .countdownUnits {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+  gap: 0;
   width: 100%;
-  max-width: 460px;
+  max-width: 440px;
   direction: ltr;
+  align-items: center;
 }
 
 .countdownUnitBox {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px 8px;
-  border-radius: 14px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.04) 100%);
-  border: 1px solid rgba(217, 187, 129, 0.28);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.24),
-    0 4px 14px rgba(0, 0, 0, 0.35);
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  padding: 6px 4px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
-.countdownUnitBox:hover {
-  transform: translateY(-1.5px);
-  border-color: rgba(217, 187, 129, 0.55);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.30),
-    0 8px 20px rgba(0, 0, 0, 0.45);
+.countdownUnitBox:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  inset-inline-end: 0;
+  top: 10%;
+  height: 80%;
+  width: 1px;
+  background: linear-gradient(180deg, transparent 4%, rgba(20, 36, 60, 0.35) 20%, rgba(20, 36, 60, 0.35) 80%, transparent 96%);
+  box-shadow: 1px 0 0 #ffffff;
+  pointer-events: none;
 }
 
-.countdownNum {
-  color: #ffffff;
-  font-family: var(--font-norwester), var(--font-sans);
-  font-size: clamp(22px, 2.2vw, 28px);
-  line-height: 1.05;
-  font-weight: 900;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.04em;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.65);
+.dashboard[data-account-theme='dark'] .countdownUnitBox:not(:last-child)::after {
+  background: linear-gradient(180deg, transparent 4%, rgba(255, 255, 255, 0.30) 20%, rgba(255, 255, 255, 0.30) 80%, transparent 96%);
+  box-shadow: 1px 0 0 rgba(0, 0, 0, 0.60);
 }
 
 .countdownLabel {
-  color: #d9bb81;
+  color: var(--gold);
   font-family: var(--font-sans);
-  font-size: 11.5px;
+  font-size: 11px;
   line-height: 1.2;
-  font-weight: 800;
+  font-weight: 700;
   white-space: nowrap;
-  margin-top: 4px;
+  margin-bottom: 2px;
   letter-spacing: 0.02em;
+}
+
+.dashboard[data-account-theme='dark'] .countdownLabel {
+  color: #d9bb81;
+}
+
+.countdownNum {
+  color: var(--ink-strong);
+  font-family: var(--font-norwester), var(--font-sans);
+  font-size: clamp(17px, 1.6vw, 21px);
+  line-height: 1.1;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 0 #ffffff;
+}
+
+.dashboard[data-account-theme='dark'] .countdownNum {
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
 }
 
 .auctionCtaRow {
@@ -1906,9 +2072,13 @@
   display: inline-block;
   width: 0.72em;
   height: 0.8em;
-  color: #d9bb81;
+  color: var(--gold);
   align-self: center;
   flex: none;
+}
+
+.dashboard[data-account-theme='dark'] .riyal {
+  color: #d9bb81;
 }
 
 .goldButton {
@@ -1934,16 +2104,24 @@
   justify-content: center;
   flex-wrap: wrap;
   gap: 8px;
-  color: #e2e8f0;
+  color: var(--ink-strong);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.01em;
 }
 
+.dashboard[data-account-theme='dark'] .visualPlateInfo {
+  color: #e2e8f0;
+}
+
 .visualInfoDivider {
-  color: rgba(217, 187, 129, 0.55);
+  color: var(--line-strong);
   font-size: 13px;
   font-weight: 700;
+}
+
+.dashboard[data-account-theme='dark'] .visualInfoDivider {
+  color: rgba(217, 187, 129, 0.55);
 }
 
 /* Matches PlateCard's Cool Platinum-White Stage & Etched FBS Watermark 1:1 */
@@ -1956,12 +2134,20 @@
   align-items: center;
   min-height: 222px;
   padding: 26px 20px;
-  border: 1px solid #dce3ee;
-  border-radius: 20px;
+  border: 1.5px solid #94a3b8;
+  border-radius: 10px;
   background: linear-gradient(180deg, #ffffff 0%, #f6f8fc 54%, #ebf0f6 100%);
   box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.96),
-    inset 0 4px 10px rgba(15, 23, 42, 0.06),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.96),
+    inset 0 2px 6px rgba(15, 23, 42, 0.04),
+    0 10px 24px -6px rgba(14, 28, 54, 0.07);
+}
+
+.dashboard[data-account-theme='dark'] .auctionVisual {
+  border-color: rgba(148, 163, 184, 0.22);
+  background: linear-gradient(180deg, #102038 0%, #0a1728 54%, #06101e 100%);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.12),
     0 18px 36px -10px rgba(0, 2, 7, 0.62);
 }
 
@@ -3014,17 +3200,15 @@
   }
 
   .auctionActionRow {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     gap: 12px;
+    flex-wrap: nowrap;
   }
 
   .auctionPriceInline {
-    align-items: center;
-  }
-
-  .goldButton {
-    width: 100%;
+    align-items: flex-start;
   }
 
   .themeControl {

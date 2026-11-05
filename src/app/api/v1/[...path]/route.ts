@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createAdminClient,createSessionClient } from '@/lib/supabase/server';
-import { requireViewer,requirePermission,requireMfa } from '@/lib/auth';
+import { getViewer,requireViewer,requirePermission,requireMfa } from '@/lib/auth';
 import { success,failure,assertOrigin,readJson } from '@/lib/api';
 import { DomainError,errorMessages,type ErrorCode } from '@/lib/errors';
 import { rateLimit } from '@/lib/rate-limit';
@@ -22,8 +22,10 @@ const adminSections:Record<string,{table:string;permission:string;select:string}
  payments:{table:'payment_transactions',permission:'payment.view',select:'id,operation,amount_minor,status,created_at'},
  settlements:{table:'settlements',permission:'settlement.manage',select:'id,auction_id,winning_amount_minor,status'},
  notifications:{table:'notifications',permission:'admin.view',select:'id,type,title,created_at'},
+ messages:{table:'contact_messages',permission:'admin.view',select:'id,name,email,subject,status,created_at'},
  audit:{table:'audit_logs',permission:'audit.view',select:'id,action,entity_type,reason,created_at'},
  cms:{table:'cms_pages',permission:'cms.manage',select:'slug,title_ar,body_ar,published,updated_at'},
+ faqs:{table:'faqs',permission:'cms.manage',select:'id,question_ar,answer_ar,sort_order,published'},
  settings:{table:'system_settings',permission:'settings.manage',select:'key,value,description,updated_at'},
  reports:{table:'auction_results',permission:'payment.view',select:'auction_id,outcome,winning_amount_minor,finalized_at'}
 };
@@ -43,12 +45,58 @@ export async function GET(request:Request,{params}:{params:Promise<{path:string[
  }
  if(resource==='bids'&&id){const user=await requireViewer();uuid.parse(id);const {data,error}=await database().from('bid_requests').select('response').eq('bid_request_id',id).eq('user_id',user.id).maybeSingle();check(error);return success(data?{resolved:true,result:data.response}:{resolved:false,result:null});}
  if(resource==='account'){const user=await requireViewer();const client=await createSessionClient();if(client&&id){const sections:Record<string,[string,string]>={plates:['plates','owner_id'],bids:['bids','user_id'],auctions:['auction_registrations','user_id'],favorites:['favorites','user_id'],deposits:['payment_authorizations','user_id'],payments:['payment_authorizations','user_id'],notifications:['notifications','user_id']};const section=sections[id];if(section){const {data,error}=await client.from(section[0]).select('*').eq(section[1],user.id).limit(100);if(!error&&data)return success({rows:data});}}return success({user,rows:[]});}
- if(resource==='admin'){const section=adminSections[id??'auctions'];if(!section)return new Response(null,{status:404});try{await requirePermission(section.permission);const db=createAdminClient();if(db){const {data,error}=await db.from(section.table).select(section.select).limit(100);if(!error)return success({rows:data??[]});}}catch{}return success({rows:[]});}
+ if(resource==='admin'){const section=adminSections[id??'auctions'];if(!section)return new Response(null,{status:404});await requirePermission(section.permission);const db=database();const {data,error}=await db.from(section.table).select(section.select).limit(100);check(error);return success({rows:data??[]});}
  return new Response(null,{status:404});
 }catch(e){return failure(e);}}
 export async function POST(request:Request,{params}:{params:Promise<{path:string[]}>}){try{
- assertOrigin(request);const {path}=await params;const [resource,id,action]=path;const body=((await readJson(request))||{}) as Record<string,unknown>;const user=await requireViewer();const db=createAdminClient();await rateLimit(resource==='auctions'&&action==='bids'?'bids':resource==='admin'?'admin':'write',`${user.id}:${resource}:${id??''}`);
- if(resource==='plates'&&!id){const d=database();const value=z.object({typeId:uuid,letter1:z.coerce.number().int().min(1).max(99),letter2:z.coerce.number().int().min(1).max(99),letter3:z.coerce.number().int().min(1).max(99),digits:z.string().regex(/^[0-9]{1,4}$/).refine(v=>!/^0+$/.test(v)),cityId:uuid,description:z.string().max(5000)}).parse(body);if(!user.verified)throw new DomainError('NOT_QUALIFIED','فعّل بريدك الإلكتروني أولًا.',{},403);const {data,error}=await d.from('plates').insert({owner_id:user.id,type_id:value.typeId,letter_1_id:value.letter1,letter_2_id:value.letter2,letter_3_id:value.letter3,digits:value.digits,city_id:value.cityId,description:value.description}).select('id,slug').single();check(error);return success(data,201);}
+ assertOrigin(request);const {path}=await params;const [resource,id,action]=path;const body=((await readJson(request))||{}) as Record<string,unknown>;
+ if(resource==='contact'){
+  const viewer=await getViewer();
+  const ip=request.headers.get('x-forwarded-for')?.split(',')[0]??'guest';
+  await rateLimit('write',`${viewer?.id??ip}:contact`);
+  const v=z.object({name:z.string().min(2).max(120),email:z.email(),subject:z.string().min(3).max(200),message:z.string().min(10).max(5000)}).parse(body);
+  const {error}=await database().from('contact_messages').insert({...v,user_id:viewer?.id??null});
+  check(error);
+  return success({message:'تم استلام رسالتك بنجاح.'});
+ }
+ const user=await requireViewer();const db=createAdminClient();await rateLimit(resource==='auctions'&&action==='bids'?'bids':resource==='admin'?'admin':'write',`${user.id}:${resource}:${id??''}`);
+ if(resource==='plates'&&!id){
+  const d=database();
+  const value=z.object({
+   typeId:uuid,
+   letter1:z.coerce.number().int().min(1).max(99),
+   letter2:z.coerce.number().int().min(1).max(99),
+   letter3:z.coerce.number().int().min(1).max(99),
+   digits:z.string().regex(/^[0-9]{1,4}$/).refine(v=>!/^0+$/.test(v)),
+   cityId:z.string().max(120).optional().default(''),
+   description:z.string().max(5000),
+   saleMode:z.enum(['AUCTION','FIXED_PRICE','AUCTION_WITH_BUY_NOW']).optional(),
+   askingPriceMinor:amount.optional()
+  }).parse(body);
+  if(!user.verified)throw new DomainError('NOT_QUALIFIED','فعّل بريدك الإلكتروني أولًا.',{},403);
+  let resolvedCityId:string|null=null;
+  if(uuid.safeParse(value.cityId).success){
+   resolvedCityId=value.cityId;
+  }else if(value.cityId){
+   const cleanCity=value.cityId.replace(/^custom:/,'').trim();
+   const {data:cityMatch}=await d.from('cities').select('id').or(`name_ar.eq.${cleanCity},name_en.ilike.${cleanCity}`).limit(1).maybeSingle();
+   resolvedCityId=cityMatch?.id??null;
+  }
+  const {data,error}=await d.from('plates').insert({
+   owner_id:user.id,
+   type_id:value.typeId,
+   letter_1_id:value.letter1,
+   letter_2_id:value.letter2,
+   letter_3_id:value.letter3,
+   digits:value.digits,
+   city_id:resolvedCityId,
+   description:value.description,
+   ...(value.saleMode?{sale_mode:value.saleMode}:{}),
+   ...(value.askingPriceMinor?{asking_price_minor:value.askingPriceMinor}:{})
+  }).select('id,slug').single();
+  check(error);
+  return success(data,201);
+ }
  if(resource==='plates'&&action==='submit'){uuid.parse(id);const {data,error}=await database().rpc('fbs_submit_plate',{p_plate_id:id,p_user_id:user.id});check(error);return success(data);}
  if(resource==='plates'&&action==='upload'){uuid.parse(id);const value=z.object({mimeType:z.enum(['application/pdf','image/jpeg','image/png']),size:z.number().int().positive().max(10485760)}).parse(body);if(!db)throw new DomainError('SYSTEM_DEGRADED',undefined,{},503);const {data:plate}=await db.from('plates').select('id,verification_status').eq('id',id).eq('owner_id',user.id).single();if(!plate||!['DRAFT','CHANGES_REQUIRED','DOCUMENTS_PENDING'].includes(plate.verification_status))throw new DomainError('FORBIDDEN',undefined,{},403);const extension={'application/pdf':'pdf','image/jpeg':'jpg','image/png':'png'}[value.mimeType];const objectPath=`${user.id}/${id}/${crypto.randomUUID()}.${extension}`;const {data,error}=await db.storage.from('ownership-documents').createSignedUploadUrl(objectPath);check(error);return success({signedUrl:data?.signedUrl,path:objectPath});}
  if(resource==='plates'&&action==='document'){
@@ -75,13 +123,12 @@ export async function POST(request:Request,{params}:{params:Promise<{path:string
  }
  if(resource==='auctions'&&action==='register'){uuid.parse(id);const v=z.object({termsVersion:z.string().length(32)}).parse(body);const {data,error}=await database().rpc('fbs_register',{p_auction_id:id,p_user_id:user.id,p_terms_version:v.termsVersion});check(error);if(!data)throw new DomainError('SYSTEM_DEGRADED',undefined,{},503);return success(data);}
  if(resource==='payments'||resource==='webhooks')throw new DomainError('SYSTEM_DEGRADED','خدمة الدفع غير متاحة حاليًا.',{},503);
- if(resource==='contact'){const v=z.object({name:z.string().min(2).max(120),email:z.string().email(),subject:z.string().min(3).max(200),message:z.string().min(10).max(5000)}).parse(body);const {error}=await database().from('contact_messages').insert({...v,user_id:user.id});check(error);return success({message:'تم استلام رسالتك بنجاح.'});}
  if(resource==='profile'){const v=z.object({displayName:z.string().min(2).max(120),phone:z.string().regex(/^\+[1-9][0-9]{7,14}$/).or(z.literal(''))}).parse(body);const client=await createSessionClient();if(!client)throw new DomainError('SYSTEM_DEGRADED','تعذر حفظ الملف الشخصي، يرجى المحاولة مجددًا.',{},503);const cleanName=v.displayName.trim();const {data:existing}=await client.from('profiles').select('id').ilike('display_name',cleanName).neq('id',user.id).maybeSingle();if(existing)throw new DomainError('INVALID_INPUT','هذا الاسم مستخدم بالفعل، يرجى اختيار اسم آخر.');const {data:updated,error}=await client.from('profiles').update({display_name:cleanName,phone:v.phone||null}).eq('id',user.id).select('id').maybeSingle();check(error);if(!updated)throw new DomainError('SYSTEM_DEGRADED','تعذر حفظ الملف الشخصي، يرجى المحاولة مجددًا.',{},503);return success({message:'حُفظ الملف الشخصي بنجاح.'});}
- if(resource==='admin'&&id==='verifications'){await requirePermission('plate.verify');await requireMfa();const v=z.object({plateId:uuid,status:z.enum(['UNDER_REVIEW','CHANGES_REQUIRED','REJECTED','APPROVED']),reason:z.string().min(3).max(1000)}).parse(body);if(db){const {data,error}=await db.rpc('fbs_verify_plate',{p_plate_id:v.plateId,p_actor_id:user.id,p_status:v.status,p_reason:v.reason});check(error);return success(data);}return success({status:v.status});}
- if(resource==='admin'&&id==='auction-transition'){await requireMfa();const v=z.object({auctionId:uuid,status:z.string(),reason:z.string().min(3).max(1000)}).parse(body);if(db){const {data,error}=await db.rpc('fbs_auction_transition',{p_auction_id:v.auctionId,p_actor_id:user.id,p_status:v.status,p_reason:v.reason});check(error);return success(data);}return success({status:v.status});}
- if(resource==='admin'&&id==='document'){await requirePermission('plate.verify');await requireMfa();const v=z.object({documentId:uuid}).parse(body);if(db){const {data,error}=await db.from('plate_documents').select('object_path').eq('id',v.documentId).single();check(error);if(!data)throw new DomainError('INVALID_INPUT');const signed=await db.storage.from('ownership-documents').createSignedUrl(data.object_path,60);check(signed.error);return success({url:signed.data?.signedUrl});}return success({url:'/demo-document.pdf'});}
- if(resource==='admin'&&id==='cms'){await requirePermission('cms.manage');await requireMfa();const v=z.object({slug:z.string().regex(/^[a-z-]+$/),title_ar:z.string().min(2).max(150),body_ar:z.string().min(5).max(20000),published:z.boolean(),reason:z.string().min(3).max(1000)}).parse(body);if(db){const {data,error}=await db.rpc('fbs_save_cms',{p_actor_id:user.id,p_slug:v.slug,p_title:v.title_ar,p_body:v.body_ar,p_published:v.published,p_reason:v.reason});check(error);return success(data);}return success({message:'تم حفظ المحتوى بنجاح.'});}
+ if(resource==='admin'&&id==='verifications'){await requirePermission('plate.verify');await requireMfa();const v=z.object({plateId:uuid,status:z.enum(['UNDER_REVIEW','CHANGES_REQUIRED','REJECTED','APPROVED']),reason:z.string().min(3).max(1000)}).parse(body);const d=database();const {data,error}=await d.rpc('fbs_verify_plate',{p_plate_id:v.plateId,p_actor_id:user.id,p_status:v.status,p_reason:v.reason});check(error);return success(data);}
+ if(resource==='admin'&&id==='auction-transition'){await requireMfa();const v=z.object({auctionId:uuid,status:z.string(),reason:z.string().min(3).max(1000)}).parse(body);const d=database();const {data,error}=await d.rpc('fbs_auction_transition',{p_auction_id:v.auctionId,p_actor_id:user.id,p_status:v.status,p_reason:v.reason});check(error);return success(data);}
+ if(resource==='admin'&&id==='document'){await requirePermission('plate.verify');await requireMfa();const v=z.object({documentId:uuid}).parse(body);const d=database();const {data,error}=await d.from('plate_documents').select('object_path').eq('id',v.documentId).single();check(error);if(!data)throw new DomainError('INVALID_INPUT');const signed=await d.storage.from('ownership-documents').createSignedUrl(data.object_path,60);check(signed.error);return success({url:signed.data?.signedUrl});}
+ if(resource==='admin'&&id==='cms'){await requirePermission('cms.manage');await requireMfa();const v=z.object({slug:z.string().regex(/^[a-z-]+$/),title_ar:z.string().min(2).max(150),body_ar:z.string().min(5).max(20000),published:z.boolean(),reason:z.string().min(3).max(1000)}).parse(body);const d=database();const {data,error}=await d.rpc('fbs_save_cms',{p_actor_id:user.id,p_slug:v.slug,p_title:v.title_ar,p_body:v.body_ar,p_published:v.published,p_reason:v.reason});check(error);return success(data);}
  if(resource==='security'){const client=await createSessionClient();if(!client)throw new DomainError('SYSTEM_DEGRADED',undefined,{},503);if(id==='enroll'){const factors=await client.auth.mfa.listFactors();check(factors.error);const existing=factors.data?.totp.find(f=>f.status==='verified');if(existing)return success({id:existing.id,qr:''});const enrolled=await client.auth.mfa.enroll({factorType:'totp',friendlyName:`FBS ${Date.now()}`});check(enrolled.error);return success({id:enrolled.data?.id,qr:enrolled.data?.totp.qr_code});}if(id==='verify'){const v=z.object({factorId:uuid,code:z.string().regex(/^[0-9]{6}$/)}).parse(body);const challenge=await client.auth.mfa.challenge({factorId:v.factorId});check(challenge.error);if(!challenge.data)throw new DomainError('SYSTEM_DEGRADED');const verified=await client.auth.mfa.verify({factorId:v.factorId,challengeId:challenge.data.id,code:v.code});check(verified.error);return success({message:'تم التحقق.'});}}
- if(resource==='admin'&&id==='auction-create'){await requirePermission('auction.create');await requireMfa();const v=z.object({plateId:uuid,startingPrice:amount,reservePrice:amount.or(z.literal('')),minimumIncrement:amount,depositAmount:amount,registrationStart:z.iso.datetime(),registrationEnd:z.iso.datetime(),startAt:z.iso.datetime(),endAt:z.iso.datetime(),antiSniping:z.boolean(),windowSeconds:z.number().int().min(0).max(86400),extensionSeconds:z.number().int().min(0).max(86400),maxExtensions:z.number().int().min(0).max(10000),commissionType:z.enum(['NONE','FIXED','PERCENTAGE']),commissionValue:amount,requireKyc:z.boolean(),reason:z.string().min(3).max(1000)}).parse(body);if(db){const {data,error}=await db.rpc('fbs_create_auction',{p_actor_id:user.id,p_config:v});check(error);return success(data,201);}return success({id:'demo-auction-new'},201);}
+ if(resource==='admin'&&id==='auction-create'){await requirePermission('auction.create');await requireMfa();const v=z.object({plateId:uuid,startingPrice:amount,reservePrice:amount.or(z.literal('')),minimumIncrement:amount,depositAmount:amount,registrationStart:z.iso.datetime(),registrationEnd:z.iso.datetime(),startAt:z.iso.datetime(),endAt:z.iso.datetime(),antiSniping:z.boolean(),windowSeconds:z.number().int().min(0).max(86400),extensionSeconds:z.number().int().min(0).max(86400),maxExtensions:z.number().int().min(0).max(10000),commissionType:z.enum(['NONE','FIXED','PERCENTAGE']),commissionValue:amount,requireKyc:z.boolean(),reason:z.string().min(3).max(1000)}).parse(body);const d=database();const {data,error}=await d.rpc('fbs_create_auction',{p_actor_id:user.id,p_config:v});check(error);return success(data,201);}
  return new Response(null,{status:404});
 }catch(e){return failure(e);}}

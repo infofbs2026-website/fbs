@@ -128,7 +128,7 @@ export function PlateCardWide({
         {/* Right: Plate Showcase Canvas with Etched FBS Watermark */}
         <Link
           href={`/plates/${plate.slug}`}
-          className="relative overflow-hidden w-full sm:w-[284px] xl:w-[312px] min-h-[134px] sm:min-h-[148px] shrink-0 rounded-xl px-2.5 py-5 sm:px-3.5 sm:py-6 flex items-center justify-center bg-gradient-to-b from-[#FFFFFF] via-[#F6F8FC] to-[#EBF0F6] border border-[#DCE3EE] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_2px_6px_rgba(15,23,42,0.04)] group-hover:border-[#D9BB81]/70 transition-all"
+          className="relative overflow-hidden w-full sm:w-[284px] xl:w-[312px] min-h-[134px] sm:min-h-[148px] shrink-0 rounded-[9px] px-2.5 py-5 sm:px-3.5 sm:py-6 flex items-center justify-center bg-gradient-to-b from-[#FFFFFF] via-[#F6F8FC] to-[#EBF0F6] border border-[#94A3B8] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_2px_6px_rgba(15,23,42,0.04)] group-hover:border-[#D9BB81] transition-all"
         >
           <FbsStageWatermark />
           <div className="relative z-10 w-full flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.02]">

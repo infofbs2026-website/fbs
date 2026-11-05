@@ -4,7 +4,7 @@ import { assertOrigin,readJson,success,failure } from '@/lib/api';
 import { rateLimit } from '@/lib/rate-limit';
 import { siteOrigin } from '@/lib/env';
 import { DomainError } from '@/lib/errors';
-import { getViewer } from '@/lib/auth';
+import { getViewerAdminAccess } from '@/lib/auth';
 import { sendOtpEmail } from '@/lib/email';
 
 const credentials=z.object({
@@ -18,8 +18,8 @@ export async function GET(request:Request,{params}:{params:Promise<{action:strin
   try{
     const {action}=await params;
     if(action==='session'){
-      const viewer=await getViewer();
-      return success({user:viewer});
+      const access=await getViewerAdminAccess();
+      return success({user:access.viewer?{...access.viewer,isAdmin:access.isAdmin}:null});
     }
     return new Response(null,{status:404});
   }catch(e){return failure(e);}
@@ -51,7 +51,8 @@ export async function POST(request:Request,{params}:{params:Promise<{action:stri
       }
       throw new DomainError('AUTH_REQUIRED','بيانات الدخول أو كلمة المرور غير صحيحة، أو لم يتم تفعيل الحساب.',{},401);
     }
-    return success({redirect:'/account'});
+    const access = await getViewerAdminAccess();
+    return success({redirect: access.isAdmin ? '/admin' : '/account'});
   }
 
   if(action==='register'){

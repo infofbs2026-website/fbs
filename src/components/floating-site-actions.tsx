@@ -6,7 +6,7 @@ import { Store } from 'lucide-react';
 import styles from './floating-site-actions.module.css';
 
 // Match the existing contact links until the official WhatsApp number is set.
-const WHATSAPP_URL = 'https://wa.me/966500000000';
+const DEFAULT_WHATSAPP_NUMBER = '966500000000';
 const HIDDEN_ROUTES = [
   '/account',
   '/admin',
@@ -40,17 +40,20 @@ function WhatsAppIcon() {
   );
 }
 
-export function FloatingSiteActions() {
+export function FloatingSiteActions({ whatsappNumber }: { whatsappNumber?: string }) {
   const pathname = usePathname();
   if (!pathname || HIDDEN_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`))) {
     return null;
   }
 
+  const cleanWa = (whatsappNumber ?? DEFAULT_WHATSAPP_NUMBER).replace(/[^0-9]/g, '') || DEFAULT_WHATSAPP_NUMBER;
+  const whatsappUrl = `https://wa.me/${cleanWa}`;
+
   return (
     <nav className={styles.actions} aria-label="روابط سريعة">
       <a
         className={`${styles.action} ${styles.whatsapp}`}
-        href={WHATSAPP_URL}
+        href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="تواصل مع FBS عبر واتساب (يفتح في نافذة جديدة)"

@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { PageTitle, EmptyState } from './ui';
 import { createAdminClient } from '@/lib/supabase/server';
+import { getSiteSettings } from '@/lib/site-settings';
+import { loadDynamicFaqs } from '@/app/faq/page';
 import {
   HowItWorksInteractive,
   ContactInteractive,
@@ -78,14 +80,18 @@ const defaults: Record<string, string> = {
 
 export async function ContentPage({ slug }: { slug: string }) {
   const db = createAdminClient();
-  const result = db
-    ? await db
-        .from('cms_pages')
-        .select('title_ar,body_ar')
-        .eq('slug', slug)
-        .eq('published', true)
-        .maybeSingle()
-    : null;
+  const [result, siteSettings, dynamicFaqs] = await Promise.all([
+    db
+      ? db
+          .from('cms_pages')
+          .select('title_ar,body_ar')
+          .eq('slug', slug)
+          .eq('published', true)
+          .maybeSingle()
+      : Promise.resolve(null),
+    getSiteSettings(),
+    slug === 'faq' ? loadDynamicFaqs() : Promise.resolve(undefined),
+  ]);
 
   const pageTitle = result?.data?.title_ar ?? contentTitles[slug] ?? 'فارس بن سعود';
   const pageDescription = pageDescriptions[slug];
@@ -107,10 +113,10 @@ export async function ContentPage({ slug }: { slug: string }) {
         {slug === 'how-it-works' ? (
           <HowItWorksInteractive />
         ) : slug === 'faq' ? (
-          <FaqView />
+          <FaqView items={dynamicFaqs} whatsappNumber={siteSettings.whatsappNumber} />
         ) : slug === 'contact' ? (
           <div className="mx-auto max-w-5xl">
-            <ContactInteractive />
+            <ContactInteractive siteSettings={siteSettings} />
           </div>
         ) : slug === 'about' ? (
           <AboutView />

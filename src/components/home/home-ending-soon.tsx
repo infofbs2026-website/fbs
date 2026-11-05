@@ -64,17 +64,21 @@ function EndingSoonCountdown({ endsAt }: { endsAt?: string }) {
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-1.5 w-full font-norwester" dir="ltr">
-      {units.map((unit) => (
+    <div className="grid grid-cols-4 w-full" dir="ltr">
+      {units.map((unit, idx) => (
         <div
           key={unit.key}
-          className="flex flex-col items-center justify-center py-1.5 px-1 rounded-xl bg-white border border-[#E2DDD3] shadow-[0_1px_3px_rgba(20,36,60,0.04),inset_0_1px_0_#ffffff] transition-all hover:border-[#D9BB81]/80"
+          className={`relative flex flex-col items-center justify-center py-0.5 px-0.5 ${
+            idx < units.length - 1
+              ? "after:content-[''] after:absolute after:inset-y-[10%] after:end-0 after:w-px after:bg-gradient-to-b after:from-transparent after:via-[#14243C]/35 after:to-transparent after:shadow-[1px_0_0_#ffffff]"
+              : ''
+          }`}
         >
-          <span className="font-norwester font-black text-sm sm:text-[15px] text-[#14243C] tabular-nums leading-tight" dir="ltr">
-            {unit.value}
-          </span>
-          <span className="text-[10px] font-sans font-bold text-[#8C6B2D] leading-none mt-0.5">
+          <span className="text-[9.5px] sm:text-[10px] font-sans font-bold text-[#96722C] leading-none mb-1">
             {unit.label}
+          </span>
+          <span className="font-norwester font-bold text-[13.5px] sm:text-[14.5px] text-[#08162B] tabular-nums leading-none tracking-tight" dir="ltr">
+            {unit.value}
           </span>
         </div>
       ))}
@@ -139,7 +143,7 @@ const EndingSoonCard = memo(function EndingSoonCard({
       {/* -------------------------------------------------------- */}
       {/* POSTER CENTER: AUTHENTIC SAUDI PLATE + FBS WATERMARK     */}
       {/* -------------------------------------------------------- */}
-      <div className="relative overflow-hidden my-2 sm:my-2.5 py-5 sm:py-6 px-2 w-full min-h-[128px] sm:min-h-[144px] flex items-center justify-center rounded-xl bg-gradient-to-b from-[#FFFFFF] via-[#F6F8FC] to-[#EBF0F6] border border-[#DCE3EE] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_2px_6px_rgba(15,23,42,0.04)] transition-colors duration-300 group-hover:border-[#D9BB81]/70">
+      <div className="relative overflow-hidden my-2 sm:my-2.5 py-5 sm:py-6 px-2 w-full min-h-[128px] sm:min-h-[144px] flex items-center justify-center rounded-[9px] bg-gradient-to-b from-[#FFFFFF] via-[#F6F8FC] to-[#EBF0F6] border border-[#94A3B8] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_2px_6px_rgba(15,23,42,0.04)] transition-colors duration-300 group-hover:border-[#D9BB81]">
         <FbsStageWatermark />
         <div className="relative z-10 w-full flex justify-center py-0.5 transition-transform duration-300 group-hover:scale-[1.02]">
           <div className="w-full max-w-[244px] flex justify-center scale-[0.94] origin-center">
@@ -160,7 +164,7 @@ const EndingSoonCard = memo(function EndingSoonCard({
       {/* -------------------------------------------------------- */}
       <div className="pt-2 sm:pt-2.5 border-t border-[#ECE9E2] flex flex-col gap-2">
         {/* Full-Width Countdown Chamber: Spacious, No Redundant Text */}
-        <div className="w-full rounded-2xl bg-gradient-to-b from-[#FAF9F5] to-[#F4EFE6] border border-[#E7E2D6] p-1.5 shadow-[inset_0_1px_2px_rgba(20,36,60,0.03)]">
+        <div className="w-full rounded-[9px] bg-gradient-to-b from-[#DDE4EE] via-[#EAEFF6] to-[#F3F6FA] border border-[#94A3B8] py-1.5 px-1 shadow-[inset_0_2px_5px_rgba(15,23,42,0.07),0_1px_0_#ffffff]">
           <EndingSoonCountdown endsAt={plate.auction?.endsAt} />
         </div>
 

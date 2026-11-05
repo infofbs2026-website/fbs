@@ -292,6 +292,7 @@ const faqData: FaqItem[] = [
 ];
 
 import { FaqView } from './faq-view';
+import { DEFAULT_SITE_SETTINGS, type SiteSettings } from '@/lib/site-settings-types';
 
 export function FaqInteractive() {
   return <FaqView />;
@@ -301,7 +302,9 @@ export function FaqInteractive() {
 /* 3. CONTACT: VIP CONCIERGE & DIRECT INQUIRY DESK                           */
 /* ========================================================================= */
 
-export function ContactInteractive() {
+export function ContactInteractive({ siteSettings }: { siteSettings?: SiteSettings }) {
+  const settings = siteSettings ?? DEFAULT_SITE_SETTINGS;
+  const cleanWa = settings.whatsappNumber.replace(/[^0-9]/g, '') || DEFAULT_SITE_SETTINGS.whatsappNumber;
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<{ message: string; isError?: boolean } | null>(null);
 
@@ -352,7 +355,7 @@ export function ContactInteractive() {
           <div className="mt-6 space-y-3.5 text-xs">
             {/* WhatsApp VIP */}
             <a
-              href="https://wa.me/966500000000"
+              href={`https://wa.me/${cleanWa}`}
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-3.5 rounded-2xl border-2 border-emerald-200 bg-emerald-50/70 p-4 font-bold text-navy hover:border-emerald-400 hover:bg-emerald-50 transition-all shadow-xs"
@@ -362,7 +365,7 @@ export function ContactInteractive() {
               </span>
               <div className="flex-1">
                 <p className="text-[11px] text-emerald-800 font-semibold">محادثة واتساب كبار الشخصيات (24/7)</p>
-                <p className="text-sm font-black text-navy" dir="ltr">+966 50 000 0000</p>
+                <p className="text-sm font-black text-navy" dir="ltr">{settings.phoneDisplay}</p>
               </div>
             </a>
 
@@ -373,7 +376,7 @@ export function ContactInteractive() {
               </span>
               <div>
                 <p className="text-[11px] text-slate-500 font-medium">الهاتف الموحد المعتمد</p>
-                <p className="text-sm font-black" dir="ltr">9200 00000</p>
+                <p className="text-sm font-black" dir="ltr">{settings.unifiedNumber}</p>
               </div>
             </div>
 
@@ -384,7 +387,7 @@ export function ContactInteractive() {
               </span>
               <div>
                 <p className="text-[11px] text-slate-500 font-medium">البريد الإلكتروني المعتمد</p>
-                <p className="text-sm font-black" dir="ltr">concierge@fbs.sa</p>
+                <p className="text-sm font-black" dir="ltr">{settings.contactEmail}</p>
               </div>
             </div>
 
@@ -395,7 +398,7 @@ export function ContactInteractive() {
               </span>
               <div>
                 <p className="text-[11px] text-slate-500 font-medium">المقر الرئيسي</p>
-                <p className="text-xs font-bold leading-relaxed">طريق الملك فهد، برج النخبة، الرياض، المملكة العربية السعودية</p>
+                <p className="text-xs font-bold leading-relaxed">{settings.addressAr}</p>
               </div>
             </div>
           </div>
@@ -408,9 +411,9 @@ export function ContactInteractive() {
             <span>ساعات العمل الرسمية</span>
           </div>
           <div className="mt-3 space-y-1.5 text-xs leading-relaxed">
-            <div className="flex justify-between border-b border-slate-100 pb-1.5">
-              <span className="font-semibold text-navy">من الأحد إلى الخميس:</span>
-              <span className="text-slate-500">9:00 ص – 6:00 م</span>
+            <div className="flex justify-between border-b border-slate-100 pb-1.5 gap-3">
+              <span className="font-semibold text-navy">أوقات الدوام:</span>
+              <span className="text-slate-500">{settings.workingHoursAr}</span>
             </div>
             <div className="flex justify-between pt-1">
               <span className="font-semibold text-navy">صالة المزادات والدعم الطارئ:</span>

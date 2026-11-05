@@ -2,6 +2,7 @@ import dynamic from 'next/dynamic';
 import { HeroCinematic } from '@/components/hero-cinematic';
 import { HomeEndingSoon } from '@/components/home/home-ending-soon';
 import { getMarketplace } from '@/modules/marketplace/service';
+import { getSiteSettings } from '@/lib/site-settings';
 
 // Dynamic lazy imports for deeper below-the-fold sections:
 // HomeEndingSoon is imported statically above because it sits directly at the Hero fold boundary,
@@ -34,9 +35,10 @@ const HomeConciergeCta = dynamic(
 export const revalidate = 60;
 
 export default async function Home() {
-  const [market, store] = await Promise.all([
+  const [market, store, siteSettings] = await Promise.all([
     getMarketplace({ auctionStatus: 'LIVE', pageSize: 12 }),
-    getMarketplace({ auctionStatus: 'DIRECT', pageSize: 8 })
+    getMarketplace({ auctionStatus: 'DIRECT', pageSize: 8 }),
+    getSiteSettings(),
   ]);
   const displayPlates = market.plates;
   const liveAuctions = displayPlates.filter((p) => p.auction?.status === 'LIVE');
@@ -72,11 +74,6 @@ export default async function Home() {
       <HomeLiveAuctions liveAuctions={store.plates} />
 
       {/* ============================================================== */}
-      {/* 05. مزادات حصرية / الإحصائيات (MIDNIGHT NAVY #08162B + GOLD)   */}
-      {/* ============================================================== */}
-
-
-      {/* ============================================================== */}
       {/* 06. الثقة والمميزات (WARM IVORY #F7F6F3 + WHITE CARDS)         */}
       {/* ============================================================== */}
       <HomeWhyFbs />
@@ -84,7 +81,7 @@ export default async function Home() {
       {/* ============================================================== */}
       {/* EXECUTIVE CONCIERGE BANNER                                     */}
       {/* ============================================================== */}
-      <HomeConciergeCta />
+      <HomeConciergeCta siteSettings={siteSettings} />
     </>
   );
 }

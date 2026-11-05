@@ -1,8 +1,12 @@
 import Link from 'next/link';
 import { ArrowLeft, Crown, MessageSquare, ShieldCheck } from 'lucide-react';
 import { ScrollReveal } from '@/components/home-motion';
+import { DEFAULT_SITE_SETTINGS, type SiteSettings } from '@/lib/site-settings-types';
 
-export function HomeConciergeCta() {
+export function HomeConciergeCta({ siteSettings }: { siteSettings?: SiteSettings }) {
+  const settings = siteSettings ?? DEFAULT_SITE_SETTINGS;
+  const cleanWa = settings.whatsappNumber.replace(/[^0-9]/g, '') || DEFAULT_SITE_SETTINGS.whatsappNumber;
+
   return (
     <section className="relative overflow-hidden bg-[#F7F6F3] pt-2 pb-16 sm:pb-24 select-none">
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -27,12 +31,12 @@ export function HomeConciergeCta() {
 
             {/* Clean Punchy Headline */}
             <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-snug">
-              هل ترغب في عرض لوحتك أو اقتناء لوحة نادرة؟
+              {settings.conciergeTitle || DEFAULT_SITE_SETTINGS.conciergeTitle}
             </h2>
 
             {/* Concise 1-Line Subtitle */}
             <p className="mt-2 text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl mx-auto font-normal">
-              مستشارو FBS متاحون لتقديم التقييم المعتمد والدعم التنفيذي الفوري بأعلى درجات الخصوصية.
+              {settings.conciergeSubtitle || DEFAULT_SITE_SETTINGS.conciergeSubtitle}
             </p>
 
             {/* Two Balanced Action Buttons */}
@@ -48,7 +52,7 @@ export function HomeConciergeCta() {
 
               {/* Secondary VIP Direct Line: تحدث مع مستشار خاص */}
               <a
-                href="https://wa.me/966500000000"
+                href={`https://wa.me/${cleanWa}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group w-full sm:w-auto min-w-[210px] h-11 sm:h-12 px-6 rounded-xl border border-white/15 bg-white/[0.06] hover:bg-white/[0.12] hover:border-[#D9BB81]/50 text-white flex items-center justify-center gap-2 text-xs sm:text-sm font-bold backdrop-blur-md active:scale-[0.98] transition-all cursor-pointer"
@@ -76,4 +80,3 @@ export function HomeConciergeCta() {
     </section>
   );
 }
-

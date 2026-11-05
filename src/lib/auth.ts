@@ -26,3 +26,26 @@ export async function requireMfa(){
   const {data,error}=await client.auth.mfa.getAuthenticatorAssuranceLevel();
   if(error||data?.currentLevel!=='aal2')throw new DomainError('FORBIDDEN','يلزم التحقق بخطوتين لتنفيذ هذا الإجراء.',{},403);
 }
+export const getViewerAdminAccess=cache(async()=>{
+  const viewer=await getViewer();
+  if(!viewer)return {viewer:null,roles:[] as string[],permissions:[] as string[],isAdmin:false,mfaVerified:false,mfaFactorId:null as string|null};
+  const [db,sessionClient]=await Promise.all([Promise.resolve(createAdminClient()),createSessionClient()]);
+  let roles=[viewer.role];
+  let permissions:string[]=[];
+  if(db){
+    const {data:userRoles}=await db.from('user_roles').select('role_code').eq('user_id',viewer.id);
+    roles=Array.from(new Set([viewer.role,...(userRoles??[]).map(r=>String(r.role_code))]));
+    const {data:grants}=await db.from('role_permissions').select('permission_code').in('role_code',roles);
+    permissions=Array.from(new Set((grants??[]).map(g=>String(g.permission_code))));
+  }
+  let mfaVerified=false;
+  let mfaFactorId:string|null=null;
+  if(sessionClient){
+    try{
+      const [aal,factors]=await Promise.all([sessionClient.auth.mfa.getAuthenticatorAssuranceLevel(),sessionClient.auth.mfa.listFactors()]);
+      mfaVerified=aal.data?.currentLevel==='aal2';
+      mfaFactorId=factors.data?.totp?.find(f=>f.status==='verified')?.id??null;
+    }catch{}
+  }
+  return {viewer,roles,permissions,isAdmin:permissions.includes('admin.view')||permissions.length>0,mfaVerified,mfaFactorId};
+});

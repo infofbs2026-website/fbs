@@ -155,23 +155,43 @@ export const masterFaqData: FaqItem[] = [
   }
 ];
 
-const categoriesList = [
-  { id: 'all', label: 'جميع الأسئلة', count: 14, icon: Layers },
-  { id: 'auctions', label: 'المزادات والمزايدة', count: 3, icon: Gavel },
-  { id: 'guarantees', label: 'الضمان والتأمين', count: 3, icon: ShieldCheck },
-  { id: 'transfer', label: 'نقل الملكية والمرور', count: 3, icon: Car },
-  { id: 'selling', label: 'البائعون وعرض اللوحات', count: 2, icon: BadgeDollarSign },
-  { id: 'policies', label: 'التوثيق والسياسات', count: 3, icon: Scale }
+const baseCategories = [
+  { id: 'all', label: 'جميع الأسئلة', icon: Layers },
+  { id: 'auctions', label: 'المزادات والمزايدة', icon: Gavel },
+  { id: 'guarantees', label: 'الضمان والتأمين', icon: ShieldCheck },
+  { id: 'transfer', label: 'نقل الملكية والمرور', icon: Car },
+  { id: 'selling', label: 'البائعون وعرض اللوحات', icon: BadgeDollarSign },
+  { id: 'policies', label: 'التوثيق والسياسات', icon: Scale }
 ] as const;
 
-export function FaqView() {
+export function FaqView({
+  items,
+  whatsappNumber,
+}: {
+  items?: FaqItem[];
+  whatsappNumber?: string;
+} = {}) {
+  const sourceItems = items && items.length > 0 ? items : masterFaqData;
+  const cleanWa = (whatsappNumber ?? '966500000000').replace(/[^0-9]/g, '') || '966500000000';
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [openId, setOpenId] = useState<string | null>(null);
 
+  const categoriesList = useMemo(
+    () =>
+      baseCategories.map((cat) => ({
+        ...cat,
+        count:
+          cat.id === 'all'
+            ? sourceItems.length
+            : sourceItems.filter((item) => item.catId === cat.id).length,
+      })),
+    [sourceItems],
+  );
+
   const filteredItems = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    return masterFaqData.filter((item) => {
+    return sourceItems.filter((item) => {
       const matchCat = activeCategory === 'all' || item.catId === activeCategory;
       if (!matchCat) return false;
       if (!q) return true;
@@ -183,7 +203,7 @@ export function FaqView() {
         item.id.includes(q)
       );
     });
-  }, [activeCategory, searchQuery]);
+  }, [activeCategory, searchQuery, sourceItems]);
 
   // Divide into two symmetrical luxury columns (Home-page layout)
   const { col1, col2 } = useMemo(() => {
@@ -434,7 +454,7 @@ export function FaqView() {
           <div className="flex items-center justify-between text-xs sm:text-sm text-slate-500 font-medium px-1">
             <span>
               عرض <strong className="text-navy-deep font-norwester text-sm sm:text-base font-black">{filteredItems.length}</strong> من أصل{' '}
-              <span className="font-norwester">{masterFaqData.length}</span> سؤالاً معتمداً
+              <span className="font-norwester">{sourceItems.length}</span> سؤالاً معتمداً
             </span>
             {(searchQuery || activeCategory !== 'all') && (
               <button
@@ -516,7 +536,7 @@ export function FaqView() {
 
               <div className="flex flex-col sm:flex-row gap-3 shrink-0">
                 <a
-                  href="https://wa.me/966500000000"
+                  href={`https://wa.me/${cleanWa}`}
                   target="_blank"
                   rel="noreferrer"
                   className="btn btn-gold text-xs sm:text-sm font-black py-3 px-5 shadow-lg shadow-gold/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"

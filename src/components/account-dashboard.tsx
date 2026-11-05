@@ -7,7 +7,7 @@ import {
   ArrowLeft, ArrowUpLeft, Bell, Bookmark, Car, Clock, Compass,
   CreditCard, Crown, FileQuestion, Gavel, Globe, Headphones, Home, KeyRound, Layers,
   LayoutDashboard, LockKeyhole, LogOut, Mail, Moon, PanelRightClose, PanelRightOpen,
-  Plus, Search, ShieldCheck, ShoppingBag, Smartphone, Sun, UserRound, Wallet, X
+  Plus, Search, ShieldCheck, ShoppingBag, Smartphone, Sparkles, Store, Sun, UserRound, Wallet, X
 } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
 import { MfaSetup } from '@/components/mfa';
@@ -48,6 +48,12 @@ const marketplaceNavLinks = [
   { key: 'bids', href: '/account/bids', label: 'مزايداتي', icon: Clock, countKey: null },
   { key: 'plates', href: '/account/plates', label: 'لوحاتي', icon: Car, countKey: 'plates' as const },
   { key: 'favorites', href: '/account/favorites', label: 'المفضلة', icon: Bookmark, countKey: 'favorites' as const }
+] as const;
+
+const platformServicesNavLinks = [
+  { key: 'store', href: '/plates', label: 'المتجر الفوري', icon: Store },
+  { key: 'studio-3d', href: '/studio-3d', label: 'استوديو 3D للسيارات', icon: Sparkles },
+  { key: 'sell-plate', href: '/sell-your-plate', label: 'اعرض لوحتك للبيع', icon: Plus }
 ] as const;
 
 const financeSecurityNavLinks = [
@@ -264,8 +270,8 @@ function Countdown({ endsAt }: { endsAt?: string }) {
     <div className={styles.countdownUnits} dir="ltr">
       {units.map((unit) => (
         <div key={unit.key} className={styles.countdownUnitBox}>
+          <span className={styles.countdownLabel}>{unit.label}</span>
           <span className={styles.countdownNum} dir="ltr">{unit.value}</span>
-          <small className={styles.countdownLabel}>{unit.label}</small>
         </div>
       ))}
     </div>
@@ -815,23 +821,6 @@ export function AccountDashboard({
             </Link>
           </div>
 
-          <Link
-            href="/account/profile"
-            className={styles.sidebarMember}
-            onClick={() => setMenuOpen(false)}
-            aria-current={activeSectionKey === 'profile' ? 'page' : undefined}
-            title={name ? `${name} (${user.email})` : user.email}
-          >
-            <span className={styles.memberMonogram}>
-              {initial}
-              <span className={styles.memberPulse} aria-hidden="true" />
-            </span>
-            <span className={styles.memberMeta}>
-              <strong>{name || 'عضو النخبة'}</strong>
-              <small dir="ltr">{user.email}</small>
-            </span>
-          </Link>
-
           <nav className={styles.navigation} aria-label="أقسام الحساب">
             <div className={styles.navSection}>
               <span className={styles.navCaption}>المزادات والمقتنيات</span>
@@ -853,6 +842,27 @@ export function AccountDashboard({
                     </Link>
                   );
                 })}
+              </div>
+            </div>
+
+            <div className={styles.navSection}>
+              <span className={styles.navCaption}>خدمات المنصة والاستوديو</span>
+              <div className={styles.navTrack}>
+                {platformServicesNavLinks.map(({ key, href, label, icon: Icon }) => (
+                  <Link
+                    key={key}
+                    href={href}
+                    data-tooltip={label}
+                    title={sidebarCollapsed ? label : undefined}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <span className={styles.navIconWrap}><Icon size={17} strokeWidth={1.9} aria-hidden="true" /></span>
+                    <span className={styles.navLabel}>{label}</span>
+                    <span className={styles.navExternalHint} aria-hidden="true">
+                      <ArrowUpLeft size={13} strokeWidth={2} />
+                    </span>
+                  </Link>
+                ))}
               </div>
             </div>
 
@@ -885,7 +895,7 @@ export function AccountDashboard({
                 aria-label="الملف الشخصي"
                 title="الملف الشخصي"
               >
-                <UserRound size={16} aria-hidden="true" />
+                <UserRound size={17} aria-hidden="true" />
                 <span>ملفي</span>
               </Link>
               <Link
@@ -894,7 +904,7 @@ export function AccountDashboard({
                 aria-label="المساعدة"
                 title="مركز المساعدة"
               >
-                <Headphones size={16} aria-hidden="true" />
+                <Headphones size={17} aria-hidden="true" />
                 <span>المساعدة</span>
               </Link>
               <button
@@ -904,7 +914,7 @@ export function AccountDashboard({
                 aria-label="تسجيل الخروج"
                 title="تسجيل الخروج"
               >
-                <LogOut size={16} aria-hidden="true" />
+                <LogOut size={17} aria-hidden="true" />
                 <span>خروج</span>
               </button>
             </div>
