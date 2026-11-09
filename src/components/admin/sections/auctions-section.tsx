@@ -14,12 +14,13 @@ import {
   Plus,
   Search,
   Timer,
+  Trash2,
   Users,
   X,
-  XCircle,
 } from 'lucide-react';
-import { PlateVisualizer } from '@/components/ui';
+import { FbsStageWatermark, PlateVisualizer } from '@/components/ui';
 import { SarPrice } from '@/components/sar-symbol';
+import accountStyles from '@/components/account-dashboard.module.css';
 import styles from '../admin-dashboard.module.css';
 import {
   AUCTION_STATUS_LABELS,
@@ -62,6 +63,13 @@ export function AuctionsSection({
   const [timeModalAuction, setTimeModalAuction] = useState<AdminAuctionRecord | null>(null);
   const [customEndLocal, setCustomEndLocal] = useState('');
   const [customTimeReason, setCustomTimeReason] = useState('تعديل وقت إغلاق المزاد من غرفة التحكم الإدارية');
+
+  // Custom Finalize / Cancel Decision Modal (replaces browser prompt/confirm)
+  const [decisionModal, setDecisionModal] = useState<{
+    auction: AdminAuctionRecord;
+    mode: 'FINALIZE_NOW' | 'CANCEL';
+  } | null>(null);
+  const [decisionReason, setDecisionReason] = useState('');
 
   // Create / Edit Auction Drawer
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -401,176 +409,50 @@ export function AuctionsSection({
         <div className="space-y-4">
           {filteredAuctions.map((auction) => {
             const st = AUCTION_STATUS_LABELS[auction.status] ?? { label: auction.status, tone: 'slate' as const };
-            const cd = formatCountdownLabel(auction.effective_end_at, nowMs);
             const isTerminal = ['ENDED', 'COMPLETED', 'CANCELLED', 'RESERVE_NOT_MET'].includes(auction.status);
             const isExpanded = expandedAuctionId === auction.id;
             const auctionBids = data.bids.filter((b) => b.auction_id === auction.id);
             const auctionRegs = data.registrations.filter((r) => r.auction_id === auction.id);
 
+            const targetMs = auction.effective_end_at ? Date.parse(auction.effective_end_at) : NaN;
+            const totalSec = Number.isFinite(targetMs)
+              ? Math.max(0, Math.floor((targetMs - nowMs) / 1000))
+              : null;
+            const countdownUnits = [
+              {
+                key: 'days',
+                label: 'يوم',
+                value: totalSec === null ? '00' : String(Math.floor(totalSec / 86400)).padStart(2, '0'),
+              },
+              {
+                key: 'hours',
+                label: 'ساعة',
+                value: totalSec === null ? '00' : String(Math.floor((totalSec % 86400) / 3600)).padStart(2, '0'),
+              },
+              {
+                key: 'minutes',
+                label: 'دقيقة',
+                value: totalSec === null ? '00' : String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0'),
+              },
+              {
+                key: 'seconds',
+                label: 'ثانية',
+                value: totalSec === null ? '00' : String(totalSec % 60).padStart(2, '0'),
+              },
+            ];
+
             return (
               <article key={auction.id} className={styles.panel}>
-                <div className="grid gap-4 lg:grid-cols-[260px_1fr]">
-                  {/* Plate Stage */}
-                  <div className="space-y-2.5">
-                    <div className={styles.plateStage}>
-                      <div className="w-full max-w-[235px]">
-                        <PlateVisualizer
-                          lettersAr={auction.letters_ar}
-                          lettersEn={auction.letters_en}
-                          numbers={auction.digits}
-                          plateType={auction.plate_type}
-                          compact
-                        />
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between text-xs px-1">
+                <div className="grid gap-5 lg:grid-cols-[295px_1fr] items-stretch">
+                  {/* Right Column (in RTL): Plate Stage + Status & Icon Bar + Finalize/Cancel Under Plate */}
+                  <div className="flex flex-col justify-between gap-3">
+                    {/* Top Row: Status Badge + Lightweight Icon Controls */}
+                    <div className="flex items-center justify-between gap-2">
                       <span className={`${styles.badge} ${styles[`tone_${st.tone}`]}`}>{st.label}</span>
-                      <Link
-                        href={`/plates/${auction.plate_slug}`}
-                        target="_blank"
-                        className="inline-flex items-center gap-1 font-bold hover:underline text-[var(--adm-gold)]"
-                      >
-                        <span>صفحة المزاد</span>
-                        <ExternalLink size={12} />
-                      </Link>
-                    </div>
-                  </div>
 
-                  {/* Auction Financial & Time Command Console */}
-                  <div className="space-y-3.5 min-w-0">
-                    {/* Financial Metrics Strip */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                      <div className="rounded-xl border border-[var(--adm-border-subtle)] bg-[var(--adm-surface-soft)] p-3">
-                        <div className="text-[11px] opacity-70">المزايدة الحالية</div>
-                        <div className="mt-1 text-base font-black">
-                          <SarPrice amount={auction.current_price} />
-                        </div>
-                      </div>
-
-                      <div className="rounded-xl border border-[var(--adm-border-subtle)] bg-[var(--adm-surface-soft)] p-3">
-                        <div className="text-[11px] opacity-70">سعر البداية / الزيادة</div>
-                        <div className="mt-1 text-xs font-bold">
-                          <SarPrice amount={auction.starting_price} /> • +<SarPrice amount={auction.minimum_increment} />
-                        </div>
-                      </div>
-
-                      <div className="rounded-xl border border-[var(--adm-border-subtle)] bg-[var(--adm-surface-soft)] p-3">
-                        <div className="text-[11px] opacity-70">العد التنازلي للإغلاق</div>
-                        <div
-                          className={`mt-1 font-mono text-sm font-black tabular-nums ${
-                            cd.urgent && !isTerminal ? 'text-rose-400' : ''
-                          }`}
-                          dir="ltr"
-                        >
-                          {isTerminal ? st.label : cd.text}
-                        </div>
-                      </div>
-
-                      <div className="rounded-xl border border-[var(--adm-border-subtle)] bg-[var(--adm-surface-soft)] p-3">
-                        <div className="text-[11px] opacity-70">العطاءات والتمديدات</div>
-                        <div className="mt-1 text-xs font-black">
-                          {auction.sequence_no} مزايدة • {auction.registrations_count} مسجل • {auction.extension_count} تمديد
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Exact Timestamps Info */}
-                    <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs opacity-80">
-                      <span>البدء: {formatAdminDate(auction.start_at)}</span>
-                      <span>الإغلاق الفعلي: {formatAdminDate(auction.effective_end_at)}</span>
-                      {auction.reserve_price && (
-                        <span>
-                          الحد السري: <SarPrice amount={auction.reserve_price} />
-                        </span>
-                      )}
-                      {auction.deposit_amount && BigInt(auction.deposit_amount) > 0n && (
-                        <span>
-                          التأمين: <SarPrice amount={auction.deposit_amount} />
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Direct Time Control & State Transitions */}
-                    {!isTerminal && (
-                      <div className="rounded-2xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-3 space-y-2.5">
-                        <div className="flex items-center justify-between gap-2 flex-wrap">
-                          <span className="text-xs font-black flex items-center gap-1.5 text-[var(--adm-gold)]">
-                            <Timer size={14} />
-                            <span>التحكم الفوري بوقت المزاد وحالته</span>
-                          </span>
-
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            {[
-                              { label: '+5 دقائق', min: 5 },
-                              { label: '+15 دقيقة', min: 15 },
-                              { label: '+1 ساعة', min: 60 },
-                              { label: '+24 ساعة', min: 1440 },
-                              { label: '-5 دقائق', min: -5 },
-                            ].map((btn) => (
-                              <button
-                                key={btn.min}
-                                type="button"
-                                disabled={busyKey !== null}
-                                onClick={() =>
-                                  executeControl(auction.id, 'EXTEND_MINUTES', {
-                                    minutes: btn.min,
-                                    reason: `تعديل وقت المزاد (${btn.label}) من الإدارة`,
-                                  })
-                                }
-                                className={styles.btnChip}
-                              >
-                                {btn.label}
-                              </button>
-                            ))}
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setTimeModalAuction(auction);
-                                setCustomEndLocal(toDatetimeLocalValue(auction.effective_end_at));
-                                setCustomTimeReason('تحديد موعد إغلاق مخصص للمزاد من الإدارة');
-                              }}
-                              className={styles.btnChip}
-                            >
-                              <Clock size={12} />
-                              <span>تحديد وقت مخصص</span>
-                            </button>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between gap-2 flex-wrap pt-2 border-t border-[var(--adm-border-subtle)]">
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            {auction.status !== 'LIVE' && auction.status !== 'PAUSED' && (
-                              <button
-                                type="button"
-                                disabled={busyKey !== null}
-                                onClick={() =>
-                                  executeControl(auction.id, 'GO_LIVE_NOW', {
-                                    reason: 'بدء المزاد المباشر فوراً بأمر الإدارة',
-                                  })
-                                }
-                                className={styles.btnSuccess}
-                              >
-                                <Play size={13} />
-                                <span>بدء مباشر الآن (LIVE)</span>
-                              </button>
-                            )}
-
-                            {['DRAFT', 'PENDING_APPROVAL', 'SCHEDULED'].includes(auction.status) && (
-                              <button
-                                type="button"
-                                disabled={busyKey !== null}
-                                onClick={() =>
-                                  executeControl(auction.id, 'OPEN_REGISTRATION_NOW', {
-                                    reason: 'فتح باب التسجيل في المزاد الآن',
-                                  })
-                                }
-                                className={styles.btnSecondary}
-                              >
-                                <span>فتح التسجيل الآن</span>
-                              </button>
-                            )}
-
+                      <div className="flex items-center gap-1">
+                        {!isTerminal && (
+                          <>
                             {auction.status === 'PAUSED' ? (
                               <button
                                 type="button"
@@ -580,10 +462,11 @@ export function AuctionsSection({
                                     reason: 'استئناف المزاد من لوحة الإدارة',
                                   })
                                 }
-                                className={styles.btnSuccess}
+                                className={styles.btnChip}
+                                title="استئناف المزاد"
+                                aria-label="استئناف المزاد"
                               >
-                                <Play size={13} />
-                                <span>استئناف المزاد</span>
+                                <Play size={14} className="text-emerald-600" />
                               </button>
                             ) : (
                               ['LIVE', 'REGISTRATION_OPEN', 'WAITING_ROOM', 'SCHEDULED'].includes(auction.status) && (
@@ -595,143 +478,286 @@ export function AuctionsSection({
                                       reason: 'إيقاف مؤقت للمزاد من لوحة الإدارة',
                                     })
                                   }
-                                  className={styles.btnSecondary}
+                                  className={styles.btnChip}
+                                  title="إيقاف مؤقت للمزاد"
+                                  aria-label="إيقاف مؤقت للمزاد"
                                 >
-                                  <Pause size={13} />
-                                  <span>إيقاف مؤقت</span>
+                                  <Pause size={14} />
                                 </button>
                               )
                             )}
 
-                            <button type="button" className={styles.btnSecondary} onClick={() => openEditDrawer(auction)}>
-                              <Edit3 size={13} />
-                              <span>تعديل الأسعار والإعدادات</span>
+                            <button
+                              type="button"
+                              onClick={() => openEditDrawer(auction)}
+                              className={styles.btnChip}
+                              title="تعديل الأسعار والإعدادات"
+                              aria-label="تعديل الأسعار والإعدادات"
+                            >
+                              <Edit3 size={14} />
+                            </button>
+                          </>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={() => setExpandedAuctionId(isExpanded ? null : auction.id)}
+                          className={styles.btnChip}
+                          title={`عرض المزايدات الحية (${auctionBids.length}) والمشاركين (${auctionRegs.length})`}
+                          aria-label="عرض المزايدات والمشاركين"
+                        >
+                          <Users size={14} />
+                          <span className="tabular-nums text-[11px]" dir="ltr">
+                            {auctionBids.length}
+                          </span>
+                        </button>
+
+                        <Link
+                          href={`/plates/${auction.plate_slug}`}
+                          target="_blank"
+                          className={styles.btnChip}
+                          title="معاينة صفحة المزاد في الموقع"
+                          aria-label="معاينة صفحة المزاد في الموقع"
+                        >
+                          <ExternalLink size={14} />
+                        </Link>
+                      </div>
+                    </div>
+
+                    {/* Plate Stage */}
+                    <div className={styles.plateStage}>
+                      <FbsStageWatermark className={accountStyles.auctionStageWatermark} />
+                      <div className="relative z-10 w-full max-w-[240px]">
+                        <PlateVisualizer
+                          lettersAr={auction.letters_ar}
+                          lettersEn={auction.letters_en}
+                          numbers={auction.digits}
+                          plateType={auction.plate_type}
+                          compact
+                        />
+                      </div>
+                    </div>
+
+                    {/* Minimal Icon + Text Action Row Directly Under the Plate */}
+                    {!isTerminal && (
+                      <div className={`flex items-center justify-between gap-2 pt-2 ${styles.engravedDivider}`}>
+                        {['LIVE', 'ENDING', 'PAUSED'].includes(auction.status) ? (
+                          <button
+                            type="button"
+                            disabled={busyKey !== null}
+                            onClick={() => {
+                              setDecisionReason('إنهاء وترسية المزاد يدوياً بأمر الإدارة');
+                              setDecisionModal({ auction, mode: 'FINALIZE_NOW' });
+                            }}
+                            className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-extrabold text-[var(--ink-strong)] hover:bg-amber-500/10 hover:text-[var(--gold)] transition-colors cursor-pointer whitespace-nowrap"
+                          >
+                            <Flag size={14} className="text-[var(--gold)] shrink-0" />
+                            <span>إنهاء وترسية</span>
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            disabled={busyKey !== null}
+                            onClick={() =>
+                              executeControl(auction.id, 'GO_LIVE_NOW', {
+                                reason: 'بدء المزاد المباشر فوراً بأمر الإدارة',
+                              })
+                            }
+                            className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-extrabold text-emerald-700 hover:bg-emerald-500/10 transition-colors cursor-pointer whitespace-nowrap"
+                          >
+                            <Play size={14} className="shrink-0" />
+                            <span>بدء مباشر الآن</span>
+                          </button>
+                        )}
+
+                        <span className="h-4 w-px bg-[var(--adm-border-subtle)] shrink-0" aria-hidden="true" />
+
+                        <button
+                          type="button"
+                          disabled={busyKey !== null}
+                          onClick={() => {
+                            setDecisionReason('إلغاء المزاد بقرار تنظيمي من الإدارة');
+                            setDecisionModal({ auction, mode: 'CANCEL' });
+                          }}
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-extrabold text-rose-600 hover:bg-rose-500/10 transition-colors cursor-pointer whitespace-nowrap"
+                        >
+                          <Trash2 size={14} className="shrink-0" />
+                          <span>إلغاء المزاد</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Left Column: RTL Metrics + Main-Page Style Countdown Chamber & Quick Time Controls */}
+                  <div className="flex flex-col justify-between gap-3.5 min-w-0">
+                    {/* 3 Clean RTL Financial & Activity Vaults (English Digits) */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                      <div className="rounded-xl border border-[var(--well-border)] bg-[var(--well-bg)] p-3 text-right">
+                        <div className="text-[11px] font-bold text-[var(--muted)]">المزايدة الحالية</div>
+                        <div className="mt-1 text-lg font-black text-[var(--ink-strong)] tabular-nums">
+                          <SarPrice amount={auction.current_price} />
+                        </div>
+                      </div>
+
+                      <div className="rounded-xl border border-[var(--well-border)] bg-[var(--well-bg)] p-3 text-right">
+                        <div className="text-[11px] font-bold text-[var(--muted)]">سعر البداية / الزيادة</div>
+                        <div className="mt-1 text-xs font-black text-[var(--ink-strong)] tabular-nums">
+                          <SarPrice amount={auction.starting_price} />
+                          <span className="mx-1.5 opacity-50">•</span>
+                          <span dir="ltr">+</span>
+                          <SarPrice amount={auction.minimum_increment} />
+                        </div>
+                      </div>
+
+                      <div className="rounded-xl border border-[var(--well-border)] bg-[var(--well-bg)] p-3 text-right">
+                        <div className="text-[11px] font-bold text-[var(--muted)]">العطاءات والمشاركون</div>
+                        <div className="mt-1 text-xs font-black text-[var(--ink-strong)] tabular-nums">
+                          <span dir="ltr">{auction.sequence_no.toLocaleString('en-US')}</span> مزايدة
+                          <span className="mx-1.5 opacity-50">•</span>
+                          <span dir="ltr">{auction.registrations_count.toLocaleString('en-US')}</span> مسجل
+                          <span className="mx-1.5 opacity-50">•</span>
+                          <span dir="ltr">{auction.extension_count.toLocaleString('en-US')}</span> تمديد
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Home-Page Style 4-Cell Countdown Chamber + Compact Quick Time Chips */}
+                    <div className="grid grid-cols-1 xl:grid-cols-[1fr_auto] gap-3 items-center">
+                      <div className={accountStyles.auctionTimerChamber}>
+                        <div className={accountStyles.countdownUnits} dir="ltr">
+                          {countdownUnits.map((unit) => (
+                            <div key={unit.key} className={accountStyles.countdownUnitBox}>
+                              <span className={accountStyles.countdownLabel}>{unit.label}</span>
+                              <span className={accountStyles.countdownNum}>{unit.value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {!isTerminal && (
+                        <div className="rounded-2xl border border-[var(--well-border)] bg-[var(--well-bg)] p-2.5 flex flex-col gap-2 justify-center">
+                          <div className="flex items-center justify-between gap-2 px-1">
+                            <span className="text-[11px] font-extrabold flex items-center gap-1.5 text-[var(--gold)]">
+                              <Timer size={13} />
+                              <span>تمديد وتحكم بالوقت</span>
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setTimeModalAuction(auction);
+                                setCustomEndLocal(toDatetimeLocalValue(auction.effective_end_at));
+                                setCustomTimeReason('تحديد موعد إغلاق مخصص للمزاد من الإدارة');
+                              }}
+                              className={styles.btnChip}
+                              title="تحديد موعد إغلاق مخصص"
+                              aria-label="تحديد موعد إغلاق مخصص"
+                            >
+                              <Clock size={13} />
                             </button>
                           </div>
 
                           <div className="flex items-center gap-1.5 flex-wrap">
-                            {['LIVE', 'ENDING', 'PAUSED'].includes(auction.status) && (
+                            {[
+                              { label: '+5m', title: 'تمديد 5 دقائق (+5 د)', min: 5 },
+                              { label: '+15m', title: 'تمديد 15 دقيقة (+15 د)', min: 15 },
+                              { label: '+1h', title: 'تمديد ساعة واحدة (+1 س)', min: 60 },
+                              { label: '+24h', title: 'تمديد 24 ساعة (+24 س)', min: 1440 },
+                              { label: '-5m', title: 'إنقاص 5 دقائق (-5 د)', min: -5 },
+                            ].map((btn) => (
                               <button
+                                key={btn.min}
                                 type="button"
                                 disabled={busyKey !== null}
-                                onClick={() => {
-                                  if (window.confirm('هل تريد إنهاء المزاد الآن واعتماد النتيجة والترسية فوراً؟')) {
-                                    executeControl(auction.id, 'FINALIZE_NOW', {
-                                      reason: 'إنهاء وترسية المزاد يدوياً بأمر الإدارة',
-                                    });
-                                  }
-                                }}
-                                className={styles.btnPrimary}
-                              >
-                                <Flag size={13} />
-                                <span>إنهاء وترسية الآن</span>
-                              </button>
-                            )}
-
-                            <button
-                              type="button"
-                              disabled={busyKey !== null}
-                              onClick={() => {
-                                const r = window.prompt('اكتب سبب إلغاء المزاد (سيتم فك حجز التأمينات تلقائياً):', 'إلغاء المزاد بقرار تنظيمي من الإدارة');
-                                if (r && r.trim().length >= 3) {
-                                  executeControl(auction.id, 'CANCEL', { reason: r.trim() });
+                                onClick={() =>
+                                  executeControl(auction.id, 'EXTEND_MINUTES', {
+                                    minutes: btn.min,
+                                    reason: `تعديل وقت المزاد (${btn.title}) من الإدارة`,
+                                  })
                                 }
-                              }}
-                              className={styles.btnDanger}
-                            >
-                              <XCircle size={13} />
-                              <span>إلغاء المزاد</span>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Expandable Live Bids & Registrations Inspector */}
-                    <div>
-                      <button
-                        type="button"
-                        onClick={() => setExpandedAuctionId(isExpanded ? null : auction.id)}
-                        className={styles.btnChip}
-                      >
-                        <Users size={13} />
-                        <span>
-                          {isExpanded
-                            ? 'إخفاء سجل المزايدات والمشاركين'
-                            : `عرض المزايدات الحية (${auctionBids.length}) والمشاركين (${auctionRegs.length})`}
-                        </span>
-                      </button>
-
-                      {isExpanded && (
-                        <div className="mt-3 grid gap-3 md:grid-cols-2">
-                          <div className="rounded-xl border border-[var(--adm-border)] p-3">
-                            <h4 className="text-xs font-black m-0 mb-2">أحدث العطاءات المسجلة</h4>
-                            {auctionBids.length === 0 ? (
-                              <p className="text-xs opacity-65 m-0">لم تُسجّل أي مزايدات بعد.</p>
-                            ) : (
-                              <div className="space-y-1.5 max-h-52 overflow-y-auto">
-                                {auctionBids.slice(0, 12).map((bid) => (
-                                  <div
-                                    key={bid.id}
-                                    className="flex items-center justify-between text-xs py-1.5 border-b border-[var(--adm-border-subtle)]"
-                                  >
-                                    <div>
-                                      <span className="font-mono opacity-70">#{bid.sequence_no}</span>{' '}
-                                      <strong>{bid.user_name}</strong>
-                                    </div>
-                                    <div className="font-black">
-                                      <SarPrice amount={bid.amount_minor} />
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="rounded-xl border border-[var(--adm-border)] p-3">
-                            <h4 className="text-xs font-black m-0 mb-2">المزايدون المسجلون وتأهيلهم</h4>
-                            {auctionRegs.length === 0 ? (
-                              <p className="text-xs opacity-65 m-0">لا يوجد مسجلون في هذا المزاد بعد.</p>
-                            ) : (
-                              <div className="space-y-1.5 max-h-52 overflow-y-auto">
-                                {auctionRegs.map((reg) => (
-                                  <div
-                                    key={reg.id}
-                                    className="flex items-center justify-between gap-2 text-xs py-1.5 border-b border-[var(--adm-border-subtle)]"
-                                  >
-                                    <div>
-                                      <strong>{reg.user_name}</strong>{' '}
-                                      <span className="opacity-70">({reg.bidder_alias})</span>
-                                      <div className="text-[11px] opacity-70">الحالة: {reg.status}</div>
-                                    </div>
-                                    {reg.status !== 'QUALIFIED' ? (
-                                      <button
-                                        type="button"
-                                        disabled={busyKey !== null}
-                                        onClick={() => updateRegistrationStatus(reg.id, 'QUALIFIED')}
-                                        className={styles.btnSuccess}
-                                      >
-                                        <CheckCircle2 size={12} />
-                                        <span>تأهيل</span>
-                                      </button>
-                                    ) : (
-                                      <button
-                                        type="button"
-                                        disabled={busyKey !== null}
-                                        onClick={() => updateRegistrationStatus(reg.id, 'SUSPENDED')}
-                                        className={styles.btnChip}
-                                      >
-                                        تعليق
-                                      </button>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
+                                title={btn.title}
+                                className={`${styles.btnChip} tabular-nums font-black`}
+                                dir="ltr"
+                              >
+                                {btn.label}
+                              </button>
+                            ))}
                           </div>
                         </div>
                       )}
                     </div>
+
+                    {/* Expandable Live Bids & Registrations Inspector */}
+                    {isExpanded && (
+                      <div className="pt-1 grid gap-3 md:grid-cols-2">
+                        <div className="rounded-xl border border-[var(--adm-border)] p-3">
+                          <h4 className="text-xs font-black m-0 mb-2">أحدث العطاءات المسجلة</h4>
+                          {auctionBids.length === 0 ? (
+                            <p className="text-xs opacity-65 m-0">لم تُسجّل أي مزايدات بعد.</p>
+                          ) : (
+                            <div className="space-y-1.5 max-h-52 overflow-y-auto">
+                              {auctionBids.slice(0, 12).map((bid) => (
+                                <div
+                                  key={bid.id}
+                                  className="flex items-center justify-between text-xs py-1.5 border-b border-[var(--adm-border-subtle)]"
+                                >
+                                  <div>
+                                    <span className="tabular-nums opacity-70" dir="ltr">
+                                      #{bid.sequence_no}
+                                    </span>{' '}
+                                    <strong>{bid.user_name}</strong>
+                                  </div>
+                                  <div className="font-black">
+                                    <SarPrice amount={bid.amount_minor} />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="rounded-xl border border-[var(--adm-border)] p-3">
+                          <h4 className="text-xs font-black m-0 mb-2">المزايدون المسجلون وتأهيلهم</h4>
+                          {auctionRegs.length === 0 ? (
+                            <p className="text-xs opacity-65 m-0">لا يوجد مسجلون في هذا المزاد بعد.</p>
+                          ) : (
+                            <div className="space-y-1.5 max-h-52 overflow-y-auto">
+                              {auctionRegs.map((reg) => (
+                                <div
+                                  key={reg.id}
+                                  className="flex items-center justify-between gap-2 text-xs py-1.5 border-b border-[var(--adm-border-subtle)]"
+                                >
+                                  <div>
+                                    <strong>{reg.user_name}</strong>{' '}
+                                    <span className="opacity-70">({reg.bidder_alias})</span>
+                                    <div className="text-[11px] opacity-70">الحالة: {reg.status}</div>
+                                  </div>
+                                  {reg.status !== 'QUALIFIED' ? (
+                                    <button
+                                      type="button"
+                                      disabled={busyKey !== null}
+                                      onClick={() => updateRegistrationStatus(reg.id, 'QUALIFIED')}
+                                      className={styles.btnSuccess}
+                                    >
+                                      <CheckCircle2 size={12} />
+                                      <span>تأهيل</span>
+                                    </button>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      disabled={busyKey !== null}
+                                      onClick={() => updateRegistrationStatus(reg.id, 'SUSPENDED')}
+                                      className={styles.btnChip}
+                                    >
+                                      تعليق
+                                    </button>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </article>
@@ -800,10 +826,125 @@ export function AuctionsSection({
         </div>
       )}
 
-      {/* Create / Edit Auction Drawer */}
+      {/* Custom Finalize / Cancel Decision Modal */}
+      {decisionModal && (
+        <div
+          className={styles.modalCenter}
+          role="dialog"
+          aria-modal="true"
+          aria-label={decisionModal.mode === 'CANCEL' ? 'تأكيد إلغاء المزاد' : 'تأكيد إنهاء وترسية المزاد'}
+          onClick={() => setDecisionModal(null)}
+        >
+          <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <div>
+                <h3 className="text-base font-black m-0 text-[var(--ink-strong)]">
+                  {decisionModal.mode === 'CANCEL'
+                    ? 'إلغاء المزاد وفك حجز التأمين'
+                    : 'إنهاء المزاد واعتماد الترسية'}
+                </h3>
+                <p className="text-xs text-[var(--muted)] m-0 mt-1">
+                  {decisionModal.mode === 'CANCEL'
+                    ? 'سيتم إيقاف المزاد وتحرير مبالغ التأمين المحجوزة للمشاركين تلقائياً.'
+                    : 'سيتم إغلاق المزاد فوراً واعتماد أعلى مزايدة مسجلة حالياً.'}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setDecisionModal(null)}
+                className={styles.btnChip}
+                aria-label="إغلاق النافذة"
+              >
+                <X size={14} />
+              </button>
+            </div>
+
+            {/* Plate Preview & Current Bid Summary */}
+            <div className={`${styles.plateStage} mb-4`}>
+              <FbsStageWatermark className={accountStyles.auctionStageWatermark} />
+              <div className="relative z-10 w-full max-w-[225px]">
+                <PlateVisualizer
+                  lettersAr={decisionModal.auction.letters_ar}
+                  lettersEn={decisionModal.auction.letters_en}
+                  numbers={decisionModal.auction.digits}
+                  plateType={decisionModal.auction.plate_type}
+                  compact
+                />
+              </div>
+            </div>
+
+            <div className="mb-4 flex items-center justify-between text-xs px-1">
+              <span className="font-bold text-[var(--muted)]">أعلى مزايدة حالية:</span>
+              <strong className="text-sm font-black text-[var(--ink-strong)] tabular-nums">
+                <SarPrice amount={decisionModal.auction.current_price} />
+              </strong>
+            </div>
+
+            <div className={`${styles.field} mb-5`}>
+              <label className={styles.fieldLabel}>
+                {decisionModal.mode === 'CANCEL' ? 'سبب إلغاء المزاد' : 'سبب الإنهاء والترسية'}
+              </label>
+              <input
+                type="text"
+                value={decisionReason}
+                onChange={(e) => setDecisionReason(e.target.value)}
+                placeholder="اكتب سبب القرار هنا…"
+                className={styles.input}
+                autoFocus
+              />
+            </div>
+
+            <div className="flex items-center gap-2.5 pt-3 border-t border-[var(--adm-border-subtle)]">
+              <button
+                type="button"
+                className={`${styles.btnSecondary} flex-1`}
+                onClick={() => setDecisionModal(null)}
+              >
+                تراجع
+              </button>
+              <button
+                type="button"
+                disabled={busyKey !== null}
+                className={`${decisionModal.mode === 'CANCEL' ? styles.btnDanger : styles.btnPrimary} flex-1`}
+                onClick={async () => {
+                  const trimmed = decisionReason.trim();
+                  if (trimmed.length < 3) {
+                    onNotify('يرجى كتابة سبب واضح (3 أحرف على الأقل).', 'error');
+                    return;
+                  }
+                  const target = decisionModal;
+                  setDecisionModal(null);
+                  await executeControl(target.auction.id, target.mode, { reason: trimmed });
+                }}
+              >
+                {decisionModal.mode === 'CANCEL' ? (
+                  <>
+                    <Trash2 size={14} />
+                    <span>تأكيد إلغاء المزاد</span>
+                  </>
+                ) : (
+                  <>
+                    <Flag size={14} />
+                    <span>تأكيد الإنهاء والترسية</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create / Edit Auction Centered Wide Studio Modal */}
       {drawerOpen && (
-        <div className={styles.overlay} role="dialog" aria-modal="true" aria-label="إعداد المزاد">
-          <div className={styles.drawer}>
+        <div
+          className={styles.overlay}
+          role="dialog"
+          aria-modal="true"
+          aria-label="إعداد المزاد"
+          onClick={() => setDrawerOpen(false)}
+        >
+          <div className={styles.drawer} onClick={(e) => e.stopPropagation()}>
             <div className={styles.drawerHeader}>
               <div>
                 <h3 className="text-base font-black m-0">
@@ -822,7 +963,8 @@ export function AuctionsSection({
               {/* Plate Picker & Preview */}
               {selectedPlatePreview && (
                 <div className={styles.plateStage}>
-                  <div className="w-full max-w-[265px]">
+                  <FbsStageWatermark className={accountStyles.auctionStageWatermark} />
+                  <div className="relative z-10 w-full max-w-[275px]">
                     <PlateVisualizer
                       lettersAr={selectedPlatePreview.letters_ar}
                       lettersEn={selectedPlatePreview.letters_en}
@@ -846,15 +988,15 @@ export function AuctionsSection({
                     ))}
                   </select>
                   {eligiblePlates.length === 0 && (
-                    <span className="text-xs text-amber-400">
+                    <span className="text-xs text-amber-500 font-bold">
                       جميع اللوحات الحالية مرتبطة بمزادات نشطة؛ يمكنك إضافة لوحة جديدة أولاً من قسم اللوحات.
                     </span>
                   )}
                 </div>
               )}
 
-              {/* Prices in SAR */}
-              <div className={styles.formGrid}>
+              {/* Prices in SAR — 2x2 Grid in Wide Modal */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
                 <div className={styles.field}>
                   <label className={styles.fieldLabel}>سعر البداية (ريال سعودي)</label>
                   <input
@@ -882,7 +1024,7 @@ export function AuctionsSection({
                 </div>
 
                 <div className={styles.field}>
-                  <label className={styles.fieldLabel}>السعر الاحتياطي السري (اختياري SAR)</label>
+                  <label className={styles.fieldLabel}>السعر الاحتياطي السري (اختياري)</label>
                   <input
                     type="number"
                     min={0}
@@ -896,7 +1038,7 @@ export function AuctionsSection({
                 </div>
 
                 <div className={styles.field}>
-                  <label className={styles.fieldLabel}>مبلغ التأمين البنكي (0 = بدون تأمين)</label>
+                  <label className={styles.fieldLabel}>مبلغ التأمين البنكي (0 = بدون)</label>
                   <input
                     type="number"
                     min={0}
@@ -918,7 +1060,7 @@ export function AuctionsSection({
                       type="button"
                       onClick={() => setLaunchMode('LIVE_NOW')}
                       className={`${styles.btnSecondary} ${
-                        launchMode === 'LIVE_NOW' ? '!border-emerald-400 !text-emerald-400' : ''
+                        launchMode === 'LIVE_NOW' ? '!border-emerald-500 !text-emerald-600' : ''
                       }`}
                     >
                       <Play size={14} />
@@ -962,7 +1104,7 @@ export function AuctionsSection({
                   </div>
                 </div>
               ) : (
-                <div className={styles.formGrid}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div className={styles.field}>
                     <label className={styles.fieldLabel}>فتح التسجيل</label>
                     <input
@@ -1007,18 +1149,29 @@ export function AuctionsSection({
               )}
 
               {/* Anti-Sniping & Rules */}
-              <div className="rounded-2xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-4 space-y-3">
-                <label className={styles.checkboxRow}>
-                  <input
-                    type="checkbox"
-                    checked={antiSniping}
-                    onChange={(e) => setAntiSniping(e.target.checked)}
-                  />
-                  <span>تفعيل التمديد التلقائي لمنع القنص في اللحظات الأخيرة (Anti-Sniping)</span>
-                </label>
+              <div className="rounded-2xl border border-[var(--well-border)] bg-[var(--well-bg)] p-4 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <label className={styles.checkboxRow}>
+                    <input
+                      type="checkbox"
+                      checked={antiSniping}
+                      onChange={(e) => setAntiSniping(e.target.checked)}
+                    />
+                    <span>تفعيل التمديد التلقائي لمنع القنص في اللحظات الأخيرة (Anti-Sniping)</span>
+                  </label>
+
+                  <label className={styles.checkboxRow}>
+                    <input
+                      type="checkbox"
+                      checked={requireKyc}
+                      onChange={(e) => setRequireKyc(e.target.checked)}
+                    />
+                    <span>اشتراط توثيق الهوية الوطنية (KYC)</span>
+                  </label>
+                </div>
 
                 {antiSniping && (
-                  <div className={styles.formGrid}>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                     <div className={styles.field}>
                       <label className={styles.fieldLabel}>نافذة المراقبة (ثوانٍ)</label>
                       <input
@@ -1054,19 +1207,10 @@ export function AuctionsSection({
                     </div>
                   </div>
                 )}
-
-                <label className={styles.checkboxRow}>
-                  <input
-                    type="checkbox"
-                    checked={requireKyc}
-                    onChange={(e) => setRequireKyc(e.target.checked)}
-                  />
-                  <span>اشتراط توثيق الهوية الوطنية (KYC) للمزايدة في هذا المزاد</span>
-                </label>
               </div>
 
-              {/* Commission */}
-              <div className={styles.formGrid}>
+              {/* Commission & Audit Reason in 1 Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div className={styles.field}>
                   <label className={styles.fieldLabel}>نوع عمولة المنصة</label>
                   <select
@@ -1080,7 +1224,7 @@ export function AuctionsSection({
                   </select>
                 </div>
 
-                {commissionType !== 'NONE' && (
+                {commissionType !== 'NONE' ? (
                   <div className={styles.field}>
                     <label className={styles.fieldLabel}>
                       {commissionType === 'FIXED' ? 'قيمة العمولة (ريال سعودي)' : 'نقاط الأساس (100 = 1%)'}
@@ -1094,26 +1238,38 @@ export function AuctionsSection({
                       className={styles.input}
                     />
                   </div>
+                ) : (
+                  <div className={styles.field}>
+                    <label className={styles.fieldLabel}>سبب الإجراء للسجل الرقابي</label>
+                    <input
+                      type="text"
+                      value={saveReason}
+                      onChange={(e) => setSaveReason(e.target.value)}
+                      className={styles.input}
+                    />
+                  </div>
                 )}
               </div>
 
-              <div className={styles.field}>
-                <label className={styles.fieldLabel}>سبب الإجراء للسجل الرقابي</label>
-                <input
-                  type="text"
-                  value={saveReason}
-                  onChange={(e) => setSaveReason(e.target.value)}
-                  className={styles.input}
-                />
-              </div>
+              {commissionType !== 'NONE' && (
+                <div className={styles.field}>
+                  <label className={styles.fieldLabel}>سبب الإجراء للسجل الرقابي</label>
+                  <input
+                    type="text"
+                    value={saveReason}
+                    onChange={(e) => setSaveReason(e.target.value)}
+                    className={styles.input}
+                  />
+                </div>
+              )}
             </div>
 
             <div className={styles.drawerFooter}>
-              <button type="button" className={styles.btnSecondary} onClick={() => setDrawerOpen(false)}>
-                إلغاء
-              </button>
               <button type="button" disabled={saving} className={styles.btnPrimary} onClick={saveAuction}>
                 {saving ? 'جارٍ الحفظ…' : editingAuction ? 'حفظ التعديلات والتوقيت' : 'إنشاء واعتماد المزاد'}
+              </button>
+              <button type="button" className={styles.btnSecondary} onClick={() => setDrawerOpen(false)}>
+                إلغاء
               </button>
             </div>
           </div>

@@ -13,7 +13,6 @@ import {
   Phone,
   Search,
   ShieldCheck,
-  Sparkles,
   Store,
   User,
   X,
@@ -280,7 +279,7 @@ export function VerificationsSection({
           <p className="mt-1 text-xs">جميع اللوحات المرسلة من نموذج «اعرض لوحتك» تظهر هنا مع مستنداتها للمراجعة والاعتماد.</p>
         </div>
       ) : (
-        <div className={styles.cardsGrid}>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filteredPlates.map((plate) => {
             const vst = VERIFICATION_LABELS[plate.verification_status] ?? {
               label: plate.verification_status,
@@ -291,22 +290,37 @@ export function VerificationsSection({
               tone: 'slate' as const,
             };
             const kyc = KYC_LABELS[plate.owner_kyc] ?? { label: plate.owner_kyc, tone: 'slate' as const };
+            const isApproved = plate.verification_status === 'APPROVED';
+            const isRejected = plate.verification_status === 'REJECTED';
+            const isChangesReq = plate.verification_status === 'CHANGES_REQUIRED';
+
+            const statusColor =
+              vst.tone === 'emerald'
+                ? '#065f46'
+                : vst.tone === 'rose'
+                  ? '#be123c'
+                  : vst.tone === 'amber'
+                    ? '#92400e'
+                    : 'var(--ink-strong)';
 
             return (
               <article key={plate.id} className={styles.itemCard}>
                 <div className="space-y-3">
-                  {/* Card Top Status Row */}
-                  <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className={`${styles.badge} ${styles[`tone_${vst.tone}`]}`}>{vst.label}</span>
-                      <span className={`${styles.badge} ${styles[`tone_${lst.tone}`]}`}>{lst.label}</span>
+                  {/* Card Top Status Row — Clean text without crowded pill tags */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 text-xs font-extrabold" style={{ color: statusColor }}>
+                      <span>{vst.label}</span>
+                      <span className="opacity-40">•</span>
+                      <span className="text-[var(--muted)] font-bold">{lst.label}</span>
                     </div>
-                    <span className="text-[11px] opacity-70">{formatAdminDate(plate.submitted_at || plate.created_at)}</span>
+                    <span className="text-[11px] font-semibold text-[var(--muted)]">
+                      {formatAdminDate(plate.submitted_at || plate.created_at)}
+                    </span>
                   </div>
 
                   {/* Authentic Saudi Plate Preview */}
                   <div className={styles.plateStage}>
-                    <div className="w-full max-w-[260px]">
+                    <div className="w-full max-w-[250px]">
                       <PlateVisualizer
                         lettersAr={plate.letters_ar}
                         lettersEn={plate.letters_en}
@@ -317,121 +331,142 @@ export function VerificationsSection({
                     </div>
                   </div>
 
-                  {/* Owner & Plate Specs */}
-                  <div className="rounded-xl border border-[var(--adm-border-subtle)] bg-[var(--adm-surface-soft)] p-3 space-y-2 text-xs">
+                  {/* Owner & Plate Specs — High contrast surface & crisp typography */}
+                  <div className="rounded-xl border border-[var(--line)] bg-[var(--surface)] p-3 space-y-2 text-xs text-[var(--ink-strong)]">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="inline-flex items-center gap-1.5 font-bold">
+                      <span className="inline-flex items-center gap-1.5 font-extrabold text-[var(--ink-strong)]">
                         <User size={13} className="text-[var(--adm-gold)]" />
                         <span>{plate.owner_name || 'عارض لوحة مسجل'}</span>
                       </span>
-                      <span className={`${styles.badge} ${styles[`tone_${kyc.tone}`]}`}>
-                        <ShieldCheck size={11} />
-                        <span>هوية: {kyc.label}</span>
+                      <span
+                        className="text-[11px] font-bold"
+                        style={{
+                          color:
+                            kyc.tone === 'emerald'
+                              ? '#065f46'
+                              : kyc.tone === 'amber'
+                                ? '#92400e'
+                                : '#475569',
+                        }}
+                      >
+                        هوية: {kyc.label}
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between gap-2 opacity-85">
-                      <span>الفئة: {plate.type_name} • {plate.city_name || 'الرياض'}</span>
-                      {plate.owner_phone && (
-                        <span className="inline-flex items-center gap-1 font-mono" dir="ltr">
+                    <div className="flex items-center justify-between gap-2 text-[var(--ink)] font-semibold">
+                      <span>{plate.type_name} • {plate.city_name || 'الرياض'}</span>
+                      {plate.owner_phone ? (
+                        <span className="inline-flex items-center gap-1 font-mono text-[var(--ink-strong)]" dir="ltr">
                           <Phone size={11} />
                           {plate.owner_phone}
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-[var(--muted)]">
+                          {SALE_MODE_LABELS[plate.sale_mode] || plate.sale_mode}
                         </span>
                       )}
                     </div>
 
                     <div className="flex items-center justify-between gap-2 pt-1.5 border-t border-[var(--adm-border-subtle)]">
-                      <span className="opacity-75">رغبة البيع: {SALE_MODE_LABELS[plate.sale_mode] || plate.sale_mode}</span>
+                      <span className="text-[var(--muted)] font-semibold">
+                        {SALE_MODE_LABELS[plate.sale_mode] || plate.sale_mode}
+                      </span>
                       {plate.asking_price_minor ? (
-                        <span className="font-black">
+                        <span className="font-black text-[var(--ink-strong)]">
                           <SarPrice amount={plate.asking_price_minor} />
                         </span>
                       ) : (
-                        <span className="opacity-65">تقييم من الإدارة</span>
+                        <span className="text-[11px] font-bold text-[var(--gold)]">تقييم من الإدارة</span>
                       )}
                     </div>
 
                     {(plate.description || plate.submission_note) && (
-                      <p className="pt-1.5 border-t border-[var(--adm-border-subtle)] text-[11.5px] leading-relaxed opacity-85">
+                      <p className="pt-1.5 border-t border-[var(--adm-border-subtle)] text-[11.5px] leading-relaxed text-[var(--muted)] m-0">
                         {plate.submission_note || plate.description}
                       </p>
                     )}
-                  </div>
 
-                  {/* Ownership Documents */}
-                  <div className="space-y-1.5">
-                    <div className="text-[11px] font-bold opacity-75 flex items-center justify-between">
-                      <span>مستندات الملكية المرفقة ({plate.documents.length})</span>
-                      {plate.documents.length === 0 && (
-                        <span className="text-amber-400 inline-flex items-center gap-1">
-                          <AlertTriangle size={11} />
-                          لم يُرفق مستند بعد
+                    {/* Ownership Documents inside same clean card */}
+                    <div className="flex items-center justify-between gap-2 pt-1.5 border-t border-[var(--adm-border-subtle)] text-[11.5px]">
+                      <span className="font-bold text-[var(--ink-strong)]">
+                        المستندات ({plate.documents.length})
+                      </span>
+                      {plate.documents.length === 0 ? (
+                        <span className="font-bold" style={{ color: '#92400e' }}>
+                          بدون مستند مرفق
                         </span>
+                      ) : (
+                        <div className="flex flex-wrap gap-1.5">
+                          {plate.documents.map((doc, idx) => (
+                            <button
+                              key={doc.id}
+                              type="button"
+                              disabled={docLoadingId === doc.id}
+                              onClick={() =>
+                                openDocumentPreview(
+                                  doc.id,
+                                  `مستند ملكية (${doc.document_type}) — ${plate.letters_ar.join(' ')} ${plate.digits}`,
+                                )
+                              }
+                              className="inline-flex items-center gap-1 text-[11px] font-extrabold text-[var(--gold)] hover:underline cursor-pointer bg-transparent border-0 p-0"
+                            >
+                              <Eye size={12} />
+                              <span>
+                                {docLoadingId === doc.id
+                                  ? 'جارٍ الفتح…'
+                                  : `معاينة #${idx + 1}`}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
                       )}
                     </div>
-                    {plate.documents.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {plate.documents.map((doc, idx) => (
-                          <button
-                            key={doc.id}
-                            type="button"
-                            disabled={docLoadingId === doc.id}
-                            onClick={() =>
-                              openDocumentPreview(
-                                doc.id,
-                                `مستند ملكية (${doc.document_type}) — ${plate.letters_ar.join(' ')} ${plate.digits}`,
-                              )
-                            }
-                            className={styles.btnChip}
-                          >
-                            <Eye size={12} />
-                            <span>
-                              {docLoadingId === doc.id
-                                ? 'جارٍ فك التشفير…'
-                                : `معاينة المستند #${idx + 1} (${formatFileSize(doc.size_bytes)})`}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
                   </div>
-
-                  {/* Latest Verification Event */}
-                  {plate.events.length > 0 && (
-                    <div className="rounded-xl bg-[var(--adm-surface-soft)] px-3 py-2 text-[11px] opacity-80 flex items-start gap-2">
-                      <History size={13} className="shrink-0 mt-0.5 text-[var(--adm-gold)]" />
-                      <div>
-                        <span className="font-bold">آخر قرار:</span> {plate.events[0].reason}
-                      </div>
-                    </div>
-                  )}
                 </div>
 
-                {/* Action Buttons */}
-                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[var(--adm-border-subtle)]">
+                {/* Lightweight Icon + Short Text Action Bar */}
+                <div className="flex items-center justify-between gap-2 pt-2.5 border-t border-[var(--adm-border-subtle)]">
                   <button
                     type="button"
+                    disabled={isApproved}
                     onClick={() => openReviewDrawer(plate, 'APPROVED')}
-                    className={styles.btnSuccess}
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border text-xs font-extrabold transition-all cursor-pointer disabled:opacity-45 disabled:cursor-default"
+                    style={{
+                      borderColor: isApproved ? 'var(--line)' : 'rgba(5, 150, 105, 0.35)',
+                      background: isApproved ? 'transparent' : 'rgba(16, 185, 129, 0.08)',
+                      color: '#065f46',
+                    }}
+                    title={isApproved ? 'هذه اللوحة معتمدة بالفعل' : 'قبول واعتماد اللوحة'}
                   >
                     <CheckCircle2 size={14} />
-                    <span>قبول واعتماد</span>
+                    <span>{isApproved ? 'معتمدة' : 'قبول'}</span>
                   </button>
+
                   <button
                     type="button"
+                    disabled={isChangesReq}
                     onClick={() => openReviewDrawer(plate, 'CHANGES_REQUIRED')}
-                    className={styles.btnSecondary}
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border border-[var(--line)] bg-transparent hover:bg-[var(--surface)] text-xs font-extrabold text-[var(--ink-strong)] transition-all cursor-pointer disabled:opacity-45 disabled:cursor-default"
+                    title="طلب استكمال البيانات أو المستندات"
                   >
                     <Clock size={14} />
-                    <span>طلب استكمال</span>
+                    <span>استكمال</span>
                   </button>
+
                   <button
                     type="button"
+                    disabled={isRejected}
                     onClick={() => openReviewDrawer(plate, 'REJECTED')}
-                    className={styles.btnDanger}
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border text-xs font-extrabold transition-all cursor-pointer disabled:opacity-45 disabled:cursor-default"
+                    style={{
+                      borderColor: isRejected ? 'var(--line)' : 'rgba(225, 29, 72, 0.3)',
+                      background: isRejected ? 'transparent' : 'rgba(225, 29, 72, 0.06)',
+                      color: '#be123c',
+                    }}
+                    title={isRejected ? 'هذه اللوحة مرفوضة بالفعل' : 'رفض الطلب'}
                   >
                     <XCircle size={14} />
-                    <span>رفض الطلب</span>
+                    <span>{isRejected ? 'مرفوضة' : 'رفض'}</span>
                   </button>
                 </div>
               </article>
@@ -506,7 +541,7 @@ export function VerificationsSection({
               {decisionStatus === 'APPROVED' && (
                 <div className="rounded-2xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-4 space-y-4">
                   <div className="text-xs font-black flex items-center gap-1.5 text-[var(--adm-gold)]">
-                    <Sparkles size={14} />
+                    <CheckCircle2 size={14} />
                     <span>خيارات النشر الفوري بعد الاعتماد</span>
                   </div>
 

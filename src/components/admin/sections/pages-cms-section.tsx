@@ -3,14 +3,13 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import {
-  CheckCircle2,
   Edit3,
   ExternalLink,
   FileText,
   HelpCircle,
   MapPin,
   Plus,
-  Sparkles,
+  RotateCcw,
   Trash2,
   X,
 } from 'lucide-react';
@@ -100,6 +99,7 @@ export function PagesCmsSection({ data, onNotify, onRequireMfa, onRefresh }: Pag
   const [cityNameAr, setCityNameAr] = useState('');
   const [cityNameEn, setCityNameEn] = useState('');
   const [cityRegionId, setCityRegionId] = useState(data.regions[0]?.id ?? '');
+  const [deletingFaqId, setDeletingFaqId] = useState<string | null>(null);
 
   function openPageEditor(slug: string, fallbackTitle = '', fallbackBody = '') {
     const existing: AdminCmsPageRecord | undefined = data.cmsPages.find((p) => p.slug === slug);
@@ -209,8 +209,10 @@ export function PagesCmsSection({ data, onNotify, onRequireMfa, onRefresh }: Pag
     onRefresh();
   }
 
-  async function deleteFaq(id: string) {
-    if (!window.confirm('هل تريد حذف هذا السؤال الشائع من الموقع؟')) return;
+  async function confirmDeleteFaq() {
+    if (!deletingFaqId) return;
+    const id = deletingFaqId;
+    setDeletingFaqId(null);
     setBusy(true);
     const res = await callAdminManage({ action: 'faq.delete', id, reason: 'حذف سؤال شائع من الإدارة' });
     setBusy(false);
@@ -341,13 +343,17 @@ export function PagesCmsSection({ data, onNotify, onRequireMfa, onRefresh }: Pag
         )}
 
         {subTab === 'FAQS' && (
-          <div className="flex items-center gap-2">
-            {data.faqs.length === 0 && (
-              <button type="button" disabled={busy} className={styles.btnSecondary} onClick={seedDefaultFaqs}>
-                <Sparkles size={14} />
-                <span>استيراد الـ 14 سؤالاً الافتراضية</span>
-              </button>
-            )}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              disabled={busy}
+              onClick={seedDefaultFaqs}
+              className="inline-flex items-center gap-1.5 px-2 py-1 text-xs font-extrabold text-[var(--gold)] hover:opacity-80 cursor-pointer bg-transparent border-0"
+              title="استيراد واستعادة الأسئلة الشائعة الافتراضية في قاعدة البيانات"
+            >
+              <RotateCcw size={13} />
+              <span>استيراد الأسئلة الافتراضية</span>
+            </button>
             <button type="button" className={styles.btnPrimary} onClick={() => openFaqEditor()}>
               <Plus size={15} />
               <span>إضافة سؤال شائع</span>
@@ -365,87 +371,116 @@ export function PagesCmsSection({ data, onNotify, onRequireMfa, onRefresh }: Pag
 
       {/* TAB 1: CMS PAGES */}
       {subTab === 'PAGES' && (
-        <div className={styles.cardsGrid}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {CORE_PAGES.map((core) => {
             const dbRow = data.cmsPages.find((p) => p.slug === core.slug);
             const isPublished = dbRow ? dbRow.published : false;
 
             return (
               <article key={core.slug} className={styles.itemCard}>
-                <div className="space-y-2.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-xs opacity-75" dir="ltr">
-                      /{core.slug}
-                    </span>
-                    <span
-                      className={`${styles.badge} ${
-                        isPublished ? styles.tone_emerald : styles.tone_amber
-                      }`}
-                    >
-                      {isPublished ? 'منشورة ومعتمدة بالقاعدة' : 'تعمل بالنص الافتراضي'}
-                    </span>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <div className="flex items-center flex-wrap gap-2">
+                      <h3 className="text-[15px] font-black m-0 text-[var(--ink-strong)]">
+                        {dbRow?.title_ar || core.title}
+                      </h3>
+                      <span className="text-[var(--muted)] opacity-40">•</span>
+                      <span
+                        className="text-xs font-extrabold"
+                        style={{ color: isPublished ? '#065f46' : '#92400e' }}
+                      >
+                        {isPublished ? 'منشورة ومعتمدة' : 'النص الافتراضي'}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center flex-wrap gap-2 text-[11.5px] text-[var(--muted)]">
+                      <span className="font-mono opacity-80" dir="ltr">
+                        {core.route}
+                      </span>
+                      {dbRow?.updated_at && (
+                        <>
+                          <span className="opacity-40">•</span>
+                          <span>آخر تحديث: {formatAdminDate(dbRow.updated_at)}</span>
+                        </>
+                      )}
+                      {core.slug === 'auction-policy' && (
+                        <>
+                          <span className="opacity-40">•</span>
+                          <span className="font-extrabold" style={{ color: '#065f46' }}>
+                            مرتبطة بتوقيع الشروط الإلزامي للمزايدين
+                          </span>
+                        </>
+                      )}
+                    </div>
                   </div>
 
-                  <h3 className="text-base font-black m-0">{dbRow?.title_ar || core.title}</h3>
-                  <p className="text-xs opacity-75 line-clamp-3 leading-relaxed m-0">
-                    {dbRow?.body_ar || core.defaultBody}
-                  </p>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      className={styles.iconBtn}
+                      onClick={() => openPageEditor(core.slug, core.title, core.defaultBody)}
+                      title="تحرير المحتوى والنشر"
+                      aria-label={`تحرير ${dbRow?.title_ar || core.title}`}
+                    >
+                      <Edit3 size={15} />
+                    </button>
 
-                  {core.slug === 'auction-policy' && (
-                    <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-[11px] flex items-center gap-1.5 text-emerald-400">
-                      <CheckCircle2 size={13} />
-                      <span>مرتبطة بتوقيع الشروط الإلزامي لتسجيل المزايدين</span>
-                    </div>
-                  )}
-
-                  {dbRow?.updated_at && (
-                    <div className="text-[11px] opacity-60">آخر تحديث: {formatAdminDate(dbRow.updated_at)}</div>
-                  )}
+                    <Link
+                      href={core.route}
+                      target="_blank"
+                      className={styles.iconBtn}
+                      title="معاينة حية في الموقع"
+                      aria-label={`معاينة ${dbRow?.title_ar || core.title}`}
+                    >
+                      <ExternalLink size={15} />
+                    </Link>
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-2 pt-2.5 border-t border-[var(--adm-border-subtle)]">
-                  <button
-                    type="button"
-                    className={styles.btnPrimary}
-                    onClick={() => openPageEditor(core.slug, core.title, core.defaultBody)}
-                  >
-                    <Edit3 size={14} />
-                    <span>تحرير المحتوى والنشر</span>
-                  </button>
-
-                  <Link href={core.route} target="_blank" className={styles.btnSecondary}>
-                    <span>معاينة حية</span>
-                    <ExternalLink size={13} />
-                  </Link>
-                </div>
+                <p className="text-xs text-[var(--muted)] line-clamp-2 leading-relaxed m-0 pt-2 border-t border-[var(--adm-border-subtle)]">
+                  {dbRow?.body_ar || core.defaultBody}
+                </p>
               </article>
             );
           })}
 
           {customPages.map((custom) => (
             <article key={custom.slug} className={styles.itemCard}>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs opacity-75" dir="ltr">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1 space-y-1">
+                  <div className="flex items-center flex-wrap gap-2">
+                    <h3 className="text-[15px] font-black m-0 text-[var(--ink-strong)]">
+                      {custom.title_ar}
+                    </h3>
+                    <span className="text-[var(--muted)] opacity-40">•</span>
+                    <span
+                      className="text-xs font-extrabold"
+                      style={{ color: custom.published ? '#065f46' : '#64748b' }}
+                    >
+                      {custom.published ? 'منشورة' : 'مسودة'}
+                    </span>
+                  </div>
+                  <div className="text-[11.5px] text-[var(--muted)] font-mono opacity-80" dir="ltr">
                     /{custom.slug}
-                  </span>
-                  <span className={`${styles.badge} ${custom.published ? styles.tone_emerald : styles.tone_slate}`}>
-                    {custom.published ? 'منشورة' : 'مسودة'}
-                  </span>
+                  </div>
                 </div>
-                <h3 className="text-base font-black m-0">{custom.title_ar}</h3>
-                <p className="text-xs opacity-75 line-clamp-3 m-0">{custom.body_ar}</p>
+
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    className={styles.iconBtn}
+                    onClick={() => openPageEditor(custom.slug, custom.title_ar, custom.body_ar)}
+                    title="تعديل الصفحة"
+                    aria-label={`تعديل ${custom.title_ar}`}
+                  >
+                    <Edit3 size={15} />
+                  </button>
+                </div>
               </div>
-              <div className="pt-2.5 border-t border-[var(--adm-border-subtle)]">
-                <button
-                  type="button"
-                  className={styles.btnSecondary}
-                  onClick={() => openPageEditor(custom.slug, custom.title_ar, custom.body_ar)}
-                >
-                  <Edit3 size={14} />
-                  <span>تعديل الصفحة</span>
-                </button>
-              </div>
+
+              <p className="text-xs text-[var(--muted)] line-clamp-2 leading-relaxed m-0 pt-2 border-t border-[var(--adm-border-subtle)]">
+                {custom.body_ar}
+              </p>
             </article>
           ))}
         </div>
@@ -457,12 +492,17 @@ export function PagesCmsSection({ data, onNotify, onRequireMfa, onRefresh }: Pag
           {data.faqs.length === 0 ? (
             <div className={styles.emptyBox}>
               <HelpCircle size={30} className="mx-auto mb-2 opacity-70" />
-              <p className="text-sm font-bold">صفحة الأسئلة الشائعة تعرض حالياً الدليل الافتراضي (14 سؤالاً)</p>
+              <p className="text-sm font-bold">صفحة الأسئلة الشائعة تعرض حالياً الدليل الافتراضي</p>
               <p className="mt-1 text-xs max-w-lg mx-auto">
-                اضغط على «استيراد الـ 14 سؤالاً الافتراضية» لنسخها إلى قاعدة البيانات وتعديل أي سؤال أو إضافة أسئلة جديدة بحرية كاملة.
+                اضغط على «استيراد الأسئلة الافتراضية» لنسخها إلى قاعدة البيانات وتعديل أي سؤال أو إضافة أسئلة جديدة بحرية كاملة.
               </p>
-              <button type="button" disabled={busy} className={`${styles.btnPrimary} mt-4`} onClick={seedDefaultFaqs}>
-                <Sparkles size={15} />
+              <button
+                type="button"
+                disabled={busy}
+                onClick={seedDefaultFaqs}
+                className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-extrabold text-[var(--gold)] hover:opacity-80 cursor-pointer bg-transparent border-0"
+              >
+                <RotateCcw size={14} />
                 <span>استيراد الأسئلة الافتراضية للتحكم بها الآن</span>
               </button>
             </div>
@@ -485,25 +525,40 @@ export function PagesCmsSection({ data, onNotify, onRequireMfa, onRefresh }: Pag
                       <tr key={faq.id}>
                         <td className="font-mono font-bold">{faq.sort_order}</td>
                         <td>
-                          <span className={`${styles.badge} ${styles.tone_gold}`}>{catLabel}</span>
+                          <span className="text-xs font-extrabold text-[var(--gold)]">{catLabel}</span>
                         </td>
                         <td>
                           <div className="font-bold text-xs">{faq.question_ar}</div>
                           <div className="text-[11px] opacity-70 line-clamp-1 mt-0.5">{faq.answer_ar}</div>
                         </td>
                         <td>
-                          <span className={`${styles.badge} ${faq.published ? styles.tone_emerald : styles.tone_slate}`}>
+                          <span
+                            className="text-xs font-extrabold"
+                            style={{ color: faq.published ? '#065f46' : '#64748b' }}
+                          >
                             {faq.published ? 'منشور' : 'مخفي'}
                           </span>
                         </td>
                         <td>
                           <div className="flex items-center gap-1.5">
-                            <button type="button" className={styles.btnChip} onClick={() => openFaqEditor(faq)}>
-                              <Edit3 size={12} />
-                              <span>تعديل</span>
+                            <button
+                              type="button"
+                              className={styles.iconBtn}
+                              onClick={() => openFaqEditor(faq)}
+                              title="تعديل السؤال"
+                              aria-label="تعديل السؤال"
+                            >
+                              <Edit3 size={14} />
                             </button>
-                            <button type="button" className={styles.btnDanger} onClick={() => deleteFaq(faq.id)}>
-                              <Trash2 size={12} />
+                            <button
+                              type="button"
+                              className={styles.iconBtn}
+                              onClick={() => setDeletingFaqId(faq.id)}
+                              title="حذف السؤال"
+                              aria-label="حذف السؤال"
+                              style={{ color: '#e11d48' }}
+                            >
+                              <Trash2 size={14} />
                             </button>
                           </div>
                         </td>
@@ -541,11 +596,16 @@ export function PagesCmsSection({ data, onNotify, onRequireMfa, onRefresh }: Pag
                   </div>
                   <button
                     type="button"
+                    role="switch"
+                    aria-checked={pt.active}
                     disabled={busy}
                     onClick={() => togglePlateType(pt.id, !pt.active)}
-                    className={pt.active ? styles.btnSuccess : styles.btnSecondary}
+                    className={`${styles.engravedToggle} ${pt.active ? styles.engravedToggleActive : ''}`}
                   >
-                    {pt.active ? 'مفعّلة بالموقع' : 'متوقفة — اضغط للتفعيل'}
+                    <span className={styles.engravedToggleLabel}>{pt.active ? 'مفعّلة' : 'متوقفة'}</span>
+                    <span className={styles.engravedToggleTrack} aria-hidden="true">
+                      <span className={styles.engravedToggleThumb} />
+                    </span>
                   </button>
                 </div>
               ))}
@@ -573,11 +633,16 @@ export function PagesCmsSection({ data, onNotify, onRequireMfa, onRefresh }: Pag
                   </div>
                   <button
                     type="button"
+                    role="switch"
+                    aria-checked={city.active}
                     disabled={busy}
                     onClick={() => toggleCityActive(city.id, city.name_ar, city.name_en, !city.active)}
-                    className={styles.btnChip}
+                    className={`${styles.engravedToggle} ${city.active ? styles.engravedToggleActive : ''}`}
                   >
-                    {city.active ? 'نشطة ✓' : 'مخفية'}
+                    <span className={styles.engravedToggleLabel}>{city.active ? 'نشطة' : 'مخفية'}</span>
+                    <span className={styles.engravedToggleTrack} aria-hidden="true">
+                      <span className={styles.engravedToggleThumb} />
+                    </span>
                   </button>
                 </div>
               ))}
@@ -814,6 +879,33 @@ export function PagesCmsSection({ data, onNotify, onRequireMfa, onRefresh }: Pag
               </button>
               <button type="button" disabled={busy} className={styles.btnPrimary} onClick={createCity}>
                 إضافة المدينة
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Delete FAQ Confirmation Modal */}
+      {deletingFaqId && (
+        <div
+          className={styles.modalCenter}
+          role="dialog"
+          aria-modal="true"
+          aria-label="تأكيد حذف السؤال الشائع"
+          onClick={() => setDeletingFaqId(null)}
+        >
+          <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-base font-black m-0 text-rose-500">حذف السؤال الشائع</h3>
+            <p className="text-xs text-[var(--muted)] mt-2 mb-5 leading-relaxed">
+              هل أنت متأكد من حذف هذا السؤال الشائع من الموقع؟ سيتم توثيق هذا الإجراء في سجل التدقيق الإداري.
+            </p>
+            <div className="flex items-center justify-end gap-2">
+              <button type="button" className={styles.btnSecondary} onClick={() => setDeletingFaqId(null)}>
+                تراجع
+              </button>
+              <button type="button" disabled={busy} className={styles.btnDanger} onClick={confirmDeleteFaq}>
+                <Trash2 size={14} />
+                <span>تأكيد الحذف</span>
               </button>
             </div>
           </div>

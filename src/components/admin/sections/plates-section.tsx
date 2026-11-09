@@ -327,21 +327,14 @@ export function PlatesSection({
         <div className={styles.cardsGrid}>
           {filteredPlates.map((plate) => {
             const lst = LISTING_LABELS[plate.listing_status] ?? { label: plate.listing_status, tone: 'slate' as const };
-            const vst = VERIFICATION_LABELS[plate.verification_status] ?? {
-              label: plate.verification_status,
-              tone: 'slate' as const,
-            };
             const isBusy = busyId === plate.id;
 
             return (
               <article key={plate.id} className={styles.itemCard}>
                 <div className="space-y-3">
-                  {/* Top Badges + Quick Star & Preview */}
+                  {/* Top Badge (Listing Status Only) + Quick Star & Preview */}
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className={`${styles.badge} ${styles[`tone_${lst.tone}`]}`}>{lst.label}</span>
-                      <span className={`${styles.badge} ${styles[`tone_${vst.tone}`]}`}>{vst.label}</span>
-                    </div>
+                    <span className={`${styles.badge} ${styles[`tone_${lst.tone}`]}`}>{lst.label}</span>
 
                     <div className="flex items-center gap-1">
                       <button
@@ -389,22 +382,14 @@ export function PlatesSection({
                     </div>
                   </div>
 
-                  {/* Specs & Price */}
-                  <div className="flex items-center justify-between gap-2 text-xs">
-                    <div>
-                      <div className="font-bold">
-                        {plate.type_name} • {plate.city_name || 'الرياض'}
-                      </div>
-                      <div className="opacity-70 mt-0.5">
-                        {SALE_MODE_LABELS[plate.sale_mode] || plate.sale_mode} • المالك: {plate.owner_name || 'FBS'}
-                      </div>
-                    </div>
-                    <div className="text-end">
-                      <div className="text-[11px] opacity-65">السعر المعروض</div>
-                      <div className="text-sm font-black">
-                        {plate.asking_price_minor ? <SarPrice amount={plate.asking_price_minor} /> : 'مزاد'}
-                      </div>
-                    </div>
+                  {/* Simplified Specs & Price */}
+                  <div className="flex items-center justify-between gap-2 text-xs pt-0.5">
+                    <span className="font-extrabold text-[var(--ink-strong)]">
+                      {plate.type_name} • {plate.city_name || 'الرياض'}
+                    </span>
+                    <strong className="text-sm font-black text-[var(--ink-strong)]">
+                      {plate.asking_price_minor ? <SarPrice amount={plate.asking_price_minor} /> : 'مزاد'}
+                    </strong>
                   </div>
 
                   {plate.active_auction_id && (
@@ -421,12 +406,17 @@ export function PlatesSection({
                   )}
                 </div>
 
-                {/* Full CRUD Actions Bar */}
-                <div className="flex items-center justify-between gap-1.5 flex-wrap pt-2.5 border-t border-[var(--adm-border-subtle)]">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <button type="button" className={styles.btnSecondary} onClick={() => openEditDrawer(plate)}>
-                      <Edit3 size={13} />
-                      <span>تعديل</span>
+                {/* Minimal Icon-Only CRUD Actions Bar */}
+                <div className={`flex items-center justify-between gap-1.5 pt-2.5 ${styles.engravedDivider}`}>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => openEditDrawer(plate)}
+                      title="تعديل بيانات اللوحة"
+                      aria-label="تعديل بيانات اللوحة"
+                      className="w-8 h-8 rounded-lg inline-flex items-center justify-center text-[var(--ink-strong)] hover:bg-black/5 hover:text-[var(--gold)] transition-colors cursor-pointer"
+                    >
+                      <Edit3 size={15} />
                     </button>
 
                     {plate.listing_status === 'PUBLISHED' ? (
@@ -434,11 +424,11 @@ export function PlatesSection({
                         type="button"
                         disabled={isBusy}
                         onClick={() => quickToggle(plate, { listingStatus: 'DRAFT' }, 'إخفاء مؤقت للوحة من المتجر')}
-                        className={styles.btnChip}
                         title="إخفاء مؤقت من الموقع"
+                        aria-label="إخفاء مؤقت من الموقع"
+                        className="w-8 h-8 rounded-lg inline-flex items-center justify-center text-[var(--muted)] hover:bg-black/5 hover:text-[var(--ink-strong)] transition-colors cursor-pointer"
                       >
-                        <EyeOff size={13} />
-                        <span>إخفاء</span>
+                        <EyeOff size={15} />
                       </button>
                     ) : (
                       <button
@@ -449,11 +439,11 @@ export function PlatesSection({
                             ? quickToggle(plate, { listingStatus: 'PUBLISHED' }, 'إعادة نشر اللوحة في الموقع')
                             : openEditDrawer(plate)
                         }
-                        className={styles.btnChip}
                         title="نشر في الموقع"
+                        aria-label="نشر في الموقع"
+                        className="w-8 h-8 rounded-lg inline-flex items-center justify-center text-[var(--muted)] hover:bg-black/5 hover:text-emerald-600 transition-colors cursor-pointer"
                       >
-                        <Eye size={13} />
-                        <span>نشر</span>
+                        <Eye size={15} />
                       </button>
                     )}
 
@@ -461,11 +451,11 @@ export function PlatesSection({
                       <button
                         type="button"
                         onClick={() => onNavigate('auctions', { createAuctionForPlateId: plate.id })}
-                        className={styles.btnChip}
                         title="إنشاء مزاد لهذه اللوحة"
+                        aria-label="إنشاء مزاد لهذه اللوحة"
+                        className="w-8 h-8 rounded-lg inline-flex items-center justify-center text-[var(--muted)] hover:bg-black/5 hover:text-[var(--gold)] transition-colors cursor-pointer"
                       >
-                        <Gavel size={13} />
-                        <span>مزاد</span>
+                        <Gavel size={15} />
                       </button>
                     )}
                   </div>
@@ -477,11 +467,11 @@ export function PlatesSection({
                       setArchiveOnly(Boolean(plate.active_auction_id));
                       setDeleteReason('حذف اللوحة وإزالتها من الموقع بأمر الإدارة');
                     }}
-                    className={styles.btnDanger}
                     title="حذف أو أرشفة اللوحة"
+                    aria-label="حذف أو أرشفة اللوحة"
+                    className="w-8 h-8 rounded-lg inline-flex items-center justify-center text-rose-500/80 hover:bg-rose-500/10 hover:text-rose-600 transition-colors cursor-pointer"
                   >
-                    <Trash2 size={13} />
-                    <span>حذف</span>
+                    <Trash2 size={15} />
                   </button>
                 </div>
               </article>
@@ -490,10 +480,16 @@ export function PlatesSection({
         </div>
       )}
 
-      {/* Add / Edit Plate Studio Drawer */}
+      {/* Add / Edit Plate Centered Wide Studio Modal */}
       {drawerOpen && (
-        <div className={styles.overlay} role="dialog" aria-modal="true" aria-label="استوديو إعداد اللوحة">
-          <div className={styles.drawer}>
+        <div
+          className={styles.overlay}
+          role="dialog"
+          aria-modal="true"
+          aria-label="استوديو إعداد اللوحة"
+          onClick={() => setDrawerOpen(false)}
+        >
+          <div className={styles.drawer} onClick={(e) => e.stopPropagation()}>
             <div className={styles.drawerHeader}>
               <div>
                 <h3 className="text-base font-black m-0">
@@ -696,11 +692,11 @@ export function PlatesSection({
             </div>
 
             <div className={styles.drawerFooter}>
-              <button type="button" className={styles.btnSecondary} onClick={() => setDrawerOpen(false)}>
-                إلغاء
-              </button>
               <button type="button" disabled={saving} className={styles.btnPrimary} onClick={savePlate}>
                 {saving ? 'جارٍ الحفظ…' : editingPlate ? 'حفظ تعديلات اللوحة' : 'إضافة ونشر اللوحة'}
+              </button>
+              <button type="button" className={styles.btnSecondary} onClick={() => setDrawerOpen(false)}>
+                إلغاء
               </button>
             </div>
           </div>
@@ -709,40 +705,92 @@ export function PlatesSection({
 
       {/* Delete / Archive Confirmation Modal */}
       {deletingPlate && (
-        <div className={styles.modalCenter} role="dialog" aria-modal="true" aria-label="تأكيد حذف اللوحة">
-          <div className={styles.modalBox}>
-            <h3 className="text-base font-black m-0 text-rose-400">حذف أو إزالة اللوحة من المنصة</h3>
-            <p className="text-xs opacity-80 mt-2 leading-relaxed">
-              أنت على وشك إزالة اللوحة <strong>({deletingPlate.letters_ar.join(' ')} {deletingPlate.digits})</strong>. إذا كانت اللوحة غير مرتبطة بمزايدات سابقة سيتم حذفها نهائياً، وإذا كان لها سجل رقابي سيتم إخفاؤها وأرشفتها فوراً مع إلغاء أي مزاد غير مكتمل.
-            </p>
+        <div
+          className={styles.modalCenter}
+          role="dialog"
+          aria-modal="true"
+          aria-label="تأكيد حذف اللوحة"
+          onClick={() => setDeletingPlate(null)}
+        >
+          <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <div>
+                <h3 className="text-base font-black m-0 text-[var(--ink-strong)]">
+                  حذف أو أرشفة اللوحة
+                </h3>
+                <p className="text-xs text-[var(--muted)] m-0 mt-1">
+                  اختر طريقة الإزالة واكتب السبب لتوثيقه في سجل الإدارة.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDeletingPlate(null)}
+                className={styles.btnChip}
+                aria-label="إغلاق النافذة"
+              >
+                <X size={14} />
+              </button>
+            </div>
 
-            <div className="my-4 space-y-3">
-              <label className={styles.checkboxRow}>
-                <input
-                  type="checkbox"
-                  checked={archiveOnly}
-                  onChange={(e) => setArchiveOnly(e.target.checked)}
+            {/* Plate Preview */}
+            <div className={`${styles.plateStage} mb-4`}>
+              <div className="w-full max-w-[225px]">
+                <PlateVisualizer
+                  lettersAr={deletingPlate.letters_ar}
+                  lettersEn={deletingPlate.letters_en}
+                  numbers={deletingPlate.digits}
+                  plateType={deletingPlate.type_name}
+                  compact
                 />
-                <span>أرشفة وإخفاء من الموقع بدلاً من الحذف النهائي</span>
-              </label>
+              </div>
+            </div>
+
+            <div className="mb-4 space-y-3">
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setArchiveOnly(false)}
+                  className={`${styles.filterPill} ${!archiveOnly ? styles.filterPillActive : ''}`}
+                >
+                  حذف نهائي
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setArchiveOnly(true)}
+                  className={`${styles.filterPill} ${archiveOnly ? styles.filterPillActive : ''}`}
+                >
+                  أرشفة وإخفاء فقط
+                </button>
+              </div>
 
               <div className={styles.field}>
-                <label className={styles.fieldLabel}>سبب الحذف (يُوثّق في سجل التدقيق)</label>
+                <label className={styles.fieldLabel}>سبب الإجراء</label>
                 <input
                   type="text"
                   value={deleteReason}
                   onChange={(e) => setDeleteReason(e.target.value)}
                   className={styles.input}
+                  autoFocus
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2">
-              <button type="button" className={styles.btnSecondary} onClick={() => setDeletingPlate(null)}>
+            <div className={`flex items-center gap-2.5 pt-3 ${styles.engravedDivider}`}>
+              <button
+                type="button"
+                className={`${styles.btnSecondary} flex-1`}
+                onClick={() => setDeletingPlate(null)}
+              >
                 تراجع
               </button>
-              <button type="button" disabled={deleting} className={styles.btnDanger} onClick={confirmDeletePlate}>
-                {deleting ? 'جارٍ التنفيذ…' : archiveOnly ? 'تأكيد الأرشفة والإخفاء' : 'حذف اللوحة نهائياً'}
+              <button
+                type="button"
+                disabled={deleting}
+                className={`${styles.btnDanger} flex-1`}
+                onClick={confirmDeletePlate}
+              >
+                <Trash2 size={14} />
+                <span>{deleting ? 'جارٍ التنفيذ…' : archiveOnly ? 'تأكيد الأرشفة' : 'حذف اللوحة'}</span>
               </button>
             </div>
           </div>

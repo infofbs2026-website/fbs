@@ -5,7 +5,7 @@ const db = vi.hoisted(() => ({ createAdminClient: vi.fn() }));
 vi.mock('@/lib/auth', () => auth);
 vi.mock('@/lib/supabase/server', () => db);
 vi.mock('next/navigation', () => ({ redirect: () => { throw new Error('REDIRECT_TO_LOGIN'); }, useRouter: () => ({ refresh: vi.fn() }) }));
-import IdentitiesPage from '@/app/admin/identities/page';
+import IdentitiesPage from '@/app/fbs-console/identities/page';
 
 beforeEach(() => {
   vi.resetAllMocks();

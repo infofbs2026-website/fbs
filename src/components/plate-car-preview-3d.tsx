@@ -14,7 +14,7 @@ import {
   Moon,
   RectangleHorizontal,
   Sun,
-  Sparkles
+  Car as SparklesIcon
 } from 'lucide-react';
 import { PlateFace } from '@/components/plate-face';
 import { getPlateGeometry, normalizePlateType, parsePlateData } from '@/lib/plate-data';
@@ -418,7 +418,7 @@ function PlateCarPreviewScene({
               <div className="rounded-2xl border border-white/10 bg-[#091224]/90 p-2 sm:p-3 shadow-2xl backdrop-blur-xl">
                 <div className="mb-2 flex items-center justify-between px-1">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-gold-light">
-                    <Sparkles size={13} className="text-gold" />
+                    <Car size={13} className="text-gold" />
                     <span>جرّب لوحات مميزة أخرى على السيارة:</span>
                   </div>
                   <button

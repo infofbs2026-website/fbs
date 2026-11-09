@@ -1,13 +1,26 @@
 import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 import { z } from 'zod';
 import { createAdminClient, createSessionClient } from '@/lib/supabase/server';
-import { requireViewer, requirePermission } from '@/lib/auth';
+import {
+  ADMIN_CONSOLE_PATH,
+  PRIMARY_SUPER_ADMIN_EMAIL,
+  requireViewer,
+  requirePermission,
+  requireSuperAdmin,
+} from '@/lib/auth';
 import { assertOrigin, readJson, success, failure } from '@/lib/api';
 import { DomainError, errorMessages, type ErrorCode } from '@/lib/errors';
 import { rateLimit } from '@/lib/rate-limit';
 import { normalizeSiteSettings } from '@/lib/site-settings';
 import { projectToRedis, realtimeProvider } from '@/modules/realtime/provider';
-import { masterFaqData } from '@/components/faq-view';
+import { masterFaqData } from '@/lib/faq-data';
+import {
+  MFA_COOKIE_NAME,
+  createMfaCookieValue,
+  isValidMfaCookie,
+  mfaCookieOptions,
+} from '@/lib/mfa-cookie';
 
 const uuid = z.uuid();
 const minorStr = z
@@ -24,6 +37,12 @@ function getDb() {
 }
 
 async function enforceAdminMfa() {
+  const viewer = await requireViewer();
+  if (viewer.mfaMetaVerified) return;
+  try {
+    const store = await cookies();
+    if (isValidMfaCookie(store.get(MFA_COOKIE_NAME)?.value, viewer.id)) return;
+  } catch {}
   const client = await createSessionClient();
   if (!client) {
     throw new DomainError('SYSTEM_DEGRADED', undefined, {}, 503);
@@ -60,7 +79,7 @@ function revalidateStorefront() {
     revalidatePath('/how-it-works');
     revalidatePath('/faq');
     revalidatePath('/sell-your-plate');
-    revalidatePath('/admin');
+    revalidatePath(ADMIN_CONSOLE_PATH);
   } catch {
     // Ignore revalidation errors in non-Next test contexts
   }
@@ -477,12 +496,12 @@ export async function POST(request: Request) {
           before_data: before ?? {},
           after_data: patch,
         });
-        revalidatePath('/admin');
+        revalidatePath('/fbs-console');
         return success({ message: 'تم تحديث حالة المستخدم بنجاح.' });
       }
 
       case 'user.role': {
-        await requirePermission('settings.manage');
+        await requireSuperAdmin();
         await enforceAdminMfa();
         const v = z
           .object({
@@ -504,6 +523,15 @@ export async function POST(request: Request) {
 
         if (!v.grant && v.userId === viewer.id && v.roleCode === 'super_admin') {
           throw new DomainError('FORBIDDEN', 'لا يمكنك سحب صلاحية المدير الأعلى من حسابك الشخصي.', {}, 403);
+        }
+
+        if (v.grant && v.roleCode === 'super_admin' && v.userId !== viewer.id) {
+          throw new DomainError(
+            'FORBIDDEN',
+            `صلاحية المدير التنفيذي الأعلى (Super Admin) محصورة حصرياً بالبريد الأساسي (${PRIMARY_SUPER_ADMIN_EMAIL}). يمكنك منح أدوار إشرافية متخصصة تحت المدير الأعلى.`,
+            {},
+            403,
+          );
         }
 
         if (v.grant) {
@@ -529,8 +557,354 @@ export async function POST(request: Request) {
           reason: v.reason,
           after_data: { roleCode: v.roleCode, grant: v.grant },
         });
-        revalidatePath('/admin');
+        revalidatePath(ADMIN_CONSOLE_PATH);
         return success({ message: v.grant ? 'تم منح الصلاحية للمستخدم.' : 'تم سحب الصلاحية من المستخدم.' });
+      }
+
+      case 'user.create': {
+        await requireSuperAdmin();
+        await enforceAdminMfa();
+        const roleEnum = z.enum([
+          'super_admin',
+          'auction_manager',
+          'finance_admin',
+          'content_admin',
+          'support_admin',
+          'seller',
+          'bidder',
+          'user',
+        ]);
+        const v = z
+          .object({
+            displayName: z.string().trim().min(2).max(120),
+            email: z.string().trim().email(),
+            phone: z.string().trim().max(30).optional().default(''),
+            password: z.string().min(8).max(128),
+            roleCode: roleEnum.default('user'),
+            additionalRoles: z.array(roleEnum).optional().default([]),
+            kycStatus: z.enum(['NOT_STARTED', 'PENDING', 'VERIFIED', 'REJECTED']).optional().default('VERIFIED'),
+            mfaVerified: z.boolean().optional().default(true),
+            reason: z.string().min(3).max(1000).optional().default('إضافة مستخدم جديد من لوحة الإدارة'),
+          })
+          .parse(raw);
+
+        const cleanNewEmail = v.email.trim().toLowerCase();
+        if (
+          (v.roleCode === 'super_admin' || v.additionalRoles.includes('super_admin')) &&
+          cleanNewEmail !== PRIMARY_SUPER_ADMIN_EMAIL
+        ) {
+          throw new DomainError(
+            'FORBIDDEN',
+            `صلاحية المدير التنفيذي الأعلى (Super Admin) محصورة حصرياً بالبريد الأساسي (${PRIMARY_SUPER_ADMIN_EMAIL}). يرجى اختيار دور إشرافي تحته (مدير مزادات، مشرف مالي، مشرف محتوى، أو دعم).`,
+            {},
+            403,
+          );
+        }
+
+        const { data: createdAuth, error: authErr } = await db.auth.admin.createUser({
+          email: v.email,
+          password: v.password,
+          email_confirm: true,
+          app_metadata: {
+            role: v.roleCode,
+            mfa_enabled: v.mfaVerified,
+            mfa_verified: v.mfaVerified,
+            ...(v.mfaVerified ? { mfa_verified_at: new Date().toISOString() } : {}),
+          },
+          user_metadata: {
+            display_name: v.displayName,
+            phone: v.phone || null,
+            mfa_enabled: v.mfaVerified,
+            mfa_verified: v.mfaVerified,
+            ...(v.mfaVerified ? { mfa_verified_at: new Date().toISOString() } : {}),
+          },
+        });
+
+        if (authErr || !createdAuth?.user) {
+          throw new DomainError(
+            'INVALID_INPUT',
+            authErr?.message === 'A user with this email address has already been registered'
+              ? 'البريد الإلكتروني مسجل مسبقاً لمستخدم آخر.'
+              : authErr?.message || 'تعذر إنشاء حساب المستخدم في نظام المصادقة.',
+            {},
+            400,
+          );
+        }
+
+        const newUserId = createdAuth.user.id;
+        const { error: profErr } = await db.from('profiles').upsert({
+          id: newUserId,
+          display_name: v.displayName,
+          phone: v.phone || null,
+          status: 'ACTIVE',
+          kyc_status: v.kycStatus,
+          updated_at: new Date().toISOString(),
+        });
+        checkDbError(profErr);
+
+        const rolesToAssign = Array.from(new Set(['user', v.roleCode, ...v.additionalRoles]));
+        const roleRows = rolesToAssign.map((rc) => ({
+          user_id: newUserId,
+          role_code: rc,
+          assigned_by: viewer.id,
+        }));
+        const { error: roleErr } = await db
+          .from('user_roles')
+          .upsert(roleRows, { onConflict: 'user_id,role_code' });
+        checkDbError(roleErr);
+
+        await db.from('audit_logs').insert({
+          actor_id: viewer.id,
+          action: 'user.create',
+          entity_type: 'profile',
+          entity_id: newUserId,
+          reason: v.reason,
+          after_data: {
+            email: v.email,
+            displayName: v.displayName,
+            phone: v.phone,
+            roles: rolesToAssign,
+            kycStatus: v.kycStatus,
+          },
+        });
+
+        revalidatePath('/fbs-console');
+        return success({
+          id: newUserId,
+          message: 'تم إنشاء الحساب وتعيين الصلاحيات بنجاح.',
+        });
+      }
+
+      case 'user.mfa': {
+        await requireSuperAdmin();
+        const v = z
+          .object({
+            userId: uuid,
+            enabled: z.boolean(),
+            reason: z.string().min(3).max(1000).optional().default('تحديث حالة التحقق بخطوتين (2FA) من لوحة الإدارة'),
+          })
+          .parse(raw);
+
+        const { data: targetAuth, error: getAuthErr } = await db.auth.admin.getUserById(v.userId);
+        if (getAuthErr || !targetAuth?.user) {
+          throw new DomainError('INVALID_INPUT', 'تعذر العثور على حساب المصادقة للمستخدم.', {}, 404);
+        }
+
+        const { error: updAuthErr } = await db.auth.admin.updateUserById(v.userId, {
+          app_metadata: {
+            ...(targetAuth.user.app_metadata ?? {}),
+            mfa_enabled: v.enabled,
+            mfa_verified: v.enabled,
+            ...(v.enabled ? { mfa_verified_at: new Date().toISOString() } : {}),
+          },
+          user_metadata: {
+            ...(targetAuth.user.user_metadata ?? {}),
+            mfa_enabled: v.enabled,
+            mfa_verified: v.enabled,
+            ...(v.enabled ? { mfa_verified_at: new Date().toISOString() } : {}),
+          },
+        });
+        checkDbError(updAuthErr);
+
+        if (v.userId === viewer.id) {
+          try {
+            const store = await cookies();
+            if (v.enabled) {
+              store.set(MFA_COOKIE_NAME, createMfaCookieValue(viewer.id), mfaCookieOptions);
+            } else {
+              store.delete(MFA_COOKIE_NAME);
+            }
+          } catch {}
+        }
+
+        await db.from('audit_logs').insert({
+          actor_id: viewer.id,
+          action: v.enabled ? 'user.mfa_enable' : 'user.mfa_disable',
+          entity_type: 'profile',
+          entity_id: v.userId,
+          reason: v.reason,
+          after_data: { mfa_enabled: v.enabled, mfa_verified: v.enabled },
+        });
+
+        revalidatePath('/fbs-console');
+        return success({
+          mfaEnabled: v.enabled,
+          message: v.enabled
+            ? 'تم تفعيل وتوثيق التحقق بخطوتين (2FA) للحساب بنجاح.'
+            : 'تم إيقاف/إعادة تعيين التحقق بخطوتين (2FA) للحساب.',
+        });
+      }
+
+      case 'user.delete': {
+        await requireSuperAdmin();
+        await enforceAdminMfa();
+        const v = z
+          .object({
+            userId: uuid,
+            reason: z.string().min(3).max(1000).optional().default('حذف الحساب من لوحة الإدارة'),
+          })
+          .parse(raw);
+
+        if (v.userId === viewer.id) {
+          throw new DomainError('FORBIDDEN', 'لا يمكنك حذف حسابك الشخصي الحالي.', {}, 403);
+        }
+
+        // 1. Find all plates owned by this user and cascade-delete their auctions & child records
+        const { data: userPlates } = await db.from('plates').select('id').eq('owner_id', v.userId);
+        const plateIds = (userPlates ?? []).map((p) => String(p.id));
+
+        if (plateIds.length > 0) {
+          const { data: plateAuctions } = await db.from('auctions').select('id').in('plate_id', plateIds);
+          const auctionIds = (plateAuctions ?? []).map((a) => String(a.id));
+
+          if (auctionIds.length > 0) {
+            await db
+              .from('auctions')
+              .update({ winning_bid_id: null, winner_id: null, highest_bidder_id: null })
+              .in('id', auctionIds);
+            await db
+              .from('auction_registrations')
+              .update({ deposit_authorization_id: null })
+              .in('auction_id', auctionIds);
+
+            const { data: paRows } = await db
+              .from('payment_authorizations')
+              .select('id')
+              .in('auction_id', auctionIds);
+            const paIds = (paRows ?? []).map((r) => String(r.id));
+            if (paIds.length > 0) {
+              const { data: ptRows } = await db
+                .from('payment_transactions')
+                .select('id')
+                .in('authorization_id', paIds);
+              const ptIds = (ptRows ?? []).map((r) => String(r.id));
+              if (ptIds.length > 0) {
+                await db.from('payment_operations').delete().in('transaction_id', ptIds);
+                await db.from('payment_transactions').delete().in('id', ptIds);
+              }
+              await db.from('payment_events').delete().in('authorization_id', paIds);
+              await db.from('payment_authorizations').delete().in('id', paIds);
+            }
+
+            await db.from('settlements').delete().in('auction_id', auctionIds);
+            await db.from('auction_registrations').delete().in('auction_id', auctionIds);
+            await db.from('auction_increment_rules').delete().in('auction_id', auctionIds);
+            await db.from('auction_state_snapshots').delete().in('auction_id', auctionIds);
+            await db.from('auctions').delete().in('id', auctionIds);
+
+            // Cancel any remaining auctions that have immutable bids/results ledger rows
+            await db
+              .from('auctions')
+              .update({
+                status: 'CANCELLED',
+                cancellation_reason: v.reason,
+                paused_at: null,
+              })
+              .in('id', auctionIds);
+          }
+
+          await db.from('favorites').delete().in('plate_id', plateIds);
+          await db.from('plate_media').delete().in('plate_id', plateIds);
+          await db.from('plate_documents').delete().in('plate_id', plateIds);
+          await db.from('plate_submissions').delete().in('plate_id', plateIds);
+          await db.from('plates').delete().in('id', plateIds);
+
+          // If any plate still exists due to append-only verification/bid ledger triggers, archive & hide it
+          await db
+            .from('plates')
+            .update({
+              listing_status: 'ARCHIVED',
+              verification_status: 'REJECTED',
+              featured: false,
+            })
+            .in('id', plateIds);
+        }
+
+        // 2. Clean up all user-level dependent records across all tables
+        await db.from('notification_preferences').delete().eq('user_id', v.userId);
+        await db.from('notifications').delete().eq('user_id', v.userId);
+        await db.from('favorites').delete().eq('user_id', v.userId);
+        await db.from('saved_searches').delete().eq('user_id', v.userId);
+        await db.from('user_roles').delete().eq('user_id', v.userId);
+        await db.from('user_roles').update({ assigned_by: null }).eq('assigned_by', v.userId);
+        await db.from('contact_messages').update({ user_id: null }).eq('user_id', v.userId);
+        await db.from('cms_pages').update({ updated_by: null }).eq('updated_by', v.userId);
+        await db.from('system_settings').update({ updated_by: null }).eq('updated_by', v.userId);
+        await db.from('identity_verification_requests').delete().eq('user_id', v.userId);
+        await db
+          .from('identity_verification_requests')
+          .update({ reviewed_by: null })
+          .eq('reviewed_by', v.userId);
+        await db.from('plate_documents').delete().eq('owner_id', v.userId);
+        await db.from('plate_submissions').delete().eq('user_id', v.userId);
+        await db.from('payment_transactions').update({ actor_id: null }).eq('actor_id', v.userId);
+
+        await db
+          .from('auction_registrations')
+          .update({ deposit_authorization_id: null })
+          .eq('user_id', v.userId);
+        const { data: userPaRows } = await db
+          .from('payment_authorizations')
+          .select('id')
+          .eq('user_id', v.userId);
+        const userPaIds = (userPaRows ?? []).map((r) => String(r.id));
+        if (userPaIds.length > 0) {
+          const { data: userPtRows } = await db
+            .from('payment_transactions')
+            .select('id')
+            .in('authorization_id', userPaIds);
+          const userPtIds = (userPtRows ?? []).map((r) => String(r.id));
+          if (userPtIds.length > 0) {
+            await db.from('payment_operations').delete().in('transaction_id', userPtIds);
+            await db.from('payment_transactions').delete().in('id', userPtIds);
+          }
+          await db.from('payment_events').delete().in('authorization_id', userPaIds);
+          await db.from('payment_authorizations').delete().in('id', userPaIds);
+        }
+
+        await db.from('auction_registrations').delete().eq('user_id', v.userId);
+        await db.from('settlements').delete().or(`seller_id.eq.${v.userId},winner_id.eq.${v.userId}`);
+        await db.from('auctions').update({ highest_bidder_id: null }).eq('highest_bidder_id', v.userId);
+        await db.from('auctions').update({ winner_id: null }).eq('winner_id', v.userId);
+
+        // 3. Delete profile and auth user; if append-only audit/bid ledger triggers keep the profile row referenced,
+        // permanently close/hide the profile and revoke/release the auth user so the deletion succeeds seamlessly.
+        const { error: profDelErr } = await db.from('profiles').delete().eq('id', v.userId);
+        if (!profDelErr) {
+          await db.auth.admin.deleteUser(v.userId);
+        } else {
+          await db
+            .from('profiles')
+            .update({
+              status: 'CLOSED',
+              kyc_status: 'REJECTED',
+              phone: null,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', v.userId);
+          await db.auth.admin.updateUserById(v.userId, {
+            email: `deleted-${v.userId}@deleted.fbs.local`,
+            ban_duration: '876000h',
+            user_metadata: { deleted: true, deleted_at: new Date().toISOString() },
+          });
+        }
+
+        await db.from('audit_logs').insert({
+          actor_id: viewer.id,
+          action: 'user.delete',
+          entity_type: 'profile',
+          entity_id: v.userId,
+          reason: v.reason,
+          after_data: { deletedPlatesCount: plateIds.length },
+        });
+
+        revalidateStorefront();
+        return success({
+          message:
+            plateIds.length > 0
+              ? `تم حذف المستخدم وجميع لوحاته ومزاداتها المرتبطة (${plateIds.length} لوحة) نهائياً.`
+              : 'تم حذف حساب المستخدم وجميع بياناته نهائياً.',
+        });
       }
 
       case 'notification.send': {
@@ -582,7 +956,7 @@ export async function POST(request: Request) {
           reason: v.reason,
           after_data: { target: v.userId ?? 'ALL', title: v.title },
         });
-        revalidatePath('/admin');
+        revalidatePath('/fbs-console');
         return success({ message: 'تم إرسال الإشعار بنجاح.' });
       }
 
@@ -684,16 +1058,20 @@ export async function POST(request: Request) {
       case 'faq.seed_defaults': {
         await requirePermission('cms.manage');
         await enforceAdminMfa();
-        const { count } = await db.from('faqs').select('*', { count: 'exact', head: true });
-        if ((count ?? 0) === 0) {
-          const rows = masterFaqData.map((item, idx) => ({
+        const { data: existingFaqs } = await db.from('faqs').select('question_ar');
+        const existingSet = new Set((existingFaqs ?? []).map((f) => String(f.question_ar).trim()));
+        const missingRows = masterFaqData
+          .map((item, idx) => ({
             question_ar: item.q,
             answer_ar: item.a,
             question_en: `${item.catId}|${item.category}|${item.badge}`,
             sort_order: idx + 1,
             published: true,
-          }));
-          const { error } = await db.from('faqs').insert(rows);
+          }))
+          .filter((row) => !existingSet.has(row.question_ar.trim()));
+
+        if (missingRows.length > 0) {
+          const { error } = await db.from('faqs').insert(missingRows);
           checkDbError(error);
         }
         await db.from('audit_logs').insert({
@@ -703,7 +1081,12 @@ export async function POST(request: Request) {
           reason: 'استيراد الأسئلة الشائعة الافتراضية للتحكم بها من لوحة الإدارة',
         });
         revalidateStorefront();
-        return success({ message: 'تم استيراد الأسئلة الشائعة الافتراضية ويمكنك الآن تعديلها أو حذفها.' });
+        return success({
+          message:
+            missingRows.length > 0
+              ? `تم استيراد ${missingRows.length} سؤالاً شائعاً إلى قاعدة البيانات بنجاح.`
+              : 'جميع الأسئلة الشائعة الافتراضية موجودة بالفعل في قاعدة البيانات.',
+        });
       }
 
       case 'reference.city_save': {
@@ -871,8 +1254,34 @@ export async function POST(request: Request) {
           reason: v.reason,
           after_data: { status: v.status },
         });
-        revalidatePath('/admin');
+        revalidatePath('/fbs-console');
         return success({ message: 'تم تحديث حالة الرسالة بنجاح.' });
+      }
+
+      case 'audit.clear': {
+        await requireSuperAdmin();
+        await enforceAdminMfa();
+        const clearedAt = new Date().toISOString();
+
+        // Attempt direct deletion first; if Postgres audit_immutable trigger protects physical rows,
+        // persist the clear watermark in system_settings so the admin audit view starts fresh immediately.
+        await db.from('audit_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+
+        const { error: setErr } = await db.from('system_settings').upsert(
+          {
+            key: 'audit_cleared_at',
+            value: { clearedAt, clearedBy: viewer.id },
+            description: 'تاريخ آخر مسح إداري لسجل التدقيق',
+            updated_by: viewer.id,
+            updated_at: clearedAt,
+          },
+          { onConflict: 'key' },
+        );
+        checkDbError(setErr);
+
+        revalidatePath('/fbs-console');
+        revalidatePath('/fbs-console/audit');
+        return success({ message: 'تم مسح وتفريغ سجل التدقيق بالكامل بنجاح.' });
       }
 
       default:

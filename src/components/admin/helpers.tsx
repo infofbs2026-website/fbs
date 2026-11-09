@@ -1,25 +1,25 @@
 export type BadgeTone = 'gold' | 'emerald' | 'amber' | 'rose' | 'sky' | 'slate';
 
 export const VERIFICATION_LABELS: Record<string, { label: string; tone: BadgeTone }> = {
-  DRAFT: { label: 'مسودة أولية', tone: 'slate' },
+  DRAFT: { label: 'مسودة', tone: 'slate' },
   DOCUMENTS_PENDING: { label: 'بانتظار المستندات', tone: 'amber' },
-  SUBMITTED: { label: 'طلب جديد للمراجعة', tone: 'gold' },
-  UNDER_REVIEW: { label: 'قيد التدقيق', tone: 'sky' },
-  CHANGES_REQUIRED: { label: 'مطلوب استكمال', tone: 'amber' },
-  VERIFIED: { label: 'تم التحقق', tone: 'emerald' },
-  APPROVED: { label: 'معتمدة رسمياً', tone: 'emerald' },
+  SUBMITTED: { label: 'طلب جديد', tone: 'gold' },
+  UNDER_REVIEW: { label: 'قيد المراجعة', tone: 'sky' },
+  CHANGES_REQUIRED: { label: 'مطلوب تعديل', tone: 'amber' },
+  VERIFIED: { label: 'موثقة', tone: 'emerald' },
+  APPROVED: { label: 'معتمدة', tone: 'emerald' },
   REJECTED: { label: 'مرفوضة', tone: 'rose' },
 };
 
 export const LISTING_LABELS: Record<string, { label: string; tone: BadgeTone }> = {
-  DRAFT: { label: 'مخفية / مسودة', tone: 'slate' },
-  PUBLISHED: { label: 'منشورة في الموقع', tone: 'emerald' },
-  SOLD: { label: 'تم البيع', tone: 'gold' },
+  DRAFT: { label: 'مسودة', tone: 'slate' },
+  PUBLISHED: { label: 'منشورة', tone: 'emerald' },
+  SOLD: { label: 'مباعة', tone: 'gold' },
   ARCHIVED: { label: 'مؤرشفة', tone: 'rose' },
 };
 
 export const SALE_MODE_LABELS: Record<string, string> = {
-  FIXED_PRICE: 'بيع مباشر (متجر)',
+  FIXED_PRICE: 'بيع مباشر',
   AUCTION: 'مزاد تنافسي',
   AUCTION_WITH_BUY_NOW: 'مزاد + شراء فوري',
 };
@@ -137,7 +137,7 @@ export function formatAdminDate(iso?: string | null): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '—';
   try {
-    return new Intl.DateTimeFormat('ar-SA', {
+    return new Intl.DateTimeFormat('ar-SA-u-nu-latn', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -238,6 +238,7 @@ export function exportRowsToCsv(filename: string, headers: string[], rows: Array
 }
 
 import React from 'react';
+import accountStyles from '@/components/account-dashboard.module.css';
 
 export function EngravedFbsCrest({
   filterId = 'fbs-admin-crest-deboss',
@@ -250,20 +251,23 @@ export function EngravedFbsCrest({
 }) {
   const isLight = tone === 'light';
   return (
-    <div aria-hidden="true" className={className} style={{ pointerEvents: 'none', userSelect: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div aria-hidden="true" className={`${accountStyles.engravedWatermarkWrap} ${className}`}>
       <svg
         viewBox="4 -18 252 168"
-        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+        className={accountStyles.engravedWatermarkSvg}
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
           <filter id={filterId} x="-14%" y="-14%" width="128%" height="132%" colorInterpolationFilters="sRGB">
+            {/* 1. Recessed Groove Base Floor */}
             <feFlood
               floodColor={isLight ? '#C5B9A8' : '#1C3656'}
               floodOpacity={isLight ? '0.68' : '0.72'}
               result="grooveBaseColor"
             />
             <feComposite in="grooveBaseColor" in2="SourceAlpha" operator="in" result="grooveBase" />
+
+            {/* 2. All-Around Sunken Inner Wall Depth */}
             <feMorphology in="SourceAlpha" operator="erode" radius="0.9" result="erodedAlpha" />
             <feComposite in="SourceAlpha" in2="erodedAlpha" operator="out" result="innerPerimeterRaw" />
             <feGaussianBlur in="innerPerimeterRaw" stdDeviation="0.85" result="innerPerimeterBlur" />
@@ -274,49 +278,51 @@ export function EngravedFbsCrest({
             />
             <feComposite in="innerWallColor" in2="innerPerimeterBlur" operator="in" result="innerWallRaw" />
             <feComposite in="innerWallRaw" in2="SourceAlpha" operator="in" result="innerWallDepth" />
-            <feOffset in="SourceAlpha" dx="0" dy="1.6" result="offsetShadow" />
-            <feGaussianBlur in="offsetShadow" stdDeviation="1.15" result="blurShadow" />
+
+            {/* 3. Deep Overhead Inner Cut Shadow */}
+            <feOffset in="SourceAlpha" dx="0" dy={isLight ? '2.4' : '3.4'} result="shiftedDown" />
+            <feComposite in="SourceAlpha" in2="shiftedDown" operator="out" result="topInnerCutRaw" />
+            <feGaussianBlur in="topInnerCutRaw" stdDeviation={isLight ? '1.2' : '1.5'} result="topInnerCutBlur" />
             <feFlood
-              floodColor={isLight ? '#261F17' : '#01050A'}
-              floodOpacity={isLight ? '0.52' : '0.96'}
-              result="shadowColor"
+              floodColor={isLight ? '#52432F' : '#081424'}
+              floodOpacity={isLight ? '0.45' : '0.60'}
+              result="cutShadowColor"
             />
-            <feComposite in="shadowColor" in2="blurShadow" operator="in" result="dropShadowRaw" />
-            <feComposite in="dropShadowRaw" in2="SourceAlpha" operator="in" result="innerDropShadow" />
-            <feOffset in="SourceAlpha" dx="0" dy="-1.4" result="offsetCatch" />
-            <feGaussianBlur in="offsetCatch" stdDeviation="0.75" result="blurCatch" />
+            <feComposite in="cutShadowColor" in2="topInnerCutBlur" operator="in" result="cutShadow" />
+            <feComposite in="cutShadow" in2="SourceAlpha" operator="in" result="innerTopShadow" />
+
+            {/* 4. Specular Catchlight Lip */}
+            <feOffset in="SourceAlpha" dx="0" dy="1.4" result="lipOffset" />
+            <feComposite in="lipOffset" in2="SourceAlpha" operator="out" result="bottomLipRaw" />
+            <feGaussianBlur in="bottomLipRaw" stdDeviation="0.4" result="bottomLipSoft" />
             <feFlood
-              floodColor={isLight ? '#FFFFFF' : '#88B4E8'}
-              floodOpacity={isLight ? '0.95' : '0.62'}
-              result="catchColor"
+              floodColor={isLight ? '#FFFFFF' : '#CBD5E1'}
+              floodOpacity={isLight ? '0.95' : '0.80'}
+              result="lipHighlightColor"
             />
-            <feComposite in="catchColor" in2="blurCatch" operator="in" result="catchLightRaw" />
-            <feComposite in="catchLightRaw" in2="SourceAlpha" operator="in" result="bottomCatchLight" />
+            <feComposite in="lipHighlightColor" in2="bottomLipSoft" operator="in" result="bottomHighlightLip" />
+
             <feMerge>
+              <feMergeNode in="bottomHighlightLip" />
               <feMergeNode in="grooveBase" />
               <feMergeNode in="innerWallDepth" />
-              <feMergeNode in="innerDropShadow" />
-              <feMergeNode in="bottomCatchLight" />
+              <feMergeNode in="innerTopShadow" />
             </feMerge>
           </filter>
         </defs>
+
         <g filter={`url(#${filterId})`}>
-          <g fill="#000000" transform="translate(0, -14)">
-            <path d="M 126,1.5 C 130.5,1.5 133,5 133,9.5 C 133,14 130.5,17.5 126,17.5 C 121.5,17.5 119,14 119,9.5 C 119,5 121.5,1.5 126,1.5 Z" />
-            <path d="M 77,15.5 C 80.5,15.5 82.5,18.5 82.5,22 C 82.5,25.5 80.5,28.5 77,28.5 C 73.5,28.5 71.5,25.5 71.5,22 C 71.5,18.5 73.5,15.5 77,15.5 Z" />
-            <path d="M 175,15.5 C 178.5,15.5 180.5,18.5 180.5,22 C 180.5,25.5 178.5,28.5 175,28.5 C 171.5,28.5 169.5,25.5 169.5,22 C 169.5,18.5 171.5,15.5 175,15.5 Z" />
-            <path d="M 39,36 C 42,36 44,38.5 44,41.5 C 44,44.5 42,47 39,47 C 36,47 34,44.5 34,41.5 C 34,38.5 36,36 39,36 Z" />
-            <path d="M 213,36 C 216,36 218,38.5 218,41.5 C 218,44.5 216,47 213,47 C 210,47 208,44.5 208,41.5 C 208,38.5 210,36 213,36 Z" />
-            <path d="M 126,22 C 129,32 135,46 148,53 C 132,53 126.5,35 126,22 Z" />
-            <path d="M 126,22 C 123,32 117,46 104,53 C 120,53 125.5,35 126,22 Z" />
-            <path d="M 77,33 C 82,41 91,52 108,55 C 92,57 80,48 77,33 Z" />
-            <path d="M 175,33 C 170,41 161,52 144,55 C 160,57 172,48 175,33 Z" />
-            <path d="M 40,42.2 C 31,41.8 19,45.5 10,51.6 C 21,50.8 31,48.2 37,44.8 Z" />
+          <g fill="#000000" transform="translate(0, -10)">
+            <path d="M 10,25.5 C 21,29 33,27.5 50,22 C 78,12.5 103,7.5 127,8.2 C 149,8.8 168,15.5 188,26.8 L 183.5,28.2 C 164,18.5 146,13.2 126.5,12.8 C 103,12.2 79,17 51,26.5 C 34,32 21,33.5 10,25.5 Z" />
+            <path d="M 22,33.2 C 42,27.8 66,26.8 98,30.5 C 70,31.2 46,31.5 27,36.2 C 23,37 19.5,35.5 22,33.2 Z" />
+            <path d="M 65,25.8 C 105,30.8 147,31.4 185,32 C 213,32.5 234,38 250,49.5 C 232,42.5 212,37.8 184.5,37 C 145,36 103,35 65,27.6 Z" />
+            <path d="M 94,46.2 C 127,40.2 165,39.8 202,42.6 C 166,44 128,44.6 94,46.2 Z" />
             <path d="M 212,42.2 C 221,41.8 233,45.5 242,51.6 C 231,50.8 221,48.2 215,44.8 Z" />
             <path d="M 39,62.5 C 40.2,49.2 48,43 57.5,43 C 67,43 74.8,49.2 76,62.5 C 73.2,52.2 66.2,47.5 57.5,47.5 C 48.8,47.5 41.8,52.2 39,62.5 Z" />
             <path d="M 180,65 C 181.2,51.8 189,45.6 198.5,45.6 C 208,45.6 215.8,51.8 217,65 C 214.2,54.8 207.2,50.1 198.5,50.1 C 189.8,50.1 182.8,54.8 180,65 Z" />
             <path d="M 83,62.5 C 113,64.2 144,65 173,64.8 C 144,67.6 113,66.6 83,62.5 Z" />
           </g>
+
           <g fill="#000000" transform="translate(0, -14)">
             <path
               fillRule="evenodd"

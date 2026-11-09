@@ -19,7 +19,6 @@ import {
   Store,
   Bookmark,
   Crown,
-  Sparkles,
   X
 } from 'lucide-react';
 import { DEFAULT_SITE_SETTINGS, type SiteSettings } from '@/lib/site-settings-types';
@@ -239,7 +238,14 @@ export function Header({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/v1/auth/logout', { method: 'POST' });
+      await fetch('/api/v1/auth/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{}',
+      });
+    } catch {}
+    try {
+      window.sessionStorage.clear();
     } catch {}
     setUser(null);
     setUserMenuOpen(false);
@@ -291,7 +297,7 @@ export function Header({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
     pathname === '/verify';
 
   const isAccountPage = pathname.startsWith('/account');
-  const isAdminPage = pathname.startsWith('/admin');
+  const isAdminPage = pathname.startsWith('/fbs-console');
   const isStudioPage = pathname.startsWith('/studio-3d');
 
   if (isAuthPage || isAccountPage || isAdminPage || isStudioPage) {
@@ -321,7 +327,7 @@ export function Header({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
               href={settings.announcementHref || '/auctions'}
               className="inline-flex items-center justify-center gap-2 hover:text-white transition-colors"
             >
-              <Sparkles size={13} className="text-[#D9BB81] shrink-0" />
+              <Crown size={13} className="text-[#D9BB81] shrink-0" />
               <span>{settings.announcementText}</span>
               <ArrowLeft size={12} className="shrink-0" />
             </Link>
@@ -443,7 +449,7 @@ export function Header({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
                     <div className="space-y-0.5 text-xs font-bold text-slate-200">
                       {user.isAdmin && (
                         <Link
-                          href="/admin"
+                          href="/fbs-console"
                           role="menuitem"
                           onClick={() => setUserMenuOpen(false)}
                           className="flex items-center gap-2.5 rounded-xl border border-gold/40 bg-gold/15 px-3 py-2.5 text-gold-light hover:bg-gold/25 hover:text-white transition-colors mb-1"
@@ -627,7 +633,7 @@ export function Header({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
 
                   {user.isAdmin && (
                     <Link
-                      href="/admin"
+                      href="/fbs-console"
                       onClick={() => setMobileMenuOpen(false)}
                       className="flex items-center justify-center gap-1.5 rounded-xl border border-gold/50 bg-gold/20 py-2 text-xs font-black text-gold-light hover:bg-gold/30 transition-colors"
                     >
@@ -684,7 +690,7 @@ export function Footer({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
     pathname === '/verify';
 
   const isAccountPage = pathname.startsWith('/account');
-  const isAdminPage = pathname.startsWith('/admin');
+  const isAdminPage = pathname.startsWith('/fbs-console');
   const isStudioPage = pathname.startsWith('/studio-3d');
 
   if (isAuthPage || isAccountPage || isAdminPage || isStudioPage) {

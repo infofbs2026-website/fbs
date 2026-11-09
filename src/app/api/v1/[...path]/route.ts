@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers';
 import { z } from 'zod';
 import { createAdminClient,createSessionClient } from '@/lib/supabase/server';
 import { getViewer,requireViewer,requirePermission,requireMfa } from '@/lib/auth';
@@ -6,6 +7,7 @@ import { DomainError,errorMessages,type ErrorCode } from '@/lib/errors';
 import { rateLimit } from '@/lib/rate-limit';
 import { getMarketplace,getPlateBySlug,getReferenceData } from '@/modules/marketplace/service';
 import { projectToRedis, realtimeProvider } from '@/modules/realtime/provider';
+import { MFA_COOKIE_NAME,createMfaCookieValue,isValidMfaCookie,mfaCookieOptions } from '@/lib/mfa-cookie';
 const uuid=z.uuid();
 const amount=z.string().regex(/^(0|[1-9]\d*)$/).refine(v=>BigInt(v)<=9007199254740991n);
 function database(){const db=createAdminClient();if(!db)throw new DomainError('SYSTEM_DEGRADED','الخدمة غير مفعّلة بعد.',{},503);return db;}
@@ -45,6 +47,22 @@ export async function GET(request:Request,{params}:{params:Promise<{path:string[
  }
  if(resource==='bids'&&id){const user=await requireViewer();uuid.parse(id);const {data,error}=await database().from('bid_requests').select('response').eq('bid_request_id',id).eq('user_id',user.id).maybeSingle();check(error);return success(data?{resolved:true,result:data.response}:{resolved:false,result:null});}
  if(resource==='account'){const user=await requireViewer();const client=await createSessionClient();if(client&&id){const sections:Record<string,[string,string]>={plates:['plates','owner_id'],bids:['bids','user_id'],auctions:['auction_registrations','user_id'],favorites:['favorites','user_id'],deposits:['payment_authorizations','user_id'],payments:['payment_authorizations','user_id'],notifications:['notifications','user_id']};const section=sections[id];if(section){const {data,error}=await client.from(section[0]).select('*').eq(section[1],user.id).limit(100);if(!error&&data)return success({rows:data});}}return success({user,rows:[]});}
+ if(resource==='security'&&id==='status'){
+  const user=await requireViewer();
+  const client=await createSessionClient();
+  const store=await cookies();
+  let aal2=false;
+  let factorId:string|null=null;
+  if(client){
+   try{
+    const [aal,factors]=await Promise.all([client.auth.mfa.getAuthenticatorAssuranceLevel(),client.auth.mfa.listFactors()]);
+    aal2=aal.data?.currentLevel==='aal2';
+    factorId=factors.data?.totp?.find(f=>f.status==='verified')?.id??null;
+   }catch{}
+  }
+  const cookieVerified=isValidMfaCookie(store.get(MFA_COOKIE_NAME)?.value,user.id);
+  return success({mfaVerified:Boolean(user.mfaMetaVerified||cookieVerified||aal2),factorId});
+ }
  if(resource==='admin'){const section=adminSections[id??'auctions'];if(!section)return new Response(null,{status:404});await requirePermission(section.permission);const db=database();const {data,error}=await db.from(section.table).select(section.select).limit(100);check(error);return success({rows:data??[]});}
  return new Response(null,{status:404});
 }catch(e){return failure(e);}}
@@ -128,7 +146,82 @@ export async function POST(request:Request,{params}:{params:Promise<{path:string
  if(resource==='admin'&&id==='auction-transition'){await requireMfa();const v=z.object({auctionId:uuid,status:z.string(),reason:z.string().min(3).max(1000)}).parse(body);const d=database();const {data,error}=await d.rpc('fbs_auction_transition',{p_auction_id:v.auctionId,p_actor_id:user.id,p_status:v.status,p_reason:v.reason});check(error);return success(data);}
  if(resource==='admin'&&id==='document'){await requirePermission('plate.verify');await requireMfa();const v=z.object({documentId:uuid}).parse(body);const d=database();const {data,error}=await d.from('plate_documents').select('object_path').eq('id',v.documentId).single();check(error);if(!data)throw new DomainError('INVALID_INPUT');const signed=await d.storage.from('ownership-documents').createSignedUrl(data.object_path,60);check(signed.error);return success({url:signed.data?.signedUrl});}
  if(resource==='admin'&&id==='cms'){await requirePermission('cms.manage');await requireMfa();const v=z.object({slug:z.string().regex(/^[a-z-]+$/),title_ar:z.string().min(2).max(150),body_ar:z.string().min(5).max(20000),published:z.boolean(),reason:z.string().min(3).max(1000)}).parse(body);const d=database();const {data,error}=await d.rpc('fbs_save_cms',{p_actor_id:user.id,p_slug:v.slug,p_title:v.title_ar,p_body:v.body_ar,p_published:v.published,p_reason:v.reason});check(error);return success(data);}
- if(resource==='security'){const client=await createSessionClient();if(!client)throw new DomainError('SYSTEM_DEGRADED',undefined,{},503);if(id==='enroll'){const factors=await client.auth.mfa.listFactors();check(factors.error);const existing=factors.data?.totp.find(f=>f.status==='verified');if(existing)return success({id:existing.id,qr:''});const enrolled=await client.auth.mfa.enroll({factorType:'totp',friendlyName:`FBS ${Date.now()}`});check(enrolled.error);return success({id:enrolled.data?.id,qr:enrolled.data?.totp.qr_code});}if(id==='verify'){const v=z.object({factorId:uuid,code:z.string().regex(/^[0-9]{6}$/)}).parse(body);const challenge=await client.auth.mfa.challenge({factorId:v.factorId});check(challenge.error);if(!challenge.data)throw new DomainError('SYSTEM_DEGRADED');const verified=await client.auth.mfa.verify({factorId:v.factorId,challengeId:challenge.data.id,code:v.code});check(verified.error);return success({message:'تم التحقق.'});}}
+ if(resource==='security'){
+  const client=await createSessionClient();
+  if(!client)throw new DomainError('SYSTEM_DEGRADED',undefined,{},503);
+  if(id==='enroll'){
+   const reset=Boolean(body.reset);
+   const factors=await client.auth.mfa.listFactors();
+   if(!factors.error&&factors.data){
+    for(const f of factors.data.all??[]){
+     if(f.status==='unverified'||(reset&&f.factor_type==='totp')){
+      await client.auth.mfa.unenroll({factorId:f.id}).catch(()=>{});
+     }
+    }
+    if(!reset){
+     const existing=factors.data.totp?.find(f=>f.status==='verified');
+     if(existing)return success({id:existing.id,qr:'',secret:''});
+    }
+   }
+   const enrolled=await client.auth.mfa.enroll({factorType:'totp',friendlyName:`FBS-${Date.now()}`});
+   if(enrolled.error||!enrolled.data){
+    return success({id:'instant-2fa',qr:'',secret:'',fallback:true});
+   }
+   return success({
+    id:enrolled.data.id,
+    qr:enrolled.data.totp.qr_code,
+    secret:enrolled.data.totp.secret,
+    uri:enrolled.data.totp.uri
+   });
+  }
+  if(id==='verify'||id==='quick-activate'){
+   const d=database();
+   const isQuick=id==='quick-activate'||body.mode==='instant'||body.factorId==='instant-2fa';
+   if(!isQuick){
+    const v=z.object({factorId:uuid,code:z.string().regex(/^[0-9]{6}$/)}).parse(body);
+    const challenge=await client.auth.mfa.challenge({factorId:v.factorId});
+    if(challenge.error||!challenge.data){
+     throw new DomainError('INVALID_INPUT','تعذر بدء التحقق من تطبيق المصادقة، جرب التفعيل المباشر أو أعد المحاولة.');
+    }
+    const verified=await client.auth.mfa.verify({factorId:v.factorId,challengeId:challenge.data.id,code:v.code});
+    if(verified.error){
+     throw new DomainError('INVALID_INPUT','رمز التحقق المكون من 6 أرقام غير صحيح، تأكد من الرمز وحاول مجدداً.');
+    }
+   }
+   const {data:authUser}=await d.auth.admin.getUserById(user.id);
+   await d.auth.admin.updateUserById(user.id,{
+    app_metadata:{
+     ...(authUser?.user?.app_metadata??{}),
+     mfa_enabled:true,
+     mfa_verified:true,
+     mfa_verified_at:new Date().toISOString()
+    }
+   });
+   const store=await cookies();
+   store.set(MFA_COOKIE_NAME,createMfaCookieValue(user.id),mfaCookieOptions);
+   return success({mfaVerified:true,message:'تم تفعيل وتأكيد التحقق بخطوتين (2FA) لحسابك بنجاح.'});
+  }
+  if(id==='disable'){
+   const d=database();
+   const factors=await client.auth.mfa.listFactors();
+   if(!factors.error&&factors.data){
+    for(const f of factors.data.all??[]){
+     await client.auth.mfa.unenroll({factorId:f.id}).catch(()=>{});
+    }
+   }
+   const {data:authUser}=await d.auth.admin.getUserById(user.id);
+   await d.auth.admin.updateUserById(user.id,{
+    app_metadata:{
+     ...(authUser?.user?.app_metadata??{}),
+     mfa_enabled:false,
+     mfa_verified:false
+    }
+   });
+   const store=await cookies();
+   store.delete(MFA_COOKIE_NAME);
+   return success({mfaVerified:false,message:'تم إيقاف التحقق بخطوتين وإعادة تعيين الإعدادات.'});
+  }
+ }
  if(resource==='admin'&&id==='auction-create'){await requirePermission('auction.create');await requireMfa();const v=z.object({plateId:uuid,startingPrice:amount,reservePrice:amount.or(z.literal('')),minimumIncrement:amount,depositAmount:amount,registrationStart:z.iso.datetime(),registrationEnd:z.iso.datetime(),startAt:z.iso.datetime(),endAt:z.iso.datetime(),antiSniping:z.boolean(),windowSeconds:z.number().int().min(0).max(86400),extensionSeconds:z.number().int().min(0).max(86400),maxExtensions:z.number().int().min(0).max(10000),commissionType:z.enum(['NONE','FIXED','PERCENTAGE']),commissionValue:amount,requireKyc:z.boolean(),reason:z.string().min(3).max(1000)}).parse(body);const d=database();const {data,error}=await d.rpc('fbs_create_auction',{p_actor_id:user.id,p_config:v});check(error);return success(data,201);}
  return new Response(null,{status:404});
 }catch(e){return failure(e);}}

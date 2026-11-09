@@ -7,7 +7,7 @@ import {
   ArrowLeft, ArrowUpLeft, Bell, Bookmark, Car, Clock, Compass,
   CreditCard, Crown, FileQuestion, Gavel, Globe, Headphones, Home, KeyRound, Layers,
   LayoutDashboard, LockKeyhole, LogOut, Mail, Moon, PanelRightClose, PanelRightOpen,
-  Plus, Search, ShieldCheck, ShoppingBag, Smartphone, Sparkles, Store, Sun, UserRound, Wallet, X
+  Plus, Search, ShieldCheck, ShoppingBag, Smartphone, Store, Sun, UserRound, Wallet, X
 } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
 import { MfaSetup } from '@/components/mfa';
@@ -52,7 +52,7 @@ const marketplaceNavLinks = [
 
 const platformServicesNavLinks = [
   { key: 'store', href: '/plates', label: 'المتجر الفوري', icon: Store },
-  { key: 'studio-3d', href: '/studio-3d', label: 'استوديو 3D للسيارات', icon: Sparkles },
+  { key: 'studio-3d', href: '/studio-3d', label: 'استوديو 3D للسيارات', icon: Car },
   { key: 'sell-plate', href: '/sell-your-plate', label: 'اعرض لوحتك للبيع', icon: Plus }
 ] as const;
 
@@ -774,11 +774,15 @@ export function AccountDashboard({
     setLogoutError('');
     try {
       const response = await fetch('/api/v1/auth/logout', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}'
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{}',
       });
       if (!response.ok) throw new Error('تعذر تسجيل الخروج، حاول مرة أخرى.');
-      router.push('/');
-      router.refresh();
+      try {
+        window.sessionStorage.clear();
+      } catch {}
+      window.location.href = '/';
     } catch {
       setLogoutError('تعذر تسجيل الخروج، حاول مرة أخرى.');
     }
@@ -952,16 +956,16 @@ export function AccountDashboard({
             <GlobalOmniSearch initialPlates={featuredPlates} />
 
             <div className={styles.headerEnd}>
-              <div className={styles.themeControl} role="group" aria-label="مظهر الداشبورد">
-                <button type="button" aria-label="الوضع الفاتح" aria-pressed={theme === 'light'} onClick={() => changeTheme('light')}>
-                  <Sun size={14} aria-hidden="true" />
-                  <span>فاتح</span>
-                </button>
-                <button type="button" aria-label="الوضع الداكن" aria-pressed={theme === 'dark'} onClick={() => changeTheme('dark')}>
-                  <Moon size={14} aria-hidden="true" />
-                  <span>داكن</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                className={styles.raisedIconBtn}
+                aria-label={theme === 'dark' ? 'الوضع الداكن' : 'الوضع الفاتح'}
+                aria-pressed={theme === 'dark'}
+                title={theme === 'dark' ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الداكن'}
+                onClick={() => changeTheme(theme === 'dark' ? 'light' : 'dark')}
+              >
+                {theme === 'dark' ? <Sun size={17} aria-hidden="true" /> : <Moon size={17} aria-hidden="true" />}
+              </button>
 
               <Link
                 href="/account/notifications"

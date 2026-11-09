@@ -446,12 +446,16 @@ export function SettingsSection({ data, onNotify, onRequireMfa, onRefresh }: Set
 
                 <button
                   type="button"
+                  role="switch"
+                  aria-checked={isEnabled}
                   disabled={flagBusy === flagDef.key}
                   onClick={() => toggleFeatureFlag(flagDef.key, !isEnabled, flagDef.description)}
-                  className={isEnabled ? styles.btnSuccess : styles.btnSecondary}
+                  className={`${styles.engravedToggle} ${isEnabled ? styles.engravedToggleActive : ''}`}
                 >
-                  {isEnabled ? <ToggleRight size={17} /> : <ToggleLeft size={17} />}
-                  <span>{isEnabled ? 'مفعّل' : 'متوقف'}</span>
+                  <span className={styles.engravedToggleLabel}>{isEnabled ? 'مفعّل' : 'متوقف'}</span>
+                  <span className={styles.engravedToggleTrack} aria-hidden="true">
+                    <span className={styles.engravedToggleThumb} />
+                  </span>
                 </button>
               </div>
             );

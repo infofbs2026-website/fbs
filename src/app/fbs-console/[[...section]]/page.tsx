@@ -5,6 +5,7 @@ import { Lock, ShieldAlert } from 'lucide-react';
 import { getViewerAdminAccess } from '@/lib/auth';
 import { createAdminClient } from '@/lib/supabase/server';
 import { getSiteSettings } from '@/lib/site-settings';
+import { masterFaqData } from '@/lib/faq-data';
 import { AdminDashboard } from '@/components/admin/admin-dashboard';
 import type {
   AdminAuctionRecord,
@@ -191,6 +192,8 @@ export default async function AdminSectionPage({
     notificationsRes,
     auditLogsRes,
     identitiesRes,
+    authUsersRes,
+    auditClearedRes,
   ] = await Promise.all([
     getSiteSettings(),
     db
@@ -315,7 +318,21 @@ export default async function AdminSectionPage({
           .order('submitted_at', { ascending: false })
           .limit(200)
       : Promise.resolve({ data: [], error: null }),
+    db.auth.admin.listUsers({ page: 1, perPage: 500 }).catch(() => ({ data: { users: [] }, error: null })),
+    db.from('system_settings').select('value').eq('key', 'audit_cleared_at').maybeSingle(),
   ]);
+
+  const mfaByUserId = new Map<string, boolean>();
+  for (const au of authUsersRes?.data?.users ?? []) {
+    const hasTotp = Array.isArray(au.factors) && au.factors.some((f) => f.status === 'verified');
+    const hasMeta = Boolean(
+      au.app_metadata?.mfa_enabled ||
+      au.app_metadata?.mfa_verified ||
+      au.user_metadata?.mfa_enabled ||
+      au.user_metadata?.mfa_verified,
+    );
+    mfaByUserId.set(String(au.id), Boolean(hasTotp || hasMeta));
+  }
 
   const letters: AdminLetterRef[] = (lettersRes.data ?? []).map((row) => ({
     id: Number(row.id),
@@ -430,7 +447,15 @@ export default async function AdminSectionPage({
   const plateRecordById = new Map<string, AdminPlateRecord>();
   const plateLabelById = new Map<string, string>();
 
-  const plates: AdminPlateRecord[] = (platesRes.data ?? []).map((row) => {
+  const plates: AdminPlateRecord[] = (platesRes.data ?? [])
+    .filter((row) => {
+      const owner = profileById.get(String(row.owner_id));
+      if (owner?.status === 'CLOSED' && String(row.listing_status) === 'ARCHIVED') {
+        return false;
+      }
+      return true;
+    })
+    .map((row) => {
     const id = String(row.id);
     const ownerId = String(row.owner_id);
     platesCountByOwner.set(ownerId, (platesCountByOwner.get(ownerId) ?? 0) + 1);
@@ -599,20 +624,25 @@ export default async function AdminSectionPage({
     };
   });
 
-  const users: AdminUserRecord[] = (profilesRes.data ?? []).map((row) => {
-    const uid = String(row.id);
-    return {
-      id: uid,
-      display_name: String(row.display_name || 'مستخدم'),
-      phone: strOrNull(row.phone),
-      status: String(row.status || 'ACTIVE'),
-      kyc_status: String(row.kyc_status || 'UNVERIFIED'),
-      roles: rolesByUserId.get(uid) ?? [],
-      plates_count: platesCountByOwner.get(uid) ?? 0,
-      bids_count: bidsCountByUser.get(uid) ?? 0,
-      created_at: String(row.created_at),
-    };
-  });
+  const users: AdminUserRecord[] = (profilesRes.data ?? [])
+    .filter((row) => String(row.status || 'ACTIVE') !== 'CLOSED')
+    .map((row) => {
+      const uid = String(row.id);
+      return {
+        id: uid,
+        display_name: String(row.display_name || 'مستخدم'),
+        phone: strOrNull(row.phone),
+        status: String(row.status || 'ACTIVE'),
+        kyc_status: String(row.kyc_status || 'UNVERIFIED'),
+        mfa_enabled: Boolean(
+          mfaByUserId.get(uid) || (uid === access.viewer?.id && access.mfaVerified),
+        ),
+        roles: rolesByUserId.get(uid) ?? [],
+        plates_count: platesCountByOwner.get(uid) ?? 0,
+        bids_count: bidsCountByUser.get(uid) ?? 0,
+        created_at: String(row.created_at),
+      };
+    });
 
   const identities: AdminIdentityRecord[] = (identitiesRes.data ?? []).map((row) => ({
     id: String(row.id),
@@ -703,7 +733,25 @@ export default async function AdminSectionPage({
     updated_at: String(row.updated_at),
   }));
 
-  const faqs: AdminFaqRecord[] = (faqsRes.data ?? []).map((row) => ({
+  let rawFaqs = faqsRes.data ?? [];
+  if (rawFaqs.length === 0) {
+    const seedRows = masterFaqData.map((item, idx) => ({
+      question_ar: item.q,
+      answer_ar: item.a,
+      question_en: `${item.catId}|${item.category}|${item.badge}`,
+      sort_order: idx + 1,
+      published: true,
+    }));
+    const { data: insertedFaqs } = await db
+      .from('faqs')
+      .insert(seedRows)
+      .select('id,question_ar,answer_ar,question_en,sort_order,published');
+    if (insertedFaqs && insertedFaqs.length > 0) {
+      rawFaqs = insertedFaqs;
+    }
+  }
+
+  const faqs: AdminFaqRecord[] = rawFaqs.map((row) => ({
     id: String(row.id),
     question_ar: String(row.question_ar ?? ''),
     answer_ar: String(row.answer_ar ?? ''),
@@ -745,7 +793,16 @@ export default async function AdminSectionPage({
     };
   });
 
-  const auditLogs: AdminAuditLogRecord[] = (auditLogsRes.data ?? []).map((row) => {
+  const auditClearedAt =
+    auditClearedRes?.data?.value &&
+    typeof auditClearedRes.data.value === 'object' &&
+    'clearedAt' in auditClearedRes.data.value
+      ? String((auditClearedRes.data.value as Record<string, unknown>).clearedAt ?? '')
+      : '';
+
+  const auditLogs: AdminAuditLogRecord[] = (auditLogsRes.data ?? [])
+    .filter((row) => !auditClearedAt || String(row.created_at) > auditClearedAt)
+    .map((row) => {
     const actorId = strOrNull(row.actor_id);
     return {
       id: String(row.id),

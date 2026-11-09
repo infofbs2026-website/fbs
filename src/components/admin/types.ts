@@ -191,6 +191,7 @@ export interface AdminUserRecord {
   phone: string | null;
   status: string;
   kyc_status: string;
+  mfa_enabled?: boolean;
   roles: string[];
   plates_count: number;
   bids_count: number;

@@ -23,6 +23,7 @@ import {
   KeyRound,
   LayoutDashboard,
   Lock,
+  LogOut,
   type LucideIcon,
   Mail,
   Menu,
@@ -121,28 +122,11 @@ const NAV_GROUPS: Array<{ title: string; items: NavEntry[] }> = [
     ],
   },
   {
-    title: 'صفحات الموقع والإعدادات',
-    items: [
-      {
-        key: 'cms',
-        label: 'الصفحات والـ FAQ والمدن',
-        subtitle: 'تحرير صفحات الموقع والسياسات والأسئلة الشائعة والمدن السعودية.',
-        icon: FileText,
-      },
-      {
-        key: 'settings',
-        label: 'إعدادات الموقع الشاملة',
-        subtitle: 'التحكم في الهوية، شريط الإعلانات، أرقام الواتساب، ومفاتيح الميزات.',
-        icon: Settings,
-      },
-    ],
-  },
-  {
-    title: 'الأعضاء والتوثيق والتواصل',
+    title: 'الأعضاء والتواصل',
     items: [
       {
         key: 'identities',
-        label: 'توثيق الهوية (KYC)',
+        label: 'توثيق الهويات',
         subtitle: 'فحص ومطابقة صور الهوية الوطنية للأعضاء.',
         icon: ShieldCheck,
         badgeKey: 'pendingIdentities',
@@ -155,38 +139,55 @@ const NAV_GROUPS: Array<{ title: string; items: NavEntry[] }> = [
       },
       {
         key: 'messages',
-        label: 'رسائل تواصل معنا',
+        label: 'رسائل التواصل',
         subtitle: 'استفسارات الزوار وطلبات الكونسيرج والوساطة الخاصة.',
         icon: Mail,
         badgeKey: 'newMessages',
       },
       {
         key: 'notifications',
-        label: 'الإشعارات والتعاميم',
+        label: 'الإشعارات',
         subtitle: 'إرسال تنبيهات فورية للأعضاء داخل حساباتهم.',
         icon: Bell,
       },
     ],
   },
   {
-    title: 'المالية والتسويات والرقابة',
+    title: 'المحتوى والإعدادات',
+    items: [
+      {
+        key: 'cms',
+        label: 'الصفحات والمدن',
+        subtitle: 'تحرير صفحات الموقع والسياسات والأسئلة الشائعة والمدن السعودية.',
+        icon: FileText,
+      },
+      {
+        key: 'settings',
+        label: 'إعدادات المنصة',
+        subtitle: 'التحكم في الهوية، شريط الإعلانات، أرقام الواتساب، ومفاتيح الميزات.',
+        icon: Settings,
+      },
+    ],
+  },
+  {
+    title: 'المالية والرقابة',
     items: [
       {
         key: 'settlements',
-        label: 'التسويات ونقل الملكية',
+        label: 'التسويات والضمان',
         subtitle: 'إدارة الحساب الضامن Escrow ومراحل نقل الملكية عبر أبشر.',
         icon: Handshake,
         badgeKey: 'activeSettlements',
       },
       {
         key: 'deposits',
-        label: 'تفويضات التأمينات',
+        label: 'التأمينات البنكية',
         subtitle: 'متابعة حجوزات التأمين البنكية وحالات الفك والتحصيل.',
         icon: Wallet,
       },
       {
         key: 'payments',
-        label: 'الحركات المصرفية',
+        label: 'المدفوعات',
         subtitle: 'سجل عمليات بوابة الدفع والتحويلات المعتمدة.',
         icon: CreditCard,
       },
@@ -198,7 +199,7 @@ const NAV_GROUPS: Array<{ title: string; items: NavEntry[] }> = [
       },
       {
         key: 'audit',
-        label: 'سجل التدقيق الرقابي',
+        label: 'سجل التدقيق',
         subtitle: 'الأرشيف الزمني الكامل لكافة قرارات وتعديلات الإدارة.',
         icon: Lock,
       },
@@ -282,7 +283,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
         setPreselectedPlateId(opts.createAuctionForPlateId);
       }
       if (typeof window !== 'undefined') {
-        const targetUrl = next === 'overview' ? '/admin' : `/admin/${next}`;
+        const targetUrl = next === 'overview' ? '/fbs-console' : `/fbs-console/${next}`;
         window.history.pushState(null, '', targetUrl);
       }
     },
@@ -319,6 +320,20 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
     }
   }
 
+  async function handleAdminLogout() {
+    try {
+      await fetch('/api/v1/auth/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{}',
+      });
+    } catch {}
+    try {
+      window.sessionStorage.clear();
+    } catch {}
+    window.location.href = '/';
+  }
+
   const activeNavMeta = useMemo(
     () => ALL_NAV_ITEMS.find((item) => item.key === section) ?? ALL_NAV_ITEMS[0],
     [section],
@@ -344,8 +359,9 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
 
   return (
     <div
-      className={`${accountStyles.dashboard} ${collapsed ? accountStyles.sidebarCollapsed : ''} ${mobileOpen ? accountStyles.sidebarOpen : ''}`}
+      className={accountStyles.dashboard}
       data-account-theme={theme}
+      data-sidebar-collapsed={collapsed ? 'true' : 'false'}
       dir="rtl"
     >
       {/* Mobile Backdrop */}
@@ -360,7 +376,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
       {/* Executive Sculpted Sidebar */}
       <aside
         id="admin-navigation"
-        className={`${accountStyles.sidebar} ${collapsed ? accountStyles.sidebarCollapsed : ''}`}
+        className={`${accountStyles.sidebar} ${collapsed ? accountStyles.sidebarCollapsed : ''} ${mobileOpen ? accountStyles.sidebarOpen : ''}`}
         aria-label="قائمة لوحة تحكم الإدارة"
       >
         <div className={accountStyles.sidebarInner}>
@@ -368,33 +384,19 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
           <div className={accountStyles.brandPlaque}>
             <Link href="/" className={accountStyles.brand} onClick={() => setMobileOpen(false)} aria-label="FBS، العودة للرئيسية" title="فارس بن سعود — الرئيسية">
               <div className={accountStyles.brandMark}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/brand/X12.svg" alt="" className={accountStyles.brandEmblem} />
                 {!collapsed && (
                   <div className={accountStyles.brandWords}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src="/brand/logo.svg" alt="فارس بن سعود" className={accountStyles.brandCalligraphy} />
-                    <img src="/brand/X14.svg" alt="غرفة القيادة والسيطرة" className={accountStyles.brandSubtitle} />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/brand/X14.svg" alt="اللوحات المميزة" className={accountStyles.brandSubtitle} />
                   </div>
                 )}
               </div>
             </Link>
           </div>
-
-          {/* Executive Member Monogram Card */}
-          {!collapsed && (
-            <div className={accountStyles.sidebarMember} title={data.viewer.displayName}>
-              <span className={accountStyles.memberMonogram}>
-                {data.viewer.displayName.charAt(0) || 'أ'}
-                <span className={accountStyles.memberPulse} aria-hidden="true" />
-              </span>
-              <span className={accountStyles.memberMeta}>
-                <strong>{data.viewer.displayName}</strong>
-                <small dir="ltr" className="flex items-center gap-1 font-bold">
-                  <Crown size={11} className="text-amber-500 shrink-0" />
-                  <span>{data.viewer.email}</span>
-                </small>
-              </span>
-            </div>
-          )}
 
           {/* Grouped Navigation */}
           <nav className={accountStyles.navigation} aria-label="أقسام لوحة الإدارة">
@@ -413,6 +415,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
                         type="button"
                         onClick={() => navigateSection(item.key)}
                         title={collapsed ? item.label : undefined}
+                        data-tooltip={item.label}
                         aria-current={active ? 'page' : undefined}
                       >
                         <span className={accountStyles.navIconWrap}>
@@ -454,6 +457,16 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
                 <KeyRound size={16} aria-hidden="true" />
                 <span>2FA</span>
               </button>
+              <button
+                type="button"
+                onClick={handleAdminLogout}
+                className={accountStyles.dockLogout}
+                aria-label="تسجيل الخروج"
+                title="تسجيل الخروج وإنهاء الجلسة الإدارية"
+              >
+                <LogOut size={16} aria-hidden="true" />
+                <span>خروج</span>
+              </button>
             </div>
           </div>
         </div>
@@ -462,7 +475,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
       {/* Main Content Workspace */}
       <div className={accountStyles.workspace}>
         <div className={accountStyles.content}>
-          {/* Seamless Header */}
+          {/* Seamless Header — Matches AccountDashboard 1:1 */}
           <header className={accountStyles.header}>
             <div className={accountStyles.headerStart}>
               <button
@@ -487,71 +500,69 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
               </Link>
             </div>
 
+            {/* Centered Omni-Search Bar — Matches AccountDashboard */}
+            <div className={accountStyles.omniSearchRoot}>
+              <form
+                className={accountStyles.omniSearchForm}
+                role="search"
+                aria-label="البحث الشامل في الإدارة"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setOmniOpen(true);
+                }}
+              >
+                <span className={accountStyles.omniSearchIcon} aria-hidden="true">
+                  <Search size={17} strokeWidth={2.2} />
+                </span>
+                <input
+                  type="search"
+                  value={omniQuery}
+                  onFocus={() => setOmniOpen(true)}
+                  onChange={(e) => {
+                    setOmniQuery(e.target.value);
+                    setOmniOpen(true);
+                  }}
+                  placeholder="ابحث في أقسام الإدارة، اللوحات، المزادات، أو الأعضاء..."
+                  aria-label="ابحث في الإدارة"
+                  autoComplete="off"
+                  className={accountStyles.omniSearchInput}
+                />
+                <button type="submit" className={accountStyles.omniSubmitBtn}>
+                  <span>بحث</span>
+                </button>
+              </form>
+            </div>
+
             <div className={accountStyles.headerEnd}>
-              {/* Omni Search Trigger */}
+              {/* Single Theme Switcher Button */}
               <button
                 type="button"
-                onClick={() => setOmniOpen(true)}
-                className={styles.omniTrigger}
-                title="البحث الشامل والتنقل السريع (Ctrl+K)"
+                className={accountStyles.raisedIconBtn}
+                aria-label={theme === 'dark' ? 'الوضع الداكن' : 'الوضع الفاتح'}
+                aria-pressed={theme === 'dark'}
+                title={theme === 'dark' ? 'التبديل إلى الوضع الفاتح' : 'التبديل إلى الوضع الداكن'}
+                onClick={() => {
+                  const nextTheme = theme === 'dark' ? 'light' : 'dark';
+                  setTheme(nextTheme);
+                  try { window.localStorage.setItem('fbs_admin_theme', nextTheme); } catch {}
+                }}
               >
-                <Search size={15} />
-                <span className="hidden sm:inline">ابحث في أقسام الإدارة واللوحات والمزادات…</span>
-                <kbd className={`${styles.kbd} hidden md:inline`} dir="ltr">Ctrl K</kbd>
+                {theme === 'dark' ? (
+                  <Sun size={17} aria-hidden="true" />
+                ) : (
+                  <Moon size={17} aria-hidden="true" />
+                )}
               </button>
 
-              {/* Tactile Theme Switcher */}
-              <div className={accountStyles.themeControl} role="group" aria-label="مظهر الداشبورد">
-                <button
-                  type="button"
-                  aria-label="الوضع الفاتح الخزفي"
-                  aria-pressed={theme === 'light'}
-                  onClick={() => {
-                    setTheme('light');
-                    try { window.localStorage.setItem('fbs_admin_theme', 'light'); } catch {}
-                  }}
-                >
-                  <Sun size={14} aria-hidden="true" />
-                  <span className="hidden sm:inline">فاتح</span>
-                </button>
-                <button
-                  type="button"
-                  aria-label="الوضع الداكن الملكي"
-                  aria-pressed={theme === 'dark'}
-                  onClick={() => {
-                    setTheme('dark');
-                    try { window.localStorage.setItem('fbs_admin_theme', 'dark'); } catch {}
-                  }}
-                >
-                  <Moon size={14} aria-hidden="true" />
-                  <span className="hidden sm:inline">داكن</span>
-                </button>
-              </div>
-
-              {/* 2FA Assurance Pill */}
+              {/* 2FA Status & Quick Unlock Icon Button */}
               <button
                 type="button"
                 onClick={() => setMfaModalOpen(true)}
-                className={`${styles.mfaPill} ${
-                  mfaVerifiedLocal ? styles.mfaPillVerified : styles.mfaPillLocked
-                }`}
-                title="حالة التحقق بخطوتين للعمليات الإدارية الحساسة"
+                className={styles.mfaHeaderIconBtn}
+                aria-label={mfaVerifiedLocal ? 'التحقق بخطوتين (2FA) مفعل' : 'تفعيل التحقق بخطوتين (2FA)'}
+                title={mfaVerifiedLocal ? 'التحقق بخطوتين (2FA) مفعل' : 'تفعيل التحقق بخطوتين (2FA)'}
               >
-                <KeyRound size={14} />
-                <span className="hidden sm:inline">
-                  {mfaVerifiedLocal ? 'جلسة 2FA موثقة' : 'تأكيد 2FA'}
-                </span>
-              </button>
-
-              {/* Refresh */}
-              <button
-                type="button"
-                onClick={refreshData}
-                className={accountStyles.raisedIconBtn}
-                title="تحديث البيانات من الخادم"
-                aria-label="تحديث البيانات"
-              >
-                <RefreshCw size={16} className={isPending ? 'animate-spin' : ''} />
+                <ShieldCheck size={18} strokeWidth={2.1} aria-hidden="true" />
               </button>
 
               {/* Admin Avatar Pill */}
@@ -559,20 +570,38 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
                 <span className={accountStyles.avatar}>{data.viewer.displayName.charAt(0) || 'أ'}</span>
                 <span className={accountStyles.userName}>{data.viewer.displayName || 'الإدارة'}</span>
               </div>
+
+              {/* Admin Logout Button */}
+              <button
+                type="button"
+                onClick={handleAdminLogout}
+                className={accountStyles.raisedIconBtn}
+                style={{ color: '#ef4444' }}
+                aria-label="تسجيل الخروج من لوحة الإدارة"
+                title="تسجيل الخروج وإنهاء الجلسة الإدارية"
+              >
+                <LogOut size={17} strokeWidth={2.1} aria-hidden="true" />
+              </button>
             </div>
           </header>
 
-          {/* Sculpted 3D Welcome & Operations Banner */}
+          {/* Sculpted 3D Welcome & Operations Banner — Matches AccountDashboard */}
           <section className={accountStyles.greeting} aria-label="ترويسة القيادة التنفيذية">
             <div className={accountStyles.greetingInner}>
               <div className={accountStyles.greetingCopy}>
                 <p className={accountStyles.eyebrowPill}>
                   <Crown size={13} aria-hidden="true" />
-                  <span>غرفة العمليات المركزية والتحكم الشامل · منصة فارس بن سعود للوحات</span>
+                  <span>بوابة القيادة التنفيذية · فارس بن سعود</span>
                 </p>
                 <h1 className={accountStyles.engravedHeading}>
-                  <span className={accountStyles.carvedInk}>{activeNavMeta.label} </span>
-                  <span className={accountStyles.carvedGold}>· غرفة التحكم التنفيذي</span>
+                  {section === 'overview' ? (
+                    <>
+                      <span className={accountStyles.carvedInk}>مرحبًا، </span>
+                      <span className={accountStyles.carvedGold}>{data.viewer.displayName || 'الإدارة'}</span>
+                    </>
+                  ) : (
+                    <span className={accountStyles.carvedInk}>{activeNavMeta.label}</span>
+                  )}
                 </h1>
                 <p className={accountStyles.intro}>{activeNavMeta.subtitle}</p>
               </div>
@@ -580,19 +609,19 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
               <div className={accountStyles.greetingActions}>
                 <button
                   type="button"
-                  className={accountStyles.primaryButton}
-                  onClick={() => navigateSection(section === 'overview' ? 'plates' : 'overview')}
-                >
-                  <Car size={16} aria-hidden="true" />
-                  <span>{section === 'overview' ? 'إضافة لوحة جديدة' : 'النظرة التنفيذية'}</span>
-                </button>
-                <button
-                  type="button"
                   className={accountStyles.secondaryHeroButton}
                   onClick={() => navigateSection('verifications')}
                 >
                   <FileCheck2 size={15} aria-hidden="true" />
                   <span>طابور الاعتماد ({data.badges.pendingVerifications})</span>
+                </button>
+                <button
+                  type="button"
+                  className={accountStyles.primaryButton}
+                  onClick={() => navigateSection(section === 'overview' ? 'plates' : 'overview')}
+                >
+                  <Car size={16} aria-hidden="true" />
+                  <span>{section === 'overview' ? 'إضافة لوحة جديدة' : 'النظرة التنفيذية'}</span>
                 </button>
               </div>
 
@@ -603,21 +632,6 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
               />
             </div>
           </section>
-          {/* Gentle inline banner when MFA session isn't unlocked yet */}
-          {!mfaVerifiedLocal && (
-            <div className={styles.mfaBanner}>
-              <div className="flex items-center gap-2.5 text-xs">
-                <Crown size={17} className="text-amber-400 shrink-0" />
-                <div>
-                  <strong>حماية الصلاحيات التنفيذية (2FA):</strong> يمكنك تصفح كافة البيانات بحرية؛ ولتنفيذ أوامر القبول أو الحذف أو تعديل الوقت والأسعار اضغط على زر تأكيد رمز المصادقة بخطوتين.
-                </div>
-              </div>
-              <button type="button" className={styles.btnPrimary} onClick={() => setMfaModalOpen(true)}>
-                <KeyRound size={14} />
-                <span>فتح قفل التعديل (2FA)</span>
-              </button>
-            </div>
-          )}
 
           {section === 'overview' && (
             <OverviewSection
@@ -715,68 +729,116 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
 
       {/* Inline 2FA Unlock / Enrollment Modal */}
       {mfaModalOpen && (
-        <div className={styles.modalCenter} role="dialog" aria-modal="true" aria-label="التحقق بخطوتين للإدارة">
-          <div className={styles.modalBox}>
-            <div className="flex items-center justify-between pb-3 mb-3 border-b border-[var(--adm-border)]">
-              <div className="flex items-center gap-2">
-                <KeyRound size={18} className="text-[var(--adm-gold)]" />
-                <h3 className="text-base font-black m-0">تأكيد الهوية الإدارية بخطوتين (2FA)</h3>
+        <div
+          className={styles.modalBackdrop}
+          role="dialog"
+          aria-modal="true"
+          aria-label="التحقق بخطوتين للإدارة"
+          onClick={() => setMfaModalOpen(false)}
+        >
+          <div className={styles.modalCard} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <div className={styles.modalIconWrap}>
+                <KeyRound size={19} />
               </div>
-              <button type="button" className={styles.iconBtn} onClick={() => setMfaModalOpen(false)} aria-label="إغلاق">
+              <div className={styles.modalTitleGroup}>
+                <h3 className={styles.modalTitle}>التحقق بخطوتين وتوثيق الحساب (2FA)</h3>
+                <p className={styles.modalSubtitle}>
+                  حماية حساب الإدارة ومراجعة الهويات الوطنية والعمليات الحساسة.
+                </p>
+              </div>
+              <button
+                type="button"
+                className={styles.iconBtn}
+                onClick={() => setMfaModalOpen(false)}
+                aria-label="إغلاق"
+              >
                 <X size={16} />
               </button>
             </div>
 
             {mfaVerifiedLocal ? (
-              <div className="py-4 text-center space-y-2">
-                <CheckCircle2 size={34} className="mx-auto text-emerald-400" />
-                <p className="text-sm font-black m-0">جلسة التحقق بخطوتين مفعّلة وموثقة حالياً (AAL2)</p>
-                <p className="text-xs opacity-75 m-0">جميع أوامر التعديل والحذف والاعتماد مفتوحة لحسابك الإداري.</p>
-              </div>
-            ) : data.viewer.mfaFactorId ? (
-              <form onSubmit={verifyExistingMfaFactor} className="space-y-3">
-                <p className="text-xs opacity-80 leading-relaxed m-0">
-                  أدخل الرمز المكون من 6 أرقام من تطبيق المصادقة المرتبط بحسابك لتفعيل صلاحيات التعديل الفورية.
-                </p>
-                <div className={styles.field}>
-                  <label className={styles.fieldLabel} htmlFor="admin-totp-code">
-                    رمز تطبيق المصادقة (6 أرقام)
-                  </label>
-                  <input
-                    id="admin-totp-code"
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]{6}"
-                    maxLength={6}
-                    required
-                    dir="ltr"
-                    placeholder="000000"
-                    value={totpCode}
-                    onChange={(e) => setTotpCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
-                    className={`${styles.input} text-center text-lg font-mono tracking-widest`}
-                  />
+              <div className={styles.modalBody}>
+                <div className="rounded-2xl border border-emerald-500/35 bg-emerald-500/10 p-4 text-center space-y-2">
+                  <CheckCircle2 size={32} className="mx-auto text-emerald-500" />
+                  <p className="text-sm font-black m-0">جلسة التحقق بخطوتين (2FA) مفعّلة وموثقة حالياً</p>
+                  <p className="text-xs opacity-75 m-0">
+                    جميع أقسام توثيق الهويات الوطنية وأوامر التعديل والحذف الإدارية مفعّلة لحسابك.
+                  </p>
                 </div>
-                {totpErr && <p className="text-xs text-rose-400 font-bold m-0">{totpErr}</p>}
-                <button type="submit" disabled={totpBusy} className={`${styles.btnPrimary} w-full`}>
-                  {totpBusy ? 'جارٍ التحقق…' : 'تأكيد الرمز وفتح الصلاحيات'}
-                </button>
-              </form>
+
+                <div className={styles.modalFooter}>
+                  <button
+                    type="button"
+                    className={styles.btnPrimary}
+                    onClick={() => setMfaModalOpen(false)}
+                  >
+                    إغلاق ومتابعة العمل
+                  </button>
+                  <button
+                    type="button"
+                    disabled={totpBusy}
+                    className={styles.btnSecondary}
+                    onClick={async () => {
+                      setTotpBusy(true);
+                      try {
+                        await sendJson('/api/v1/security/disable', {});
+                        setMfaVerifiedLocal(false);
+                        notify('تم إيقاف التحقق بخطوتين وإعادة تعيين الإعدادات.');
+                        refreshData();
+                      } catch {
+                        notify('تعذر إعادة تعيين التحقق بخطوتين.', 'error');
+                      } finally {
+                        setTotpBusy(false);
+                      }
+                    }}
+                  >
+                    إعادة ضبط أو إيقاف 2FA
+                  </button>
+                </div>
+              </div>
             ) : (
-              <div className="space-y-3">
+              <div className={styles.modalBody}>
                 <p className="text-xs opacity-80 leading-relaxed m-0">
-                  لم يتم ربط تطبيق مصادقة بحسابك الإداري بعد. يمكنك إعداده الآن مباشرة دون مغادرة لوحة الإدارة:
+                  يمكنك تفعيل التحقق بخطوتين (2FA) لحسابك الإداري مباشرة بضغطة واحدة لفتح قسم توثيق الهويات وجميع الصلاحيات، أو ربطه بتطبيق المصادقة (Google Authenticator):
                 </p>
-                <MfaSetup />
-                <button
-                  type="button"
-                  onClick={() => {
+
+                <MfaSetup
+                  compact
+                  onVerified={() => {
+                    setMfaVerifiedLocal(true);
                     setMfaModalOpen(false);
+                    notify('تم تفعيل التحقق بخطوتين (2FA) وتوثيق الحساب بنجاح.');
                     refreshData();
                   }}
-                  className={`${styles.btnSecondary} w-full`}
-                >
-                  تحديث الجلسة بعد إتمام الربط
-                </button>
+                />
+
+                {data.viewer.mfaFactorId && (
+                  <form onSubmit={verifyExistingMfaFactor} className="space-y-3 pt-2 border-t border-[var(--adm-border-subtle)]">
+                    <div className={styles.field}>
+                      <label className={styles.fieldLabel} htmlFor="admin-totp-code">
+                        أو أدخل الرمز من تطبيق المصادقة المرتبط مسبقاً (6 أرقام)
+                      </label>
+                      <input
+                        id="admin-totp-code"
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]{6}"
+                        maxLength={6}
+                        required
+                        dir="ltr"
+                        placeholder="000000"
+                        value={totpCode}
+                        onChange={(e) => setTotpCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
+                        className={`${styles.input} text-lg font-mono tracking-widest`}
+                      />
+                    </div>
+                    {totpErr && <p className="text-xs text-rose-500 font-bold m-0">{totpErr}</p>}
+                    <button type="submit" disabled={totpBusy} className={`${styles.btnSecondary} w-full`}>
+                      {totpBusy ? 'جارٍ التحقق…' : 'تأكيد رمز التطبيق'}
+                    </button>
+                  </form>
+                )}
               </div>
             )}
           </div>

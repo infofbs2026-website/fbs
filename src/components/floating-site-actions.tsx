@@ -9,7 +9,7 @@ import styles from './floating-site-actions.module.css';
 const DEFAULT_WHATSAPP_NUMBER = '966500000000';
 const HIDDEN_ROUTES = [
   '/account',
-  '/admin',
+  '/fbs-console',
   '/auction-room',
   '/studio-3d',
   '/login',

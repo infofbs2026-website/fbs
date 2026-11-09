@@ -22,4 +22,4 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 
-export const config = { matcher: ['/account/:path*', '/seller/:path*', '/admin/:path*', '/api/:path*', '/auth/:path*', '/login', '/register'] };
+export const config = { matcher: ['/account/:path*', '/seller/:path*', '/fbs-console/:path*', '/admin/:path*', '/api/:path*', '/auth/:path*', '/login', '/register'] };

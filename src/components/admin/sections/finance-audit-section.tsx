@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Download, Eye, Search, X } from 'lucide-react';
+import { AlertTriangle, Download, Search, Trash2, X } from 'lucide-react';
 import { SarPrice, formatEnglishAmount } from '@/components/sar-symbol';
 import styles from '../admin-dashboard.module.css';
 import {
@@ -10,7 +10,7 @@ import {
   exportRowsToCsv,
   formatAdminDate,
 } from '../helpers';
-import type { AdminAuditLogRecord, AdminDashboardData, AdminSectionKey } from '../types';
+import type { AdminDashboardData, AdminSectionKey } from '../types';
 
 interface FinanceAuditProps {
   section: Extract<AdminSectionKey, 'bids' | 'deposits' | 'payments' | 'settlements' | 'reports' | 'audit'>;
@@ -39,7 +39,22 @@ export function FinanceAuditSection({
 }: FinanceAuditProps) {
   const [query, setQuery] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
-  const [inspectLog, setInspectLog] = useState<AdminAuditLogRecord | null>(null);
+  const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
+  const [clearing, setClearing] = useState(false);
+
+  async function clearAuditLogs() {
+    setClearing(true);
+    const res = await callAdminManage({ action: 'audit.clear' });
+    setClearing(false);
+    if (!res.ok) {
+      if (res.mfaRequired) onRequireMfa();
+      onNotify(res.error || 'تعذر مسح سجل التدقيق.', 'error');
+      return;
+    }
+    setClearConfirmOpen(false);
+    onNotify(res.message || 'تم مسح سجل التدقيق بالكامل.');
+    onRefresh();
+  }
 
   async function updateSettlement(settlementId: string, status: string) {
     setBusyId(settlementId);
@@ -417,25 +432,39 @@ export function FinanceAuditSection({
           />
         </div>
 
-        <button
-          type="button"
-          className={styles.btnSecondary}
-          onClick={() =>
-            exportRowsToCsv(
-              'fbs-audit-log.csv',
-              ['التاريخ', 'المنفذ', 'الإجراء', 'الكيان', 'السبب'],
-              filteredAudit.map((l) => [l.created_at, l.actor_name, l.action, l.entity_type, l.reason || '']),
-            )
-          }
-        >
-          <Download size={14} />
-          <span>تصدير سجل التدقيق CSV</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className={styles.btnSecondary}
+            onClick={() =>
+              exportRowsToCsv(
+                'fbs-audit-log.csv',
+                ['التاريخ', 'المنفذ', 'الإجراء', 'الكيان', 'السبب'],
+                filteredAudit.map((l) => [l.created_at, l.actor_name, l.action, l.entity_type, l.reason || '']),
+              )
+            }
+          >
+            <Download size={14} />
+            <span>تصدير CSV</span>
+          </button>
+
+          {data.auditLogs.length > 0 && (
+            <button
+              type="button"
+              className={styles.btnDanger}
+              onClick={() => setClearConfirmOpen(true)}
+              title="مسح وتفريغ سجل التدقيق بالكامل"
+            >
+              <Trash2 size={14} />
+              <span>مسح السجل</span>
+            </button>
+          )}
+        </div>
       </div>
 
       <section className={styles.panel}>
         {filteredAudit.length === 0 ? (
-          <div className={styles.emptyBox}>لا توجد سجلات مطابقة.</div>
+          <div className={styles.emptyBox}>لا توجد سجلات في سجل التدقيق حالياً.</div>
         ) : (
           <div className={styles.tableWrap}>
             <table className={styles.table}>
@@ -446,7 +475,6 @@ export function FinanceAuditSection({
                   <th>الإجراء</th>
                   <th>الكيان</th>
                   <th>السبب الموثّق</th>
-                  <th>التفاصيل</th>
                 </tr>
               </thead>
               <tbody>
@@ -455,16 +483,10 @@ export function FinanceAuditSection({
                     <td className="text-xs opacity-75 whitespace-nowrap">{formatAdminDate(log.created_at)}</td>
                     <td className="font-bold text-xs">{log.actor_name}</td>
                     <td>
-                      <span className={`${styles.badge} ${styles.tone_gold}`}>{log.action}</span>
+                      <span className="font-mono text-xs font-extrabold text-[var(--gold)]">{log.action}</span>
                     </td>
                     <td className="font-mono text-xs">{log.entity_type}</td>
                     <td className="text-xs max-w-md truncate">{log.reason || '—'}</td>
-                    <td>
-                      <button type="button" className={styles.btnChip} onClick={() => setInspectLog(log)}>
-                        <Eye size={12} />
-                        <span>فحص JSON</span>
-                      </button>
-                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -473,43 +495,66 @@ export function FinanceAuditSection({
         )}
       </section>
 
-      {inspectLog && (
-        <div className={styles.modalCenter} role="dialog" aria-modal="true" aria-label="تفاصيل سجل التدقيق">
-          <div className={`${styles.modalBox} !max-w-2xl`}>
-            <div className="flex items-center justify-between pb-3 mb-3 border-b border-[var(--adm-border)]">
-              <div>
-                <h3 className="text-sm font-black m-0">{inspectLog.action}</h3>
-                <p className="text-xs opacity-70 m-0 mt-0.5">{formatAdminDate(inspectLog.created_at)}</p>
+      {clearConfirmOpen && (
+        <div
+          className={styles.modalBackdrop}
+          role="dialog"
+          aria-modal="true"
+          aria-label="تأكيد مسح سجل التدقيق"
+          onClick={() => !clearing && setClearConfirmOpen(false)}
+        >
+          <div
+            className={styles.modalCard}
+            style={{ maxWidth: 460 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.modalHeader}>
+              <div className={styles.modalTitleGroup}>
+                <span className={`${styles.modalIconWrap} ${styles.modalIconWrapDanger}`}>
+                  <AlertTriangle size={20} />
+                </span>
+                <div>
+                  <h3 className={styles.modalTitle}>مسح سجل التدقيق بالكامل</h3>
+                  <p className={styles.modalSubtitle}>
+                    هل أنت متأكد من مسح جميع السجلات الحالية ({data.auditLogs.length} سجل)؟
+                  </p>
+                </div>
               </div>
-              <button type="button" className={styles.iconBtn} onClick={() => setInspectLog(null)} aria-label="إغلاق">
+              <button
+                type="button"
+                className={styles.iconBtn}
+                disabled={clearing}
+                onClick={() => setClearConfirmOpen(false)}
+                aria-label="إغلاق"
+              >
                 <X size={16} />
               </button>
             </div>
 
-            <div className="space-y-3 text-xs">
-              <div>
-                <strong>السبب:</strong> {inspectLog.reason || '—'}
-              </div>
-              <div className="grid gap-3 md:grid-cols-2">
-                <div>
-                  <div className="font-bold mb-1">قبل التعديل (Before)</div>
-                  <pre
-                    dir="ltr"
-                    className="rounded-xl bg-black/35 p-3 overflow-x-auto text-[11px] font-mono border border-[var(--adm-border)]"
-                  >
-                    {JSON.stringify(inspectLog.before_data ?? {}, null, 2)}
-                  </pre>
-                </div>
-                <div>
-                  <div className="font-bold mb-1">بعد التعديل (After)</div>
-                  <pre
-                    dir="ltr"
-                    className="rounded-xl bg-black/35 p-3 overflow-x-auto text-[11px] font-mono border border-[var(--adm-border)]"
-                  >
-                    {JSON.stringify(inspectLog.after_data ?? {}, null, 2)}
-                  </pre>
-                </div>
-              </div>
+            <div className={styles.modalBody}>
+              <p className="text-xs leading-relaxed text-[var(--muted)] m-0">
+                سيتم تفريغ جدول سجل التدقيق الحالي وبدء التسجيل من جديد للعمليات القادمة فقط. يمكنك تصدير نسخة CSV قبل المسح إن رغبت.
+              </p>
+            </div>
+
+            <div className={styles.modalFooter}>
+              <button
+                type="button"
+                disabled={clearing}
+                className={styles.btnSecondary}
+                onClick={() => setClearConfirmOpen(false)}
+              >
+                تراجع
+              </button>
+              <button
+                type="button"
+                disabled={clearing}
+                className={styles.btnDanger}
+                onClick={clearAuditLogs}
+              >
+                <Trash2 size={14} />
+                <span>{clearing ? 'جارٍ المسح…' : 'تأكيد مسح السجل'}</span>
+              </button>
             </div>
           </div>
         </div>

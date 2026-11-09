@@ -17,7 +17,7 @@ export default async function IdentitiesPage() {
   if (!db) return <div className="container-fbs py-16" dir="rtl">تعذر تحميل طلبات الهوية.</div>;
   const { data, error } = await db.from('identity_verification_requests').select('id,full_name,national_id,birth_date,phone,email,city,status,submitted_at,review_reason').order('submitted_at', { ascending: false }).limit(100);
   return <div className={`${styles.dashboard} ${styles.adminIdentityPreview}`} data-account-theme="light" dir="rtl">
-    <div className={styles.adminIdentityContent}><Link href="/admin" className={styles.textLink}>العودة إلى الإدارة</Link>
+    <div className={styles.adminIdentityContent}><Link href="/fbs-console" className={styles.textLink}>العودة إلى الإدارة</Link>
       <section className={styles.panel}><div className={styles.panelHeading}><div><h1>مراجعة الهوية</h1><p>راجع البيانات والصور قبل اعتماد الطلب.</p></div></div></section>
       {error ? <p role="alert">تعذر تحميل طلبات الهوية.</p> : data?.length ? data.map(request => <IdentityReview key={request.id} request={request} />) : <p className={styles.identityEmpty}>لا توجد طلبات هوية.</p>}
     </div></div>;

@@ -16,7 +16,6 @@ import {
   FileText,
   Car,
   Lock,
-  Sparkles,
   Plus,
   MapPin
 } from 'lucide-react';
@@ -710,7 +709,7 @@ export function SellerForm({
                   {!isLoggedIn ? (
                     <div className="space-y-3 pt-1">
                       <div className="flex items-start gap-2.5 rounded-xl border border-[#D9BB81]/50 bg-[#FAF7F0] p-3.5 pf-type-micro font-medium leading-relaxed text-[#526071]">
-                        <Sparkles size={15} className="mt-0.5 shrink-0 text-[#9E7B35]" />
+                        <ShieldCheck size={15} className="mt-0.5 shrink-0 text-[#9E7B35]" />
                         <span>
                           يمكنك تجربة محاكي اللوحة واختيار الحروف والأرقام بحرية. لحفظ اللوحة ورفع
                           مستندات الملكية، يلزم تسجيل الدخول.
