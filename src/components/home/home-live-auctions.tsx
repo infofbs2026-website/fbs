@@ -127,10 +127,10 @@ export function HomeLiveAuctions({ liveAuctions }: HomeLiveAuctionsProps) {
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <ScrollReveal direction="up" delay={50}>
           <div className="mb-6 sm:mb-9 flex flex-col justify-between gap-4 sm:flex-row sm:items-end text-center sm:text-start">
-            <div className="flex flex-col items-center sm:items-start">
+            <div className="flex min-w-0 flex-1 flex-col items-center sm:items-start">
               {/* Prestige Eyebrow Badge with Bespoke Luxury Gem Icon */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#D9BB81]/50 bg-white px-3.5 py-1 text-xs sm:text-[13px] font-bold text-[#8C6B2D] shadow-2xs mb-2.5 mx-auto sm:mx-0">
-                <LuxuryGemIcon size={14} className="text-[#9E7B35] shrink-0" />
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-[#D9BB81]/50 bg-white px-3 py-1 text-[11px] sm:text-xs font-semibold text-[#8C6B2D] shadow-2xs mb-2.5 mx-auto sm:mx-0">
+                <LuxuryGemIcon size={12} className="text-[#9E7B35] shrink-0" />
                 <span className="tracking-wide">سوق النخبة · لوحات حصرية</span>
               </div>
 
@@ -140,7 +140,7 @@ export function HomeLiveAuctions({ liveAuctions }: HomeLiveAuctionsProps) {
                 <span className="text-[#9E7B35]">المميزة</span>
               </h2>
 
-              <p className="mt-2 max-w-xl text-[14px] sm:text-[15px] leading-[1.7] text-[#526071] font-normal text-center sm:text-start mx-auto sm:mx-0">
+              <p className="mt-3.5 max-w-[min(100%,46rem)] text-pretty text-[14px] sm:text-[15px] leading-[1.7] text-[#526071] font-normal text-center sm:text-start mx-auto sm:mx-0">
                 تشكيلة منتقاة من أندر اللوحات الملكية والخصوصية المتاحة للشراء المباشر.
               </p>
             </div>
