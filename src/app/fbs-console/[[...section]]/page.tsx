@@ -43,6 +43,7 @@ export const metadata: Metadata = {
 
 const VALID_SECTIONS = new Set<AdminSectionKey>([
   'overview',
+  'profile',
   'verifications',
   'plates',
   'auctions',

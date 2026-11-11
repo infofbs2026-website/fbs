@@ -43,9 +43,9 @@ const steps = [
     icon: LuxuryCompassIcon,
     shortTitle: 'اكتشاف اللوحة',
     title: 'اكتشف لوحتك النادرة',
-    desc: 'ابحث وتصفح مزادات النخبة لاختيار لوحتك بأعلى معايير الشفافية.',
-    badge: 'تصفح وفلترة ذكية',
-    tag: 'نظامي معتمد'
+    desc: 'تصفح مزادات النخبة لاختيار لوحتك المعتمدة.',
+    badge: 'تصفح ذكي',
+    tag: 'معتمد رسمياً'
   },
   {
     number: '02',
@@ -53,9 +53,9 @@ const steps = [
     icon: CreditCard,
     shortTitle: 'حجز التأمين',
     title: 'التسجيل وتفويض التأمين',
-    desc: 'اعتمد مبلغ التأمين البنكي بأمان رسمي كامل دون أي استقطاع فوري.',
-    badge: 'حجز بنكي آمن (Hold)',
-    tag: 'حماية مصرفية 100%'
+    desc: 'حجز تأمين بنكي رسمي وآمن دون استقطاع.',
+    badge: 'حجز آمن (Hold)',
+    tag: 'حماية مصرفية'
   },
   {
     number: '03',
@@ -63,9 +63,9 @@ const steps = [
     icon: Gavel,
     shortTitle: 'المزايدة الذكية',
     title: 'زايد في الوقت الفعلي',
-    desc: 'زايد لحظياً مع تمديد ذكي يحمي من القنص ويضمن تكافؤ الفرص.',
-    badge: 'تمديد ذكي ضد القنص',
-    tag: 'تحديث لحظي مشفر'
+    desc: 'مزايدة لحظية ذكية مع حماية ضد القنص.',
+    badge: 'ضد القنص',
+    tag: 'تحديث لحظي'
   },
   {
     number: '04',
@@ -73,9 +73,9 @@ const steps = [
     icon: Award,
     shortTitle: 'نقل الملكية',
     title: 'التسوية ونقل الملكية',
-    desc: 'فور رسو المزاد، يتولى فريقنا إتمام الإجراءات ونقل الاستمارة باسمك.',
-    badge: 'نقل رسمي معتمد',
-    tag: 'تسليم فوري ومضمون'
+    desc: 'إتمام نقل الملكية والاستمارة فور رسو المزاد.',
+    badge: 'نقل رسمي',
+    tag: 'تسليم مضمون'
   }
 ];
 
@@ -99,14 +99,14 @@ export function HomeHowItWorks() {
       {/* Top Specular Edge Line */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#D9BB81]/30 to-transparent pointer-events-none" />
 
-      {/* Main Container: Constrained to ~1240px for generous breathing margins */}
-      <div className="max-w-[1240px] mx-auto px-5 sm:px-8 lg:px-10 relative z-10">
+      {/* Main Container: Elegantly constrained to ~1000px with generous breathing margins on both sides */}
+      <div className="max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10 relative z-10">
         {/* Section Header */}
         <ScrollReveal direction="up" className="mb-10 sm:mb-14 text-center">
-          {/* Eyebrow Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#D9BB81]/50 bg-white px-4 py-1.5 text-xs sm:text-[13px] font-bold text-[#8C6B2D] shadow-2xs mb-3.5 mx-auto">
-            <ShieldCheck size={14} className="text-[#9E7B35] shrink-0" />
-            <span className="tracking-wide">رحلة واضحة ومحمية من المزايدة حتى نقل الملكية</span>
+          {/* Eyebrow Badge: Compact, Balanced & Breathing Room */}
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-[#D9BB81]/50 bg-white px-3.5 py-1.5 text-[11px] sm:text-[11.5px] font-bold text-[#8C6B2D] shadow-2xs mb-3.5 mx-auto">
+            <ShieldCheck size={13} className="text-[#9E7B35] shrink-0" />
+            <span className="tracking-wide">رحلة واضحة ومحمية لنقل الملكية</span>
           </div>
 
           {/* Heading with Deep Royal Navy & High-Contrast Warm Saudi Gold */}
@@ -115,8 +115,8 @@ export function HomeHowItWorks() {
             <span className="text-[#9E7B35]">منصة FBS للمزادات؟</span>
           </h2>
 
-          {/* Concise, impactful subtitle */}
-          <p className="mt-2.5 max-w-xl mx-auto text-[14px] sm:text-[15px] leading-[1.7] text-[#526071] font-normal text-center">
+          {/* Concise Subtitle in a Single Clean Line without awkward wrapping */}
+          <p className="mt-2.5 max-w-2xl sm:max-w-3xl mx-auto text-xs sm:text-[13.5px] leading-relaxed text-[#526071] font-normal text-center whitespace-normal sm:whitespace-nowrap">
             4 خطوات موثقة تضمن الشفافية والحماية المصرفية وسلاسة نقل الملكية باسمك.
           </p>
         </ScrollReveal>
@@ -214,7 +214,7 @@ export function HomeHowItWorks() {
             ======================================================== */}
         <div className="relative">
           <StaggerGrid
-            className="grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4 relative z-10"
+            className="grid gap-3.5 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4 relative z-10"
             itemClassName="h-full flex flex-col"
             baseDelay={80}
           >
@@ -227,10 +227,10 @@ export function HomeHowItWorks() {
                   key={step.number}
                   onMouseEnter={() => setHoveredStep(idx)}
                   onMouseLeave={() => setHoveredStep(null)}
-                  className={`group relative flex flex-col justify-between rounded-2xl p-5 sm:p-5.5 bg-white border transition-all duration-300 overflow-hidden h-full ${
+                  className={`group relative flex flex-col justify-between rounded-xl sm:rounded-2xl p-3 sm:px-3 sm:py-3.5 bg-white border transition-all duration-300 overflow-hidden h-full ${
                     isActive
-                      ? 'border-[#9E7B35] shadow-[0_12px_28px_rgba(20,36,60,0.08)] -translate-y-1.5'
-                      : 'border-[#E7E5DF] hover:border-[#D9BB81]/80 shadow-[0_4px_16px_rgba(20,36,60,0.04)] hover:shadow-[0_10px_24px_rgba(20,36,60,0.06)] hover:-translate-y-1'
+                      ? 'border-[#9E7B35] shadow-[0_10px_24px_rgba(20,36,60,0.08)] -translate-y-1'
+                      : 'border-[#E7E5DF] hover:border-[#D9BB81]/80 shadow-[0_3px_14px_rgba(20,36,60,0.04)] hover:shadow-[0_8px_20px_rgba(20,36,60,0.06)] hover:-translate-y-0.5'
                   }`}
                 >
                   {/* Top Specular Edge Line */}
@@ -242,23 +242,23 @@ export function HomeHowItWorks() {
 
                   <div>
                     {/* Top Row: Icon + Step Chip + Number */}
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-2.5">
                       <span
-                        className={`flex h-11 w-11 items-center justify-center rounded-xl border transition-all duration-300 ${
+                        className={`flex h-8.5 w-8.5 sm:h-9 sm:w-9 items-center justify-center rounded-xl border transition-all duration-300 ${
                           isActive
                             ? 'scale-105 border-[#9E7B35]/40 bg-[#FAF7F0] text-[#8C6B2D]'
                             : 'border-[#E7E5DF] bg-[#FAF9F6] text-[#14243C] group-hover:border-[#D9BB81]/50'
                         }`}
                       >
-                        <Icon size={20} className="transition-transform duration-300 group-hover:rotate-3" />
+                        <Icon size={17} className="transition-transform duration-300 group-hover:rotate-3" />
                       </span>
 
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center rounded-full border border-[#E7E5DF] bg-[#FAF9F6] px-2.5 py-0.5 text-[11px] font-semibold text-[#526071]">
+                      <div className="flex items-center gap-1.5">
+                        <span className="inline-flex items-center rounded-full border border-[#E7E5DF] bg-[#FAF9F6] px-2 py-0.5 text-[10px] font-semibold text-[#526071]">
                           الخطوة {step.stepLabel}
                         </span>
                         <span
-                          className="font-norwester text-2xl sm:text-3xl font-black text-[#D9BB81]/40 group-hover:text-[#9E7B35] transition-colors select-none tracking-wider"
+                          className="font-norwester text-lg sm:text-xl font-black text-[#D9BB81]/40 group-hover:text-[#9E7B35] transition-colors select-none tracking-wider"
                           dir="ltr"
                         >
                           {step.number}
@@ -267,23 +267,23 @@ export function HomeHowItWorks() {
                     </div>
 
                     {/* Card Title */}
-                    <h3 className="text-[16px] sm:text-[17px] font-bold text-[#14243C] leading-snug group-hover:text-[#9E7B35] transition-colors tracking-tight">
+                    <h3 className="text-[13.5px] sm:text-[14px] font-bold text-[#14243C] leading-snug group-hover:text-[#9E7B35] transition-colors tracking-tight">
                       {step.title}
                     </h3>
 
-                    {/* Card Description: Condensed and uncluttered */}
-                    <p className="mt-2 text-[13px] sm:text-[13.5px] leading-[1.65] text-[#526071] font-normal">
+                    {/* Card Description: Condensed on one single line */}
+                    <p className="mt-1 text-[10.5px] sm:text-[11px] font-normal text-[#526071] leading-relaxed tracking-tight whitespace-normal sm:whitespace-nowrap">
                       {step.desc}
                     </p>
                   </div>
 
                   {/* Verification Guarantee Footer */}
-                  <div className="mt-4 pt-3 border-t border-[#ECE9E2] flex items-center justify-between gap-1.5 text-xs font-medium">
-                    <span className="inline-flex items-center gap-1.5 rounded-lg border border-[#E7E5DF] bg-[#FAF9F6] px-2 py-0.5 text-[10.5px] text-[#526071] whitespace-nowrap shrink-0">
-                      <CheckCircle2 size={12} className="text-[#9E7B35] shrink-0" />
-                      <span>{step.badge}</span>
+                  <div className="mt-3 pt-2 border-t border-[#ECE9E2] flex items-center justify-between gap-1 text-[10px] font-medium min-w-0">
+                    <span className="inline-flex items-center gap-1 rounded-md border border-[#E7E5DF] bg-[#FAF9F6] px-1.5 py-0.5 text-[9.5px] sm:text-[10px] text-[#526071] truncate min-w-0">
+                      <CheckCircle2 size={11} className="text-[#9E7B35] shrink-0" />
+                      <span className="truncate">{step.badge}</span>
                     </span>
-                    <span className="text-[10.5px] text-[#526071] flex items-center gap-1.5 whitespace-nowrap shrink-0">
+                    <span className="text-[9.5px] sm:text-[10px] text-[#526071] flex items-center gap-1 shrink-0">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse shrink-0" />
                       <span>{step.tag}</span>
                     </span>

@@ -6,7 +6,7 @@ import { getSiteSettings } from '@/lib/site-settings';
 export const metadata: Metadata = {
   title: 'الأسئلة الشائعة والمساعدة الشاملة | فارس بن سعود للوحات المميزة',
   description:
-    'دليل شامل ومفصل لكافة الاستفسارات التشغيلية والمالية: آليات المزايدة، التفويض البنكي، حساب الضمان Escrow، والتوثيق ونقل الملكية المعتمد عبر أبشر.',
+    'دليل شامل ومفصل لكافة الاستفسارات التشغيلية والمالية: آليات المزايدة، التفويض البنكي، حساب الضمان Escrow، والتوثيق ونقل الملكية المعتمد.',
   openGraph: {
     title: 'الأسئلة الشائعة والمساعدة الشاملة | فارس بن سعود للوحات المميزة',
     description: 'إجابات تفصيلية وموثقة لكافة استفسارات المزادات والتأمين المسترد ونقل الملكية المعتمد.',
@@ -15,9 +15,9 @@ export const metadata: Metadata = {
 };
 
 const CATEGORY_MAP: Record<string, { label: string; catId: FaqItem['catId']; badge: string }> = {
-  auctions: { label: 'المزادات والمزايدة', catId: 'auctions', badge: 'توثيق فوري عبر النفاذ الوطني وأبشر' },
+  auctions: { label: 'المزادات والمزايدة', catId: 'auctions', badge: 'توثيق رسمي معتمد وسريع' },
   guarantees: { label: 'الضمان المالي والتأمين', catId: 'guarantees', badge: 'حساب ضمان Escrow بنكي معتمد' },
-  transfer: { label: 'نقل الملكية والمرور', catId: 'transfer', badge: 'نقل ملكية رقمي دون مراجعة فروع المرور' },
+  transfer: { label: 'نقل الملكية والمرور', catId: 'transfer', badge: 'نقل ملكية رسمي دون مراجعة فروع المرور' },
   selling: { label: 'البائعون وعرض اللوحات', catId: 'selling', badge: 'بدون أي رسوم مسبقة وتقييم خلال 24 ساعة' },
   policies: { label: 'التوثيق والسياسات', catId: 'policies', badge: 'إجابة معتمدة وفق اللوائح التنظيمية' },
   general: { label: 'استفسارات عامة', catId: 'policies', badge: 'مركز المعرفة والشفافية المعتمد' },
@@ -34,7 +34,15 @@ export async function loadDynamicFaqs(): Promise<FaqItem[] | undefined> {
       .order('sort_order', { ascending: true });
     if (error || !data || data.length === 0) return undefined;
 
-    return data.map((row, idx) => {
+    const seen = new Set<string>();
+    const uniqueRows = data.filter((row) => {
+      const q = String(row.question_ar ?? '').trim();
+      if (!q || seen.has(q)) return false;
+      seen.add(q);
+      return true;
+    });
+
+    return uniqueRows.map((row, idx) => {
       const metaRaw = String(row.question_en ?? '').trim();
       const [rawCatId, customLabel, customBadge] = metaRaw.includes('|')
         ? metaRaw.split('|')

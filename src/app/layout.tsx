@@ -53,54 +53,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     >
       <head>
         <link rel="preload" as="image" href="/videos/fbs-hero-poster.webp" type="image/webp" />
-        <Script
-          id="fbs-theme-init"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `(function(){
-  try {
-    var m = document.cookie.match(/(?:^|; )fbs_signature_theme=([^;]+)/);
-    var t = (m && m[1]) || localStorage.getItem('fbs_signature_theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', 'dark');
-    var seen = new WeakMap();
-    var cleanAttr = function(el) {
-      if (!el || !el.hasAttribute || !el.hasAttribute('data-pdffiller-skip')) return;
-      var c = (seen.get(el) || 0) + 1;
-      if (c <= 4) {
-        seen.set(el, c);
-        el.removeAttribute('data-pdffiller-skip');
-      }
-    };
-    var sweep = function() {
-      var nodes = document.querySelectorAll('[data-pdffiller-skip]');
-      for (var i = 0; i < nodes.length; i++) cleanAttr(nodes[i]);
-    };
-    sweep();
-    var obs = new MutationObserver(function(list) {
-      for (var i = 0; i < list.length; i++) {
-        var rec = list[i];
-        if (rec.type === 'attributes') cleanAttr(rec.target);
-        else if (rec.addedNodes) {
-          for (var j = 0; j < rec.addedNodes.length; j++) {
-            var n = rec.addedNodes[j];
-            if (n && n.nodeType === 1) {
-              cleanAttr(n);
-              if (n.querySelectorAll) {
-                var inner = n.querySelectorAll('[data-pdffiller-skip]');
-                for (var k = 0; k < inner.length; k++) cleanAttr(inner[k]);
-              }
-            }
-          }
-        }
-      }
-    });
-    obs.observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ['data-pdffiller-skip'] });
-    document.addEventListener('DOMContentLoaded', sweep, { once: true });
-    setTimeout(function() { obs.disconnect(); }, 5000);
-  } catch(e) {}
-})();`,
-          }}
-        />
       </head>
       <body
         suppressHydrationWarning
@@ -116,6 +68,73 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </main>
         <Footer siteSettings={siteSettings} />
         <FloatingSiteActions whatsappNumber={siteSettings.whatsappNumber} />
+        <Script
+          id="fbs-theme-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){
+  try {
+    var m = document.cookie.match(/(?:^|; )fbs_signature_theme=([^;]+)/);
+    var t = (m && m[1]) || localStorage.getItem('fbs_signature_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', 'dark');
+
+    // Intercept extension DOM pollution (e.g. pdfFiller injecting data-pdffiller-skip="1")
+    if (typeof Element !== 'undefined' && Element.prototype) {
+      var origSet = Element.prototype.setAttribute;
+      Element.prototype.setAttribute = function(name, val) {
+        if (name === 'data-pdffiller-skip') return;
+        return origSet.apply(this, arguments);
+      };
+      var origSetNode = Element.prototype.setAttributeNode;
+      if (origSetNode) {
+        Element.prototype.setAttributeNode = function(attr) {
+          if (attr && attr.name === 'data-pdffiller-skip') return attr;
+          return origSetNode.apply(this, arguments);
+        };
+      }
+      var origHas = Element.prototype.hasAttribute;
+      Element.prototype.hasAttribute = function(name) {
+        if (name === 'data-pdffiller-skip') return true;
+        return origHas.apply(this, arguments);
+      };
+    }
+
+    var cleanAttr = function(el) {
+      if (!el || !el.removeAttribute) return;
+      el.removeAttribute('data-pdffiller-skip');
+    };
+    var sweep = function() {
+      var nodes = document.querySelectorAll('[data-pdffiller-skip]');
+      for (var i = 0; i < nodes.length; i++) cleanAttr(nodes[i]);
+    };
+    sweep();
+    if (typeof MutationObserver !== 'undefined') {
+      var obs = new MutationObserver(function(list) {
+        for (var i = 0; i < list.length; i++) {
+          var rec = list[i];
+          if (rec.type === 'attributes') cleanAttr(rec.target);
+          else if (rec.addedNodes) {
+            for (var j = 0; j < rec.addedNodes.length; j++) {
+              var n = rec.addedNodes[j];
+              if (n && n.nodeType === 1) {
+                cleanAttr(n);
+                if (n.querySelectorAll) {
+                  var inner = n.querySelectorAll('[data-pdffiller-skip]');
+                  for (var k = 0; k < inner.length; k++) cleanAttr(inner[k]);
+                }
+              }
+            }
+          }
+        }
+      });
+      obs.observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ['data-pdffiller-skip'] });
+      document.addEventListener('DOMContentLoaded', sweep, { once: true });
+      setTimeout(function() { obs.disconnect(); }, 10000);
+    }
+  } catch(e) {}
+})();`,
+          }}
+        />
       </body>
     </html>
   );

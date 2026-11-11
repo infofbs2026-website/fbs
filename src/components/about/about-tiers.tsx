@@ -64,7 +64,7 @@ export function AboutTiers() {
   const selectedTier = plateTiers.find((t) => t.id === selectedTierId) || plateTiers[0];
 
   return (
-    <section className="relative overflow-hidden bg-navy border-y border-gold/30 py-16 sm:py-22 text-white">
+    <section className="relative overflow-hidden bg-navy border-y border-gold/30 py-12 sm:py-16 text-white">
       {/* Architectural Museum Vault Backdrop */}
       <div
         aria-hidden="true"
@@ -82,18 +82,18 @@ export function AboutTiers() {
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
       </div>
 
-      <div className="container-fbs relative z-10 space-y-6">
+      <div className="max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10 relative z-10 space-y-5 sm:space-y-6">
         {/* Header + Compact Segmented Selector (Centered on Mobile, Balanced Split on Desktop) */}
         <div className="flex flex-col items-center text-center lg:flex-row lg:items-end lg:text-start justify-between gap-4">
           <div className="min-w-0 flex flex-col items-center lg:items-start">
-            <div className="pf-type-micro inline-flex items-center gap-2 rounded-full border border-gold/35 bg-gold/10 px-3.5 py-1 font-bold text-gold-light">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-gold/35 bg-gold/10 px-3.5 py-1.5 text-[11px] sm:text-[11.5px] font-bold text-gold-light">
               <Layers size={13} className="text-gold shrink-0" />
-              <span>أرشيف الفئات</span>
+              <span>تصنيف وفئات اللوحات</span>
             </div>
-            <h2 className="pf-type-h2 mt-2.5 font-black text-white tracking-tight">
+            <h2 className="text-xl sm:text-2xl lg:text-[26px] font-black text-white tracking-tight mt-2.5">
               تصنيف اللوحات المميزة
             </h2>
-            <p className="pf-type-body mt-1.5 text-slate-300 font-normal">
+            <p className="mt-1.5 text-xs sm:text-[13.5px] text-slate-300 font-normal">
               أربع فئات نادرة مصنفة وفق التميز البصري والمقاس الرسمي.
             </p>
           </div>
@@ -107,7 +107,7 @@ export function AboutTiers() {
                   type="button"
                   aria-pressed={isSelected}
                   onClick={() => setSelectedTierId(tier.id)}
-                  className={`min-w-0 rounded-lg px-3.5 py-2 text-xs font-bold transition-all text-center whitespace-nowrap ${
+                  className={`min-w-0 rounded-lg px-3 sm:px-3.5 py-1.5 sm:py-2 text-xs font-bold transition-all text-center whitespace-nowrap ${
                     isSelected
                       ? 'btn-gold text-navy font-black shadow-xs'
                       : 'text-slate-300 hover:text-white hover:bg-white/5'
@@ -123,13 +123,13 @@ export function AboutTiers() {
         {/* Sculpted Gallery Stage — Clean, Uncluttered, Zero Nested Box Bloat */}
         <div
           data-pf-audit="about-tier-stage"
-          className="glass-vision p-5 sm:p-8 lg:p-9"
+          className="glass-vision p-5 sm:p-6 lg:p-7 rounded-2xl border border-white/10"
           style={{ backgroundColor: 'rgba(10, 20, 40, 0.8)' }}
         >
-          <div className="pf-cq-split grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-8 items-center">
             {/* Start Column (Right): Recessed Plate Pedestal + Plain Inline Tag Before Dimension */}
-            <div className="pf-cq-pad-inner plate-tray-recessed-dark min-w-0 flex flex-col items-center justify-center rounded-2xl p-5 sm:p-7">
-              <div className="w-full flex justify-center py-1.5">
+            <div className="plate-tray-recessed-dark min-w-0 flex flex-col items-center justify-center rounded-2xl p-4 sm:p-5">
+              <div className="w-full flex justify-center py-1 sm:py-1.5">
                 <PlateVisualizer
                   lettersAr={selectedTier.lettersAr}
                   lettersEn={selectedTier.lettersEn}
@@ -139,7 +139,7 @@ export function AboutTiers() {
                 />
               </div>
 
-              <div className="pf-type-micro mt-4 flex flex-wrap items-center justify-center gap-2 text-slate-300">
+              <div className="pf-type-micro mt-3.5 flex flex-wrap items-center justify-center gap-2 text-slate-300">
                 <span className="font-bold text-gold">{selectedTier.rankTag}</span>
                 <span className="text-white/25">•</span>
                 <span>
@@ -150,28 +150,28 @@ export function AboutTiers() {
 
             {/* End Column (Left): Clean Title, 1-Line Description & Compact Natural-Width Buttons */}
             <div className="min-w-0 flex flex-col items-center text-center lg:items-start lg:text-start justify-center">
-              <h3 className="pf-type-h2 font-black text-white tracking-tight">
+              <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                 {selectedTier.name}
               </h3>
 
-              <p className="pf-type-body mt-2 text-slate-300 font-normal">
+              <p className="mt-2 text-xs sm:text-[13.5px] leading-relaxed text-slate-300 font-normal">
                 {selectedTier.description}
               </p>
 
-              <div className="mt-6 flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
+              <div className="mt-5 flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
                 <Link
                   href="/plates"
-                  className="btn btn-gold min-h-10 rounded-xl px-5 py-2 text-xs font-black"
+                  className="btn btn-gold min-h-9.5 rounded-xl px-4 py-2 text-xs font-black shadow-xs"
                 >
                   <span>تصفح المتجر</span>
-                  <ArrowLeft size={14} className="shrink-0" />
+                  <ArrowLeft size={13} className="shrink-0" />
                 </Link>
 
                 <Link
                   href="/studio-3d"
-                  className="btn btn-outline-gold min-h-10 rounded-xl px-4 py-2 text-xs font-bold"
+                  className="btn btn-outline-gold min-h-9.5 rounded-xl px-3.5 py-2 text-xs font-bold"
                 >
-                  <Box size={14} className="text-gold shrink-0" />
+                  <Box size={13} className="text-gold shrink-0" />
                   <span>معاينة 3D</span>
                 </Link>
               </div>

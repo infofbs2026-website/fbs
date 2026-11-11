@@ -83,16 +83,16 @@ const buyerJourneySteps: JourneyStep[] = [
       textClass: 'text-emerald-800',
       borderClass: 'border-emerald-300'
     },
-    title: 'استكشاف اللوحات ومعاينتها بدقة فائقة',
+    title: 'استكشاف اللوحات ومعاينتها بدقة',
     description:
-      'تصفح تشكيلة اللوحات الأحادية والثنائية والنادرة بدقة عالية، مع محاكي القياسات والمواصفات الرسمية لوزارة الداخلية والإدارة العامة للمرور.',
+      'تصفح أندر اللوحات المميزة مع محاكي دقيق مطابق للمقاسات والمواصفات الرسمية.',
     stepProgress: 'الخطوة 1 من 5',
     renderVisual: () => (
       <div className="space-y-3">
         <div className="flex justify-center py-1">
           <PlateVisualizer
             lettersAr={['د', 'ل', 'ع']}
-            lettersEn={['D', 'L', 'A']}
+            lettersEn={['D', 'L', 'E']}
             numbers="1"
             compact={true}
           />
@@ -110,14 +110,14 @@ const buyerJourneySteps: JourneyStep[] = [
   {
     num: '02',
     badge: {
-      label: 'توثيق أمني نفاذ',
+      label: 'توثيق معتمد وسريع',
       bgClass: 'bg-blue-50',
       textClass: 'text-blue-800',
       borderClass: 'border-blue-300'
     },
-    title: 'التسجيل وتوثيق الهوية الوطنية',
+    title: 'التسجيل وتوثيق بيانات المزايد',
     description:
-      'أنشئ حسابك وفعّل رقم جوالك مع ربط الهوية الوطنية عبر النفاذ الوطني الموحد لضمان جدية وموثوقية كافة المزايدات ومنع الحسابات الوهمية.',
+      'إنشاء حسابك وتأكيد بيانات الهوية والتواصل لضمان جدية المزايدات وموثوقية التعاملات.',
     stepProgress: 'الخطوة 2 من 5',
     renderVisual: () => (
       <div className="rounded-xl border border-blue-200/80 bg-gradient-to-br from-blue-50/70 to-indigo-50/40 p-3 text-start">
@@ -127,8 +127,8 @@ const buyerJourneySteps: JourneyStep[] = [
               <ShieldCheck size={16} />
             </span>
             <div>
-              <p className="text-xs font-bold text-navy">توثيق النفاذ الوطني</p>
-              <p className="text-[10px] text-slate-500">ربط فوري بهوية المزايد</p>
+              <p className="text-xs font-bold text-navy">توثيق هوية المزايد</p>
+              <p className="text-[10px] text-slate-500">تحقق رسمي معتمد</p>
             </div>
           </div>
           <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-300">
@@ -136,8 +136,8 @@ const buyerJourneySteps: JourneyStep[] = [
           </span>
         </div>
         <div className="mt-2.5 flex items-center justify-between border-t border-blue-100 pt-2 text-[10px] text-slate-500 font-medium">
-          <span>تشفير بيانات بنكي 256-bit</span>
-          <span className="text-navy font-bold">معتمد للأفراد والشركات</span>
+          <span className="whitespace-nowrap">تشفير بنكي معتمد 256-bit</span>
+          <span className="text-navy font-bold whitespace-nowrap">للأفراد والشركات</span>
         </div>
       </div>
     )
@@ -152,7 +152,7 @@ const buyerJourneySteps: JourneyStep[] = [
     },
     title: 'إيداع تأمين المزاد المالي',
     description:
-      'سدّد تأمين المزاد المحدد لكل لوحة عبر بوابات الدفع الرسمية (مدى، فيزا، ماستركارد، تحويل بنكي). التأمين مسترد بالكامل 100% فور انتهاء المزاد في حال عدم الفوز.',
+      'إيداع مبلغ التأمين المحدد بأمان، مع إفراج فوري وتلقائي 100% في حال عدم الفوز.',
     stepProgress: 'الخطوة 3 من 5',
     renderVisual: () => (
       <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3">
@@ -162,11 +162,11 @@ const buyerJourneySteps: JourneyStep[] = [
             حساب بنكي ضامن (Escrow)
           </span>
           <span className="rounded-md bg-amber-200/70 px-2 py-0.5 text-[10px] font-black text-amber-900">
-            ضمان بنكي ساما
+            ضمان بنكي معتمد
           </span>
         </div>
         <p className="mt-1.5 text-[11px] leading-relaxed text-amber-900/80">
-          يُحجز التأمين بأمان كامل، ويتم تحريره واسترداده لحسابك آليًا فور انتهاء المزاد دون أي خصومات في حال عدم الترسية.
+          حجز بنكي آمن يُحرر تلقائياً فور نهاية المزاد دون أي استقطاعات عند عدم الترسية.
         </p>
       </div>
     )
@@ -181,7 +181,7 @@ const buyerJourneySteps: JourneyStep[] = [
     },
     title: 'المزايدة في الصالة الرقمية الحية',
     description:
-      'ادخل صالة المزاد الرقمية وتابع المزايدات بالثواني مع نظام حماية الثواني الأخيرة (Anti-Sniping) الذي يمدد وقت المزاد تلقائيًا لمنع المباغتة البرمجية.',
+      'متابعة لحظية وتنافس عادل مع نظام تمديد ذكي يحمي تكافؤ الفرص في اللحظات الأخيرة.',
     stepProgress: 'الخطوة 4 من 5',
     renderVisual: () => (
       <div className="rounded-xl border border-purple-200/90 bg-gradient-to-r from-purple-50 via-slate-50 to-purple-50/50 p-3">
@@ -198,7 +198,7 @@ const buyerJourneySteps: JourneyStep[] = [
           </span>
         </div>
         <div className="mt-2 text-[11px] font-medium text-slate-600">
-          خوارزمية حماية المزايدين: تمديد وقت المزاد آليًا عند وجود مزايدات في الثواني الأخيرة لضمان تكافؤ الفرص.
+          خوارزمية ذكية تمدد وقت المزاد آلياً عند وجود مزايدات بالثواني الأخيرة لضمان تكافؤ الفرص.
         </div>
       </div>
     )
@@ -206,29 +206,32 @@ const buyerJourneySteps: JourneyStep[] = [
   {
     num: '05',
     badge: {
-      label: 'نقل رسمي معتمد أبشر',
+      label: 'نقل ملكية رسمي',
       bgClass: 'bg-emerald-50',
       textClass: 'text-emerald-900',
       borderClass: 'border-emerald-300'
     },
-    title: 'الترسية ونقل الملكية الفوري عبر أبشر',
+    title: 'الترسية والتسوية ونقل الملكية',
     description:
-      'عند انتهاء المزاد بفوزك، تُسدد القيمة المتبقية عبر الحساب الضامن، ويتولى فريق التنسيق إتمام نقل الملكية رسمياً إلى سجلك في منصة أبشر وإصدار الاستمارة.',
+      'تسديد المتبقي عبر الحساب الضامن واستكمال إجراءات نقل الملكية الرسمية واستلام الاستمارة.',
     stepProgress: 'الخطوة 5 من 5',
     renderVisual: () => (
       <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-3">
-        <div className="flex items-center justify-between">
-          <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-950">
-            <Building size={15} className="text-emerald-700" />
-            بوابة المرور ومنصة أبشر
-          </span>
-          <span className="rounded-full bg-emerald-200/80 px-2 py-0.5 text-[10px] font-black text-emerald-900">
-            نقل إلكتروني فوري
+        <div className="flex items-center gap-2">
+          <Building size={16} className="text-emerald-700 shrink-0" />
+          <span className="text-xs font-bold text-emerald-950 whitespace-nowrap">
+            تسوية ونقل الملكية المعتمد
           </span>
         </div>
-        <div className="mt-2 flex items-center justify-between text-[11px] text-emerald-900/90 font-medium">
-          <span>• مطابقة السجل المروري</span>
-          <span>• تسليم الوثائق الأصلية</span>
+        <div className="mt-2.5 space-y-1.5 border-t border-emerald-200/60 pt-2 text-[11px] text-emerald-900 font-medium">
+          <div className="flex items-center gap-1.5">
+            <CheckCircle2 size={12} className="text-emerald-600 shrink-0" />
+            <span>مطابقة السجلات وتحديث المستندات</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <CheckCircle2 size={12} className="text-emerald-600 shrink-0" />
+            <span>تسليم الوثائق الرسمية</span>
+          </div>
         </div>
       </div>
     )
@@ -244,16 +247,16 @@ const sellerJourneySteps: JourneyStep[] = [
       textClass: 'text-teal-800',
       borderClass: 'border-teal-300'
     },
-    title: 'إدخال بيانات اللوحة وتحديد فئتها',
+    title: 'إدخال بيانات ومواصفات اللوحة',
     description:
-      'أدخل الحروف والأرقام ونوع اللوحة وسنة التسجيل، لتحصل على معاينة فورية مطابقة للمواصفات الرسمية للمرور مع تحديد مؤشر الندرة الاستثماري.',
+      'إدخال الحروف والأرقام والفئة للحصول على معاينة فورية ومطابقة دقيقة للمواصفات الرسمية.',
     stepProgress: 'الخطوة 1 من 5',
     renderVisual: () => (
       <div className="space-y-3">
         <div className="flex justify-center py-1">
           <PlateVisualizer
             lettersAr={['س', 'ع', 'د']}
-            lettersEn={['S', 'A', 'D']}
+            lettersEn={['S', 'E', 'D']}
             numbers="777"
             compact={true}
           />
@@ -271,14 +274,14 @@ const sellerJourneySteps: JourneyStep[] = [
   {
     num: '02',
     badge: {
-      label: 'تشفير وحماية تامة',
+      label: 'سرية وتشفير كامل',
       bgClass: 'bg-blue-50',
       textClass: 'text-blue-800',
       borderClass: 'border-blue-300'
     },
     title: 'رفع إثبات الملكية وتفويض البيع',
     description:
-      'ارفع صورة استمارة المركبة أو برنت منصة أبشر في بيئة سحابية مشفرة بالكامل لا يطلع عليها سوى فريق التدقيق والامتثال النظامي بالمنصة.',
+      'رفع استمارة المركبة وتفويض البيع في بيئة مشفرة تخضع لأعلى معايير السرية والتدقيق النظامي.',
     stepProgress: 'الخطوة 2 من 5',
     renderVisual: () => (
       <div className="rounded-xl border border-blue-200/80 bg-gradient-to-br from-blue-50/70 to-indigo-50/40 p-3 text-start">
@@ -311,9 +314,9 @@ const sellerJourneySteps: JourneyStep[] = [
       textClass: 'text-amber-900',
       borderClass: 'border-amber-300'
     },
-    title: 'الفحص النظامي والتقييم الاستثماري',
+    title: 'الفحص والتقييم الاستثماري',
     description:
-      'يتولى خبراؤنا ومثمنو اللوحات مراجعة السجل المروري ومطابقة البيانات واقتراح السعر الافتتاحي والحد الأدنى (Reserve Price) لضمان أعلى عائد للوحة.',
+      'مراجعة شاملة ومطابقة للسجلات وتقدير السعر العادل وفق تحليلات السوق لتحقيق أعلى عائد.',
     stepProgress: 'الخطوة 3 من 5',
     renderVisual: () => (
       <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3">
@@ -327,7 +330,7 @@ const sellerJourneySteps: JourneyStep[] = [
           </span>
         </div>
         <p className="mt-1.5 text-[11px] leading-relaxed text-amber-900/80">
-          تحليل مقارن لآخر الصفقات المماثلة في السوق السعودي لتحديد السعر الأنسب لجذب كبار المزايدين.
+          تحليل مقارن لأحدث الصفقات المماثلة في السوق السعودي لتحديد السعر الأنسب لجذب كبار المزايدين.
         </p>
       </div>
     )
@@ -335,14 +338,14 @@ const sellerJourneySteps: JourneyStep[] = [
   {
     num: '04',
     badge: {
-      label: 'تسويق حصري للنخبة',
+      label: 'تسويق موجه للنخبة',
       bgClass: 'bg-purple-50',
       textClass: 'text-purple-800',
       borderClass: 'border-purple-300'
     },
-    title: 'إطلاق المزاد والتسويق لشبكة كبار المقتنين',
+    title: 'طرح المزاد والتسويق الحصري',
     description:
-      'تُطرح اللوحة في صالة المزادات الحية وتُسوّق عبر شبكة حصرية تضم أكثر من 10,000 مستثمر ومقتنٍ للوحات في المملكة ودول الخليج العربي.',
+      'عرض اللوحة في الصالة الحية والوصول المباشر لقاعدة تضم أكثر من 10,000 مستثمر ومقتنٍ جاد.',
     stepProgress: 'الخطوة 4 من 5',
     renderVisual: () => (
       <div className="rounded-xl border border-purple-200/90 bg-gradient-to-r from-purple-50 via-slate-50 to-purple-50/50 p-3">
@@ -356,7 +359,7 @@ const sellerJourneySteps: JourneyStep[] = [
           </span>
         </div>
         <div className="mt-2 text-[11px] font-medium text-slate-600">
-          حملات تسويقية موجهة وإشعارات خاصة لكبار الشخصيات وهواة جمع الأرقام المتطابقة.
+          حملات تسويقية وتنبيهات مباشرة لكبار المقتنين والمهتمين باللوحات النادرة.
         </div>
       </div>
     )
@@ -369,24 +372,27 @@ const sellerJourneySteps: JourneyStep[] = [
       textClass: 'text-emerald-900',
       borderClass: 'border-emerald-300'
     },
-    title: 'تحصيل العوائد ونقل الملكية البنكي',
+    title: 'تحصيل العوائد ونقل الملكية',
     description:
-      'تُودع قيمة الترسية بالكامل في حساب الضامن (Escrow) قبل التنازل، وتتحول لحسابك البنكي مباشرة فور اكتمال نقل اللوحة للمشتري عبر أبشر.',
+      'إيداع قيمة الترسية بالحساب الضامن مسبقاً، وتحويل العوائد لحسابك البنكي فور إتمام نقل الملكية.',
     stepProgress: 'الخطوة 5 من 5',
     renderVisual: () => (
       <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-3">
-        <div className="flex items-center justify-between">
-          <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-950">
-            <Building size={15} className="text-emerald-700" />
+        <div className="flex items-center gap-2">
+          <Building size={16} className="text-emerald-700 shrink-0" />
+          <span className="text-xs font-bold text-emerald-950 whitespace-nowrap">
             تحويل بنكي IBAN فوري
           </span>
-          <span className="rounded-full bg-emerald-200/80 px-2 py-0.5 text-[10px] font-black text-emerald-900">
-            صفر مخاطرة تعثر
-          </span>
         </div>
-        <div className="mt-2 flex items-center justify-between text-[11px] text-emerald-900/90 font-medium">
-          <span>• استلام المقابل المالي مضمون 100%</span>
-          <span>• إخلاء طرف رسمي فوري</span>
+        <div className="mt-2.5 space-y-1.5 border-t border-emerald-200/60 pt-2 text-[11px] text-emerald-900 font-medium">
+          <div className="flex items-center gap-1.5">
+            <CheckCircle2 size={12} className="text-emerald-600 shrink-0" />
+            <span>استلام المقابل المالي مضمون 100%</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <CheckCircle2 size={12} className="text-emerald-600 shrink-0" />
+            <span>إخلاء طرف رسمي فوري</span>
+          </div>
         </div>
       </div>
     )
@@ -406,22 +412,22 @@ type FaqItem = {
 const faqs: FaqItem[] = [
   {
     q: 'ما هو نظام الحساب الضامن (Escrow) وكيف يحميني كمشترٍ أو كبائع؟',
-    a: 'الحساب الضامن هو حساب بنكي وسيط معتمد تشرف عليه المنصة، حيث يتم إيداع قيمة اللوحة بالكامل من المشتري وحفظها بأمان، ولا يتم تحويل المقابل المالي إلى البائع إلا بعد إتمام إجراءات نقل ملكية اللوحة رسمياً في منصة أبشر وإصدار الاستمارة الجديدة باسم المشتري. هذا يضمن حماية المشتري من الاحتيال وحماية البائع من تعثر الدفع.',
+    a: 'تُحفظ قيمة اللوحة في حساب بنكي ضامن محمي، ولا تُحوّل للبائع إلا بعد اكتمال نقل الملكية رسمياً واستلام المشتري للاستمارة الجديدة.',
     category: 'الضمانات المالية'
   },
   {
     q: 'كيف يعمل نظام مكافحة القنص (Anti-Sniping) في الصالة الحية؟',
-    a: 'عند تقديم أي مزايدة في آخر 60 ثانية من عمر المزاد، يقوم النظام الذكي تلقائيًا بتمديد وقت المزاد لدقيقة إضافية. هذا الإجراء يمنع برامج البوتات والمباغتة في اللحظات الأخيرة ويمنح جميع المزايدين فرصة عادلة وحقيقية للرد.',
+    a: 'عند تقديم أي مزايدة في آخر دقيقة من المزاد، يُمدد الوقت تلقائياً لدقيقة إضافية لضمان تكافؤ الفرص ومنع المباغتة في اللحظات الأخيرة.',
     category: 'المزادات الحية'
   },
   {
     q: 'متى يتم استرداد مبلغ تأمين المزاد في حال عدم الفوز؟',
-    a: 'يتم فك حجز التأمين وإعادته لحسابك البنكي أو بطاقتك الائتمانية بشكل آلي وفوري بعد انتهاء المزاد مباشرة دون استقطاع أي رسوم، وتظهر في كشف حسابك خلال المدة المحددة من بنكك المحلي (عادة من 1 إلى 24 ساعة).',
+    a: 'يُفك حجز التأمين آلياً وفور انتهاء المزاد لغير الفائزين دون أي استقطاع، ليعود الرصيد لحسابك البنكي مباشرة دون تأخير.',
     category: 'التأمين والمدفوعات'
   },
   {
     q: 'هل يتطلب إتمام نقل الملكية الحضور لأي فرع من فروع المرور؟',
-    a: 'في معظم الحالات العادية، تتم كافة إجراءات نقل الملكية والتوثيق إلكترونياً بالكامل عبر منصة أبشر التابعة لوزارة الداخلية والربط مع أنظمة المرور السعودي، ويتم توصيل اللوحات والوثائق إلى عنوانك الوطني المعتمد دون الحاجة لمراجعة الفروع.',
+    a: 'لا حاجة لمراجعة فروع المرور؛ يتولى فريقنا إنهاء إجراءات النقل الرسمية وإصدار الاستمارة وتسليم اللوحات مباشرة.',
     category: 'نقل الملكية'
   }
 ];
@@ -455,15 +461,15 @@ export function HowItWorksView() {
       {/* =================================================================== */}
       {/* 1. PRESTIGE DARK HERO SECTION                                       */}
       {/* =================================================================== */}
-      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#D9BB81]/30 text-white pt-26 sm:pt-30 lg:pt-34 pb-28 sm:pb-36 lg:pb-48 min-h-[55svh] lg:min-h-[69vh] flex flex-col justify-center">
-        <div className="container-fbs relative z-10">
+      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#D9BB81]/30 text-white pt-24 sm:pt-28 lg:pt-32 pb-16 sm:pb-20 lg:pb-22 min-h-[66vh] lg:min-h-[70vh] flex flex-col justify-center items-center text-center">
+        <div className="w-full max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10 relative z-10 flex flex-col items-center text-center">
           {/* Stage 1: Breadcrumb Navigation & Eyebrow Capsule */}
           <div
-            className={`transition-all duration-700 ease-out transform ${
+            className={`flex flex-col items-center justify-center transition-all duration-700 ease-out transform ${
               stage >= 1 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
             }`}
           >
-            <nav aria-label="مسار التصفح" className="mb-6 flex items-center gap-2 text-xs font-medium text-slate-400">
+            <nav aria-label="مسار التصفح" className="mb-4 flex items-center justify-center gap-2 text-xs font-medium text-slate-400">
               <Link href="/" className="hover:text-gold transition-colors">
                 الرئيسية
               </Link>
@@ -471,76 +477,52 @@ export function HowItWorksView() {
               <span className="text-gold font-semibold">كيف نعمل</span>
             </nav>
 
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-gold/40 bg-gold/10 px-4 py-1.5 backdrop-blur-md">
-              <IconOfficialSeal className="w-4 h-4 text-gold" />
-              <span className="text-xs font-bold text-gold-light tracking-wide">
-                دليل الصفقات والمزادات المعتمدة في المملكة
+            <div className="inline-flex items-center justify-center gap-1.5 rounded-full border border-gold/35 bg-gold/15 px-3.5 py-1.5 backdrop-blur-md mx-auto">
+              <IconOfficialSeal className="w-3.5 h-3.5 text-gold" />
+              <span className="text-[11px] sm:text-[11.5px] font-bold text-gold-light tracking-wide">
+                دليل آلية العمل والوساطة المعتمدة
               </span>
             </div>
           </div>
 
           {/* Stage 2: Hero Typography */}
           <div
-            className={`mt-6 max-w-3xl transition-all duration-700 ease-out transform ${
+            className={`mt-5 max-w-3xl text-center mx-auto transition-all duration-700 ease-out transform ${
               stage >= 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'
             }`}
           >
-            <h1 className="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-white leading-tight">
-              آلية عمل صفقات ومزادات النخبة
-              <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-gold-light via-gold to-gold-accent">
-                بضمانات رسمية وأنظمة مالية محكمة
-              </span>
+            <h1 className="text-[clamp(1.75rem,1.35rem+1.2vw,2.35rem)] font-black tracking-tight text-white leading-tight whitespace-normal sm:whitespace-nowrap text-center">
+              آلية عمل مزادات وصفقات النخبة المعتمدة
             </h1>
 
-            <p className="mt-5 text-sm sm:text-base lg:text-lg leading-relaxed text-slate-200 font-normal">
-              رحلة رقمية متكاملة لامتلاك وبيع أندر لوحات المركبات السعودية، مدعومة بنظام الحساب الضامن (Escrow)
-              والربط الرسمي مع بوابة أبشر وأنظمة وزارة الداخلية لضمان حقوق كافة الأطراف بأعلى معايير الحوكمة والسرية.
+            <p className="mt-3 text-xs sm:text-[13.5px] text-slate-300 font-normal whitespace-normal sm:whitespace-nowrap max-w-2xl mx-auto leading-relaxed text-center">
+              منظومة رقمية متكاملة للمزايدة والبيع بإشراف حساب بنكي ضامن وحماية مالية معتمدة.
             </p>
           </div>
 
           {/* Stage 3: Quick Assurance Badges Ribbon */}
           <div
-            className={`mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4 border-t border-gold/20 pt-8 transition-all duration-700 ease-out transform ${
+            className={`mt-7 w-full max-w-[540px] mx-auto grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-gold/20 pt-6 justify-center transition-all duration-700 ease-out transform ${
               stage >= 3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'
             }`}
           >
-            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3.5 backdrop-blur-sm">
+            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-2.5 sm:py-2.5 sm:px-3.5 backdrop-blur-sm text-start">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold/20 text-gold border border-gold/30">
                 <CreditCard size={18} />
               </span>
-              <div>
-                <p className="text-xs font-black text-white">حساب بنكي ضامن</p>
-                <p className="text-[11px] text-slate-400 font-medium">تسوية مالية مؤمنة 100%</p>
+              <div className="min-w-0">
+                <p className="text-xs font-black text-white whitespace-nowrap">حساب بنكي ضامن</p>
+                <p className="text-[11px] text-slate-300 font-medium whitespace-nowrap">تسوية مالية مؤمنة 100%</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3.5 backdrop-blur-sm">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                <Building size={18} />
-              </span>
-              <div>
-                <p className="text-xs font-black text-white">ربط رسمي عبر أبشر</p>
-                <p className="text-[11px] text-slate-400 font-medium">إجراءات مرورية معتمدة</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3.5 backdrop-blur-sm">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30">
+            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-2.5 sm:py-2.5 sm:px-3.5 backdrop-blur-sm text-start">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/30">
                 <Clock size={18} />
               </span>
-              <div>
-                <p className="text-xs font-black text-white">مكافحة القنص الذكية</p>
-                <p className="text-[11px] text-slate-400 font-medium">تكافؤ كامل لفرص المزايدة</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3.5 backdrop-blur-sm">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                <ShieldCheck size={18} />
-              </span>
-              <div>
-                <p className="text-xs font-black text-white">توثيق نفاذ الوطني</p>
-                <p className="text-[11px] text-slate-400 font-medium">مزايدون وملاك حقيقيون</p>
+              <div className="min-w-0">
+                <p className="text-xs font-black text-white whitespace-nowrap">مكافحة القنص الذكية</p>
+                <p className="text-[11px] text-slate-300 font-medium whitespace-nowrap">تمديد تلقائي وتكافؤ فرص</p>
               </div>
             </div>
           </div>
@@ -550,32 +532,32 @@ export function HowItWorksView() {
       {/* =================================================================== */}
       {/* 2. SEGMENTED TAB SWITCHER & STEPS SHOWCASE                          */}
       {/* =================================================================== */}
-      <section className="relative -mt-10 sm:-mt-14 pb-20">
-        <div className="container-fbs">
+      <section className="relative -mt-8 sm:-mt-10 pb-20">
+        <div className="max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10">
           {/* Executive Glass Tab Bar */}
-          <div className="mx-auto max-w-2xl">
-            <div className="rounded-3xl border-2 border-gold/40 bg-[#080e1c] p-2 shadow-[0_20px_50px_rgba(0,0,0,0.45)]">
-              <div className="grid grid-cols-2 gap-2">
+          <div className="mx-auto max-w-xl">
+            <div className="rounded-2xl border border-gold/40 bg-[#081223]/95 p-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.35)] backdrop-blur-md">
+              <div className="grid grid-cols-2 gap-1.5">
                 {/* Tab 1: Buyer Journey */}
                 <button
                   type="button"
                   onClick={() => setActiveTab('buyer')}
-                  className={`flex items-center justify-center gap-3 rounded-2xl px-4 py-4 text-center transition-all duration-300 ${
+                  className={`flex items-center justify-center gap-2.5 rounded-xl px-3 sm:px-4 py-3 text-center transition-all duration-300 ${
                     activeTab === 'buyer'
-                      ? 'bg-gradient-to-r from-gold/30 via-gold/15 to-gold/25 border border-gold text-gold-light shadow-lg'
-                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                      ? 'bg-gradient-to-r from-gold/30 via-gold/15 to-gold/25 border border-gold text-gold-light shadow-md'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
                   }`}
                 >
                   <IconBuyerJourney
-                    className={`w-6 h-6 transition-colors ${
+                    className={`w-5 h-5 sm:w-6 sm:h-6 shrink-0 transition-colors ${
                       activeTab === 'buyer' ? 'text-gold' : 'text-slate-400'
                     }`}
                   />
-                  <div className="text-start">
-                    <p className={`text-sm sm:text-base font-black ${activeTab === 'buyer' ? 'text-white' : 'text-slate-300'}`}>
+                  <div className="text-start min-w-0">
+                    <p className={`text-xs sm:text-[14px] font-black whitespace-nowrap ${activeTab === 'buyer' ? 'text-white' : 'text-slate-300'}`}>
                       رحلة المزايد والمشتري
                     </p>
-                    <p className="text-[11px] text-slate-400 font-medium hidden sm:block">
+                    <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium hidden sm:block whitespace-nowrap truncate">
                       للمشاركين في المزادات والشراء الفوري
                     </p>
                   </div>
@@ -585,22 +567,22 @@ export function HowItWorksView() {
                 <button
                   type="button"
                   onClick={() => setActiveTab('seller')}
-                  className={`flex items-center justify-center gap-3 rounded-2xl px-4 py-4 text-center transition-all duration-300 ${
+                  className={`flex items-center justify-center gap-2.5 rounded-xl px-3 sm:px-4 py-3 text-center transition-all duration-300 ${
                     activeTab === 'seller'
-                      ? 'bg-gradient-to-r from-gold/30 via-gold/15 to-gold/25 border border-gold text-gold-light shadow-lg'
-                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                      ? 'bg-gradient-to-r from-gold/30 via-gold/15 to-gold/25 border border-gold text-gold-light shadow-md'
+                      : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
                   }`}
                 >
                   <IconSellerJourney
-                    className={`w-6 h-6 transition-colors ${
+                    className={`w-5 h-5 sm:w-6 sm:h-6 shrink-0 transition-colors ${
                       activeTab === 'seller' ? 'text-gold' : 'text-slate-400'
                     }`}
                   />
-                  <div className="text-start">
-                    <p className={`text-sm sm:text-base font-black ${activeTab === 'seller' ? 'text-white' : 'text-slate-300'}`}>
+                  <div className="text-start min-w-0">
+                    <p className={`text-xs sm:text-[14px] font-black whitespace-nowrap ${activeTab === 'seller' ? 'text-white' : 'text-slate-300'}`}>
                       رحلة المالك والبائع
                     </p>
-                    <p className="text-[11px] text-slate-400 font-medium hidden sm:block">
+                    <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium hidden sm:block whitespace-nowrap truncate">
                       لعرض وتثمين لوحتك أمام المستثمرين
                     </p>
                   </div>
@@ -610,16 +592,16 @@ export function HowItWorksView() {
           </div>
 
           {/* Section Subheading Indicator */}
-          <div className="mt-12 text-center">
-            <h2 className="text-xl sm:text-2xl font-black text-navy">
+          <div className="mt-9 sm:mt-11 text-center">
+            <h2 className="text-xl sm:text-2xl font-black text-navy whitespace-normal sm:whitespace-nowrap">
               {activeTab === 'buyer'
                 ? '5 خطوات لاقتناء لوحتك المميزة بأعلى درجات الأمان'
-                : '5 خطوات لعرض لوحتك والحصول على أعلى عائد استثماري'}
+                : '5 خطوات لعرض لوحتك وتحقيق أعلى عائد استثماري'}
             </h2>
-            <p className="mt-2 text-xs sm:text-sm text-slate-500 font-medium">
+            <p className="mt-2 text-xs sm:text-[13px] text-slate-500 font-medium whitespace-normal sm:whitespace-nowrap">
               {activeTab === 'buyer'
-                ? 'إجراءات مؤتمتة تبدأ بالمعاينة والمزايدة وتنتهي بنقل الملكية الرسمي'
-                : 'من التقييم والفحص الجنائي وحتى تحصيل المبالغ في حسابك البنكي'}
+                ? 'إجراءات منظمة تبدأ بالمعاينة والمزايدة الحية وتنتهي بنقل الملكية الرسمي'
+                : 'من الفحص والتقييم العادل وحتى إيداع العوائد المالية في حسابك البنكي'}
             </p>
           </div>
 
@@ -701,9 +683,9 @@ export function HowItWorksView() {
                     : 'اعرض لوحتك أمام أكثر من 10,000 مقتنٍ'}
                 </h3>
 
-                <p className="mt-3 text-xs sm:text-sm leading-relaxed text-slate-300 font-normal">
+                <p className="mt-3 text-xs sm:text-[13px] leading-relaxed text-slate-300 font-normal">
                   {activeTab === 'buyer'
-                    ? 'انضم إلى نخبة مقتني اللوحات في المملكة وتابع المزادات الحية بالثواني مع ضمانات رسمية لنقل الملكية.'
+                    ? 'انضم إلى نخبة مقتني اللوحات في المملكة وتابع المزادات الحية بالثواني مع ضمانات حماية مالية متكاملة.'
                     : 'احصل على أعلى قيمة سوقية للوحتك مع سرية تامة وسرعة في إجراءات البيع والتسوية البنكية.'}
                 </p>
 
@@ -711,11 +693,11 @@ export function HowItWorksView() {
                 <div className="mt-5 space-y-2 border-t border-white/10 pt-4 text-xs text-slate-300">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 size={14} className="text-gold" />
-                    <span>حساب بنكي ضامن (Escrow) يحمي حقوقك 100%</span>
+                    <span>{activeTab === 'buyer' ? 'حساب بنكي ضامن لحفظ حقوقك بالكامل' : 'إيداع بنكي مضمون لكامل القيمة مسبقاً'}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 size={14} className="text-gold" />
-                    <span>نقل ملكية رسمي وإلكتروني عبر منصة أبشر</span>
+                    <span>{activeTab === 'buyer' ? 'إجراءات نقل ملكية رسمية موثقة ومعتمدة' : 'تسويق موجه لأكثر من 10,000 مقتنٍ جاد'}</span>
                   </div>
                 </div>
               </div>
@@ -764,57 +746,57 @@ export function HowItWorksView() {
       {/* =================================================================== */}
       {/* 3. TRIPLE GUARANTEES & COMPLIANCE SECTION                           */}
       {/* =================================================================== */}
-      <section className="border-y border-slate-200 bg-white py-16 sm:py-24">
-        <div className="container-fbs">
+      <section className="border-y border-slate-200 bg-white py-16 sm:py-20">
+        <div className="max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10">
           <div className="text-center max-w-2xl mx-auto">
-            <span className="text-xs font-extrabold text-gold-accent tracking-widest uppercase">
-              منظومة الأمان المؤسسية
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/35 bg-gold/15 px-3.5 py-1.5 text-[11px] sm:text-[11.5px] font-bold text-[#8a6828]">
+              منظومة الحماية والضمان
             </span>
-            <h2 className="mt-2 text-2xl sm:text-3xl font-black text-navy">
+            <h2 className="mt-3 text-xl sm:text-2xl lg:text-3xl font-black text-navy whitespace-normal sm:whitespace-nowrap">
               3 ركائز أساسية تضمن حماية صفقاتك
             </h2>
-            <p className="mt-2 text-xs sm:text-sm text-slate-500">
-              حرصنا في منصة فارس بن سعود على بناء بنية تحتية قانونية ومالية صارمة لضمان راحة بالك.
+            <p className="mt-2 text-xs sm:text-[13px] text-slate-500 whitespace-normal sm:whitespace-nowrap">
+              بنية تحتية مالية ونظامية محكمة تضمن أمان التعاملات وحفظ حقوق كافة الأطراف.
             </p>
           </div>
 
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
             {/* Pillar 1 */}
-            <div className="rounded-3xl border border-slate-200 bg-[#fbfcfd] p-7 hover:border-gold/50 transition-colors">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600 border border-amber-500/20 shadow-xs">
-                <CreditCard size={24} />
+            <div className="rounded-3xl border border-slate-200 bg-[#fbfcfd] p-6 hover:border-gold/50 transition-colors">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600 border border-amber-500/20 shadow-xs">
+                <CreditCard size={22} />
               </span>
-              <h3 className="mt-5 text-base font-black text-navy">
+              <h3 className="mt-4 text-base font-black text-navy">
                 الحساب البنكي الضامن (Escrow)
               </h3>
-              <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-slate-600">
-                تسوية مالية خالية من المخاطر. تبقى المبالغ محفوظة في حساب وسيط بنكي معتمد ولا تُحوّل للبائع إلا بعد تأكيد استلام اللوحة ونقل الاستمارة في المرور باسم المشتري.
+              <p className="mt-2 text-xs sm:text-[13px] leading-relaxed text-slate-600">
+                تسوية مالية مؤمنة 100%؛ تبقى المبالغ في حساب وسيط معتمد ولا تُحوّل للبائع إلا بعد استكمال نقل الملكية وتأكيد الاستلام رسمياً.
               </p>
             </div>
 
             {/* Pillar 2 */}
-            <div className="rounded-3xl border border-slate-200 bg-[#fbfcfd] p-7 hover:border-gold/50 transition-colors">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 shadow-xs">
-                <Building size={24} />
+            <div className="rounded-3xl border border-slate-200 bg-[#fbfcfd] p-6 hover:border-gold/50 transition-colors">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 shadow-xs">
+                <Building size={22} />
               </span>
-              <h3 className="mt-5 text-base font-black text-navy">
-                الربط الحكومي المعتمد مع أبشر
+              <h3 className="mt-4 text-base font-black text-navy">
+                حوكمة وتوثيق رسمي معتمد
               </h3>
-              <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-slate-600">
-                تتم جميع عمليات نقل الملكية وفحص السجل المروري بالتعاون المباشر مع القنوات الرسمية لوزارة الداخلية والإدارة العامة للمرور لضمان شرعية وموثوقية الصفقة.
+              <p className="mt-2 text-xs sm:text-[13px] leading-relaxed text-slate-600">
+                إشراف نظامي متكامل لمطابقة بيانات اللوحات وإتمام إجراءات نقل الملكية الرسمية واستلام الاستمارة باسم المشتري مباشرة.
               </p>
             </div>
 
             {/* Pillar 3 */}
-            <div className="rounded-3xl border border-slate-200 bg-[#fbfcfd] p-7 hover:border-gold/50 transition-colors">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-600 border border-purple-500/20 shadow-xs">
-                <Clock size={24} />
+            <div className="rounded-3xl border border-slate-200 bg-[#fbfcfd] p-6 hover:border-gold/50 transition-colors">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-600 border border-purple-500/20 shadow-xs">
+                <Clock size={22} />
               </span>
-              <h3 className="mt-5 text-base font-black text-navy">
-                خوارزمية مكافحة القنص (Anti-Sniping)
+              <h3 className="mt-4 text-base font-black text-navy">
+                خوارزمية مكافحة القنص الذكية
               </h3>
-              <p className="mt-2.5 text-xs sm:text-sm leading-relaxed text-slate-600">
-                عدالة وشفافية مطلقة في الصالة الحية؛ أي مزايدة في آخر دقيقة تمنح المزاد وقتاً إضافياً لتمكين المزايدين الجادين من المنافسة دون مباغتة برمجية.
+              <p className="mt-2 text-xs sm:text-[13px] leading-relaxed text-slate-600">
+                تمديد تلقائي لعمر المزاد عند وجود مزايدات في الدقيقة الأخيرة لضمان تكافؤ الفرص ومنع أي مباغتة برمجية.
               </p>
             </div>
           </div>
@@ -824,17 +806,17 @@ export function HowItWorksView() {
       {/* =================================================================== */}
       {/* 4. FREQUENTLY ASKED QUESTIONS ACCORDION                             */}
       {/* =================================================================== */}
-      <section className="py-16 sm:py-24 bg-[#f8fafc]">
-        <div className="container-fbs">
+      <section className="py-16 sm:py-20 bg-[#f8fafc]">
+        <div className="max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10">
           <div className="text-center max-w-2xl mx-auto">
-            <span className="text-xs font-extrabold text-gold-accent tracking-widest uppercase">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/35 bg-gold/15 px-3.5 py-1.5 text-[11px] sm:text-[11.5px] font-bold text-[#8a6828]">
               الأسئلة الشائعة
             </span>
-            <h2 className="mt-2 text-2xl sm:text-3xl font-black text-navy">
-              إجابات شافية حول آلية عمل المنصة
+            <h2 className="mt-3 text-xl sm:text-2xl lg:text-3xl font-black text-navy whitespace-normal sm:whitespace-nowrap">
+              إجابات وافية حول آلية عمل المنصة
             </h2>
-            <p className="mt-2 text-xs sm:text-sm text-slate-500">
-              كل ما تحتاج معرفته عن المزادات، التأمين، وطرق تسليم اللوحات ونقل الملكية.
+            <p className="mt-2 text-xs sm:text-[13px] text-slate-500 whitespace-normal sm:whitespace-nowrap">
+              كل ما يهمك معرفته عن المزايدة، التأمين، الحساب الضامن، وإجراءات الاستلام.
             </p>
           </div>
 

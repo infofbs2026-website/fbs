@@ -859,18 +859,18 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 0 20px;
-  border-radius: 14px;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 13px;
+  border-radius: 10px;
   text-decoration: none;
-  font-size: 13px;
+  font-size: 11.5px;
   font-weight: 800;
   color: #08162b;
   background: linear-gradient(180deg, #edd08d 0%, #d4a64f 52%, #b88428 100%);
   border: 1.5px solid #8f6419;
   box-shadow:
-    0 8px 20px -4px rgba(143, 100, 25, 0.42),
+    0 5px 14px -3px rgba(143, 100, 25, 0.36),
     inset 0 1.5px 0 rgba(255, 255, 255, 0.78),
     inset 0 -2px 0 rgba(92, 62, 10, 0.28);
   cursor: pointer;
@@ -879,10 +879,10 @@
 
 .btnPrimary:hover,
 .primaryButton:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1.5px);
   background: linear-gradient(180deg, #f3da9e 0%, #ddb35f 52%, #c49032 100%);
   box-shadow:
-    0 12px 26px -4px rgba(143, 100, 25, 0.50),
+    0 8px 18px -4px rgba(143, 100, 25, 0.45),
     inset 0 1.5px 0 rgba(255, 255, 255, 0.88),
     inset 0 -2px 0 rgba(92, 62, 10, 0.30);
 }
@@ -893,15 +893,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 0 18px;
-  border-radius: 14px;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 10px;
   border: 1px solid var(--line-strong);
   background: var(--surface-grad);
   box-shadow: var(--pill-shadow);
   color: var(--ink-strong);
-  font-size: 12.5px;
+  font-size: 11.5px;
   font-weight: 800;
   text-decoration: none;
   cursor: pointer;
@@ -911,7 +911,7 @@
 .btnSecondary:hover,
 .outlineButton:hover,
 .secondaryHeroButton:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1.5px);
   border-color: var(--line-hover);
   color: var(--gold);
 }
@@ -919,14 +919,14 @@
 .btnChip {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 6px 12px;
-  border-radius: 10px;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 8px;
   border: 1px solid var(--well-border);
   background: var(--well-bg);
   box-shadow: var(--well-shadow);
   color: var(--ink-strong);
-  font-size: 11.5px;
+  font-size: 10.5px;
   font-weight: 800;
   cursor: pointer;
   transition: all 0.16s ease;
@@ -943,17 +943,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 0 20px;
-  border-radius: 14px;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 13px;
+  border-radius: 10px;
   border: 1.5px solid #881313;
   background: linear-gradient(180deg, #e64848 0%, #c82222 52%, #a31515 100%);
   color: #ffffff;
-  font-size: 13px;
+  font-size: 11.5px;
   font-weight: 800;
   box-shadow:
-    0 8px 20px -4px rgba(163, 21, 21, 0.38),
+    0 5px 14px -3px rgba(163, 21, 21, 0.34),
     inset 0 1.5px 0 rgba(255, 255, 255, 0.35),
     inset 0 -2px 0 rgba(69, 10, 10, 0.32);
   cursor: pointer;
@@ -964,9 +964,9 @@
   border-color: #7f1d1d;
   background: linear-gradient(180deg, #ef5353 0%, #d62828 52%, #b31919 100%);
   color: #ffffff;
-  transform: translateY(-2px);
+  transform: translateY(-1.5px);
   box-shadow:
-    0 12px 26px -4px rgba(163, 21, 21, 0.48),
+    0 8px 18px -4px rgba(163, 21, 21, 0.44),
     inset 0 1.5px 0 rgba(255, 255, 255, 0.45),
     inset 0 -2px 0 rgba(69, 10, 10, 0.35);
 }
@@ -976,17 +976,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  min-height: 40px;
-  padding: 0 18px;
-  border-radius: 13px;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 10px;
   border: 1.5px solid #065f46;
   background: linear-gradient(180deg, #12b886 0%, #0ca678 52%, #087f5b 100%);
   color: #ffffff;
-  font-size: 12.5px;
+  font-size: 11.5px;
   font-weight: 800;
   box-shadow:
-    0 8px 18px -4px rgba(8, 127, 91, 0.35),
+    0 5px 14px -3px rgba(8, 127, 91, 0.32),
     inset 0 1.5px 0 rgba(255, 255, 255, 0.35),
     inset 0 -2px 0 rgba(6, 78, 59, 0.32);
   cursor: pointer;
@@ -999,7 +999,7 @@
   color: #ffffff;
   transform: translateY(-1.5px);
   box-shadow:
-    0 12px 24px -4px rgba(8, 127, 91, 0.45),
+    0 8px 18px -4px rgba(8, 127, 91, 0.42),
     inset 0 1.5px 0 rgba(255, 255, 255, 0.45),
     inset 0 -2px 0 rgba(6, 78, 59, 0.35);
 }
@@ -1233,18 +1233,18 @@
 .panel {
   position: relative;
   overflow: hidden;
-  padding: clamp(20px, 2.2vw, 28px);
+  padding: 14px 18px;
   border: 1px solid var(--line);
-  border-radius: 26px;
+  border-radius: 18px;
   background: var(--surface-grad);
   box-shadow: var(--slab-shadow);
-  margin-bottom: 22px;
+  margin-bottom: 14px;
 }
 
 .panel::before {
   content: '';
   position: absolute;
-  inset-inline: 30px;
+  inset-inline: 22px;
   top: 0;
   height: 1.5px;
   background: linear-gradient(90deg, transparent, rgba(217, 187, 129, 0.65), transparent);
@@ -1255,32 +1255,32 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 12px;
   flex-wrap: wrap;
 }
 
 .panelTitle {
   margin: 0;
-  font-size: 17.5px;
-  font-weight: 900;
+  font-size: 14.5px;
+  font-weight: 800;
   color: var(--ink-strong);
-  letter-spacing: -0.015em;
+  letter-spacing: -0.01em;
 }
 
 .panelDesc {
-  margin: 4px 0 0;
-  font-size: 12.5px;
+  margin: 2px 0 0;
+  font-size: 11px;
   color: var(--muted);
   font-weight: 500;
-  line-height: 1.6;
+  line-height: 1.45;
 }
 
 /* Data Tables */
 .tableWrap {
   width: 100%;
   overflow-x: auto;
-  border-radius: 18px;
+  border-radius: 13px;
   border: 1px solid var(--line);
   background: var(--surface);
   box-shadow: var(--well-shadow);
@@ -1292,17 +1292,17 @@
   border-spacing: 0;
   text-align: right;
   direction: rtl;
-  font-size: 13px;
+  font-size: 11.5px;
 }
 
 .th,
 .table th {
-  padding: 13px 16px;
+  padding: 9px 12px;
   background: var(--well-bg);
   border-bottom: 1px solid var(--well-border);
   color: var(--ink-strong);
-  font-weight: 900;
-  font-size: 11.5px;
+  font-weight: 800;
+  font-size: 10.5px;
   letter-spacing: 0.01em;
   white-space: nowrap;
   text-align: right;
@@ -1310,7 +1310,7 @@
 
 .td,
 .table td {
-  padding: 14px 16px;
+  padding: 9px 12px;
   border-bottom: 1px solid var(--line);
   color: var(--ink);
   font-weight: 600;
@@ -1827,8 +1827,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 18px 16px;
-  border-radius: 14px;
+  padding: 12px 12px;
+  border-radius: 12px;
   border: 1.5px solid var(--well-border);
   background: var(--well-bg);
   box-shadow: var(--well-shadow);
@@ -1848,8 +1848,8 @@
 
 .cardsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
 }
 
 .itemCard {
@@ -1857,9 +1857,9 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 14px;
-  padding: 18px 20px;
-  border-radius: 22px;
+  gap: 10px;
+  padding: 13px 15px;
+  border-radius: 16px;
   border: 1px solid var(--line);
   background: var(--surface-grad);
   box-shadow: var(--slab-shadow);
@@ -2036,9 +2036,9 @@
   display: inline-grid;
   place-items: center;
   flex: none;
-  width: 46px;
-  height: 46px;
-  border-radius: 15px;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
   border: 1px solid rgba(16, 185, 129, 0.48);
   background: linear-gradient(180deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
   color: #059669;

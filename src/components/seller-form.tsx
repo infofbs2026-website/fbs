@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, ChangeEvent, FormEvent } from 'react';
+import { useState, useMemo, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
 import Link from 'next/link';
 import { PlateVisualizer } from './ui';
 import { sendJson } from './forms';
@@ -17,7 +17,10 @@ import {
   Car,
   Lock,
   Plus,
-  MapPin
+  MapPin,
+  ChevronDown,
+  Check,
+  Search
 } from 'lucide-react';
 
 type Ref = {
@@ -96,10 +99,37 @@ export function SellerForm({
     ];
   });
   const [cityId, setCityId] = useState<string>('');
+  const [isCityDropdownOpen, setIsCityDropdownOpen] = useState<boolean>(false);
+  const [citySearchQuery, setCitySearchQuery] = useState<string>('');
+  const cityDropdownRef = useRef<HTMLDivElement>(null);
   const [isAddingCity, setIsAddingCity] = useState<boolean>(false);
   const [customCityName, setCustomCityName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<{ name: string; size: string } | null>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (cityDropdownRef.current && !cityDropdownRef.current.contains(event.target as Node)) {
+        setIsCityDropdownOpen(false);
+      }
+    }
+    if (isCityDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isCityDropdownOpen]);
+
+  const filteredCities = useMemo(() => {
+    if (!citySearchQuery.trim()) return cityList;
+    const q = citySearchQuery.trim().toLowerCase();
+    return cityList.filter((c) => String(c.name_ar || '').toLowerCase().includes(q));
+  }, [cityList, citySearchQuery]);
+
+  const selectedCityObj = useMemo(() => {
+    return cityList.find((c) => String(c.id) === String(cityId));
+  }, [cityList, cityId]);
 
   function handleAddCustomCity() {
     const trimmed = customCityName.trim();
@@ -116,6 +146,7 @@ export function SellerForm({
     }
     setCustomCityName('');
     setIsAddingCity(false);
+    setIsCityDropdownOpen(false);
   }
 
   // Derived plate representation for live preview
@@ -291,13 +322,13 @@ export function SellerForm({
   }
 
   return (
-    <div className="space-y-7 sm:space-y-8">
+    <div className="space-y-6 sm:space-y-7">
       {/* 3-Step Interactive Milestone Track (Modeled after HomeHowItWorks) */}
-      <div className="relative mx-auto max-w-3xl pt-1">
+      <div className="relative mx-auto max-w-2xl pt-1">
         {/* Connecting Rail */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute top-6 right-[16.66%] left-[16.66%] z-0 h-[2px] overflow-hidden rounded-full bg-[#D9BB81]/35"
+          className="pointer-events-none absolute top-5 right-[16.66%] left-[16.66%] z-0 h-[2px] overflow-hidden rounded-full bg-[#D9BB81]/35"
         >
           {/* Active Progress Fill */}
           <div
@@ -317,26 +348,26 @@ export function SellerForm({
             return (
               <div key={step.num} className="flex flex-col items-center text-center">
                 <div
-                  className={`relative flex h-12 w-12 items-center justify-center rounded-2xl border transition-all duration-500 ease-out ${
+                  className={`relative flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl border transition-all duration-500 ease-out ${
                     step.done
                       ? 'border-emerald-500/70 bg-emerald-50 text-emerald-600 shadow-xs'
                       : step.active
                       ? 'scale-105 border-[#9E7B35] bg-white text-[#8C6B2D] shadow-[0_4px_16px_rgba(158,123,53,0.22)]'
-                      : 'border-[#E2E0D8] bg-white text-[#64748B] shadow-xs'
+                      : 'border-[#E2E0D8] bg-white text-[#64748B] shadow-2xs'
                   }`}
                 >
                   {step.done ? (
-                    <CheckCircle2 size={20} strokeWidth={2.3} />
+                    <CheckCircle2 size={18} strokeWidth={2.3} />
                   ) : (
-                    <StepIcon size={19} strokeWidth={step.active ? 2.2 : 1.8} />
+                    <StepIcon size={17} strokeWidth={step.active ? 2.2 : 1.8} />
                   )}
                   {step.active && !step.done && (
-                    <span className="pointer-events-none absolute -inset-1.5 rounded-2xl border border-[#9E7B35]/30 animate-pulse" />
+                    <span className="pointer-events-none absolute -inset-1 rounded-xl border border-[#9E7B35]/30 animate-pulse" />
                   )}
                 </div>
 
                 <span
-                  className={`mt-2 pf-type-micro font-bold transition-colors duration-300 ${
+                  className={`mt-1.5 text-[11px] sm:text-xs font-bold transition-colors duration-300 ${
                     step.active
                       ? 'text-[#9E7B35]'
                       : step.done
@@ -347,7 +378,7 @@ export function SellerForm({
                   {step.stepLabel}
                 </span>
                 <span
-                  className={`mt-0.5 pf-type-caption font-bold transition-colors duration-300 ${
+                  className={`mt-0.5 text-xs sm:text-[13px] font-bold transition-colors duration-300 ${
                     step.active || step.done ? 'text-[#14243C]' : 'text-[#526071]'
                   }`}
                 >
@@ -360,14 +391,14 @@ export function SellerForm({
       </div>
 
       {/* Main Interactive Stage */}
-      <div className="grid gap-6 lg:gap-7 lg:grid-cols-12 items-stretch">
-        {/* Live Plate Visualizer Card (HomeHowItWorks White Surface & Warm Ivory Pedestal) */}
+      <div className="grid gap-5 sm:gap-6 lg:grid-cols-12 items-stretch">
+        {/* Live Plate Visualizer Card */}
         <div
           data-pf-audit="seller-preview-card"
           style={{ containerType: 'inline-size' }}
           className="lg:col-span-5 order-first lg:order-last flex flex-col"
         >
-          <div className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-[#E7E5DF] bg-white p-5 sm:p-6 shadow-[0_4px_16px_rgba(20,36,60,0.04)] transition-all duration-300 hover:border-[#D9BB81]/80 hover:shadow-[0_12px_28px_rgba(20,36,60,0.08)]">
+          <div className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-[#E7E5DF] bg-white p-4 sm:p-5 shadow-[0_4px_16px_rgba(20,36,60,0.04)] transition-all duration-300 hover:border-[#D9BB81]/80 hover:shadow-[0_10px_24px_rgba(20,36,60,0.06)]">
             {/* Top Specular Gold Hairline */}
             <div
               aria-hidden="true"
@@ -376,16 +407,16 @@ export function SellerForm({
 
             <div>
               {/* Card Header */}
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#9E7B35]/40 bg-[#FAF7F0] text-[#8C6B2D] shadow-xs">
-                    <Eye size={17} strokeWidth={2} />
+              <div className="mb-3.5 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#9E7B35]/40 bg-[#FAF7F0] text-[#8C6B2D] shadow-2xs">
+                    <Eye size={16} strokeWidth={2} />
                   </span>
                   <div>
-                    <h3 className="pf-type-h3 font-bold text-[#14243C]">
+                    <h3 className="text-sm sm:text-base font-bold text-[#14243C]">
                       معاينة فورية حية للوحة
                     </h3>
-                    <p className="pf-type-micro font-medium text-[#64748B]">
+                    <p className="text-[11px] sm:text-xs font-medium text-[#64748B]">
                       محاكاة مطابقة للقياس السعودي الرسمي
                     </p>
                   </div>
@@ -393,7 +424,7 @@ export function SellerForm({
 
                 {plateClassification && (
                   <span
-                    className={`rounded-lg border px-2.5 py-1 pf-type-micro font-bold ${plateClassification.color}`}
+                    className={`rounded-lg border px-2 py-0.5 text-[11px] font-bold ${plateClassification.color}`}
                   >
                     {plateClassification.label}
                   </span>
@@ -401,7 +432,7 @@ export function SellerForm({
               </div>
 
               {/* Warm Ivory Recessed Plate Pedestal */}
-              <div className="flex items-center justify-center rounded-2xl border border-[#E5E2D9] bg-gradient-to-b from-[#FAF9F6] via-[#F1EEE7] to-[#E9E5DD] p-4 sm:p-5 shadow-[inset_0_2px_6px_rgba(20,36,60,0.05)]">
+              <div className="flex items-center justify-center rounded-2xl border border-[#E5E2D9] bg-gradient-to-b from-[#FAF9F6] via-[#F1EEE7] to-[#E9E5DD] p-3.5 sm:p-4 shadow-[inset_0_2px_6px_rgba(20,36,60,0.05)]">
                 <PlateVisualizer
                   lettersAr={previewLettersAr}
                   lettersEn={previewLettersEn}
@@ -412,22 +443,22 @@ export function SellerForm({
               </div>
 
               {/* Clean Specification Rows */}
-              <div className="mt-5 space-y-2.5">
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#ECE9E2] pb-2.5">
-                  <span className="pf-type-caption font-bold text-[#526071]">
+              <div className="mt-4 space-y-2 text-xs sm:text-[13px]">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#ECE9E2] pb-2">
+                  <span className="font-bold text-[#526071]">
                     فئة ونوع اللوحة:
                   </span>
-                  <span className="rounded-lg border border-[#D9BB81]/50 bg-[#FAF7F0] px-3 py-0.5 pf-type-micro font-black text-[#8C6B2D]">
+                  <span className="rounded-lg border border-[#D9BB81]/50 bg-[#FAF7F0] px-2.5 py-0.5 text-[11px] font-black text-[#8C6B2D]">
                     {selectedTypeName}
                   </span>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#ECE9E2] pb-2.5">
-                  <span className="pf-type-caption font-bold text-[#526071]">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#ECE9E2] pb-2">
+                  <span className="font-bold text-[#526071]">
                     الحروف المعتمدة:
                   </span>
                   <span
-                    className="pf-type-body font-black tracking-widest text-[#14243C]"
+                    className="font-black tracking-widest text-[#14243C]"
                     dir="rtl"
                   >
                     {l1 && l2 && l3
@@ -436,9 +467,9 @@ export function SellerForm({
                   </span>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#ECE9E2] pb-2.5">
-                  <span className="pf-type-caption font-bold text-[#526071]">الأرقام:</span>
-                  <span className="font-norwester pf-type-h3 font-black tracking-wider text-[#9E7B35]">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#ECE9E2] pb-2">
+                  <span className="font-bold text-[#526071]">الأرقام:</span>
+                  <span className="font-norwester text-sm sm:text-base font-black tracking-wider text-[#9E7B35]">
                     {digits || 'بانتظار الإدخال…'}
                   </span>
                 </div>
@@ -446,25 +477,25 @@ export function SellerForm({
             </div>
 
             {/* Bottom Guarantee Box & Verification Strip */}
-            <div className="mt-5 space-y-3 border-t border-[#ECE9E2] pt-4">
-              <div className="space-y-1.5 rounded-xl border border-[#E7E5DF] bg-[#FAF9F6] p-3.5">
-                <div className="flex items-center gap-2 pf-type-caption font-bold text-[#14243C]">
-                  <ShieldCheck size={16} className="shrink-0 text-emerald-600" />
+            <div className="mt-4 space-y-2.5 border-t border-[#ECE9E2] pt-3.5">
+              <div className="space-y-1 rounded-xl border border-[#E7E5DF] bg-[#FAF9F6] p-3 text-xs">
+                <div className="flex items-center gap-1.5 font-bold text-[#14243C]">
+                  <ShieldCheck size={15} className="shrink-0 text-emerald-600" />
                   <span>معايير الاعتماد المروري الرسمي</span>
                 </div>
-                <p className="pf-type-micro font-medium leading-relaxed text-[#526071]">
+                <p className="font-normal leading-relaxed text-[#526071] text-[11px] sm:text-xs">
                   يتم التحقق الفوري من صحة بيانات اللوحة وسجل المركبة عبر الأنظمة المعتمدة لضمان
                   حقوق الملكية ونقلها بأمان عبر منصة أبشر.
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center justify-between gap-2 px-1 pf-type-micro font-bold text-[#64748B]">
+              <div className="flex flex-wrap items-center justify-between gap-2 px-1 text-[11px] sm:text-xs font-bold text-[#64748B]">
                 <span className="flex items-center gap-1.5">
-                  <Lock size={13} className="text-[#9E7B35]" />
+                  <Lock size={12} className="text-[#9E7B35]" />
                   <span>تشفير المستندات 100%</span>
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Car size={13} className="text-[#9E7B35]" />
+                  <Car size={12} className="text-[#9E7B35]" />
                   <span>قياسات معتمدة 52×11 سم</span>
                 </span>
               </div>
@@ -606,51 +637,138 @@ export function SellerForm({
                   <div>
                     <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                       <label
-                        htmlFor="cityId"
+                        id="city-select-label"
                         className="pf-type-caption font-bold text-[#14243C]"
                       >
                         المدينة المسجل بها المركبة
                       </label>
                       <button
                         type="button"
-                        onClick={() => setIsAddingCity((prev) => !prev)}
-                        className="inline-flex items-center gap-1 rounded-lg border border-[#D9BB81]/60 bg-[#FAF7F0] px-2.5 py-1 pf-type-micro font-bold text-[#8C6B2D] transition-all hover:border-[#9E7B35] hover:bg-white hover:text-[#14243C]"
+                        onClick={() => {
+                          setIsAddingCity((prev) => !prev);
+                          setIsCityDropdownOpen(false);
+                        }}
+                        className="inline-flex items-center gap-1 rounded-lg border border-[#D9BB81]/60 bg-[#FAF7F0] px-2.5 py-1 pf-type-micro font-bold text-[#8C6B2D] transition-all hover:border-[#9E7B35] hover:bg-white hover:text-[#14243C] cursor-pointer"
                       >
                         <Plus size={13} strokeWidth={2.5} />
                         <span>{isAddingCity ? 'العودة لقائمة المدن' : 'إضافة مدينة أخرى'}</span>
                       </button>
                     </div>
 
-                    <select
-                      name="cityId"
-                      id="cityId"
-                      required={!isAddingCity}
-                      value={cityId}
-                      onChange={(e) => {
-                        if (e.target.value === '__other__') {
-                          setIsAddingCity(true);
-                        } else {
-                          setCityId(e.target.value);
-                          setIsAddingCity(false);
-                        }
-                      }}
-                      className="w-full rounded-xl border border-[#DFDBD2] bg-[#FAF9F6] px-3.5 py-2.5 text-sm font-bold text-[#14243C] transition-all hover:border-[#D9BB81] hover:bg-white focus:border-[#9E7B35] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D9BB81]/25"
-                    >
-                      <option value="" disabled className="bg-white text-[#64748B]">
-                        اختر المدينة من القائمة ({cityList.length} مدينة)
-                      </option>
-                      {cityList.map((c) => (
-                        <option value={c.id} key={c.id} className="bg-white text-[#14243C]">
-                          {c.name_ar}
-                        </option>
-                      ))}
-                      <option value="__other__" className="bg-[#FAF7F0] font-bold text-[#8C6B2D]">
-                        + مدينة أخرى (إدخال مدينة جديدة)...
-                      </option>
-                    </select>
+                    {/* Hidden input to carry cityId into FormData */}
+                    <input type="hidden" name="cityId" value={cityId} />
 
-                    {isAddingCity && (
-                      <div className="mt-2.5 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 rounded-xl border border-[#D9BB81]/70 bg-[#FAF7F0] p-3">
+                    {!isAddingCity ? (
+                      <div ref={cityDropdownRef} className="relative">
+                        {/* Custom Trigger Button */}
+                        <button
+                          type="button"
+                          aria-labelledby="city-select-label"
+                          aria-expanded={isCityDropdownOpen}
+                          onClick={() => setIsCityDropdownOpen((prev) => !prev)}
+                          className={`w-full flex items-center justify-between gap-2 rounded-xl border px-3.5 py-2.5 text-sm font-bold transition-all text-start cursor-pointer ${
+                            isCityDropdownOpen
+                              ? 'border-[#9E7B35] bg-white ring-2 ring-[#D9BB81]/25 text-[#14243C] shadow-xs'
+                              : cityId
+                              ? 'border-[#D9BB81] bg-[#FAF9F6] text-[#14243C] hover:border-[#9E7B35] hover:bg-white'
+                              : 'border-[#DFDBD2] bg-[#FAF9F6] text-[#64748B] hover:border-[#D9BB81] hover:bg-white'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5 truncate">
+                            <MapPin
+                              size={16}
+                              className={`shrink-0 ${cityId ? 'text-[#8C6B2D]' : 'text-[#94A3B8]'}`}
+                            />
+                            <span className={cityId ? 'text-[#14243C] font-bold' : 'text-[#64748B] font-medium'}>
+                              {selectedCityObj ? selectedCityObj.name_ar : `اختر المدينة من القائمة (${cityList.length} مدينة)`}
+                            </span>
+                          </div>
+                          <ChevronDown
+                            size={16}
+                            className={`shrink-0 text-[#8C6B2D] transition-transform duration-200 ${
+                              isCityDropdownOpen ? 'rotate-180' : ''
+                            }`}
+                          />
+                        </button>
+
+                        {/* Floating Custom Dropdown Popover */}
+                        {isCityDropdownOpen && (
+                          <div className="absolute top-full start-0 mt-1.5 w-full z-50 rounded-2xl border border-[#D9BB81]/70 bg-white p-2 shadow-[0_18px_40px_rgba(20,36,60,0.16)] backdrop-blur-xl animate-in fade-in-0 zoom-in-95 duration-150">
+                            {/* Search Filter Input */}
+                            <div className="relative mb-2">
+                              <Search
+                                size={14}
+                                className="pointer-events-none absolute top-1/2 start-3 -translate-y-1/2 text-[#8C6B2D]"
+                              />
+                              <input
+                                type="text"
+                                value={citySearchQuery}
+                                onChange={(e) => setCitySearchQuery(e.target.value)}
+                                placeholder="ابحث عن اسم المدينة..."
+                                className="w-full rounded-xl border border-[#DFDBD2] bg-[#FAF9F6] ps-9 pe-3 py-1.5 text-xs font-semibold text-[#14243C] placeholder-[#94A3B8] focus:border-[#9E7B35] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#D9BB81]/25"
+                                autoFocus
+                              />
+                            </div>
+
+                            {/* Scrollable City List */}
+                            <div className="max-h-52 overflow-y-auto space-y-0.5 custom-scrollbar pe-1">
+                              {filteredCities.length > 0 ? (
+                                filteredCities.map((c) => {
+                                  const isSelected = String(c.id) === String(cityId);
+                                  return (
+                                    <button
+                                      key={c.id}
+                                      type="button"
+                                      onClick={() => {
+                                        setCityId(String(c.id));
+                                        setIsCityDropdownOpen(false);
+                                        setCitySearchQuery('');
+                                      }}
+                                      className={`w-full flex items-center justify-between rounded-lg px-3 py-2 text-xs font-bold transition-colors cursor-pointer ${
+                                        isSelected
+                                          ? 'bg-[#FAF7F0] text-[#8C6B2D] font-black border border-[#D9BB81]/50'
+                                          : 'text-[#14243C] hover:bg-[#FAF9F6] hover:text-[#8C6B2D]'
+                                      }`}
+                                    >
+                                      <span className="flex items-center gap-2">
+                                        <span
+                                          className={`h-1.5 w-1.5 rounded-full ${
+                                            isSelected ? 'bg-[#8C6B2D]' : 'bg-transparent'
+                                          }`}
+                                        />
+                                        <span>{c.name_ar}</span>
+                                      </span>
+                                      {isSelected && <Check size={14} className="text-[#8C6B2D]" />}
+                                    </button>
+                                  );
+                                })
+                              ) : (
+                                <div className="py-3 text-center text-xs text-[#64748B]">
+                                  لم يتم العثور على مدينة مطابقة
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Add New Custom City Action within dropdown */}
+                            <div className="mt-1.5 pt-1.5 border-t border-[#ECE9E2]">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setIsAddingCity(true);
+                                  setIsCityDropdownOpen(false);
+                                  setCitySearchQuery('');
+                                }}
+                                className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-[#FAF7F0] hover:bg-[#F2ECE0] px-3 py-2 text-xs font-bold text-[#8C6B2D] transition-colors border border-[#D9BB81]/40 cursor-pointer"
+                              >
+                                <Plus size={13} strokeWidth={2.5} />
+                                <span>+ إضافة مدينة أخرى غير مدرجة بالقائمة</span>
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="mt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 rounded-xl border border-[#D9BB81]/70 bg-[#FAF7F0] p-3">
                         <div className="relative flex-1">
                           <MapPin
                             size={15}
@@ -668,13 +786,14 @@ export function SellerForm({
                             }}
                             placeholder="أدخل اسم المدينة (مثال: شقراء، العلا، الخفجي...)"
                             className="w-full rounded-lg border border-[#DFDBD2] bg-white ps-9 pe-3 py-2 text-sm font-bold text-[#14243C] placeholder-[#94A3B8] focus:border-[#9E7B35] focus:outline-none focus:ring-2 focus:ring-[#D9BB81]/25"
+                            autoFocus
                           />
                         </div>
                         <button
                           type="button"
                           onClick={handleAddCustomCity}
                           disabled={!customCityName.trim()}
-                          className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-[#14243C] px-4 py-2 pf-type-micro font-bold text-white shadow-xs transition-all hover:bg-[#08162B] disabled:opacity-45"
+                          className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-[#14243C] px-4 py-2 pf-type-micro font-bold text-white shadow-xs transition-all hover:bg-[#08162B] disabled:opacity-45 cursor-pointer"
                         >
                           <Plus size={14} />
                           <span>إضافة واعتماد المدينة</span>

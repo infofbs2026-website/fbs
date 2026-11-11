@@ -48,13 +48,13 @@ export function HomeWhyFbs() {
       {/* Top Specular Edge Line */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#D9BB81]/40 to-transparent pointer-events-none" />
 
-      {/* Main Container: Constrained to ~1240px for generous breathing space */}
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      {/* Main Container: Elegantly constrained to ~1000px with generous breathing margins on both sides */}
+      <div className="max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10 relative z-10">
         <ScrollReveal direction="up" delay={40}>
           <div className="mb-8 sm:mb-12 text-center">
             {/* Prestige Eyebrow Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#D9BB81]/50 bg-white px-3.5 py-1 text-xs sm:text-[13px] font-bold text-[#8C6B2D] shadow-2xs mb-3 mx-auto">
-              <BadgeCheck size={14} className="text-[#9E7B35] shrink-0" />
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#D9BB81]/50 bg-white px-3.5 py-1.5 text-[11px] sm:text-[11.5px] font-bold text-[#8C6B2D] shadow-2xs mb-3 mx-auto">
+              <BadgeCheck size={13} className="text-[#9E7B35] shrink-0" />
               <span className="tracking-wide">لماذا فارس بن سعود؟</span>
             </div>
 
@@ -65,7 +65,7 @@ export function HomeWhyFbs() {
             </h2>
 
             {/* Concise Subtitle in a single clean line */}
-            <p className="mt-2 max-w-lg mx-auto text-[14px] sm:text-[15px] leading-relaxed text-[#526071] font-normal text-center">
+            <p className="mt-2.5 max-w-2xl sm:max-w-3xl mx-auto text-xs sm:text-[13.5px] leading-relaxed text-[#526071] font-normal text-center whitespace-normal sm:whitespace-nowrap">
               منصة المزادات المعتمدة لنخبة اللوحات بالمملكة بأعلى معايير الأمان المالي.
             </p>
           </div>
@@ -73,7 +73,7 @@ export function HomeWhyFbs() {
 
         {/* 4 Unified, Identical, Symmetrical Cards Grid (Zero Clutter) */}
         <StaggerGrid
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4.5 lg:gap-5"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5"
           itemClassName="h-full flex flex-col"
           baseDelay={70}
         >
@@ -82,35 +82,35 @@ export function HomeWhyFbs() {
             return (
               <div
                 key={i}
-                className="group relative flex flex-col justify-between rounded-xl sm:rounded-2xl p-4 sm:p-5 bg-white border border-[#E7E5DF] hover:border-[#D9BB81] shadow-2xs hover:shadow-[0_12px_28px_rgba(20,36,60,0.06)] hover:-translate-y-1 transition-all duration-300 overflow-hidden h-full"
+                className="group relative flex flex-col justify-between rounded-xl sm:rounded-2xl p-3 sm:px-3 sm:py-3.5 bg-white border border-[#E7E5DF] hover:border-[#D9BB81] shadow-2xs hover:shadow-[0_10px_24px_rgba(20,36,60,0.06)] hover:-translate-y-0.5 transition-all duration-300 overflow-hidden h-full"
               >
                 {/* Top Specular Edge Line */}
                 <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#D9BB81]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                 <div>
                   {/* Header Row: Icon Emblem + Number Index */}
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-[#FAF9F6] border border-[#E7E5DF] text-[#8C6B2D] shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:border-[#D9BB81]">
-                      <Icon size={19} className="transition-transform duration-300 group-hover:rotate-3" />
+                  <div className="flex items-center justify-between mb-2.5">
+                    <span className="flex h-8.5 w-8.5 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-[#FAF9F6] border border-[#E7E5DF] text-[#8C6B2D] shadow-2xs transition-all duration-300 group-hover:scale-105 group-hover:border-[#D9BB81]">
+                      <Icon size={17} className="transition-transform duration-300 group-hover:rotate-3" />
                     </span>
                     <span
-                      className="font-norwester text-2xl sm:text-3xl font-black text-[#E2E0D8] group-hover:text-[#9E7B35]/40 transition-colors select-none tracking-wider"
+                      className="font-norwester text-lg sm:text-xl font-black text-[#E2E0D8] group-hover:text-[#9E7B35]/40 transition-colors select-none tracking-wider"
                       dir="ltr"
                     >
                       {pillar.number}
                     </span>
                   </div>
 
-                  <h3 className="text-[15px] sm:text-[16px] font-bold text-[#14243C] group-hover:text-[#9E7B35] transition-colors leading-snug">
+                  <h3 className="text-[13.5px] sm:text-[14px] font-bold text-[#14243C] group-hover:text-[#9E7B35] transition-colors leading-snug">
                     {pillar.title}
                   </h3>
-                  <p className="mt-1.5 text-[12.5px] sm:text-[13px] font-normal text-[#526071] leading-relaxed">
+                  <p className="mt-1 text-[10.5px] sm:text-[11px] font-normal text-[#526071] leading-relaxed tracking-tight whitespace-normal sm:whitespace-nowrap">
                     {pillar.desc}
                   </p>
                 </div>
 
                 {/* Verification Guarantee Footer */}
-                <div className="mt-4 pt-3 border-t border-[#ECE9E2] flex items-center justify-between text-xs font-medium">
+                <div className="mt-3.5 pt-2.5 border-t border-[#ECE9E2] flex items-center justify-between text-xs font-medium">
                   <span className="inline-flex items-center gap-1.5 rounded-lg border border-[#E7E5DF] bg-[#FAF9F6] px-2 py-0.5 text-[10.5px] text-[#526071]">
                     <CheckCircle2 size={12} className="text-[#9E7B35] shrink-0" />
                     <span>{pillar.badge}</span>

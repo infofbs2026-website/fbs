@@ -26,10 +26,10 @@ export default async function Sell() {
       {/* ============================================================= */}
       {/* 1. LUXURY DARK HERO SECTION WITH 3 INTEGRATED TRUST CARDS     */}
       {/* ============================================================= */}
-      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#D9BB81]/30 pt-28 sm:pt-34 lg:pt-38 pb-12 sm:pb-16 text-white">
-        <div className="container-fbs relative z-10 pt-2 sm:pt-3">
+      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#D9BB81]/30 pt-24 sm:pt-28 lg:pt-32 pb-10 sm:pb-14 text-white">
+        <div className="max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10 relative z-10 pt-2 sm:pt-3">
           {/* Breadcrumbs */}
-          <nav aria-label="Breadcrumb" className="mb-3.5 flex flex-wrap items-center gap-2 pf-type-micro font-semibold text-gold-light">
+          <nav aria-label="Breadcrumb" className="mb-3 flex flex-wrap items-center gap-2 text-xs font-semibold text-gold-light">
             <Link href="/" className="hover:text-white transition-colors">
               الرئيسية
             </Link>
@@ -42,20 +42,20 @@ export default async function Sell() {
           </nav>
 
           <div className="max-w-3xl">
-            <h1 className="pf-type-h1 font-black text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-black text-white tracking-tight leading-tight">
               اعرض لوحتك في{' '}
               <span className="inline-block bg-gradient-to-r from-[#F5E3BE] via-[#E4C78D] to-[#C89B4B] bg-clip-text text-transparent">
                 مزادات النخبة
               </span>
             </h1>
-            <p className="mt-2.5 max-w-[62ch] pf-type-body text-slate-200 font-normal">
-              منصتك الأولى في المملكة لعرض اللوحات الماسية والنادرة أمام نخبة المزايدين والمقتنين، مع ضمان حماية حقوق البائع وسرية المعاملات المالية.
+            <p className="mt-4 sm:mt-5 text-xs sm:text-[14px] leading-relaxed text-slate-200 font-normal whitespace-normal sm:whitespace-nowrap">
+              منصتك الأولى في المملكة لعرض اللوحات أمام نخبة المزايدين والمقتنين
             </p>
           </div>
 
           {/* 3 Prestige Trust Cards inside Hero */}
-          <div className="mt-8 sm:mt-10 pt-6 border-t border-white/10">
-            <div className="grid grid-cols-1 gap-3.5 sm:gap-4 sm:grid-cols-3">
+          <div className="mt-6 sm:mt-7 pt-4 sm:pt-5 border-t border-white/10">
+            <div className="grid grid-cols-1 gap-2.5 sm:gap-3 sm:grid-cols-3 w-full sm:max-w-[790px] lg:max-w-[820px]">
               {[
                 {
                   title: 'حماية وضمان مالي كامل',
@@ -77,18 +77,18 @@ export default async function Sell() {
                 return (
                   <div
                     key={idx}
-                    className="group relative overflow-hidden flex items-center gap-3.5 rounded-2xl border border-gold/35 bg-gradient-to-br from-white/[0.09] via-[#0c162d]/90 to-[#081022]/95 backdrop-blur-xl p-4 sm:p-4.5 shadow-[0_10px_28px_rgba(0,0,0,0.35),inset_0_1px_1px_rgba(255,255,255,0.18)] hover:border-gold/70 hover:-translate-y-0.5 transition-all duration-300"
+                    className="group relative overflow-hidden flex items-center gap-3 rounded-xl border border-gold/35 bg-gradient-to-br from-white/[0.09] via-[#0c162d]/90 to-[#081022]/95 backdrop-blur-xl p-2.5 sm:py-2.5 sm:px-3.5 shadow-[0_8px_20px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.15)] hover:border-gold/70 hover:-translate-y-0.5 transition-all duration-300"
                   >
-                    <div className="pointer-events-none absolute -top-8 -end-8 h-24 w-24 rounded-full bg-gold/15 blur-2xl group-hover:bg-gold/25 transition-all duration-300" />
+                    <div className="pointer-events-none absolute -top-8 -end-8 h-16 w-16 rounded-full bg-gold/15 blur-xl group-hover:bg-gold/25 transition-all duration-300" />
 
-                    <div className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold/15 border border-gold/45 text-gold-light shadow-[0_0_16px_rgba(217,184,127,0.2)] group-hover:scale-105 transition-transform duration-300">
-                      <Icon size={20} />
+                    <div className="relative z-10 flex h-[38px] w-[38px] sm:h-[40px] sm:w-[40px] shrink-0 items-center justify-center rounded-lg bg-gold/15 border border-gold/45 text-gold-light shadow-[0_0_12px_rgba(217,184,127,0.2)] group-hover:scale-105 transition-transform duration-300">
+                      <Icon size={19} />
                     </div>
                     <div className="relative z-10 min-w-0">
-                      <h3 className="pf-type-h3 font-bold text-white group-hover:text-gold-light transition-colors tracking-tight">
+                      <h3 className="text-xs sm:text-[12.5px] font-bold text-white group-hover:text-gold-light transition-colors tracking-tight whitespace-nowrap">
                         {card.title}
                       </h3>
-                      <p className="mt-0.5 pf-type-micro text-slate-300 font-medium">
+                      <p className="mt-0.5 text-[10.5px] sm:text-[11px] text-slate-300 font-medium whitespace-nowrap">
                         {card.desc}
                       </p>
                     </div>
@@ -103,47 +103,47 @@ export default async function Sell() {
       {/* ============================================================= */}
       {/* 2. SOFT STONE LUXURY BODY (Reference: HomeHowItWorks #F0F1F2) */}
       {/* ============================================================= */}
-      <section className="relative border-t border-[#E5E7EB] bg-[#F0F1F2] py-12 sm:py-16 lg:py-20 text-[#14243C] overflow-hidden">
+      <section className="relative border-t border-[#E5E7EB] bg-[#F0F1F2] py-10 sm:py-14 lg:py-16 text-[#14243C] overflow-hidden">
         {/* Top Specular Edge Line */}
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#D9BB81]/40 to-transparent pointer-events-none" />
 
-        <div className="container-fbs relative z-10">
-          <div className="space-y-8 sm:space-y-10">
+        <div className="max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10 relative z-10">
+          <div className="space-y-7 sm:space-y-8">
             {/* Guest Preview Notice Card (White Surface with Warm Gold Accents) */}
             {!viewer && (
-              <div className="relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-4 rounded-2xl border border-[#E7E5DF] hover:border-[#D9BB81]/80 bg-white p-4 sm:p-5.5 shadow-[0_4px_16px_rgba(20,36,60,0.04)] transition-all duration-300">
+              <div className="relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-4 rounded-2xl border border-[#E7E5DF] hover:border-[#D9BB81]/80 bg-white p-4 sm:p-5 shadow-[0_4px_16px_rgba(20,36,60,0.04)] transition-all duration-300">
                 <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#D9BB81]/50 to-transparent pointer-events-none" />
 
-                <div className="flex items-start sm:items-center gap-3.5 min-w-0">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#9E7B35]/40 bg-[#FAF7F0] text-[#8C6B2D] shadow-2xs">
-                    <Lock size={20} />
+                <div className="flex items-start sm:items-center gap-3 min-w-0">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#9E7B35]/40 bg-[#FAF7F0] text-[#8C6B2D] shadow-2xs">
+                    <Lock size={18} />
                   </span>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="pf-type-h3 font-bold text-[#14243C]">
+                      <h2 className="text-sm sm:text-base font-bold text-[#14243C]">
                         محاكي تسجيل اللوحات المميزة
                       </h2>
-                      <span className="inline-flex items-center gap-1 rounded-full border border-[#D9BB81]/50 bg-[#FAF7F0] px-2.5 py-0.5 pf-type-micro font-bold text-[#8C6B2D]">
+                      <span className="inline-flex items-center gap-1 rounded-full border border-[#D9BB81]/50 bg-[#FAF7F0] px-3.5 py-1 text-[11px] sm:text-[11.5px] font-bold text-[#8C6B2D]">
                         وضع المعاينة المباشرة
                       </span>
                     </div>
-                    <p className="pf-type-caption text-[#526071] font-normal mt-1">
+                    <p className="text-xs sm:text-[13px] text-[#526071] font-normal mt-1 leading-relaxed">
                       يمكنك تجربة تحديد حروف وأرقام لوحتك بالأسفل ومعاينتها مباشرة. لحفظ اللوحة واعتمادها رسمياً، يُرجى تسجيل الدخول.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center shrink-0 gap-2.5 w-full md:w-auto">
+                <div className="flex flex-wrap items-center shrink-0 gap-2 w-full md:w-auto">
                   <Link
                     href="/login?redirect=/sell-your-plate"
-                    className="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white py-2.5 px-5 pf-type-caption font-bold shadow-xs transition-all active:scale-95"
+                    className="flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white py-2 px-4 text-xs font-bold shadow-2xs transition-all active:scale-95"
                   >
                     <span>تسجيل الدخول</span>
-                    <ArrowLeft size={14} className="text-[#D9BB81]" />
+                    <ArrowLeft size={13} className="text-[#D9BB81]" />
                   </Link>
                   <Link
                     href="/register?redirect=/sell-your-plate"
-                    className="flex-1 md:flex-initial inline-flex items-center justify-center rounded-xl border border-[#D9BB81]/60 bg-[#FAF9F6] hover:bg-[#FAF7F0] hover:border-[#9E7B35] text-[#14243C] py-2.5 px-5 pf-type-caption font-bold transition-all active:scale-95"
+                    className="flex-1 md:flex-initial inline-flex items-center justify-center rounded-xl border border-[#D9BB81]/60 bg-[#FAF9F6] hover:bg-[#FAF7F0] hover:border-[#9E7B35] text-[#14243C] py-2 px-4 text-xs font-bold transition-all active:scale-95"
                   >
                     إنشاء حساب
                   </Link>
@@ -159,45 +159,45 @@ export default async function Sell() {
               isLoggedIn={Boolean(viewer)}
             />
 
-            {/* Seller Guarantee & Executive Concierge Footer Cards (Matching HomeHowItWorks Cards) */}
-            <div className="grid gap-4 sm:gap-5 md:grid-cols-2 items-stretch">
+            {/* Seller Guarantee & Executive Concierge Footer Cards */}
+            <div className="grid gap-3.5 sm:gap-4 md:grid-cols-2 items-stretch">
               {/* Card 1: Official Guidelines */}
-              <div className="group relative flex flex-col justify-between rounded-2xl bg-white border border-[#E7E5DF] hover:border-[#D9BB81]/80 p-5 sm:p-6 shadow-[0_4px_16px_rgba(20,36,60,0.04)] hover:shadow-[0_10px_24px_rgba(20,36,60,0.06)] transition-all duration-300 overflow-hidden">
+              <div className="group relative flex flex-col justify-between rounded-2xl bg-white border border-[#E7E5DF] hover:border-[#D9BB81]/80 p-4 sm:p-5 shadow-[0_4px_16px_rgba(20,36,60,0.04)] hover:shadow-[0_10px_24px_rgba(20,36,60,0.06)] transition-all duration-300 overflow-hidden">
                 <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#D9BB81]/40 to-transparent" />
 
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#E7E5DF] bg-[#FAF9F6] text-[#14243C] group-hover:border-[#D9BB81]/60 transition-colors">
-                      <ShieldCheck size={20} className="text-[#9E7B35]" />
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-xl border border-[#E7E5DF] bg-[#FAF9F6] text-[#14243C] group-hover:border-[#D9BB81]/60 transition-colors">
+                      <ShieldCheck size={16} className="text-[#9E7B35]" />
                     </span>
-                    <span className="inline-flex items-center rounded-full border border-[#E7E5DF] bg-[#FAF9F6] px-3 py-0.5 pf-type-micro font-semibold text-[#526071]">
+                    <span className="inline-flex items-center rounded-full border border-[#E7E5DF] bg-[#FAF9F6] px-3.5 py-1 text-[11px] sm:text-[11.5px] font-semibold text-[#526071]">
                       ضوابط الاعتماد الرسمي
                     </span>
                   </div>
 
-                  <h3 className="pf-type-h3 font-bold text-[#14243C] group-hover:text-[#9E7B35] transition-colors">
+                  <h3 className="text-[13.5px] sm:text-[14px] font-bold text-[#14243C] group-hover:text-[#9E7B35] transition-colors">
                     إرشادات اعتماد وعرض اللوحة
                   </h3>
 
-                  <ul className="mt-3 space-y-2.5 pf-type-body text-[#526071]">
-                    <li className="flex items-start gap-2.5">
-                      <CheckCircle2 size={16} className="text-[#9E7B35] mt-1 shrink-0" />
+                  <ul className="mt-2 space-y-1.5 text-[11px] sm:text-[12px] text-[#526071]">
+                    <li className="flex items-start gap-1.5">
+                      <CheckCircle2 size={13} className="text-[#9E7B35] mt-0.5 shrink-0" />
                       <span>تُراجع المستندات بدقة للتأكد من مطابقة السجل المروري للمركبة.</span>
                     </li>
-                    <li className="flex items-start gap-2.5">
-                      <CheckCircle2 size={16} className="text-[#9E7B35] mt-1 shrink-0" />
+                    <li className="flex items-start gap-1.5">
+                      <CheckCircle2 size={13} className="text-[#9E7B35] mt-0.5 shrink-0" />
                       <span>يتولى مستشارو المنصة تقدير السعر الافتتاحي بالتشاور المباشر مع المالك.</span>
                     </li>
-                    <li className="flex items-start gap-2.5">
-                      <CheckCircle2 size={16} className="text-[#9E7B35] mt-1 shrink-0" />
-                      <span>يتم توثيق شروط المزاد وقيمة التأمين الإلزامي للمشاركين لضمان جدية المزايدات.</span>
+                    <li className="flex items-start gap-1.5">
+                      <CheckCircle2 size={13} className="text-[#9E7B35] mt-0.5 shrink-0" />
+                      <span>يتم توثيق شروط المزاد وقيمة التأمين الإلزامي لضمان جدية المزايدات.</span>
                     </li>
                   </ul>
                 </div>
 
-                <div className="mt-5 pt-3.5 border-t border-[#ECE9E2] flex flex-wrap items-center justify-between gap-2 pf-type-micro font-medium text-[#526071]">
-                  <span className="inline-flex items-center gap-1.5 rounded-lg border border-[#E7E5DF] bg-[#FAF9F6] px-2.5 py-1">
-                    <ShieldCheck size={13} className="text-[#9E7B35] shrink-0" />
+                <div className="mt-3.5 pt-2.5 border-t border-[#ECE9E2] flex flex-wrap items-center justify-between gap-2 text-[10.5px] sm:text-[11px] font-medium text-[#526071]">
+                  <span className="inline-flex items-center gap-1.5 rounded-lg border border-[#E7E5DF] bg-[#FAF9F6] px-2 py-0.5">
+                    <ShieldCheck size={11} className="text-[#9E7B35] shrink-0" />
                     <span>مراجعة وتدقيق معتمد</span>
                   </span>
                   <span className="flex items-center gap-1.5">
@@ -208,42 +208,42 @@ export default async function Sell() {
               </div>
 
               {/* Card 2: Private Valuation Concierge */}
-              <div className="group relative flex flex-col justify-between rounded-2xl bg-white border border-[#9E7B35]/60 p-5 sm:p-6 shadow-[0_12px_28px_rgba(20,36,60,0.06)] transition-all duration-300 overflow-hidden">
+              <div className="group relative flex flex-col justify-between rounded-2xl bg-white border border-[#9E7B35]/60 p-4 sm:p-5 shadow-[0_8px_24px_rgba(20,36,60,0.05)] transition-all duration-300 overflow-hidden">
                 <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#9E7B35]/60 to-transparent" />
 
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#9E7B35]/40 bg-[#FAF7F0] text-[#8C6B2D]">
-                      <HelpCircle size={20} />
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-xl border border-[#9E7B35]/40 bg-[#FAF7F0] text-[#8C6B2D]">
+                      <HelpCircle size={16} />
                     </span>
-                    <span className="inline-flex items-center rounded-full border border-[#D9BB81]/50 bg-[#FAF7F0] px-3 py-0.5 pf-type-micro font-bold text-[#8C6B2D]">
+                    <span className="inline-flex items-center rounded-full border border-[#D9BB81]/50 bg-[#FAF7F0] px-3.5 py-1 text-[11px] sm:text-[11.5px] font-bold text-[#8C6B2D]">
                       خدمة كبار الملاك VIP
                     </span>
                   </div>
 
-                  <h3 className="pf-type-h3 font-bold text-[#14243C]">
+                  <h3 className="text-[13.5px] sm:text-[14px] font-bold text-[#14243C]">
                     هل تحتاج استشارة خاصة لتقييم لوحتك؟
                   </h3>
 
-                  <p className="mt-2 pf-type-body text-[#526071]">
-                    مستشارو المكتب الخاص جاهزون للإجابة على جميع استفساراتك وتقديم تقييم فني وقيمة تقديرية للوحتك المميزة قبل اعتمادها وطرحها في المزاد.
+                  <p className="mt-1.5 text-[11px] sm:text-[12px] leading-relaxed text-[#526071]">
+                    مستشارو المكتب الخاص جاهزون للإجابة على جميع استفساراتك وتقديم تقييم فني وقيمة تقديرية للوحتك قبل اعتمادها في المزاد.
                   </p>
 
-                  <div className="mt-3.5 rounded-xl bg-[#FAF7F0] border border-[#D9BB81]/50 p-3 pf-type-caption text-[#8C6B2D] font-semibold">
-                    خدمة حصرية وسرية تامة مخصصة لكبار الملاك ومقتني اللوحات النادرة في المملكة.
-                  </div>
+                  <p className="mt-2 text-[10.5px] sm:text-[11px] font-semibold text-[#5A3F16] leading-relaxed">
+                    * خدمة حصرية وسرية تامة مخصصة لكبار الملاك ومقتني اللوحات النادرة في المملكة.
+                  </p>
                 </div>
 
-                <div className="mt-5 pt-3.5 border-t border-[#ECE9E2]">
+                <div className="mt-3.5 pt-2.5 border-t border-[#ECE9E2]">
                   <a
                     href="https://wa.me/966500000000"
                     target="_blank"
                     rel="noreferrer"
-                    className="w-full rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white py-3 px-5 pf-type-caption font-bold shadow-xs transition-all inline-flex items-center justify-center gap-2 active:scale-[0.99]"
+                    className="w-full rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white py-2 px-3.5 text-[11px] sm:text-[11.5px] font-bold shadow-2xs transition-all inline-flex items-center justify-center gap-1.5 active:scale-[0.99]"
                   >
-                    <MessageCircle size={16} className="text-[#D9BB81] shrink-0" />
+                    <MessageCircle size={14} className="text-[#D9BB81] shrink-0" />
                     <span>تواصل مع مستشار المزادات عبر واتساب</span>
-                    <ArrowLeft size={14} className="text-[#D9BB81] shrink-0" />
+                    <ArrowLeft size={12} className="text-[#D9BB81] shrink-0" />
                   </a>
                 </div>
               </div>

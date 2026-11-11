@@ -28,10 +28,10 @@ export default async function AboutPage() {
     <div className="min-h-screen w-full overflow-x-clip bg-paper">
       <AboutView />
       {cms?.data?.body_ar ? (
-        <section className="container-fbs pb-16">
-          <div className="mx-auto max-w-4xl rounded-3xl border border-[#D9BB81]/40 bg-white p-7 sm:p-10 shadow-sm">
+        <section className="max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10 pb-12 sm:pb-16">
+          <div className="rounded-2xl border border-[#D9BB81]/40 bg-white p-6 sm:p-8 shadow-xs">
             <h2 className="text-xl sm:text-2xl font-black text-[#14243C]">{cms.data.title_ar}</h2>
-            <div className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
+            <div className="mt-3.5 whitespace-pre-wrap text-xs sm:text-[13.5px] leading-relaxed text-slate-700">
               {cms.data.body_ar}
             </div>
           </div>

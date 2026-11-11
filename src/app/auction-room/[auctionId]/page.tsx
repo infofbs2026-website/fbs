@@ -50,9 +50,9 @@ export default async function Room({ params }: { params: Promise<{ auctionId: st
 
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1 text-xs font-bold text-emerald-400 mb-3 shadow-xs">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse-live shadow-[0_0_8px_#34d399]" />
-                <span>جلسة مزايدة حية وتفاعلية</span>
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-[11px] sm:text-[11.5px] font-bold text-emerald-400 mb-3 shadow-xs">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse-live shadow-[0_0_8px_#34d399]" />
+                <span>مزايدة حية ومباشرة</span>
               </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
                 المزاد المباشر: لوحة {plate.lettersAr.join(' ')} {plate.numbers}

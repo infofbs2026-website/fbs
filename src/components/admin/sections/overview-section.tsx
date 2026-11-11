@@ -54,21 +54,26 @@ interface OverviewProps {
 }
 
 function LiveCountdownChamber({ endsAt }: { endsAt?: string | null }) {
-  const [now, setNow] = useState<number>(() => Date.now());
+  const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
     if (!endsAt || !Number.isFinite(Date.parse(endsAt))) return;
     const end = Date.parse(endsAt);
+    const initial = window.setTimeout(() => setNow(Date.now()), 0);
     const timer = window.setInterval(() => {
       const current = Date.now();
       setNow(current);
       if (current >= end) window.clearInterval(timer);
     }, 1000);
-    return () => window.clearInterval(timer);
+    return () => {
+      window.clearTimeout(initial);
+      window.clearInterval(timer);
+    };
   }, [endsAt]);
 
-  const valid = Boolean(endsAt && Number.isFinite(Date.parse(endsAt)));
-  const totalSeconds = valid && endsAt ? Math.max(0, Math.floor((Date.parse(endsAt) - now) / 1000)) : null;
+  const valid = Boolean(endsAt && now !== null && Number.isFinite(Date.parse(endsAt)));
+  const totalSeconds =
+    valid && endsAt && now !== null ? Math.max(0, Math.floor((Date.parse(endsAt) - now) / 1000)) : null;
 
   const days = totalSeconds === null ? '—' : String(Math.floor(totalSeconds / 86400)).padStart(2, '0');
   const hours = totalSeconds === null ? '—' : String(Math.floor((totalSeconds % 86400) / 3600)).padStart(2, '0');

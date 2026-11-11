@@ -2,6 +2,7 @@ import type { SiteSettings } from '@/lib/site-settings-types';
 
 export type AdminSectionKey =
   | 'overview'
+  | 'profile'
   | 'verifications'
   | 'plates'
   | 'auctions'

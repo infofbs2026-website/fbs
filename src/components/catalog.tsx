@@ -126,6 +126,7 @@ export async function Catalog({
     getMarketplace({
       ...clean,
       page: Number(clean.page) || 1,
+      pageSize: Number(clean.pageSize) || 8,
       sort: clean.sort as MarketplaceQuery['sort'],
       auctionStatus: auctionFilter ?? 'DIRECT'
     } as MarketplaceQuery),
@@ -148,7 +149,7 @@ export async function Catalog({
           : 'اللوحات المميزة والمزادات';
 
   const subtitle = isStoreMode
-    ? 'اقتنِ لوحتك المميزة فوراً بالسعر المطلوب دون انتظار المزادات، مع ضمان نقل الملكية الرسمي عبر منصة أبشر وحماية حساب الضمان.'
+    ? 'اقتنِ لوحتك المميزة فوراً بالسعر المطلوب دون انتظار المزادات.'
     : isLive
       ? 'مزايدة آنية ونظامية في الوقت الفعلي مع تمديد عادل وتوثيق رسمي للملكية.'
       : isUpcoming
@@ -284,12 +285,12 @@ export async function Catalog({
       {/* ============================================================== */}
       {/* 1. LUXURY PAGE HEADER HERO BANNER (HIGH-CONTRAST ROYAL NAVY)   */}
       {/* ============================================================== */}
-      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#D9BB81]/30 pt-26 sm:pt-30 lg:pt-34 pb-26 sm:pb-30 lg:pb-34 text-white">
-        <div className="container-fbs relative z-10">
+      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#D9BB81]/30 pt-20 sm:pt-24 lg:pt-26 pb-18 sm:pb-22 lg:pb-24 text-white">
+        <div className="max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10 relative z-10">
           {/* Concise High-Contrast Breadcrumb Trail */}
           <nav
             aria-label="مسار التصفح"
-            className="mb-3.5 sm:mb-4 flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-300"
+            className="mb-3 sm:mb-3.5 flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-300"
           >
             <Link href="/" className="hover:text-[#F5E3BE] transition-colors">
               الرئيسية
@@ -299,8 +300,8 @@ export async function Catalog({
           </nav>
 
           {/* Editorial Title & Subtitle with Clean Vertical Rhythm */}
-          <div className="max-w-3xl">
-            <h1 className="text-[clamp(1.75rem,4.8vw,2.75rem)] font-black tracking-tight leading-[1.28] text-white">
+          <div className="max-w-2xl">
+            <h1 className="text-[clamp(1.6rem,3.8vw,2.35rem)] font-black tracking-tight leading-[1.25] text-white">
               {isStoreMode ? (
                 <>
                   متجر اللوحات المميزة{' '}
@@ -320,25 +321,25 @@ export async function Catalog({
               )}
             </h1>
 
-            <p className="mt-3 sm:mt-4 text-[14px] sm:text-[15.5px] leading-[1.8] text-slate-300 font-normal max-w-[62ch]">
+            <p className="mt-2.5 sm:mt-3 text-[13px] sm:text-[14px] leading-[1.7] text-slate-300 font-normal max-w-3xl whitespace-normal sm:whitespace-nowrap">
               {subtitle}
             </p>
           </div>
 
           {/* Unified Hero Command Bar: Category Tabs + Store Wishlist/Cart Pod */}
-          <div className="mt-7 sm:mt-8 pt-5 sm:pt-6 border-t border-white/10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-5">
+          <div className="mt-6 sm:mt-7 pt-4 sm:pt-5 border-t border-white/10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-4">
             {/* Category Segmented Capsule */}
-            <div className="relative w-full lg:w-auto lg:min-w-[500px] xl:min-w-[540px] max-w-2xl overflow-hidden rounded-2xl border border-[#D9BB81]/30 bg-[#060E1F]/90 p-1.5 backdrop-blur-xl shadow-[0_14px_34px_rgba(0,0,0,0.45)]">
+            <div className="relative w-full lg:w-auto lg:min-w-[460px] max-w-xl overflow-hidden rounded-2xl border border-[#D9BB81]/30 bg-[#060E1F]/90 p-1 backdrop-blur-xl shadow-[0_12px_28px_rgba(0,0,0,0.4)]">
               <div className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-[#D9BB81]/65 to-transparent" />
 
-              <div className="grid grid-cols-3 gap-1.5 w-full">
+              <div className="grid grid-cols-3 gap-1 w-full">
                 {heroTabs.map((tab) => {
                   const Icon = tab.icon;
                   return (
                     <Link
                       key={tab.href}
                       href={tab.href}
-                      className={`group relative flex h-10 sm:h-[42px] items-center justify-center gap-1.5 rounded-xl px-2 sm:px-3.5 text-center text-[11.5px] sm:text-[12.5px] font-bold transition-all duration-200 w-full ${
+                      className={`group relative flex h-9 sm:h-[38px] items-center justify-center gap-1.5 rounded-xl px-2 sm:px-3 text-center text-[11px] sm:text-[12px] font-bold transition-all duration-200 w-full ${
                         tab.active
                           ? 'bg-gradient-to-r from-[#DFC38D] via-[#F2DFB6] to-[#C89B4B] text-[#071122] font-black shadow-[0_4px_14px_rgba(217,187,129,0.3)] border border-white/40'
                           : 'text-slate-200 hover:text-white bg-white/[0.04] hover:bg-white/[0.1] border border-white/10 hover:border-[#D9BB81]/40'
@@ -375,8 +376,8 @@ export async function Catalog({
       <div className="relative bg-[#F2F0EA] flow-root">
 
         {/* 2. AUTHENTIC SAUDI PLATE TYPE VISUAL SELECTOR (نوع اللوحة)      */}
-        <section aria-label="نوع اللوحة المعتمدة" className={`container-fbs relative z-30 -mt-12 sm:-mt-15 lg:-mt-18 mb-7 sm:mb-9 ${styles.selector}`}>
-        <div className="relative overflow-hidden rounded-3xl border border-[#D9BB81]/35 bg-gradient-to-b from-[#0A162C] via-[#071020] to-[#050B16] px-4 sm:px-6 py-3 sm:py-3.5 shadow-[0_22px_50px_-14px_rgba(4,9,20,0.65)]">
+        <section aria-label="نوع اللوحة المعتمدة" className={`max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10 relative z-30 -mt-10 sm:-mt-12 lg:-mt-14 mb-6 sm:mb-8 ${styles.selector}`}>
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-[#D9BB81]/35 bg-gradient-to-b from-[#0A162C] via-[#071020] to-[#050B16] px-3.5 sm:px-5 py-2.5 sm:py-3 shadow-[0_18px_40px_-12px_rgba(4,9,20,0.65)]">
           {/* Top Luxury Gold Accent Line */}
           <div className="absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#d9b87f]/80 to-transparent pointer-events-none" />
 
@@ -395,13 +396,24 @@ export async function Catalog({
             </div>
           )}
 
-          {/* 3 Frameless Plate Selectors - Direct Plate + Concise Label Underneath */}
+          {/* 3 Frameless Plate Selectors - Label Above + Direct Plate Preview */}
           <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 items-center">
             {/* Plate 1: خصوصي */}
             <Link
               href={makeTypeUrl('خصوصي')}
               className="group relative flex flex-col items-center justify-center py-1 transition-all duration-300 cursor-pointer"
             >
+              <div
+                className={`mb-2 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 pf-type-caption font-bold transition-all ${
+                  clean.type === 'خصوصي'
+                    ? 'bg-gradient-to-r from-[#d9b87f] via-[#ecd5a5] to-[#cb9b48] text-navy-deep font-black shadow-sm'
+                    : 'text-slate-200 group-hover:text-gold-light'
+                }`}
+              >
+                {clean.type === 'خصوصي' && <Check size={13} strokeWidth={3} />}
+                <span>خصوصي</span>
+              </div>
+
               <div
                 className={`${styles.preview} transition-all duration-300 group-hover:-translate-y-1 ${
                   clean.type === 'خصوصي'
@@ -418,17 +430,6 @@ export async function Catalog({
                   dark
                 />
               </div>
-
-              <div
-                className={`mt-1.5 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 pf-type-caption font-bold transition-all ${
-                  clean.type === 'خصوصي'
-                    ? 'bg-gradient-to-r from-[#d9b87f] via-[#ecd5a5] to-[#cb9b48] text-navy-deep font-black shadow-sm'
-                    : 'text-slate-200 group-hover:text-gold-light'
-                }`}
-              >
-                {clean.type === 'خصوصي' && <Check size={13} strokeWidth={3} />}
-                <span>خصوصي</span>
-              </div>
             </Link>
 
             {/* Plate 2: صغيرة رياضية */}
@@ -436,6 +437,17 @@ export async function Catalog({
               href={makeTypeUrl('صغيرة')}
               className="group relative flex flex-col items-center justify-center py-1 transition-all duration-300 cursor-pointer"
             >
+              <div
+                className={`mb-2 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 pf-type-caption font-bold transition-all ${
+                  clean.type === 'صغيرة'
+                    ? 'bg-gradient-to-r from-[#d9b87f] via-[#ecd5a5] to-[#cb9b48] text-navy-deep font-black shadow-sm'
+                    : 'text-slate-200 group-hover:text-gold-light'
+                }`}
+              >
+                {clean.type === 'صغيرة' && <Check size={13} strokeWidth={3} />}
+                <span>صغيرة رياضية</span>
+              </div>
+
               <div
                 className={`${styles.preview} transition-all duration-300 group-hover:-translate-y-1 ${
                   clean.type === 'صغيرة'
@@ -452,17 +464,6 @@ export async function Catalog({
                   dark
                 />
               </div>
-
-              <div
-                className={`mt-1.5 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 pf-type-caption font-bold transition-all ${
-                  clean.type === 'صغيرة'
-                    ? 'bg-gradient-to-r from-[#d9b87f] via-[#ecd5a5] to-[#cb9b48] text-navy-deep font-black shadow-sm'
-                    : 'text-slate-200 group-hover:text-gold-light'
-                }`}
-              >
-                {clean.type === 'صغيرة' && <Check size={13} strokeWidth={3} />}
-                <span>صغيرة رياضية</span>
-              </div>
             </Link>
 
             {/* Plate 3: نقل خاص */}
@@ -470,6 +471,17 @@ export async function Catalog({
               href={makeTypeUrl('نقل')}
               className="group relative flex flex-col items-center justify-center py-1 transition-all duration-300 cursor-pointer"
             >
+              <div
+                className={`mb-2 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 pf-type-caption font-bold transition-all ${
+                  clean.type === 'نقل'
+                    ? 'bg-gradient-to-r from-[#d9b87f] via-[#ecd5a5] to-[#cb9b48] text-navy-deep font-black shadow-sm'
+                    : 'text-slate-200 group-hover:text-gold-light'
+                }`}
+              >
+                {clean.type === 'نقل' && <Check size={13} strokeWidth={3} />}
+                <span>نقل خاص</span>
+              </div>
+
               <div
                 className={`${styles.preview} transition-all duration-300 group-hover:-translate-y-1 ${
                   clean.type === 'نقل'
@@ -485,17 +497,6 @@ export async function Catalog({
                   compact
                   dark
                 />
-              </div>
-
-              <div
-                className={`mt-1.5 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 pf-type-caption font-bold transition-all ${
-                  clean.type === 'نقل'
-                    ? 'bg-gradient-to-r from-[#d9b87f] via-[#ecd5a5] to-[#cb9b48] text-navy-deep font-black shadow-sm'
-                    : 'text-slate-200 group-hover:text-gold-light'
-                }`}
-              >
-                {clean.type === 'نقل' && <Check size={13} strokeWidth={3} />}
-                <span>نقل خاص</span>
               </div>
             </Link>
           </div>
@@ -655,15 +656,15 @@ export function CatalogSkeleton() {
   return (
     <>
       {/* 1. Luxury Hero Skeleton with Shimmer */}
-      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#D9BB81]/30 pt-26 sm:pt-30 lg:pt-34 pb-26 sm:pb-30 lg:pb-34 text-white">
-        <div className="container-fbs relative z-10 space-y-4">
+      <section className="hero-luxury-ambient relative overflow-hidden border-b border-[#D9BB81]/30 pt-20 sm:pt-24 lg:pt-26 pb-18 sm:pb-22 lg:pb-24 text-white">
+        <div className="max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10 relative z-10 space-y-4">
           <div className="h-4 w-36 rounded-md skeleton-shimmer-dark" />
-          <div className="h-11 w-80 sm:w-[440px] rounded-xl skeleton-shimmer-dark" />
-          <div className="h-5 w-full max-w-xl rounded-md skeleton-shimmer-dark" />
-          <div className="mt-7 pt-5 border-t border-white/10">
-            <div className="grid grid-cols-3 gap-2 max-w-xl p-1.5 rounded-2xl border border-[#D9BB81]/25 bg-[#060E1F]/90">
+          <div className="h-10 w-72 sm:w-[380px] rounded-xl skeleton-shimmer-dark" />
+          <div className="h-4 w-full max-w-lg rounded-md skeleton-shimmer-dark" />
+          <div className="mt-6 pt-4 border-t border-white/10">
+            <div className="grid grid-cols-3 gap-1.5 max-w-lg p-1 rounded-2xl border border-[#D9BB81]/25 bg-[#060E1F]/90">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-10 w-full rounded-xl skeleton-shimmer-dark" />
+                <div key={i} className="h-9 w-full rounded-xl skeleton-shimmer-dark" />
               ))}
             </div>
           </div>
@@ -672,20 +673,20 @@ export function CatalogSkeleton() {
 
       {/* 2. Overlapping 3-Plate Type Selector Skeleton + Full-Width Stage Bar + Full-Height 2-Column Skeleton */}
       <div className="relative bg-[#F2F0EA] flow-root pb-16 sm:pb-24">
-        <section className={`container-fbs relative z-30 -mt-12 sm:-mt-15 lg:-mt-18 mb-7 sm:mb-9 ${styles.selector}`}>
-          <div className="rounded-3xl border border-[#D9BB81]/35 bg-[#071020] px-4 sm:px-6 py-3 sm:py-3.5 shadow-xl">
+        <section className={`max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10 relative z-30 -mt-10 sm:-mt-12 lg:-mt-14 mb-6 sm:mb-8 ${styles.selector}`}>
+          <div className="rounded-2xl sm:rounded-3xl border border-[#D9BB81]/35 bg-[#071020] px-3.5 sm:px-5 py-2.5 sm:py-3 shadow-xl">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 items-center">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="flex flex-col items-center gap-1.5 py-1">
+                <div key={i} className="flex flex-col items-center gap-2 py-1">
+                  <div className="h-6 w-20 rounded-full skeleton-shimmer-dark" />
                   <div className={`${styles.preview} aspect-[52/11] rounded-xl skeleton-shimmer-dark`} />
-                  <div className="h-7 w-24 rounded-full skeleton-shimmer-dark" />
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        <div className="container-fbs">
+        <div className="max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10">
           {/* Full-Width Stage Bar Skeleton (Filter Button + Search Bar + View Toggle) */}
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-neutral-200/80 bg-white p-2.5 sm:px-4 sm:py-3 shadow-xs">
             <div className="flex flex-1 flex-wrap sm:flex-nowrap items-center gap-2.5 min-w-0">
@@ -695,9 +696,9 @@ export function CatalogSkeleton() {
             <div className="h-10 w-44 rounded-xl skeleton-shimmer shrink-0" />
           </div>
 
-          {/* Default 4-Column Plates Grid Skeleton (12 cards = 3 rows × 4 columns) */}
+          {/* Default 4-Column Plates Grid Skeleton (8 cards = 2 rows × 4 columns) */}
           <div className="min-w-0">
-            <PlateCardSkeletonGrid count={12} />
+            <PlateCardSkeletonGrid count={8} />
           </div>
         </div>
       </div>

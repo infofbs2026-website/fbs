@@ -85,6 +85,32 @@
 }
 
 @layer base {
+  html {
+    font-size: 100%;
+    scrollbar-gutter: stable;
+  }
+
+  /* TIER 1: Proportional 2D Desktop Scaling for Smaller PC Screens (1024x600 .. 1600x900) */
+  @media (min-width: 64rem) {
+    html {
+      font-size: clamp(
+        60%,
+        min(calc(0.1rem + 0.9vw), calc(0.1rem + 1.5dvh)),
+        100%
+      );
+    }
+  }
+
+  /* Low-Res Readability Floor on 1024x600 / 1366x768 */
+  @media (min-width: 64rem) and (max-width: 86rem) {
+    .pf-type-body, p {
+      font-size: max(var(--pf-type-body, 0.9375rem), 12px);
+    }
+    .pf-type-caption, .pf-type-micro, small {
+      font-size: max(var(--pf-type-caption, 0.8125rem), 11px);
+    }
+  }
+
   * {
     box-sizing: border-box;
   }
@@ -92,7 +118,8 @@
   html,
   body {
     overflow-x: clip;
-    max-width: 100vw;
+    inline-size: 100%;
+    max-inline-size: 100%;
   }
 
   body {
@@ -102,6 +129,17 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-synthesis-weight: none;
+  }
+
+  /* Arabic Font-Weight & Halation Guard across small/low-res screens */
+  @media (max-width: 39.99rem), (min-width: 64rem) and (max-width: 86rem), (max-resolution: 1.25dppx) {
+    h1, h2, h3, .font-black, .font-extrabold {
+      font-weight: 700;
+    }
+    small, .text-xs, .pf-type-caption, .pf-type-micro, .font-light, .font-thin {
+      font-weight: 500;
+    }
   }
 
   button,
@@ -191,7 +229,7 @@
       flex-direction: row;
       justify-content: center;
       align-items: stretch;
-      gap: clamp(5rem, 7vw, 8.5rem);
+      gap: clamp(2.5rem, 4.5vw, 8rem);
     }
   }
 

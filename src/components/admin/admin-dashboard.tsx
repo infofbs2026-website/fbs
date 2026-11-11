@@ -52,6 +52,7 @@ import { PlatesSection } from './sections/plates-section';
 import { AuctionsSection } from './sections/auctions-section';
 import { PagesCmsSection } from './sections/pages-cms-section';
 import { SettingsSection } from './sections/settings-section';
+import { ProfileSection } from './sections/profile-section';
 import { PeopleOpsSection } from './sections/people-ops-section';
 import { FinanceAuditSection } from './sections/finance-audit-section';
 import type { AdminDashboardData, AdminSectionKey } from './types';
@@ -155,6 +156,12 @@ const NAV_GROUPS: Array<{ title: string; items: NavEntry[] }> = [
   {
     title: 'المحتوى والإعدادات',
     items: [
+      {
+        key: 'profile',
+        label: 'الملف الإداري والحساب',
+        subtitle: 'تعديل البيانات الشخصية، مفاتيح الأمان، والأدوار الإدارية.',
+        icon: UserCheck,
+      },
       {
         key: 'cms',
         label: 'الصفحات والمدن',
@@ -444,18 +451,15 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
                 <ExternalLink size={16} aria-hidden="true" />
                 <span>الموقع</span>
               </Link>
-              <Link href="/account" onClick={() => setMobileOpen(false)} aria-label="حسابي" title="لوحة الحساب العادية">
-                <UserCheck size={16} aria-hidden="true" />
-                <span>حسابي</span>
-              </Link>
               <button
                 type="button"
-                onClick={() => setMfaModalOpen(true)}
-                aria-label="المصادقة"
-                title="إعدادات الأمان"
+                onClick={() => navigateSection('profile')}
+                aria-current={section === 'profile' ? 'page' : undefined}
+                aria-label="الملف الإداري"
+                title="الملف الإداري وتعديل البيانات"
               >
-                <KeyRound size={16} aria-hidden="true" />
-                <span>2FA</span>
+                <UserCheck size={16} aria-hidden="true" />
+                <span>حسابي</span>
               </button>
               <button
                 type="button"
@@ -481,22 +485,41 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
               <button
                 type="button"
                 className={accountStyles.sidebarToggleBtn}
-                onClick={() => setCollapsed((c) => !c)}
-                title={collapsed ? 'توسيع القائمة الجانبية' : 'طي القائمة الجانبية'}
-                aria-label={collapsed ? 'توسيع القائمة الجانبية' : 'طي القائمة الجانبية'}
+                onClick={() => {
+                  if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+                    setMobileOpen((m) => !m);
+                  } else {
+                    setCollapsed((c) => !c);
+                  }
+                }}
+                title={mobileOpen ? 'إغلاق القائمة الجانبية' : collapsed ? 'توسيع القائمة الجانبية' : 'طي القائمة الجانبية'}
+                aria-label={mobileOpen ? 'إغلاق القائمة الجانبية' : collapsed ? 'توسيع القائمة الجانبية' : 'طي القائمة الجانبية'}
               >
-                {collapsed ? (
-                  <PanelRightOpen size={18} strokeWidth={2.1} aria-hidden="true" />
-                ) : (
-                  <PanelRightClose size={18} strokeWidth={2.1} aria-hidden="true" />
-                )}
+                {/* Desktop Collapse Icon: Visible only on desktop */}
+                <span className="hidden lg:inline-flex items-center justify-center">
+                  {collapsed ? (
+                    <PanelRightOpen size={18} strokeWidth={2.1} aria-hidden="true" />
+                  ) : (
+                    <PanelRightClose size={18} strokeWidth={2.1} aria-hidden="true" />
+                  )}
+                </span>
+                {/* Mobile Menu Icon: Visible only on mobile/tablet */}
+                <span className="inline-flex lg:hidden items-center justify-center">
+                  {mobileOpen ? (
+                    <X size={20} strokeWidth={2.2} aria-hidden="true" />
+                  ) : (
+                    <Menu size={20} strokeWidth={2.2} aria-hidden="true" />
+                  )}
+                </span>
               </button>
 
-              <Link href="/" className={accountStyles.homePill} title="العودة للرئيسية">
-                <span className={accountStyles.homePillIcon}>
-                  <Home size={15} aria-hidden="true" />
-                </span>
-                <span>الرئيسية</span>
+              <Link
+                href="/"
+                className={accountStyles.raisedIconBtn}
+                title="العودة للرئيسية"
+                aria-label="الرئيسية"
+              >
+                <Home size={17} strokeWidth={2.1} aria-hidden="true" />
               </Link>
             </div>
 
@@ -565,22 +588,16 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
                 <ShieldCheck size={18} strokeWidth={2.1} aria-hidden="true" />
               </button>
 
-              {/* Admin Avatar Pill */}
-              <div className={accountStyles.userPill}>
-                <span className={accountStyles.avatar}>{data.viewer.displayName.charAt(0) || 'أ'}</span>
-                <span className={accountStyles.userName}>{data.viewer.displayName || 'الإدارة'}</span>
-              </div>
-
-              {/* Admin Logout Button */}
+              {/* Admin Avatar Pill - Clickable to open Admin Profile */}
               <button
                 type="button"
-                onClick={handleAdminLogout}
-                className={accountStyles.raisedIconBtn}
-                style={{ color: '#ef4444' }}
-                aria-label="تسجيل الخروج من لوحة الإدارة"
-                title="تسجيل الخروج وإنهاء الجلسة الإدارية"
+                onClick={() => navigateSection('profile')}
+                className={accountStyles.userPill}
+                title="الملف الإداري وتعديل الحساب"
+                aria-label="الملف الإداري"
               >
-                <LogOut size={17} strokeWidth={2.1} aria-hidden="true" />
+                <span className={accountStyles.avatar}>{data.viewer.displayName.charAt(0) || 'أ'}</span>
+                <span className={accountStyles.userName}>{data.viewer.displayName || 'الإدارة'}</span>
               </button>
             </div>
           </header>
@@ -669,6 +686,15 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
               liveOnly={section === 'live'}
               preselectedPlateId={preselectedPlateId}
               onClearPreselectedPlate={() => setPreselectedPlateId(null)}
+              onNotify={notify}
+              onRequireMfa={() => setMfaModalOpen(true)}
+              onRefresh={refreshData}
+            />
+          )}
+
+          {section === 'profile' && (
+            <ProfileSection
+              data={data}
               onNotify={notify}
               onRequireMfa={() => setMfaModalOpen(true)}
               onRefresh={refreshData}

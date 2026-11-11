@@ -26,7 +26,7 @@ export function mapPlate(row: Row, auction: MarketplaceAuction | null = null): M
 
 export async function getMarketplace(input: MarketplaceQuery = {}): Promise<MarketplaceResult> {
   const page = Math.max(1, Math.min(1000, Math.floor(Number(input.page) || 1)));
-  const pageSize = Math.max(1, Math.min(48, Math.floor(Number(input.pageSize) || 12)));
+  const pageSize = Math.max(1, Math.min(48, Math.floor(Number(input.pageSize) || 8)));
   const db = createAdminClient();
 
   if (!db) return { configured: false, available: false, source: 'database', plates: [], total: 0, page, pageSize };

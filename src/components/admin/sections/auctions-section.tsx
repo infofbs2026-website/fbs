@@ -53,7 +53,7 @@ export function AuctionsSection({
   onRequireMfa,
   onRefresh,
 }: AuctionsSectionProps) {
-  const [nowMs, setNowMs] = useState<number>(() => Date.now());
+  const [nowMs, setNowMs] = useState<number | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>(liveOnly ? 'ACTIVE' : 'ALL');
   const [query, setQuery] = useState('');
   const [busyKey, setBusyKey] = useState<string | null>(null);
@@ -98,8 +98,12 @@ export function AuctionsSection({
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    const initial = window.setTimeout(() => setNowMs(Date.now()), 0);
     const timer = window.setInterval(() => setNowMs(Date.now()), 1000);
-    return () => window.clearInterval(timer);
+    return () => {
+      window.clearTimeout(initial);
+      window.clearInterval(timer);
+    };
   }, []);
 
   const eligiblePlates = useMemo(
@@ -415,9 +419,10 @@ export function AuctionsSection({
             const auctionRegs = data.registrations.filter((r) => r.auction_id === auction.id);
 
             const targetMs = auction.effective_end_at ? Date.parse(auction.effective_end_at) : NaN;
-            const totalSec = Number.isFinite(targetMs)
-              ? Math.max(0, Math.floor((targetMs - nowMs) / 1000))
-              : null;
+            const totalSec =
+              nowMs !== null && Number.isFinite(targetMs)
+                ? Math.max(0, Math.floor((targetMs - nowMs) / 1000))
+                : null;
             const countdownUnits = [
               {
                 key: 'days',

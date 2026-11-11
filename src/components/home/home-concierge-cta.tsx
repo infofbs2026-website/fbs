@@ -9,11 +9,11 @@ export function HomeConciergeCta({ siteSettings }: { siteSettings?: SiteSettings
 
   return (
     <section className="relative overflow-hidden bg-[#F7F6F3] pt-2 pb-16 sm:pb-24 select-none">
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10 relative z-10">
         <ScrollReveal
           direction="up"
           delay={80}
-          className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-[#D9BB81]/30 bg-gradient-to-b from-[#0B182B] to-[#071222] p-8 sm:p-12 lg:p-14 text-white shadow-[0_24px_50px_-12px_rgba(8,22,43,0.3)] text-center"
+          className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-[#D9BB81]/30 bg-gradient-to-b from-[#0B182B] to-[#071222] p-6 sm:p-10 lg:p-12 text-white shadow-[0_24px_50px_-12px_rgba(8,22,43,0.3)] text-center"
         >
           {/* Subtle Top Specular Edge Line */}
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#D9BB81]/50 to-transparent pointer-events-none" />
@@ -23,9 +23,9 @@ export function HomeConciergeCta({ siteSettings }: { siteSettings?: SiteSettings
 
           <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
             {/* VIP Eyebrow Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#D9BB81]/35 bg-white/[0.05] px-3.5 py-1 text-xs sm:text-[13px] font-semibold text-[#D9BB81] backdrop-blur-md mb-4 shadow-2xs">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#D9BB81]/35 bg-white/[0.05] px-3.5 py-1.5 text-[11px] sm:text-[11.5px] font-bold text-[#D9BB81] backdrop-blur-md mb-4 shadow-2xs">
               <Crown size={13} className="text-[#D9BB81] shrink-0" />
-              <span className="tracking-wide">خدمة كونسيرج ومستشاري النخبة</span>
+              <span className="tracking-wide">المكتب الخاص ومستشارو VIP</span>
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
             </div>
 

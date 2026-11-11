@@ -13,36 +13,36 @@ const faqCol1 = [
     id: '01',
     category: 'المزادات والمزايدة',
     q: 'كيف أشارك في مزادات اللوحات؟ وما هي شروط الأهلية؟',
-    a: 'يتطلب الاشتراك إنشاء حساب موثّق وتأكيد الهوية عبر النفاذ الوطني الموحد (أبشر) لضمان موثوقية المزايدين. بعد تسجيل الدخول، يمكنك استعراض المزاد المطلوب، والموافقة على الشروط، وتفويض مبلغ التأمين المالي المخصص عبر بطاقتك البنكية (Pre-Authorization). فور اعتماد التفويض، يُفعّل حسابك فوراً لتقديم العروض الحية والتنافس المباشر.',
-    badge: 'توثيق فوري عبر النفاذ الوطني'
+    a: 'يتطلب الاشتراك توثيق حسابك بالهوية وحجز تفويض تأمين المزاد (Hold) بنكياً دون خصم من رصيدك. فور اعتماد التفويض، يمكنك المزايدة فوراً في الصالة الحية.',
+    badge: 'توثيق رسمي وتأمين بنكي فوري'
   },
   {
     id: '02',
     category: 'الضمان المالي والتأمين',
     q: 'ما هو مصير مبلغ التأمين لغير الفائزين؟ ومتى يُفك الحجز؟',
-    a: 'يتم التعامل مع مبلغ التأمين كحجز بنكي مؤقت (Pre-authorization Hold) دون خصمه الفعلي من رصيدك. فور إغلاق المزاد ورسوه على المزايد الفائز، يصدر نظام المنصة أمراً آلياً وفورياً بإلغاء التفويض (Void) لكافة المزايدين الآخرين دون أي خصومات أو رسوم، ويعود المبلغ المتاح في حسابك فوراً أو خلال 24 ساعة بحسب سياسة البنك المصدر لبطاقتك.',
-    badge: 'إلغاء حجز فوري 100% بدون استقطاع'
+    a: 'يُفك الحجز البنكي المؤقت (Void) آلياً وفور انتهاء المزاد مباشرة لكافة المزايدين دون أي استقطاع، ليعود الرصيد متاحاً في حسابك دون تأخير.',
+    badge: 'إلغاء حجز فوري 100% دون استقطاع'
   },
   {
     id: '03',
     category: 'التوثيق والتحقق',
     q: 'كيف تضمن المنصة صحة ملكية اللوحة وخلوها من الموانع؟',
-    a: 'تطبّق المنصة بروتوكول تدقيق صارم بالتعاون مع المرجعيات النظامية؛ يُلزم البائع برفع رخصة سير المركبة (الاستمارة) سارية المفعول، ويقوم فريق التحقق بمطابقة بيانات المالك والرقم التسلسلي وسجل اللوحة للتأكد القاطع من خلو اللوحة من أي حجوزات قضائية، مخالفات مقيّدة، أو موانع تمنع نقل الملكية قبل اعتماد المزاد.',
-    badge: 'فحص جنائي ونظامي شامل'
+    a: 'يتم التحقق رسمياً من سريان الاستمارة ومطابقة بيانات المالك، والتأكد من خلو اللوحة تماماً من أي بلاغات، حجوزات قضائية، أو قيود قبل نشرها.',
+    badge: 'فحص وتدقيق نظامي شامل للملكية'
   },
   {
     id: '04',
     category: 'المزادات والمزايدة',
     q: 'ما هي ميزة منع القنص (Anti-Sniping) في اللحظات الأخيرة؟',
-    a: 'ميزة منع القنص هي خوارزمية ذكية تهدف إلى حماية المزايدين من العروض المباغتة في الثواني الأخيرة؛ إذا تم تقديم أي مزايدة خلال آخر 120 ثانية من نهاية المزاد، يتم تمديد وقت المزاد تلقائياً بدقيقتين إضافيتين. يتكرر هذا التمديد مع كل مزايدة جديدة حتى تنقضي الدقيقتان دون مزايدة أخرى، مما يضمن عدالة المنافسة واستقرار السعر الحقيقي.',
-    badge: 'تمديد ديناميكي لضمان الشفافية'
+    a: 'عند تقديم أي مزايدة في آخر دقيقتين من المزاد، يُمدد الوقت تلقائياً لدقيقتين إضافيتين لضمان تكافؤ الفرص ومنع عروض الثواني الأخيرة المباغتة.',
+    badge: 'تمديد ذكي لمنع القنص'
   },
   {
     id: '05',
     category: 'نقل الملكية والمرور',
     q: 'كيف تتم إجراءات نقل الملكية رسمياً؟ وهل يلزم مراجعة المرور؟',
-    a: 'لا تتطلب العملية أي زيارة حضورية لإدارات المرور؛ تتم إجراءات نقل الملكية رقمياً عبر خدمة مبايعة اللوحات المعتمدة في منصة "أبشر" أو بالتنسيق المباشر مع شبكة معارض السيارات المعتمدة الشريكة لـ FBS في مدينتك. يتولى مستشار المنصة الخاص إدارة وتنسيق الخطوات وإصدار رخصة السير المحدثة وتسليمها لك خلال 48 إلى 72 ساعة عمل.',
-    badge: 'نقل ملكية رقمي دون مراجعة فروع المرور'
+    a: 'تتم الإجراءات دون الحاجة لمراجعة فروع المرور عبر شبكة المعارض المعتمدة الشريكة؛ ويتولى فريقنا إصدار رخصة السير (الاستمارة) وتسليمها لك مباشرة.',
+    badge: 'نقل رسمي دون مراجعة فروع المرور'
   }
 ];
 
@@ -51,35 +51,35 @@ const faqCol2 = [
     id: '06',
     category: 'الضمان المالي والتأمين',
     q: 'كيف يحمي حساب الضمان (Escrow) قيمة اللوحة حتى استلامها؟',
-    a: 'تُودع قيمة اللوحة المسددة بالكامل في حساب ضمان بنكي محمي ومستقل (Escrow Account) خاضع لإشراف مالي محكم. تظل الأموال معلقة في الحساب المحمي ولا يتم تحويل أي مبالغ لحساب البائع إلا بعد التحقق التقني والنظامي من اكتمال نقل ملكية اللوحة رسمياً في سجلات المرور باسم المشتري واستلامه لإشعار النقل بنجاح.',
-    badge: 'حساب ضمان Escrow محمي ومعتمد'
+    a: 'تُحفظ قيمة الصفقة في حساب بنكي ضامن محمي، ولا تُحوّل للبائع إلا بعد إتمام نقل الملكية رسمياً باسم المشتري وصدور الاستمارة المحدثة.',
+    badge: 'حساب ضمان Escrow بنكي معتمد'
   },
   {
     id: '07',
     category: 'البائعون وعرض اللوحات',
     q: 'كيف يمكنني عرض لوحتي للبيع أو المزاد؟ وما هي الرسوم؟',
-    a: 'نعم، يمكنك تقديم طلب عرض لوحتك عبر صفحة "اعرض لوحتك الآن" وإرفاق صورة الاستمارة. يتواصل معك فريق التقييم خلال 24 ساعة للاتفاق على السعر الافتتاحي وسعر الحفظ السري (Reserve Price) لمنع بيع اللوحة بأقل من قيمتها المرجوة. لا نتقاضى أي رسوم تسجيل مسبقة؛ تُستحق عمولة المنصة فقط عند إتمام البيع بنجاح ونقل الملكية.',
-    badge: 'بدون أي رسوم مسبقة وسعر حفظ سري محمي'
+    a: 'قدّم طلبك عبر صفحة «اعرض لوحتك» بصورة الاستمارة. يتم التقييم خلال 24 ساعة دون رسوم مسبقة، وتُستحق عمولة المنصة فقط عند إتمام البيع بنجاح.',
+    badge: 'بدون أي رسوم مسبقة وتقييم خلال 24 ساعة'
   },
   {
     id: '08',
     category: 'السياسات والالتزامات',
     q: 'ماذا يحدث في حال فوز مزايد وتخلّفه عن سداد القيمة؟',
-    a: 'يمنح النظام الفائز مهلة سداد نظامية قدرها 48 ساعة عمل لتحويل المتبقي من قيمة اللوحة عبر القنوات المصرفية المعتمدة. في حال تخلفه عن السداد دون عذر قاهر، يُصادر مبلغ التأمين المفوّض كشرط جزائي لتعويض البائع وتغطية الرسوم التشغيلية، وتُعرض اللوحة على المزايد الثاني المؤهل أو يُعاد جدولتها في جولة مزاد خاصة.',
+    a: 'يُمنح الفائز مهلة 48 ساعة للسداد؛ وفي حال التخلف يُصادر مبلغ التأمين كشرط جزائي لتعويض البائع، وتُعرض اللوحة على المزايد التالي أو تُجدول مجدداً.',
     badge: 'انضباط سوقي ملزم لحماية الجدية'
   },
   {
     id: '09',
     category: 'فئات اللوحات والرموز',
     q: 'ما هي فئات وتصنيفات اللوحات المعتمدة في مزادات المنصة؟',
-    a: 'تختص منصة FBS باللوحات السعودية الفاخرة والاستثنائية بجميع الفئات المصرحة: اللوحات الخصوصية النادرة (أحادية الحرف والرقم، الثنائية، والثلاثية المميزة)، لوحات النقل الخاص للمؤسسات والأفراد، لوحات الدراجات النارية الفريدة، إضافة إلى اللوحات التي تحمل شعارات وطنية ورسمية مميزة وفق اللوائح المعتمدة.',
-    badge: 'تغطية شاملة لكافة الفئات المصرحة'
+    a: 'نختص باللوحات السعودية الفاخرة المعتمدة رسمياً: الخصوصي (أحادية، ثنائية، وثلاثية)، النقل الخاص، الدراجات النارية، واللوحات ذات الشعارات المعتمدة.',
+    badge: 'كافة الفئات المصرحة رسمياً'
   },
   {
     id: '10',
     category: 'السرية والخصوصية',
     q: 'هل بيانات المزايدين ومعلوماتهم الشخصية مشفرة وسرية؟',
-    a: 'بكل تأكيد؛ تلتزم FBS بأعلى معايير الأمن السيبراني والخصوصية المصرفية. تظهر العروض في سجل المزايدة الحي بأسماء مشفرة وأرقام تعريفية رمزية (مثل: مزايد #582) لمنع أي تأثير نفسي أو تكتلات غير عادلة، مع حماية الهويات والبيانات الشخصية والمالية بأحدث بروتوكولات التشفير المصرفي.',
+    a: 'نعم؛ تُعرض المزايدات بأسماء رمزية مشفرة (مثل: مزايد #582) لضمان الخصوصية والعدالة، وتُحمى كافة البيانات الشخصية والمالية بتشفير مصرفي كامل.',
     badge: 'سرية مصرفية وتشفير كامل للهوية'
   }
 ];
@@ -101,32 +101,28 @@ export function HomeFaq() {
         </svg>
       </div>
 
-      <div className="container-fbs relative z-10">
-        {/* Header */}
-        <ScrollReveal
-          direction="up"
-          className="mb-12 sm:mb-16 flex flex-col justify-between gap-6 sm:flex-row sm:items-end text-center sm:text-start items-center sm:items-end"
-        >
-          <div className="max-w-2xl flex flex-col items-center sm:items-start">
-            {/* Unified Luxury Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-gold/45 bg-white/95 px-4.5 py-1.5 text-xs sm:text-sm font-black text-navy-deep shadow-[0_2px_12px_rgba(217,184,127,0.18)] mb-3.5 mx-auto sm:mx-0">
-              <HelpCircle size={16} className="text-gold-dark shrink-0" />
-              <span className="tracking-wide">مركز المعرفة والشفافية</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-navy-deep tracking-tight text-center sm:text-start">
-              الأسئلة الشائعة والمساعدة
-            </h2>
-            <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed font-medium text-center sm:text-start mx-auto sm:mx-0">
-              إجابات تفصيلية ودقيقة لكافة الجوانب التشغيلية، من آليات المزايدة والتفويض البنكي إلى التوثيق ونقل الملكية
-              المعتمد.
-            </p>
+      <div className="relative mx-auto max-w-[1000px] px-5 sm:px-8 lg:px-10">
+        {/* Section Header */}
+        <ScrollReveal direction="up" className="mb-10 text-center max-w-2xl mx-auto">
+          <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3.5 py-1 text-xs font-bold text-navy-deep backdrop-blur-md shadow-2xs">
+            <HelpCircle size={14} className="text-gold-dark" />
+            <span>مركز الشفافية والمعرفة</span>
           </div>
+
+          <h2 className="mt-3 text-xl sm:text-2xl lg:text-3xl font-black text-navy-deep tracking-tight">
+            الأسئلة الشائعة والمساعدة الشاملة
+          </h2>
+
+          <p className="mt-2 text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed">
+            كل ما تحتاج معرفته عن آليات المزايدة، التوثيق، الحساب الضامن، ونقل الملكية المعتمد.
+          </p>
+
           <Link
             href="/faq"
-            className="inline-flex items-center justify-center gap-2 self-center sm:self-auto rounded-full border border-gold/40 bg-white/90 px-5 py-2.5 text-xs sm:text-sm font-bold text-navy-deep shadow-sm hover:border-gold hover:bg-gold/10 hover:text-gold-dark transition-all duration-300 shrink-0"
+            className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-navy-deep hover:text-gold-dark transition-colors group"
           >
-            <span>دليل الأسئلة الشامل</span>
-            <ArrowLeft size={16} />
+            <span>استعراض الدليل التفاعلي الكامل للأسئلة</span>
+            <ArrowLeft size={13} className="transition-transform group-hover:-translate-x-1" />
           </Link>
         </ScrollReveal>
 
@@ -163,33 +159,34 @@ export function HomeFaq() {
             {faqCol1.map((item) => (
               <details
                 key={item.id}
-                className="luxury-card group rounded-2xl border border-slate-200/90 bg-white/95 backdrop-blur-sm p-4 sm:p-4.5 transition-all duration-300 hover:border-gold/50 hover:shadow-md open:border-gold/60 open:shadow-[0_8px_30px_rgba(217,184,127,0.12)] open:bg-white"
+                className="luxury-card group rounded-2xl border border-slate-200/90 bg-white/95 backdrop-blur-sm p-3.5 sm:p-4 transition-all duration-300 hover:border-gold/50 hover:shadow-md open:border-gold/60 open:shadow-[0_8px_30px_rgba(217,184,127,0.12)] open:bg-white"
               >
                 <summary className="flex cursor-pointer select-none list-none items-center justify-between gap-3 text-start [&::-webkit-details-marker]:hidden">
-                  <div className="flex-1 min-w-0 space-y-1.5">
-                    <div className="flex items-center">
-                      <span
-                        style={{ width: '175px' }}
-                        className="inline-flex items-center gap-1.5 rounded-md border border-gold/40 bg-gold/12 px-2 py-0.5 text-xs font-bold text-[#5c3810] shadow-2xs w-[175px] max-w-full"
-                      >
-                        <span className="font-norwester font-black text-xs sm:text-[13px] tracking-wide text-[#482907] shrink-0" dir="ltr">{item.id}</span>
-                        <span className="h-3 w-px bg-gold/50 shrink-0" />
-                        <span className="whitespace-nowrap truncate">{item.category}</span>
+                  <div className="flex-1 min-w-0 space-y-1">
+                    {/* Category & ID - Clean Minimalist Text */}
+                    <div className="flex items-center gap-1.5 text-[11px] sm:text-[11.5px] font-medium">
+                      <span className="font-norwester font-black text-xs sm:text-[12.5px] tracking-wide text-[#7a4e17] shrink-0" dir="ltr">
+                        {item.id}
                       </span>
+                      <span className="text-slate-300 select-none">|</span>
+                      <span className="whitespace-nowrap text-slate-500 font-semibold">{item.category}</span>
                     </div>
-                    <h3 className="text-xs sm:text-[13px] md:text-sm font-black text-navy-deep leading-normal truncate group-hover:text-gold-dark transition-colors">
+
+                    <h3 className="text-[12px] sm:text-[13px] font-bold text-navy-deep leading-snug truncate group-hover:text-gold transition-colors">
                       {item.q}
                     </h3>
                   </div>
-                  <div className="shrink-0 flex h-8 w-8 sm:h-8.5 sm:w-8.5 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-500 transition-all duration-300 group-hover:border-gold/40 group-hover:text-gold group-open:bg-navy-deep group-open:border-navy-deep group-open:text-gold group-open:rotate-180 shadow-xs">
-                    <ChevronDown size={16} />
+
+                  <div className="shrink-0 flex h-7.5 w-7.5 sm:h-8 sm:w-8 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-500 transition-all duration-300 group-hover:border-gold/40 group-hover:text-gold group-open:bg-navy-deep group-open:border-navy-deep group-open:text-gold group-open:rotate-180 shadow-xs">
+                    <ChevronDown size={15} />
                   </div>
                 </summary>
-                <div className="mt-3.5 border-t border-slate-100 pt-3.5 text-xs sm:text-[13.5px] leading-relaxed text-slate-600 font-medium">
+
+                <div className="mt-3 border-t border-slate-100 pt-3 text-[11.5px] sm:text-xs leading-relaxed text-slate-600 font-normal">
                   <p>{item.a}</p>
                   {item.badge && (
-                    <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-slate-50 px-2.5 py-1 text-[11px] font-bold text-slate-700 border border-slate-200/70">
-                      <CheckCircle2 size={13} className="text-gold-dark shrink-0" />
+                    <div className="mt-2.5 inline-flex items-center gap-1 rounded-md bg-slate-50 px-2 py-0.5 text-[10.5px] font-medium text-slate-600 border border-slate-200/70">
+                      <CheckCircle2 size={11} className="text-gold-dark shrink-0" />
                       <span>{item.badge}</span>
                     </div>
                   )}
@@ -203,33 +200,34 @@ export function HomeFaq() {
             {faqCol2.map((item) => (
               <details
                 key={item.id}
-                className="luxury-card group rounded-2xl border border-slate-200/90 bg-white/95 backdrop-blur-sm p-4 sm:p-4.5 transition-all duration-300 hover:border-gold/50 hover:shadow-md open:border-gold/60 open:shadow-[0_8px_30px_rgba(217,184,127,0.12)] open:bg-white"
+                className="luxury-card group rounded-2xl border border-slate-200/90 bg-white/95 backdrop-blur-sm p-3.5 sm:p-4 transition-all duration-300 hover:border-gold/50 hover:shadow-md open:border-gold/60 open:shadow-[0_8px_30px_rgba(217,184,127,0.12)] open:bg-white"
               >
                 <summary className="flex cursor-pointer select-none list-none items-center justify-between gap-3 text-start [&::-webkit-details-marker]:hidden">
-                  <div className="flex-1 min-w-0 space-y-1.5">
-                    <div className="flex items-center">
-                      <span
-                        style={{ width: '185px' }}
-                        className="inline-flex items-center gap-1.5 rounded-md border border-gold/40 bg-gold/12 px-2 py-0.5 text-xs font-bold text-[#5c3810] shadow-2xs w-[185px] max-w-full"
-                      >
-                        <span className="font-norwester font-black text-xs sm:text-[13px] tracking-wide text-[#482907] shrink-0" dir="ltr">{item.id}</span>
-                        <span className="h-3 w-px bg-gold/50 shrink-0" />
-                        <span className="whitespace-nowrap truncate">{item.category}</span>
+                  <div className="flex-1 min-w-0 space-y-1">
+                    {/* Category & ID - Clean Minimalist Text */}
+                    <div className="flex items-center gap-1.5 text-[11px] sm:text-[11.5px] font-medium">
+                      <span className="font-norwester font-black text-xs sm:text-[12.5px] tracking-wide text-[#7a4e17] shrink-0" dir="ltr">
+                        {item.id}
                       </span>
+                      <span className="text-slate-300 select-none">|</span>
+                      <span className="whitespace-nowrap text-slate-500 font-semibold">{item.category}</span>
                     </div>
-                    <h3 className="text-xs sm:text-[13px] md:text-sm font-black text-navy-deep leading-normal truncate group-hover:text-gold-dark transition-colors">
+
+                    <h3 className="text-[12px] sm:text-[13px] font-bold text-navy-deep leading-snug truncate group-hover:text-gold transition-colors">
                       {item.q}
                     </h3>
                   </div>
-                  <div className="shrink-0 flex h-8 w-8 sm:h-8.5 sm:w-8.5 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-500 transition-all duration-300 group-hover:border-gold/40 group-hover:text-gold group-open:bg-navy-deep group-open:border-navy-deep group-open:text-gold group-open:rotate-180 shadow-xs">
-                    <ChevronDown size={16} />
+
+                  <div className="shrink-0 flex h-7.5 w-7.5 sm:h-8 sm:w-8 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-500 transition-all duration-300 group-hover:border-gold/40 group-hover:text-gold group-open:bg-navy-deep group-open:border-navy-deep group-open:text-gold group-open:rotate-180 shadow-xs">
+                    <ChevronDown size={15} />
                   </div>
                 </summary>
-                <div className="mt-3.5 border-t border-slate-100 pt-3.5 text-xs sm:text-[13.5px] leading-relaxed text-slate-600 font-medium">
+
+                <div className="mt-3 border-t border-slate-100 pt-3 text-[11.5px] sm:text-xs leading-relaxed text-slate-600 font-normal">
                   <p>{item.a}</p>
                   {item.badge && (
-                    <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-slate-50 px-2.5 py-1 text-[11px] font-bold text-slate-700 border border-slate-200/70">
-                      <CheckCircle2 size={13} className="text-gold-dark shrink-0" />
+                    <div className="mt-2.5 inline-flex items-center gap-1 rounded-md bg-slate-50 px-2 py-0.5 text-[10.5px] font-medium text-slate-600 border border-slate-200/70">
+                      <CheckCircle2 size={11} className="text-gold-dark shrink-0" />
                       <span>{item.badge}</span>
                     </div>
                   )}

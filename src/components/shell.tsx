@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   UserRound,
   ChevronDown,
+  ChevronLeft,
   LogOut,
   LayoutDashboard,
   Gavel,
@@ -121,19 +122,31 @@ const allNav = [
   { href: '/about', label: 'عن FBS', icon: AboutFbsNavIcon }
 ];
 
-export function Brand({ variant = 'gold', className = '' }: { variant?: 'gold' | 'white'; className?: string }) {
+export function Brand({
+  variant = 'gold',
+  compact = false,
+  className = '',
+}: {
+  variant?: 'gold' | 'white';
+  compact?: boolean;
+  className?: string;
+}) {
   const isWhite = variant === 'white';
   return (
     <Link
       href="/"
-      className={`group inline-flex items-center gap-[clamp(0.45rem,0.35rem+0.35vw,0.75rem)] transition-transform duration-200 active:scale-[0.98] shrink-0 ${className}`}
+      className={`group inline-flex items-center ${compact ? 'gap-2' : 'gap-[clamp(0.45rem,0.35rem+0.35vw,0.75rem)]'} transition-transform duration-200 active:scale-[0.98] shrink-0 ${className}`}
       aria-label="فارس بن سعود للوحات المميزة، الرئيسية"
     >
       {/* 1. X12: FBS Plate Emblem SVG */}
       <img
         src="/brand/X12.svg"
         alt="FBS - لوحة المركبة"
-        className={`h-[clamp(2.125rem,1.85rem+0.75vw,2.75rem)] w-auto object-contain transition-transform group-hover:scale-[1.02] ${
+        className={`${
+          compact
+            ? 'h-[1.9rem] sm:h-[2.15rem]'
+            : 'h-[clamp(2.125rem,1.85rem+0.75vw,2.75rem)]'
+        } w-auto object-contain transition-transform group-hover:scale-[1.02] ${
           isWhite ? 'brightness-0 invert' : ''
         }`}
       />
@@ -143,14 +156,22 @@ export function Brand({ variant = 'gold', className = '' }: { variant?: 'gold' |
         <img
           src="/brand/logo.svg"
           alt="فارس بن سعود"
-          className={`h-[clamp(1.125rem,0.95rem+0.55vw,1.625rem)] w-auto object-contain transition-transform group-hover:scale-[1.02] ${
+          className={`${
+            compact
+              ? 'h-[1rem] sm:h-[1.15rem]'
+              : 'h-[clamp(1.125rem,0.95rem+0.55vw,1.625rem)]'
+          } w-auto object-contain transition-transform group-hover:scale-[1.02] ${
             isWhite ? 'brightness-0 invert' : ''
           }`}
         />
         <img
           src="/brand/X14.svg"
           alt="اللوحات المميزة"
-          className={`h-[clamp(0.5rem,0.42rem+0.25vw,0.75rem)] w-auto object-contain transition-transform group-hover:scale-[1.02] ${
+          className={`${
+            compact
+              ? 'h-[0.44rem] sm:h-[0.5rem]'
+              : 'h-[clamp(0.5rem,0.42rem+0.25vw,0.75rem)]'
+          } w-auto object-contain transition-transform group-hover:scale-[1.02] ${
             isWhite ? 'brightness-0 invert' : ''
           }`}
         />
@@ -701,28 +722,29 @@ export function Footer({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
   const waHref = `https://wa.me/${cleanWa}`;
 
   return (
-    <footer className="relative overflow-hidden border-t border-[#D9BB81]/30 bg-[#08162B] text-white">
+    <footer className="relative overflow-hidden border-t border-[#D9BB81]/25 bg-[#081324] text-white">
       {/* Top Specular Edge Line */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#D9BB81]/60 to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#D9BB81]/50 to-transparent pointer-events-none" />
 
-      <div className="container-fbs relative z-10 pt-16 sm:pt-20">
-        {/* Main Navigation & Links Grid (Cleaned & Streamlined 4-Column Layout) */}
-        <div className="grid gap-8 lg:gap-8 xl:gap-10 pb-8 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr]">
+      {/* Main Fluid Framed Container (~13.5vw side-whitespace on PC) */}
+      <div className="w-[min(calc(100%-2.5rem),76rem)] lg:w-[min(73vw,76rem)] mx-auto relative z-10 pt-8 sm:pt-10 pb-5 sm:pb-6 antialiased">
+        {/* Main Navigation & Links Grid (4-Column Layout with Balanced Compact Spacing) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.25fr_1fr_1fr_1fr] gap-6 md:gap-8 pb-5 sm:pb-6">
           {/* Column 1: Brand & Executive Summary */}
-          <div className="space-y-4">
-            <Brand />
-            <p className="text-sm leading-relaxed text-slate-200 font-normal max-w-sm">
+          <div className="space-y-2.5">
+            <Brand compact />
+            <p className="text-[max(0.72rem,11px)] leading-[1.65] text-slate-300/85 font-normal max-w-[17rem]">
               {settings.footerSummary || DEFAULT_SITE_SETTINGS.footerSummary}
             </p>
           </div>
 
           {/* Column 2: عالم المزادات */}
           <div>
-            <h3 className="mb-4 text-sm font-black uppercase tracking-wider text-gold-light flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-gold inline-block" />
+            <h3 className="mb-2.5 sm:mb-3 text-[max(0.75rem,11.5px)] font-semibold text-gold-light flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-gold inline-block shrink-0" />
               عالم المزادات
             </h3>
-            <ul className="space-y-2.5 text-xs sm:text-[13px]">
+            <ul className="space-y-1.5 sm:space-y-2 text-[max(0.72rem,11px)] font-normal">
               {[
                 { label: 'سوق اللوحات المميزة', href: '/plates' },
                 { label: 'دليل وخطوات المشاركة', href: '/how-it-works' },
@@ -731,14 +753,13 @@ export function Footer({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
                 <li key={idx}>
                   <Link
                     href={item.href}
-                    className="group inline-flex items-center gap-2 text-slate-200 font-medium transition-all duration-200 hover:text-gold-light whitespace-nowrap"
+                    className="group inline-flex items-center gap-1.5 text-slate-300/90 font-normal transition-colors duration-200 hover:text-white whitespace-nowrap"
                   >
-                    <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-md bg-white/5 border border-white/10 text-gold text-[10px] transition-transform duration-200 group-hover:-translate-x-1 group-hover:bg-gold/20 group-hover:border-gold/50">
-                      ←
-                    </span>
-                    <span className="group-hover:translate-x-[-2px] transition-transform whitespace-nowrap">
-                      {item.label}
-                    </span>
+                    <ChevronLeft
+                      size={11}
+                      className="text-gold/70 transition-transform duration-200 group-hover:-translate-x-1 group-hover:text-gold shrink-0"
+                    />
+                    <span>{item.label}</span>
                   </Link>
                 </li>
               ))}
@@ -747,11 +768,11 @@ export function Footer({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
 
           {/* Column 3: اللوائح والسياسات */}
           <div>
-            <h3 className="mb-4 text-sm font-black uppercase tracking-wider text-gold-light flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-gold inline-block" />
+            <h3 className="mb-2.5 sm:mb-3 text-[max(0.75rem,11.5px)] font-semibold text-gold-light flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-gold inline-block shrink-0" />
               اللوائح والسياسات
             </h3>
-            <ul className="space-y-2.5 text-xs sm:text-[13px]">
+            <ul className="space-y-1.5 sm:space-y-2 text-[max(0.72rem,11px)] font-normal">
               {[
                 { label: 'الشروط والأحكام العامة', href: '/terms' },
                 { label: 'سياسة الخصوصية والسرية', href: '/privacy' },
@@ -760,14 +781,13 @@ export function Footer({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
                 <li key={idx}>
                   <Link
                     href={item.href}
-                    className="group inline-flex items-center gap-2 text-slate-200 font-medium transition-all duration-200 hover:text-gold-light whitespace-nowrap"
+                    className="group inline-flex items-center gap-1.5 text-slate-300/90 font-normal transition-colors duration-200 hover:text-white whitespace-nowrap"
                   >
-                    <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-md bg-white/5 border border-white/10 text-gold text-[10px] transition-transform duration-200 group-hover:-translate-x-1 group-hover:bg-gold/20 group-hover:border-gold/50">
-                      ←
-                    </span>
-                    <span className="group-hover:translate-x-[-2px] transition-transform whitespace-nowrap">
-                      {item.label}
-                    </span>
+                    <ChevronLeft
+                      size={11}
+                      className="text-gold/70 transition-transform duration-200 group-hover:-translate-x-1 group-hover:text-gold shrink-0"
+                    />
+                    <span>{item.label}</span>
                   </Link>
                 </li>
               ))}
@@ -776,11 +796,11 @@ export function Footer({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
 
           {/* Column 4: المساعدة والدعم */}
           <div>
-            <h3 className="mb-4 text-sm font-black uppercase tracking-wider text-gold-light flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-gold inline-block" />
+            <h3 className="mb-2.5 sm:mb-3 text-[max(0.75rem,11.5px)] font-semibold text-gold-light flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-gold inline-block shrink-0" />
               المساعدة والدعم
             </h3>
-            <ul className="space-y-2.5 text-xs sm:text-[13px]">
+            <ul className="space-y-1.5 sm:space-y-2 text-[max(0.72rem,11px)] font-normal">
               {[
                 { label: 'مركز الأسئلة الشائعة', href: '/faq' },
                 { label: 'تواصل مع الإدارة التنفيذية', href: '/contact' },
@@ -792,26 +812,24 @@ export function Footer({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
                       href={item.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-2 text-slate-200 font-medium transition-all duration-200 hover:text-gold-light whitespace-nowrap"
+                      className="group inline-flex items-center gap-1.5 text-slate-300/90 font-normal transition-colors duration-200 hover:text-white whitespace-nowrap"
                     >
-                      <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-md bg-white/5 border border-white/10 text-gold text-[10px] transition-transform duration-200 group-hover:-translate-x-1 group-hover:bg-gold/20 group-hover:border-gold/50">
-                        ←
-                      </span>
-                      <span className="group-hover:translate-x-[-2px] transition-transform whitespace-nowrap">
-                        {item.label}
-                      </span>
+                      <ChevronLeft
+                        size={11}
+                        className="text-gold/70 transition-transform duration-200 group-hover:-translate-x-1 group-hover:text-gold shrink-0"
+                      />
+                      <span>{item.label}</span>
                     </a>
                   ) : (
                     <Link
                       href={item.href}
-                      className="group inline-flex items-center gap-2 text-slate-200 font-medium transition-all duration-200 hover:text-gold-light whitespace-nowrap"
+                      className="group inline-flex items-center gap-1.5 text-slate-300/90 font-normal transition-colors duration-200 hover:text-white whitespace-nowrap"
                     >
-                      <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-md bg-white/5 border border-white/10 text-gold text-[10px] transition-transform duration-200 group-hover:-translate-x-1 group-hover:bg-gold/20 group-hover:border-gold/50">
-                        ←
-                      </span>
-                      <span className="group-hover:translate-x-[-2px] transition-transform whitespace-nowrap">
-                        {item.label}
-                      </span>
+                      <ChevronLeft
+                        size={11}
+                        className="text-gold/70 transition-transform duration-200 group-hover:-translate-x-1 group-hover:text-gold shrink-0"
+                      />
+                      <span>{item.label}</span>
                     </Link>
                   )}
                 </li>
@@ -820,39 +838,44 @@ export function Footer({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
           </div>
         </div>
 
-        {/* Contact details and social links belong directly to the footer. */}
-        <div className="flex flex-col items-start justify-between gap-4 border-t border-white/10 py-5 text-start md:flex-row md:items-center md:gap-6 sm:py-6">
-          <div className="flex flex-col items-start gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-8 sm:gap-y-3">
+        {/* Contact details & Social Channels (Balanced Horizontal Ribbon) */}
+        <div className="flex flex-col items-start justify-between gap-3.5 border-t border-white/10 pt-4 sm:pt-5 text-start md:flex-row md:items-center md:gap-6">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
             <a
               href={waHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex min-h-8 items-center gap-2 text-slate-300 transition-colors hover:text-gold"
+              className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 transition-all duration-200 hover:border-gold/50 hover:bg-gold/10"
             >
-              <Phone size={16} className="shrink-0 text-gold" aria-hidden="true" />
-              <span className="text-xs font-medium">الخط الساخن</span>
-              <span className="font-norwester text-base font-bold tracking-wide text-white group-hover:text-gold" dir="ltr">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gold/15 text-gold shrink-0">
+                <Phone size={11} />
+              </span>
+              <span className="text-[11px] font-normal text-slate-400">الخط الساخن:</span>
+              <span className="font-norwester text-[0.8125rem] font-semibold tracking-wider text-white group-hover:text-gold transition-colors" dir="ltr">
                 {settings.phoneDisplay || DEFAULT_SITE_SETTINGS.phoneDisplay}
               </span>
             </a>
-            <div className="inline-flex min-h-8 items-center gap-2 text-xs text-slate-300 sm:text-[13px]">
-              <MapPin size={16} className="shrink-0 text-gold" aria-hidden="true" />
-              <span className="font-medium">المقر الرئيسي:</span>
-              <span className="font-semibold text-white">{settings.addressAr || DEFAULT_SITE_SETTINGS.addressAr}</span>
+
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-slate-300">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gold/15 text-gold shrink-0">
+                <MapPin size={11} />
+              </span>
+              <span className="text-[11px] font-normal text-slate-400">المقر الرئيسي:</span>
+              <span className="text-[0.72rem] font-medium text-white">{settings.addressAr || DEFAULT_SITE_SETTINGS.addressAr}</span>
             </div>
           </div>
 
           {/* Social Media Channels */}
-          <nav className="flex flex-wrap items-center gap-2" aria-label="روابط التواصل الاجتماعي">
+          <nav className="flex flex-wrap items-center gap-2.5" aria-label="روابط التواصل الاجتماعي">
             {settings.socialLinks.x && (
               <a
                 href={settings.socialLinks.x}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="X"
-                className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 transition-colors hover:border-gold/50 hover:bg-gold/15 hover:text-gold"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-gold/25 bg-gradient-to-b from-white/[0.09] to-white/[0.03] text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_4px_10px_rgba(0,0,0,0.28)] transition-all duration-200 hover:-translate-y-0.5 hover:border-gold/70 hover:bg-gold/15 hover:text-gold-light hover:shadow-[0_6px_16px_rgba(217,187,129,0.18)] active:scale-95"
               >
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                <svg className="h-[16px] w-[16px]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                 </svg>
               </a>
@@ -863,12 +886,12 @@ export function Footer({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 transition-colors hover:border-gold/50 hover:bg-gold/15 hover:text-gold"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-gold/25 bg-gradient-to-b from-white/[0.09] to-white/[0.03] text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_4px_10px_rgba(0,0,0,0.28)] transition-all duration-200 hover:-translate-y-0.5 hover:border-gold/70 hover:bg-gold/15 hover:text-gold-light hover:shadow-[0_6px_16px_rgba(217,187,129,0.18)] active:scale-95"
               >
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+                <svg className="h-[17px] w-[17px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect width="20" height="20" x="2" y="2" rx="5.5" ry="5.5"/>
+                  <circle cx="12" cy="12" r="4.2"/>
+                  <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>
                 </svg>
               </a>
             )}
@@ -878,10 +901,10 @@ export function Footer({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Snapchat"
-                className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 transition-colors hover:border-gold/50 hover:bg-gold/15 hover:text-gold"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-gold/25 bg-gradient-to-b from-white/[0.09] to-white/[0.03] text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_4px_10px_rgba(0,0,0,0.28)] transition-all duration-200 hover:-translate-y-0.5 hover:border-gold/70 hover:bg-gold/15 hover:text-gold-light hover:shadow-[0_6px_16px_rgba(217,187,129,0.18)] active:scale-95"
               >
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12.29 2c-3.67 0-6.19 2.76-6.19 5.86 0 .86.26 1.74.45 2.37.07.24.12.43.1.53-.06.22-.44.47-.89.65-.67.28-1.28.66-1.28 1.48 0 .85.74 1.34 1.5 1.57.34.1.66.14.93.18.06.01.12.02.16.03.35.08.47.37.38.74-.26 1.05-.98 1.4-1.8 1.73-.39.15-.81.33-1.07.65-.29.35-.38.8-.24 1.25.17.54.68.85 1.29.85.34 0 .73-.1 1.15-.28.84-.36 1.83-.78 3.25-.19.46.19.98.3 1.54.3.56 0 1.08-.11 1.54-.3 1.42-.59 2.41-.17 3.25.19.42.18.81.28 1.15.28.61 0 1.12-.31 1.29-.85.14-.45.05-.9-.24-1.25-.26-.32-.68-.5-1.07-.65-.82-.33-1.54-.68-1.8-1.73-.09-.37.03-.66.38-.74.04-.01.1-.02.16-.03.27-.04.59-.08.93-.18.76-.23 1.5-.72 1.5-1.57 0-.82-.61-1.2-1.28-1.48-.45-.18-.83-.43-.89-.65-.02-.1.03-.29.1-.53.19-.63.45-1.51.45-2.37C18.48 4.76 15.96 2 12.29 2z"/>
+                <svg className="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 3c-3.1 0-5.2 2.25-5.2 5.2 0 .85.18 1.68.38 2.24-.52.28-1.08.35-1.56.25-.44-.1-.85.18-.85.62 0 .52.52.86 1.08 1.04.58.18.92.42.84.88-.25 1.38-1.38 2.34-2.82 2.86-.38.14-.55.52-.36.86.24.44.82.78 1.62.92.34.06.56.28.68.58.16.42.54.68 1.02.58.78-.16 1.54.02 2.28.38.78.38 1.82.58 2.89.58s2.11-.2 2.89-.58c.74-.36 1.5-.54 2.28-.38.48.1.86-.16 1.02-.58.12-.3.34-.52.68-.58.8-.14 1.38-.48 1.62-.92.19-.34.02-.72-.36-.86-1.44-.52-2.57-1.48-2.82-2.86-.08-.46.26-.7.84-.88.56-.18 1.08-.52 1.08-1.04 0-.44-.41-.72-.85-.62-.48.1-1.04.03-1.56-.25.2-.56.38-1.39.38-2.24C17.2 5.25 15.1 3 12 3z" fill="currentColor" fillOpacity="0.14"/>
                 </svg>
               </a>
             )}
@@ -891,9 +914,9 @@ export function Footer({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="TikTok"
-                className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 transition-colors hover:border-gold/50 hover:bg-gold/15 hover:text-gold"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-gold/25 bg-gradient-to-b from-white/[0.09] to-white/[0.03] text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_4px_10px_rgba(0,0,0,0.28)] transition-all duration-200 hover:-translate-y-0.5 hover:border-gold/70 hover:bg-gold/15 hover:text-gold-light hover:shadow-[0_6px_16px_rgba(217,187,129,0.18)] active:scale-95"
               >
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                <svg className="h-[17px] w-[17px]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.85.12V9.4a6.33 6.33 0 0 0-.85-.06A6.34 6.34 0 0 0 3.1 15.68a6.34 6.34 0 0 0 10.74 4.49 6.27 6.27 0 0 0 1.94-4.5V8.87a8.28 8.28 0 0 0 5.25 1.83V7.27a4.82 4.82 0 0 1-1.44-.58z"/>
                 </svg>
               </a>
@@ -904,9 +927,9 @@ export function Footer({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="YouTube"
-                className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 transition-colors hover:border-gold/50 hover:bg-gold/15 hover:text-gold"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-gold/25 bg-gradient-to-b from-white/[0.09] to-white/[0.03] text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_4px_10px_rgba(0,0,0,0.28)] transition-all duration-200 hover:-translate-y-0.5 hover:border-gold/70 hover:bg-gold/15 hover:text-gold-light hover:shadow-[0_6px_16px_rgba(217,187,129,0.18)] active:scale-95"
               >
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                <svg className="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                 </svg>
               </a>
@@ -915,10 +938,10 @@ export function Footer({ siteSettings }: { siteSettings?: SiteSettings } = {}) {
         </div>
       </div>
 
-      {/* 4. Centered Legal Copyright Bar */}
-      <div className="border-t border-white/10 bg-black/60 backdrop-blur-md py-5 text-center">
-        <p className="container-fbs text-xs sm:text-[12.5px] text-slate-400 font-medium leading-relaxed">
-          © {new Date().getFullYear()} {settings.siteName || 'شركة فارس بن سعود للوحات المميزة'} (FBS). س.ت: {settings.crNumber || '1010884920'}. جميع الحقوق محفوظة.
+      {/* Centered Legal Copyright Bar (With Mobile Floating Action Clearance) */}
+      <div className="border-t border-white/10 bg-[#040914]/90 backdrop-blur-md pt-3.5 pb-[clamp(4.75rem,10dvh,6rem)] md:py-3 text-center px-4 antialiased">
+        <p className="w-[min(calc(100%-2rem),76rem)] lg:w-[min(73vw,76rem)] mx-auto text-[11px] text-slate-400/90 font-normal leading-relaxed">
+          © {new Date().getFullYear()} {settings.siteName || 'فارس بن سعود للوحات المميزة'} (FBS) • س.ت: {settings.crNumber || '1010884920'} • جميع الحقوق محفوظة
         </p>
       </div>
     </footer>

@@ -43,15 +43,15 @@ export function HeroAuctionCard({
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentPlate = platesPool[currentIndex] || initialPlate;
 
-  // Real-time Countdown Timer State (calculated from endsAt)
+  // Real-time Countdown Timer State (hydrated strictly on client to avoid Date.now() SSR mismatch)
   const calculateInitialSeconds = (plate: MarketplacePlate) => {
     if (!plate.auction?.endsAt) return 0;
     const diff = Math.floor((new Date(plate.auction.endsAt).getTime() - Date.now()) / 1000);
     return Number.isFinite(diff) ? Math.max(0, diff) : 0;
   };
 
-  const [timeLeft, setTimeLeft] = useState(() => calculateInitialSeconds(currentPlate));
-  const isEnded = timeLeft <= 0;
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const isEnded = timeLeft !== null && timeLeft <= 0;
 
   // Real-time Bidding Price State
   const [currentPriceHalalas, setCurrentPriceHalalas] = useState<string>(
@@ -68,33 +68,28 @@ export function HeroAuctionCard({
   const ROTATE_INTERVAL_MS = 3200; // 3.2 seconds per live auction (brisk and comfortable)
   const TICK_INTERVAL_MS = 50; // Smooth progress updates
 
-  // When changing current plate, reset timer, price, and progress bar
+  // When changing current plate (or mounting), initialize timer, price, progress, and 1s ticker
   useEffect(() => {
-    // Reset the carousel display when the selected auction changes.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setTimeLeft(calculateInitialSeconds(currentPlate));
-    setCurrentPriceHalalas(currentPlate.auction?.currentPriceHalalas || '0');
-    setBidCount(currentPlate.auction?.bidCount ?? 0);
-    setPriceFlash(false);
-    setProgress(0);
-  }, [currentIndex, currentPlate]);
+    const syncTimer = window.setTimeout(() => {
+      setTimeLeft(calculateInitialSeconds(currentPlate));
+      setCurrentPriceHalalas(currentPlate.auction?.currentPriceHalalas || '0');
+      setBidCount(currentPlate.auction?.bidCount ?? 0);
+      setPriceFlash(false);
+      setProgress(0);
+    }, 0);
 
-  // 1. Tick Countdown Every Second
-  useEffect(() => {
-    if (timeLeft <= 0) return;
-
-    const timer = setInterval(() => {
+    const ticker = window.setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prev - 1;
+        if (prev === null) return calculateInitialSeconds(currentPlate);
+        return prev <= 1 ? 0 : prev - 1;
       });
     }, 1000);
 
-    return () => clearInterval(timer);
-  }, [timeLeft]);
+    return () => {
+      window.clearTimeout(syncTimer);
+      window.clearInterval(ticker);
+    };
+  }, [currentIndex, currentPlate]);
 
   // Keep the featured price and end time in sync with the auction ledger.
   useEffect(() => {
@@ -202,13 +197,27 @@ export function HeroAuctionCard({
     setTouchStartY(null);
   };
 
-  // Format HH:MM:SS
-  const formatTime = (totalSeconds: number) => {
-    if (totalSeconds <= 0) return '00:00:00';
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  // Split remaining seconds into Days, Hours, Minutes, Seconds
+  const splitCountdown = (totalSeconds: number | null) => {
+    if (totalSeconds === null) {
+      return [
+        { key: 'days', label: 'يوم', value: '—' },
+        { key: 'hours', label: 'ساعة', value: '—' },
+        { key: 'minutes', label: 'دقيقة', value: '—' },
+        { key: 'seconds', label: 'ثانية', value: '—' },
+      ];
+    }
+    const safe = Math.max(0, totalSeconds);
+    const days = Math.floor(safe / 86400);
+    const hours = Math.floor((safe % 86400) / 3600);
+    const minutes = Math.floor((safe % 3600) / 60);
+    const seconds = safe % 60;
+    return [
+      { key: 'days', label: 'يوم', value: String(days).padStart(2, '0') },
+      { key: 'hours', label: 'ساعة', value: String(hours).padStart(2, '0') },
+      { key: 'minutes', label: 'دقيقة', value: String(minutes).padStart(2, '0') },
+      { key: 'seconds', label: 'ثانية', value: String(seconds).padStart(2, '0') },
+    ];
   };
 
   // Direct destination URL for the active auction
@@ -237,7 +246,7 @@ export function HeroAuctionCard({
       <div className="absolute h-64 w-64 rounded-full bg-gold/10 blur-3xl pointer-events-none lg:end-4 -top-8" />
 
       {/* Main Glassmorphic Auction Card (Authentic Apple visionOS Frosted Glass) */}
-      <div id="hero-auction-card" className="relative w-full max-w-[21.5rem] xl:max-w-[22rem] lg:h-full mx-auto rounded-2xl sm:rounded-3xl border border-white/20 bg-gradient-to-b from-white/[0.09] via-white/[0.03] to-slate-950/45 backdrop-blur-2xl p-3 sm:p-3.5 xl:p-4 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.28)] transition-all duration-300 flex flex-col justify-between hover:border-white/30">
+      <div id="hero-auction-card" className="relative w-full max-w-[min(21.5rem,calc(100vw-2.5rem))] xl:max-w-[22rem] lg:h-full mx-auto rounded-2xl sm:rounded-3xl border border-white/20 bg-gradient-to-b from-white/[0.09] via-white/[0.03] to-slate-950/45 backdrop-blur-2xl p-3 sm:p-3.5 xl:p-4 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.7),inset_0_1px_1px_rgba(255,255,255,0.28)] transition-all duration-300 flex flex-col justify-between hover:border-white/30">
         
         {/* Top Slim Golden Progress Line (Visual Rotation Bar, Turns Amber When Paused) */}
         {platesPool.length > 1 && !isEnded && (
@@ -324,7 +333,7 @@ export function HeroAuctionCard({
         <div className="w-full space-y-2 sm:space-y-2.5 mt-auto">
           {/* Elevated Frosted Price & Countdown Shelf */}
           <div className="rounded-xl border border-white/15 bg-white/[0.06] backdrop-blur-xl p-2 sm:p-2.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_8px_20px_rgba(0,0,0,0.35)]">
-            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-1">
+            <div className="grid grid-cols-[0.86fr_auto_1.14fr] items-center gap-1.5">
               {/* Price Column: Centered with Icon & Label */}
               <div className="flex flex-col items-center justify-center text-center px-1">
                 <div className="flex items-center justify-center gap-1.5 text-[10.5px] sm:text-[11px] font-bold text-slate-300">
@@ -332,7 +341,7 @@ export function HeroAuctionCard({
                   <span>{isEnded ? 'السعر الأخير' : bidCount > 0 ? 'أعلى مزايدة' : 'سعر البداية'}</span>
                 </div>
                 <div
-                  className={`mt-0.5 flex items-baseline justify-center gap-1 font-bold transition-all duration-300 rounded-lg px-1 ${
+                  className={`mt-1 flex items-baseline justify-center gap-1 font-bold transition-all duration-300 rounded-lg px-1 ${
                     priceFlash ? 'bg-gold/25 text-gold-light ring-2 ring-gold/40' : 'text-white'
                   }`}
                   dir="rtl"
@@ -345,29 +354,42 @@ export function HeroAuctionCard({
               </div>
 
               {/* Centered Vertical Divider: Perfectly centered between Price & Timer */}
-              <div className="h-7 sm:h-8 w-[1px] bg-white/20 shrink-0 self-center" aria-hidden="true" />
+              <div className="h-8 sm:h-9 w-[1px] bg-white/20 shrink-0 self-center" aria-hidden="true" />
 
-              {/* Countdown Timer Column: Centered with Icon & Label */}
-              <div className="flex flex-col items-center justify-center text-center px-1">
-                <div className="flex items-center justify-center gap-1.5 text-[10.5px] sm:text-[11px] font-bold text-slate-300">
-                  <Clock size={11.5} className={`shrink-0 ${!isEnded ? 'text-emerald-400' : 'text-slate-400'}`} />
+              {/* Countdown Timer Column: 4-Unit Days/Hours/Minutes/Seconds */}
+              <div className="flex flex-col items-center justify-center text-center px-0.5 min-w-0">
+                <div className="flex items-center justify-center gap-1 text-[10px] sm:text-[10.5px] font-bold text-slate-300">
+                  <Clock size={11} className={`shrink-0 ${!isEnded ? 'text-emerald-400' : 'text-slate-400'}`} />
                   <span>{!isEnded ? 'الوقت المتبقي' : 'حالة المزاد'}</span>
                 </div>
-                <div className="mt-0.5 flex items-baseline justify-center">
-                  <span
-                    suppressHydrationWarning
-                    className={`font-norwester text-xs sm:text-[13px] font-bold tracking-widest block drop-shadow-xs ${
-                      !isEnded
-                        ? timeLeft < 600
-                          ? 'text-red-400 animate-pulse'
-                          : 'text-gold-light'
-                        : 'text-emerald-400 text-xs font-sans font-bold'
-                    }`}
+                {!isEnded ? (
+                  <div
+                    className="mt-1 grid w-full grid-cols-4 items-center text-center"
                     dir="ltr"
                   >
-                    {!isEnded ? formatTime(timeLeft) : 'انتهى الوقت'}
-                  </span>
-                </div>
+                    {splitCountdown(timeLeft).map((unit, idx) => (
+                      <div
+                        key={unit.key}
+                        className={`flex flex-col items-center justify-center px-0.5 ${
+                          idx < 3 ? 'border-e border-white/15' : ''
+                        }`}
+                      >
+                        <span className="text-[8.5px] sm:text-[9px] font-sans font-semibold text-gold-light/85 leading-none mb-0.5">
+                          {unit.label}
+                        </span>
+                        <span
+                          className={`font-norwester text-[12px] sm:text-[13px] font-bold tabular-nums leading-none drop-shadow-xs ${
+                            timeLeft !== null && timeLeft < 600 ? 'text-red-400 animate-pulse' : 'text-white'
+                          }`}
+                        >
+                          {unit.value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="mt-1 text-emerald-400 text-xs font-sans font-bold">انتهى الوقت</span>
+                )}
               </div>
             </div>
           </div>

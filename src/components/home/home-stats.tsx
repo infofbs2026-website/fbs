@@ -64,9 +64,9 @@ export function HomeStats() {
         <ScrollReveal direction="up" delay={40}>
           <div className="mb-8 sm:mb-11 text-center">
             {/* Eyebrow Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#D9BB81]/30 bg-[#14243C]/90 px-3.5 py-1 text-xs sm:text-[13px] font-bold text-[#E0CDA4] shadow-xs mb-3 mx-auto">
-              <TrendingUp size={14} className="text-[#D9BB81] shrink-0" />
-              <span className="tracking-wide">ريادة موثقة · سوق مزادات النخبة بالمملكة</span>
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#D9BB81]/30 bg-[#14243C]/90 px-3.5 py-1.5 text-[11px] sm:text-[11.5px] font-bold text-[#E0CDA4] shadow-xs mb-3 mx-auto">
+              <TrendingUp size={13} className="text-[#D9BB81] shrink-0" />
+              <span className="tracking-wide">ريادة موثقة في مزادات النخبة</span>
             </div>
 
             {/* Heading: Personal Luxury Scale */}

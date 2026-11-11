@@ -27,7 +27,7 @@ export default async function HowItWorksPage() {
     <>
       <HowItWorksView />
       {cms?.data?.body_ar ? (
-        <section className="container-fbs pb-16">
+        <section className="max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10 pb-16">
           <div className="mx-auto max-w-4xl rounded-3xl border border-[#D9BB81]/40 bg-white p-7 sm:p-10 shadow-sm">
             <h2 className="text-xl sm:text-2xl font-black text-[#14243C]">{cms.data.title_ar}</h2>
             <div className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">

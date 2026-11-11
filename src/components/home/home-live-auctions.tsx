@@ -76,8 +76,8 @@ function SimplifiedPlateCard({ plate }: { plate: MarketplacePlate }) {
         </span>
       </div>
 
-      {/* 2. Center: Authentic Saudi Plate on Tall Platinum Showcase Stage with Etched FBS Watermark */}
-      <div className="relative overflow-hidden my-1.5 sm:my-2.5 flex items-center justify-center rounded-[9px] bg-gradient-to-b from-[#FFFFFF] via-[#F6F8FC] to-[#EBF0F6] px-2 py-4 sm:px-3 sm:py-5 h-[112px] sm:h-[140px] lg:h-[146px] border border-[#94A3B8] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_2px_6px_rgba(15,23,42,0.04)] transition-all duration-300 group-hover:border-[#D9BB81]">
+      {/* 2. Center: Authentic Saudi Plate on Platinum Showcase Stage with Etched FBS Watermark */}
+      <div className="relative overflow-hidden my-1.5 sm:my-2 flex items-center justify-center rounded-[9px] bg-gradient-to-b from-[#FFFFFF] via-[#F6F8FC] to-[#EBF0F6] px-2 py-3.5 sm:px-2.5 sm:py-4 h-[110px] sm:h-[126px] lg:h-[132px] border border-[#94A3B8] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_2px_6px_rgba(15,23,42,0.04)] transition-all duration-300 group-hover:border-[#D9BB81]">
         <FbsStageWatermark />
         <div className="relative z-10 w-full flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.02]">
           <PlateVisualizer
@@ -123,14 +123,14 @@ export function HomeLiveAuctions({ liveAuctions }: HomeLiveAuctionsProps) {
       {/* Top 1px Specular Edge Line */}
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#D9BB81]/40 to-transparent pointer-events-none" />
 
-      {/* Main Container: Constrained to ~1240px for generous breathing margins */}
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      {/* Main Container: Elegantly constrained to ~1000px with generous breathing margins on both sides */}
+      <div className="max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10 relative z-10">
         <ScrollReveal direction="up" delay={50}>
           <div className="mb-6 sm:mb-9 flex flex-col justify-between gap-4 sm:flex-row sm:items-end text-center sm:text-start">
             <div className="flex flex-col items-center sm:items-start">
               {/* Prestige Eyebrow Badge with Bespoke Luxury Gem Icon */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#D9BB81]/50 bg-white px-3.5 py-1 text-xs sm:text-[13px] font-bold text-[#8C6B2D] shadow-2xs mb-2.5 mx-auto sm:mx-0">
-                <LuxuryGemIcon size={14} className="text-[#9E7B35] shrink-0" />
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-[#D9BB81]/50 bg-white px-3.5 py-1.5 text-[11px] sm:text-[11.5px] font-bold text-[#8C6B2D] shadow-2xs mb-2.5 mx-auto sm:mx-0">
+                <LuxuryGemIcon size={13} className="text-[#9E7B35] shrink-0" />
                 <span className="tracking-wide">سوق النخبة · لوحات حصرية</span>
               </div>
 
@@ -157,9 +157,9 @@ export function HomeLiveAuctions({ liveAuctions }: HomeLiveAuctionsProps) {
           </div>
         </ScrollReveal>
 
-        {/* Responsive Grid: 4 columns on desktop (lg+), 3 columns on tablet (sm-md), 2 columns on mobile */}
+        {/* Responsive Grid: 4 columns on desktop (lg+), 3 columns on tablet (sm-md), 2 columns on mobile (1 col on <=375px) */}
         <StaggerGrid
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3.5 lg:gap-4.5"
+          className="grid grid-cols-1 min-[380px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3.5 lg:gap-4.5"
           baseDelay={60}
         >
           {displayPlates.map((plate) => (

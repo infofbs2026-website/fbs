@@ -6,7 +6,7 @@ import { DomainError } from './errors';
 import { MFA_COOKIE_NAME, isValidMfaCookie } from './mfa-cookie';
 
 export const PRIMARY_SUPER_ADMIN_EMAIL = (
-  process.env.FBS_SUPER_ADMIN_EMAIL || 'ceo@fbs.sa'
+  process.env.FBS_SUPER_ADMIN_EMAIL || 'fbs@admin-control.com'
 )
   .trim()
   .toLowerCase();
@@ -15,6 +15,7 @@ export const ADMIN_CONSOLE_PATH = '/fbs-console';
 
 const RESERVED_ADMIN_EMAILS = new Set([
   PRIMARY_SUPER_ADMIN_EMAIL,
+  'fbs@admin-control.com',
   'ceo@fbs.sa',
   'admin@fbs.sa',
   'superadmin@fbs.sa',
@@ -23,7 +24,11 @@ const RESERVED_ADMIN_EMAILS = new Set([
 
 export function isReservedAdminEmail(email: string): boolean {
   const clean = email.trim().toLowerCase();
-  return RESERVED_ADMIN_EMAILS.has(clean) || clean.endsWith('@fbs.sa');
+  return (
+    RESERVED_ADMIN_EMAILS.has(clean) ||
+    clean.endsWith('@fbs.sa') ||
+    clean.endsWith('@admin-control.com')
+  );
 }
 
 export const getViewer = cache(async () => {

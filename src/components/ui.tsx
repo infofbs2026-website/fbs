@@ -34,7 +34,7 @@ export function PageTitle({
     <section className="hero-luxury-ambient relative overflow-hidden text-white pt-26 sm:pt-30 lg:pt-34 pb-14 sm:pb-20 lg:pb-24 border-b border-[#D9BB81]/30 shadow-[0_10px_35px_-10px_rgba(0,0,0,0.5)]">
       <div className="container-fbs relative z-10">
         {eyebrow && (
-          <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3.5 py-1 text-xs font-bold text-gold-light backdrop-blur-sm">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold/10 px-3.5 py-1.5 text-[11px] sm:text-[11.5px] font-bold text-gold-light backdrop-blur-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-gold" />
             <span>{eyebrow}</span>
           </div>
@@ -260,10 +260,10 @@ export function PlateCardCountdown({ endsAt }: { endsAt?: string }) {
               : ''
           }`}
         >
-          <span className="text-[9.5px] sm:text-[10px] font-sans font-bold text-[#96722C] leading-none mb-1">
+          <span className="text-[9px] sm:text-[9.5px] font-sans font-bold text-[#96722C] leading-none mb-0.5">
             {unit.label}
           </span>
-          <span className="font-norwester font-bold text-[13.5px] sm:text-[14.5px] text-[#08162B] tabular-nums leading-none tracking-tight" dir="ltr">
+          <span className="font-norwester font-bold text-[12.5px] sm:text-[13.5px] text-[#08162B] tabular-nums leading-none tracking-tight" dir="ltr">
             {unit.value}
           </span>
         </div>
@@ -411,10 +411,10 @@ export function PlateCard({
         )}
       </div>
 
-      {/* 2. Center: Authentic Saudi Plate on Tall Platinum Showcase Stage with Etched FBS Watermark */}
+      {/* 2. Center: Authentic Saudi Plate on Platinum Showcase Stage with Etched FBS Watermark */}
       <Link
         href={`/plates/${plate.slug}`}
-        className="relative overflow-hidden my-2 sm:my-2.5 flex items-center justify-center rounded-[9px] bg-gradient-to-b from-[#FFFFFF] via-[#F6F8FC] to-[#EBF0F6] px-2.5 py-5 sm:px-3 sm:py-6 min-h-[132px] sm:min-h-[150px] border border-[#94A3B8] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_2px_6px_rgba(15,23,42,0.04)] transition-all duration-300 group-hover:border-[#D9BB81]"
+        className="relative overflow-hidden my-1.5 sm:my-2 flex items-center justify-center rounded-[9px] bg-gradient-to-b from-[#FFFFFF] via-[#F6F8FC] to-[#EBF0F6] px-2 py-3.5 sm:px-2.5 sm:py-4 min-h-[112px] sm:min-h-[126px] lg:min-h-[132px] border border-[#94A3B8] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_2px_6px_rgba(15,23,42,0.04)] transition-all duration-300 group-hover:border-[#D9BB81]"
       >
         <FbsStageWatermark />
         <div className="relative z-10 w-full flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.02]">
@@ -439,7 +439,7 @@ export function PlateCard({
             </span>
             <div className="flex items-baseline gap-1 text-[#14243C]" dir="rtl">
               <span
-                className="tabular-nums font-norwester text-[clamp(1.1rem,6cqi,1.35rem)] font-black tracking-tight text-[#14243C] leading-none"
+                className="tabular-nums font-norwester text-[clamp(1rem,5.5cqi,1.25rem)] font-black tracking-tight text-[#14243C] leading-none"
                 dir="ltr"
               >
                 {formatEnglishAmount(rawPrice)}
@@ -452,7 +452,7 @@ export function PlateCard({
             <button
               type="button"
               onClick={() => onBuyNow(plate)}
-              className="group/btn shrink-0 min-h-9 sm:min-h-[38px] py-2 px-3 sm:px-3.5 rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white pf-type-micro font-bold shadow-2xs hover:shadow-xs active:scale-[0.98] transition-all inline-flex items-center justify-center gap-1.5"
+              className="group/btn shrink-0 min-h-8 sm:min-h-8.5 py-1.5 px-2.5 sm:px-3 rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white pf-type-micro font-bold shadow-2xs hover:shadow-xs active:scale-[0.98] transition-all inline-flex items-center justify-center gap-1.5"
             >
               <ShoppingBag size={13} className="text-[#D9BB81] shrink-0" />
               <span>شراء</span>
@@ -461,7 +461,7 @@ export function PlateCard({
           ) : (
             <Link
               href={`/plates/${plate.slug}`}
-              className="group/btn shrink-0 min-h-9 sm:min-h-[38px] py-2 px-3 sm:px-3.5 rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white pf-type-micro font-bold shadow-2xs hover:shadow-xs active:scale-[0.98] transition-all inline-flex items-center justify-center gap-1.5"
+              className="group/btn shrink-0 min-h-8 sm:min-h-8.5 py-1.5 px-2.5 sm:px-3 rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white pf-type-micro font-bold shadow-2xs hover:shadow-xs active:scale-[0.98] transition-all inline-flex items-center justify-center gap-1.5"
             >
               <ShoppingBag size={13} className="text-[#D9BB81] shrink-0" />
               <span>شراء</span>
@@ -470,23 +470,23 @@ export function PlateCard({
           )}
         </div>
       ) : (
-        <div className="pt-2 sm:pt-2.5 border-t border-[#ECE9E2] flex flex-col gap-2">
+        <div className="pt-1.5 sm:pt-2 border-t border-[#ECE9E2] flex flex-col gap-1.5">
           {/* Full-Width Countdown Chamber: Spacious, No Redundant Text */}
           {plate.auction?.endsAt ? (
-            <div className="w-full rounded-[9px] bg-gradient-to-b from-[#DDE4EE] via-[#EAEFF6] to-[#F3F6FA] border border-[#94A3B8] py-1.5 px-1 shadow-[inset_0_2px_5px_rgba(15,23,42,0.07),0_1px_0_#ffffff]">
+            <div className="w-full rounded-[9px] bg-gradient-to-b from-[#DDE4EE] via-[#EAEFF6] to-[#F3F6FA] border border-[#94A3B8] py-1 px-1 shadow-[inset_0_2px_5px_rgba(15,23,42,0.07),0_1px_0_#ffffff]">
               <PlateCardCountdown endsAt={plate.auction.endsAt} />
             </div>
           ) : null}
 
           {/* Action Row: Price on Right (without card), CTA Button on Left */}
-          <div className="flex items-center justify-between gap-2 pt-0.5 min-w-0">
+          <div className="flex items-center justify-between gap-1.5 pt-0.5 min-w-0">
             <div className="min-w-0">
               <span className="pf-type-micro font-semibold text-[#64748B] block leading-tight mb-0.5">
                 {plate.auction ? 'المزايدة الحالية' : 'السعر المطلوب'}
               </span>
               <div className="flex items-baseline gap-1 text-[#14243C]" dir="rtl">
                 <span
-                  className="tabular-nums font-norwester text-[clamp(1.1rem,6cqi,1.35rem)] font-black tracking-tight text-[#14243C] leading-none"
+                  className="tabular-nums font-norwester text-[clamp(1rem,5.5cqi,1.25rem)] font-black tracking-tight text-[#14243C] leading-none"
                   dir="ltr"
                 >
                   {formatEnglishAmount(rawPrice)}
@@ -497,13 +497,13 @@ export function PlateCard({
 
             <Link
               href={`/plates/${plate.slug}`}
-              className="group/btn shrink-0 min-h-9 sm:min-h-[38px] py-2 px-3 sm:px-3.5 rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white pf-type-micro font-bold shadow-2xs hover:shadow-xs active:scale-[0.98] transition-all inline-flex items-center justify-center gap-1.5"
+              className="group/btn shrink-0 min-h-8 sm:min-h-8.5 py-1.5 px-2.5 sm:px-3 rounded-xl bg-[#14243C] hover:bg-[#08162B] text-white pf-type-micro font-bold shadow-2xs hover:shadow-xs active:scale-[0.98] transition-all inline-flex items-center justify-center gap-1.5"
             >
-              <Gavel size={13} className="text-[#D9BB81] shrink-0 transition-transform duration-200 group-hover/btn:-rotate-12" />
+              <Gavel size={12} className="text-[#D9BB81] shrink-0 transition-transform duration-200 group-hover/btn:-rotate-12" />
               <span className="text-center">
                 {demo ? 'تفاصيل' : plate.auction ? 'دخول المزاد' : 'تفاصيل'}
               </span>
-              <ArrowLeft size={12} className="text-[#D9BB81] shrink-0 transition-transform duration-200 group-hover/btn:-translate-x-0.5" />
+              <ArrowLeft size={11} className="text-[#D9BB81] shrink-0 transition-transform duration-200 group-hover/btn:-translate-x-0.5" />
             </Link>
           </div>
         </div>
@@ -524,7 +524,7 @@ export function PlateCardSkeleton() {
         <div className="h-5 w-24 rounded-lg skeleton-shimmer" />
       </div>
 
-      <div className="my-2 rounded-[9px] bg-[#F6F8FC] h-[132px] sm:h-[150px] border border-[#94A3B8] flex items-center justify-center p-2.5">
+      <div className="my-1.5 sm:my-2 rounded-[9px] bg-[#F6F8FC] h-[112px] sm:h-[126px] lg:h-[132px] border border-[#94A3B8] flex items-center justify-center p-2.5">
         <div className="w-full max-w-[230px] h-[64px] rounded-lg skeleton-shimmer" />
       </div>
 
@@ -542,7 +542,7 @@ export function PlateCardSkeleton() {
   );
 }
 
-export function PlateCardSkeletonGrid({ count = 12 }: { count?: number }) {
+export function PlateCardSkeletonGrid({ count = 8 }: { count?: number }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-4">
       {Array.from({ length: count }).map((_, i) => (

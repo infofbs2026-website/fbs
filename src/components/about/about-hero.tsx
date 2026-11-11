@@ -7,7 +7,7 @@ import { PlateVisualizer } from '@/components/ui';
 
 export function AboutHero() {
   return (
-    <section className="relative w-full overflow-hidden bg-navy border-b border-gold/30 pt-28 sm:pt-32 lg:pt-36 pb-16 sm:pb-20 text-white">
+    <section className="relative w-full overflow-hidden bg-navy border-b border-gold/30 min-h-[calc(100vh-4.5rem)] flex flex-col justify-center pt-28 sm:pt-32 lg:pt-36 pb-20 sm:pb-24 lg:pb-28 text-white">
       {/* Bespoke Riyadh Night Penthouse Showroom Backdrop */}
       <div
         aria-hidden="true"
@@ -24,15 +24,15 @@ export function AboutHero() {
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
       </div>
 
-      <div className="container-fbs relative z-10">
+      <div className="max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10 relative z-10">
         {/* Minimalist Breadcrumb */}
         <nav
           aria-label="مسار التصفح"
-          className="pf-type-micro mb-5 flex items-center justify-center lg:justify-start gap-2 font-semibold text-slate-300"
+          className="pf-type-micro mb-4 sm:mb-5 flex items-center justify-center lg:justify-start gap-2 font-semibold text-slate-300"
         >
           <Link
             href="/"
-            className="inline-flex min-h-6 items-center px-1 hover:text-gold-light transition-colors"
+            className="inline-flex min-h-6 items-center px-1 hover:text-[#F5E3BE] transition-colors"
           >
             الرئيسية
           </Link>
@@ -41,10 +41,10 @@ export function AboutHero() {
         </nav>
 
         {/* Balanced VisionOS Glass Split */}
-        <div className="pf-cq-split grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 items-stretch">
           {/* Start Column: Centered Executive Identity */}
           <div
-            className="glass-vision min-w-0 flex flex-col items-center justify-between text-center p-6 sm:p-8 lg:p-9"
+            className="glass-vision min-w-0 flex flex-col items-center justify-between text-center p-5 sm:p-6 lg:p-7 rounded-2xl border border-white/10"
             style={{ backgroundColor: 'rgba(8, 18, 36, 0.78)' }}
           >
             <div
@@ -53,38 +53,38 @@ export function AboutHero() {
             />
 
             <div className="flex flex-col items-center">
-              <div className="pf-type-micro inline-flex items-center justify-center gap-2 rounded-full border border-gold/35 bg-gold/10 px-3.5 py-1 font-bold text-gold-light">
+              <div className="inline-flex items-center justify-center gap-1.5 rounded-full border border-gold/35 bg-gold/10 px-3.5 py-1.5 text-[11px] sm:text-[11.5px] font-bold text-gold-light">
                 <ShieldCheck size={13} className="text-gold shrink-0" />
                 <span>فارس بن سعود للوحات المميزة</span>
               </div>
 
-              <h1 className="pf-type-h1 mt-4 font-black tracking-tight text-white">
+              <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-black tracking-tight text-white leading-tight mt-3 sm:mt-4">
                 اللوحات السعودية النادرة
                 <span className="block mt-1.5 gold-gradient-text">
                   مزادات علنية ووساطة خاصة
                 </span>
               </h1>
 
-              <p className="pf-type-body mt-3.5 text-slate-200/90 font-normal">
+              <p className="mt-3 max-w-md text-xs sm:text-[13.5px] leading-relaxed text-slate-200/90 font-normal">
                 عرض احترافي، ضمان مالي مستقل، ونقل إلكتروني عبر أبشر.
               </p>
             </div>
 
-            <div className="mt-6 pt-5 w-full border-t border-white/10 flex flex-wrap items-center justify-center gap-3">
+            <div className="mt-5 pt-4 w-full border-t border-white/10 flex flex-wrap items-center justify-center gap-2.5">
               <Link
                 href="/auctions"
-                className="btn btn-gold text-xs sm:text-[13px] font-black px-5 py-2.5"
+                className="btn btn-gold text-xs sm:text-[13px] font-black px-4.5 py-2.5 rounded-xl shadow-xs"
               >
-                <Gavel size={15} className="shrink-0" />
+                <Gavel size={14} className="shrink-0" />
                 <span>المزادات الحية</span>
               </Link>
               <Link
                 href="/sell-your-plate"
-                className="btn btn-outline-gold text-xs sm:text-[13px] font-bold px-5 py-2.5 group"
+                className="btn btn-outline-gold text-xs sm:text-[13px] font-bold px-4.5 py-2.5 rounded-xl group"
               >
                 <span>اعرض لوحتك</span>
                 <ArrowLeft
-                  size={14}
+                  size={13}
                   className="text-gold shrink-0 transition-transform duration-200 group-hover:-translate-x-1"
                 />
               </Link>
@@ -94,14 +94,14 @@ export function AboutHero() {
           {/* End Column: VisionOS Sovereign Crest & 3D Aluminum Plate Showcase */}
           <div
             data-pf-audit="about-hero-pedestal"
-            className="glass-vision min-w-0 flex flex-col justify-between p-5 sm:p-8 lg:p-9"
+            className="glass-vision min-w-0 flex flex-col justify-between p-5 sm:p-6 lg:p-7 rounded-2xl border border-white/10"
             style={{ backgroundColor: 'rgba(8, 18, 36, 0.76)' }}
           >
-            <div className="flex items-center justify-center sm:justify-between gap-4 border-b border-white/10 pb-4">
+            <div className="flex items-center justify-center sm:justify-between gap-4 border-b border-white/10 pb-3 sm:pb-4">
               <img
                 src="/branding/calligraphy_transparent.png"
                 alt="فارس بن سعود"
-                className="h-8 w-auto object-contain select-none"
+                className="h-7 sm:h-8 w-auto object-contain select-none"
               />
               <span
                 dir="ltr"
@@ -111,7 +111,7 @@ export function AboutHero() {
               </span>
             </div>
 
-            <div className="pf-cq-pad-inner plate-tray-recessed-dark my-5 rounded-2xl p-5 sm:p-6 flex flex-col items-center justify-center">
+            <div className="plate-tray-recessed-dark my-4 rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center">
               <PlateVisualizer
                 lettersAr={['ق']}
                 lettersEn={['G']}

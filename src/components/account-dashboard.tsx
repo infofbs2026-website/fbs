@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import {
   ArrowLeft, ArrowUpLeft, Bell, Bookmark, Car, Clock, Compass,
   CreditCard, Crown, FileQuestion, Gavel, Globe, Headphones, Home, KeyRound, Layers,
-  LayoutDashboard, LockKeyhole, LogOut, Mail, Moon, PanelRightClose, PanelRightOpen,
+  LayoutDashboard, LockKeyhole, LogOut, Mail, Menu, Moon, PanelRightClose, PanelRightOpen,
   Plus, Search, ShieldCheck, ShoppingBag, Smartphone, Store, Sun, UserRound, Wallet, X
 } from 'lucide-react';
 import { DataTable } from '@/components/data-table';
@@ -941,15 +941,31 @@ export function AccountDashboard({
                 title={sidebarToggleLabel}
                 onClick={handleSidebarToggle}
               >
-                {menuOpen || !sidebarCollapsed ? (
-                  <PanelRightClose size={18} strokeWidth={2.1} aria-hidden="true" />
-                ) : (
-                  <PanelRightOpen size={18} strokeWidth={2.1} aria-hidden="true" />
-                )}
+                {/* Desktop Collapse Icon: Visible only on desktop */}
+                <span className="hidden lg:inline-flex items-center justify-center">
+                  {sidebarCollapsed ? (
+                    <PanelRightOpen size={18} strokeWidth={2.1} aria-hidden="true" />
+                  ) : (
+                    <PanelRightClose size={18} strokeWidth={2.1} aria-hidden="true" />
+                  )}
+                </span>
+                {/* Mobile Menu Icon: Visible only on mobile/tablet */}
+                <span className="inline-flex lg:hidden items-center justify-center">
+                  {menuOpen ? (
+                    <X size={20} strokeWidth={2.2} aria-hidden="true" />
+                  ) : (
+                    <Menu size={20} strokeWidth={2.2} aria-hidden="true" />
+                  )}
+                </span>
               </button>
-              <Link href="/" className={styles.homePill}>
-                <span className={styles.homePillIcon}><Home size={15} aria-hidden="true" /></span>
-                <span>الرئيسية</span>
+
+              <Link
+                href="/"
+                className={styles.raisedIconBtn}
+                title="العودة للرئيسية"
+                aria-label="الرئيسية"
+              >
+                <Home size={17} strokeWidth={2.1} aria-hidden="true" />
               </Link>
             </div>
 

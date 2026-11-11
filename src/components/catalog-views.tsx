@@ -53,28 +53,81 @@ interface CatalogStageProps {
   mode?: 'auction' | 'store';
 }
 
+/* Luxury Page Icon SVG (أيقونة صفحة فاخرة تدل على صفحات المعروض) */
+function CatalogPageIcon({ className = 'w-4 h-4' }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" strokeDasharray="1.5 1.5" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+    </svg>
+  );
+}
+
 function PaginationControl({ direction, href }: { direction: 'previous' | 'next'; href?: string }) {
   const isPrevious = direction === 'previous';
   const label = isPrevious ? 'الصفحة السابقة' : 'الصفحة التالية';
-  const baseClass = 'inline-flex min-h-11 w-full sm:w-36 items-center justify-center gap-2 rounded-xl border px-4 py-2 pf-type-micro font-bold transition-all';
+  const baseClass =
+    'group inline-flex min-h-11 w-full sm:w-auto sm:min-w-[72px] items-center justify-center gap-2.5 rounded-xl border px-3.5 sm:px-4 py-2 transition-all';
+
+  // For Next Page (Right slot): ArrowRight (->) + Page SVG
+  // For Previous Page (Left slot): Page SVG + ArrowLeft (<-)
   const content = (
     <>
-      {isPrevious && <ArrowRight size={14} aria-hidden="true" />}
-      <span>{label}</span>
-      {!isPrevious && <ArrowLeft size={14} aria-hidden="true" />}
+      <span className="sr-only">{label}</span>
+      {!isPrevious ? (
+        <>
+          <ArrowRight
+            size={15}
+            className="shrink-0 transition-transform duration-200 group-hover:translate-x-0.5 text-neutral-600 group-hover:text-[#9E7B35]"
+            aria-hidden="true"
+          />
+          <CatalogPageIcon className="w-4 h-4 text-[#9E7B35] shrink-0 transition-transform duration-200 group-hover:scale-110" />
+        </>
+      ) : (
+        <>
+          <CatalogPageIcon className="w-4 h-4 text-[#9E7B35] shrink-0 transition-transform duration-200 group-hover:scale-110" />
+          <ArrowLeft
+            size={15}
+            className="shrink-0 transition-transform duration-200 group-hover:-translate-x-0.5 text-neutral-600 group-hover:text-[#9E7B35]"
+            aria-hidden="true"
+          />
+        </>
+      )}
     </>
   );
 
   if (!href) {
     return (
-      <button type="button" disabled className={`${baseClass} cursor-not-allowed border-neutral-200 bg-neutral-100/70 text-neutral-400`}>
+      <button
+        type="button"
+        disabled
+        title={label}
+        aria-label={label}
+        className={`${baseClass} cursor-not-allowed border-neutral-200/80 bg-neutral-100/70 text-neutral-400 opacity-60`}
+      >
         {content}
       </button>
     );
   }
 
   return (
-    <Link href={href} className={`${baseClass} border-neutral-200 bg-white text-neutral-800 shadow-xs hover:border-[#9E7B35] hover:bg-[#FAF7F0] active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9E7B35]`}>
+    <Link
+      href={href}
+      title={label}
+      aria-label={label}
+      className={`${baseClass} border-[#E2DFD6] bg-white text-neutral-800 shadow-2xs hover:border-[#9E7B35] hover:bg-[#FAF7F0] hover:shadow-xs active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9E7B35]`}
+    >
       {content}
     </Link>
   );
@@ -759,11 +812,11 @@ export function CatalogStage({
   const totalPages = Math.ceil(total / pageSize) || 1;
 
   return (
-    <div className="container-fbs">
+    <div className="max-w-[1000px] mx-auto px-5 sm:px-8 lg:px-10">
       {/* ============================================================== */}
       {/* FULL-WIDTH STAGE BAR (زر الفلاتر + بحث سريع + خيارات العرض)    */}
       {/* ============================================================== */}
-      <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-2.5 sm:gap-3 rounded-2xl border border-neutral-200/90 bg-white p-3 sm:px-4 sm:py-3 shadow-[0_4px_20px_-6px_rgba(0,0,0,0.05)]">
+      <div className="mb-5 sm:mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-2.5 sm:gap-3 rounded-xl sm:rounded-2xl border border-neutral-200/90 bg-white p-2.5 sm:px-3.5 sm:py-2.5 shadow-2xs">
         {/* Right/Start Group: Filter Toggle Button (Before Search Bar) + Quick Search Input */}
         <div className="flex flex-1 items-center gap-2 sm:gap-2.5 min-w-0">
           {/* 1. Filter Toggle Button — right BEFORE the Search Bar */}
@@ -773,22 +826,22 @@ export function CatalogStage({
             aria-expanded={isFiltersOpen}
             aria-controls="catalog-filters-panel"
             data-pf-action="toggle-filters"
-            className={`inline-flex h-10 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border px-3 sm:px-3.5 pf-type-micro font-bold transition-all active:scale-95 shrink-0 ${
+            className={`inline-flex h-9 sm:h-9.5 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border px-3 sm:px-3.5 text-xs font-bold transition-all active:scale-95 shrink-0 ${
               isFiltersOpen
-                ? 'border-[#14243C] bg-[#14243C] text-[#D9BB81] shadow-xs'
+                ? 'border-[#14243C] bg-[#14243C] text-[#D9BB81] shadow-2xs'
                 : activeFilterCount > 0
                   ? 'border-[#D9BB81] bg-[#FAF7F0] text-[#14243C] hover:bg-[#F3ECE0]'
                   : 'border-neutral-300 bg-neutral-100/90 text-[#14243C] hover:border-[#D9BB81] hover:bg-[#FAF7F0]'
             }`}
           >
             <SlidersHorizontal
-              size={15}
+              size={14}
               className={isFiltersOpen ? 'text-[#D9BB81] shrink-0' : 'text-[#9E7B35] shrink-0'}
             />
             <span>الفلاتر</span>
             {activeFilterCount > 0 && (
               <span
-                className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 font-norwester text-[11px] font-black leading-none ${
+                className={`inline-flex h-4.5 min-w-4.5 items-center justify-center rounded-full px-1 font-norwester text-[10.5px] font-black leading-none ${
                   isFiltersOpen
                     ? 'bg-[#D9BB81] text-[#14243C]'
                     : 'bg-[#14243C] text-[#D9BB81]'
@@ -805,16 +858,16 @@ export function CatalogStage({
               e.preventDefault();
               handleSearchSubmit(searchQ);
             }}
-            className="flex flex-1 items-center gap-1 sm:gap-1.5 min-w-0 md:max-w-md h-10 rounded-xl border border-neutral-300 bg-neutral-100/90 focus-within:bg-white focus-within:border-neutral-500 focus-within:ring-2 focus-within:ring-neutral-200 px-1 transition-all"
+            className="flex flex-1 items-center gap-1 sm:gap-1.5 min-w-0 md:max-w-md h-9 sm:h-9.5 rounded-xl border border-neutral-300 bg-neutral-100/90 focus-within:bg-white focus-within:border-neutral-500 focus-within:ring-2 focus-within:ring-neutral-200 px-1 transition-all"
           >
-            <Search size={15} className="ms-1.5 sm:ms-2 text-neutral-500 shrink-0" />
+            <Search size={14} className="ms-1.5 sm:ms-2 text-neutral-500 shrink-0" />
             <input
               id="header-search-q"
               type="text"
               value={searchQ}
               onChange={(e) => setSearchQ(e.target.value)}
               placeholder="ابحث بالحروف أو الأرقام..."
-              className="flex-1 min-w-0 bg-transparent border-0 py-1 px-1 sm:px-1.5 pf-type-micro font-semibold text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-0"
+              className="flex-1 min-w-0 bg-transparent border-0 py-1 px-1 sm:px-1.5 text-xs font-semibold text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-0"
             />
             {searchQ && (
               <button
@@ -831,7 +884,7 @@ export function CatalogStage({
             )}
             <button
               type="submit"
-              className="shrink-0 rounded-lg bg-neutral-800 hover:bg-neutral-900 text-white px-2.5 sm:px-3.5 py-1.5 pf-type-micro font-bold transition-all active:scale-95 shadow-xs"
+              className="shrink-0 rounded-lg bg-neutral-800 hover:bg-neutral-900 text-white px-2.5 sm:px-3 py-1 text-xs font-bold transition-all active:scale-95 shadow-2xs"
             >
               بحث
             </button>
@@ -839,19 +892,19 @@ export function CatalogStage({
         </div>
 
         {/* Left/End side: View Mode Toggle */}
-        <div className="grid grid-cols-3 md:flex items-center gap-1 rounded-xl bg-neutral-100 p-1 border border-neutral-200 md:shrink-0">
+        <div className="grid grid-cols-3 md:flex items-center gap-1 rounded-xl bg-neutral-100 p-0.5 border border-neutral-200 md:shrink-0">
           {/* Option 1: Grid */}
           <button
             type="button"
             onClick={() => handleModeChange('grid')}
-            className={`flex items-center justify-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-1.5 pf-type-micro font-bold whitespace-nowrap transition-all ${
+            className={`flex items-center justify-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-1.5 text-xs font-bold whitespace-nowrap transition-all ${
               viewMode === 'grid'
                 ? 'bg-[#14243C] text-[#D9BB81] shadow-2xs'
                 : 'text-neutral-600 hover:text-neutral-900 hover:bg-white'
             }`}
             title={isFiltersOpen ? 'عرض شبكة (3 كروت)' : 'عرض شبكة (4 كروت)'}
           >
-            <LayoutGrid size={14} className="shrink-0" />
+            <LayoutGrid size={13} className="shrink-0" />
             <span>شبكة</span>
           </button>
 
@@ -859,14 +912,14 @@ export function CatalogStage({
           <button
             type="button"
             onClick={() => handleModeChange('wide')}
-            className={`flex items-center justify-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-1.5 pf-type-micro font-bold whitespace-nowrap transition-all ${
+            className={`flex items-center justify-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-1.5 text-xs font-bold whitespace-nowrap transition-all ${
               viewMode === 'wide'
                 ? 'bg-[#14243C] text-[#D9BB81] shadow-2xs'
                 : 'text-neutral-600 hover:text-neutral-900 hover:bg-white'
             }`}
             title="عرض كروت عريضة"
           >
-            <RectangleHorizontal size={14} className="shrink-0" />
+            <RectangleHorizontal size={13} className="shrink-0" />
             <span className="sm:hidden">كروت</span>
             <span className="hidden sm:inline">كروت عريضة</span>
           </button>
@@ -875,14 +928,14 @@ export function CatalogStage({
           <button
             type="button"
             onClick={() => handleModeChange('table')}
-            className={`flex items-center justify-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-1.5 pf-type-micro font-bold whitespace-nowrap transition-all ${
+            className={`flex items-center justify-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-1.5 text-xs font-bold whitespace-nowrap transition-all ${
               viewMode === 'table'
                 ? 'bg-[#14243C] text-[#D9BB81] shadow-2xs'
                 : 'text-neutral-600 hover:text-neutral-900 hover:bg-white'
             }`}
             title="عرض جدول تفصيلي"
           >
-            <TableIcon size={14} className="shrink-0" />
+            <TableIcon size={13} className="shrink-0" />
             <span className="sm:hidden">جدول</span>
             <span className="hidden sm:inline">جدول تفصيلي</span>
           </button>
@@ -922,8 +975,8 @@ export function CatalogStage({
               {viewMode === 'grid' && (
                 <div
                   className={`grid grid-cols-1 sm:grid-cols-2 ${
-                    isFiltersOpen ? 'lg:grid-cols-3' : 'md:grid-cols-3 lg:grid-cols-4'
-                  } gap-3.5 sm:gap-4 items-stretch`}
+                    isFiltersOpen ? 'lg:grid-cols-2 xl:grid-cols-3' : 'md:grid-cols-3 lg:grid-cols-4'
+                  } gap-3 sm:gap-3.5 lg:gap-4 items-stretch`}
                 >
                   {plates.map((plate, idx) => (
                     <div
@@ -994,17 +1047,25 @@ export function CatalogStage({
             />
           )}
 
-          {/* Bottom Summary & Pagination Bar (المعروض أسفل الصفحة + التنقل بين الصفحات) */}
+          {/* Chiseled / Engraved Luxury Separator Line (خط فاصل محفور وأوضح بعمق ثلاثي الأبعاد) */}
+          {total > 0 && (
+            <div
+              aria-hidden="true"
+              className="mt-12 mb-7 w-full border-t border-[#C0B9A8] shadow-[0_1px_0_0_#FFFFFF]"
+            />
+          )}
+
+          {/* Bottom Summary & Pagination Bar (المعروض أسفل الصفحة + أزرار التنقل الفاخرة) */}
           {total > 0 && (
             <nav
               aria-label="صفحات النتائج والمعروض"
-              className="mt-10 grid grid-cols-2 items-center gap-3 border-t border-neutral-200/90 pt-6 sm:grid-cols-[1fr_auto_1fr] sm:gap-4"
+              className="grid grid-cols-2 items-center gap-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-4"
             >
-              {/* Previous Page (RTL: Previous button on right) */}
+              {/* Right Slot (RTL Start / sm:order-1): Next Page (الصفحة التالية) */}
               <div className="order-2 flex justify-start sm:order-1">
                 <PaginationControl
-                  direction="previous"
-                  href={page > 1 ? `?${new URLSearchParams({ ...clean, page: String(page - 1) })}` : undefined}
+                  direction="next"
+                  href={page < totalPages ? `?${new URLSearchParams({ ...clean, page: String(page + 1) })}` : undefined}
                 />
               </div>
 
@@ -1029,11 +1090,11 @@ export function CatalogStage({
                 </div>
               </div>
 
-              {/* Next Page (RTL: Next button on left) */}
+              {/* Left Slot (RTL End / sm:order-3): Previous Page (الصفحة السابقة) */}
               <div className="order-3 flex justify-end">
                 <PaginationControl
-                  direction="next"
-                  href={page < totalPages ? `?${new URLSearchParams({ ...clean, page: String(page + 1) })}` : undefined}
+                  direction="previous"
+                  href={page > 1 ? `?${new URLSearchParams({ ...clean, page: String(page - 1) })}` : undefined}
                 />
               </div>
             </nav>

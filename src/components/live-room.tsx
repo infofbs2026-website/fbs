@@ -236,9 +236,11 @@ export function LiveRoom({
 
   const isEligibleToBid = signedIn;
   const canBid = Boolean(snapshot && snapshot.status === 'LIVE' && connected && isEligibleToBid && !pending);
-  const hours = Math.floor(seconds / 3600).toString().padStart(2, '0');
-  const minutes = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
-  const secs = (seconds % 60).toString().padStart(2, '0');
+  const safeSeconds = Math.max(0, seconds);
+  const days = Math.floor(safeSeconds / 86400).toString().padStart(2, '0');
+  const hours = Math.floor((safeSeconds % 86400) / 3600).toString().padStart(2, '0');
+  const minutes = Math.floor((safeSeconds % 3600) / 60).toString().padStart(2, '0');
+  const secs = (safeSeconds % 60).toString().padStart(2, '0');
 
   // Quick increments options based on current minimum next bid
   const quickIncrements = [
@@ -321,14 +323,30 @@ export function LiveRoom({
       <div className="my-6 grid grid-cols-2 gap-4 rounded-2xl border border-slate-100 bg-white p-4 text-center">
         <div>
           <span className="block text-[11px] font-medium text-slate-400">الوقت المتبقي للجلسة</span>
-          <div className="mt-1 flex items-center justify-center gap-1 font-norwester text-2xl font-black text-slate-900" dir="ltr">
-            <span className="rounded-md bg-slate-100 px-2 py-0.5">{hours}</span>
-            <span>:</span>
-            <span className="rounded-md bg-slate-100 px-2 py-0.5">{minutes}</span>
-            <span>:</span>
-            <span className={`rounded-md bg-slate-100 px-2 py-0.5 ${seconds < 600 ? 'text-red-600 animate-pulse' : 'text-gold-dark'}`}>
-              {secs}
-            </span>
+          <div className="mt-1.5 grid grid-cols-4 gap-1.5 max-w-[240px] mx-auto" dir="ltr">
+            {[
+              { key: 'd', label: 'يوم', val: days },
+              { key: 'h', label: 'ساعة', val: hours },
+              { key: 'm', label: 'دقيقة', val: minutes },
+              { key: 's', label: 'ثانية', val: secs },
+            ].map((u) => (
+              <div key={u.key} className="rounded-lg bg-slate-100/90 px-1.5 py-1 text-center">
+                <span className="block font-sans text-[9px] font-semibold text-slate-500 leading-none mb-0.5">
+                  {u.label}
+                </span>
+                <span
+                  className={`font-norwester text-base sm:text-lg font-black tabular-nums leading-none ${
+                    u.key === 's' && seconds < 600
+                      ? 'text-red-600 animate-pulse'
+                      : u.key === 's'
+                        ? 'text-gold-dark'
+                        : 'text-slate-900'
+                  }`}
+                >
+                  {u.val}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 

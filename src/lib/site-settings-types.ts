@@ -31,11 +31,14 @@ export interface SiteSettings {
   defaultMaxExtensions: number;
 }
 
+const LEGACY_FOOTER_SUMMARY =
+  'المنصة السعودية الأولى المعتمدة لتنظيم وإدارة مزادات لوحات المركبات النادرة، وساطة موثوقة تضمن أعلى معايير الأمان المالي والتنظيمي بين نخبة المزايدين والملاك.';
+
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   siteName: 'فارس بن سعود للوحات المميزة',
   siteTagline: 'لوحتك المميزة تبدأ من هنا',
   footerSummary:
-    'المنصة السعودية الأولى المعتمدة لتنظيم وإدارة مزادات لوحات المركبات النادرة، وساطة موثوقة تضمن أعلى معايير الأمان المالي والتنظيمي بين نخبة المزايدين والملاك.',
+    'منصة سعودية متخصصة في مزادات واقتناء اللوحات النادرة بأعلى معايير الأمان.',
   crNumber: '1010884920',
   whatsappNumber: '966500000000',
   phoneDisplay: '+966 50 000 0000',
@@ -82,10 +85,16 @@ export function normalizeSiteSettings(raw: unknown): SiteSettings {
     ? obj.socialLinks
     : {}) as Record<string, unknown>;
 
+  const rawSummary = strOrDefault(obj.footerSummary, DEFAULT_SITE_SETTINGS.footerSummary);
+  const footerSummary =
+    !rawSummary.trim() || rawSummary.trim() === LEGACY_FOOTER_SUMMARY
+      ? DEFAULT_SITE_SETTINGS.footerSummary
+      : rawSummary;
+
   return {
     siteName: strOrDefault(obj.siteName, DEFAULT_SITE_SETTINGS.siteName),
     siteTagline: strOrDefault(obj.siteTagline, DEFAULT_SITE_SETTINGS.siteTagline),
-    footerSummary: strOrDefault(obj.footerSummary, DEFAULT_SITE_SETTINGS.footerSummary),
+    footerSummary,
     crNumber: strOrDefault(obj.crNumber, DEFAULT_SITE_SETTINGS.crNumber),
     whatsappNumber:
       strOrDefault(obj.whatsappNumber, DEFAULT_SITE_SETTINGS.whatsappNumber).replace(/[^0-9]/g, '') ||
