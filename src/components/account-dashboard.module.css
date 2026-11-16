@@ -241,7 +241,7 @@
   position: fixed;
   inset-block: 12px;
   inset-inline-start: 12px;
-  width: 242px;
+  width: 202px;
   z-index: 55;
   color: var(--ink);
   background: var(--surface-grad);
@@ -268,7 +268,7 @@
 }
 
 .sidebarCollapsed {
-  width: 72px;
+  width: 62px;
 }
 
 .sidebarInner {
@@ -279,8 +279,8 @@
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 13px 10px;
-  border-radius: 21px;
+  padding: 10px 8px;
+  border-radius: 19px;
   scrollbar-width: none;
 }
 
@@ -293,9 +293,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 15px 12px;
-  margin-bottom: 14px;
-  border-radius: 18px;
+  padding: 11px 9px;
+  margin-bottom: 10px;
+  border-radius: 15px;
   border: 1px solid rgba(217, 187, 129, 0.38);
   background: linear-gradient(180deg, #11223b 0%, #08162b 100%);
   box-shadow:
@@ -319,11 +319,11 @@
 .brandMark {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .brandEmblem {
-  height: 38px;
+  height: 31px;
   width: auto;
   flex: none;
   object-fit: contain;
@@ -335,18 +335,18 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 2.5px;
 }
 
 .brandCalligraphy {
-  height: 21px;
+  height: 17px;
   width: auto;
   object-fit: contain;
   filter: brightness(1.08) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.55));
 }
 
 .brandSubtitle {
-  height: 9.5px;
+  height: 8.5px;
   width: auto;
   object-fit: contain;
   filter: brightness(1.08) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.55));
@@ -431,29 +431,29 @@
 .navigation {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 11px;
 }
 
 .navSection {
   display: grid;
-  gap: 6px;
+  gap: 5px;
 }
 
 .navCaption {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 0 6px;
+  gap: 5px;
+  padding: 0 5px;
   color: var(--gold);
-  font-size: 10.5px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.015em;
 }
 
 .navCaption::before {
   content: '';
-  width: 4.5px;
-  height: 4.5px;
+  width: 4px;
+  height: 4px;
   border-radius: 1px;
   transform: rotate(45deg);
   background: var(--gold-bright);
@@ -462,10 +462,10 @@
 
 .navTrack {
   display: grid;
-  gap: 6px;
-  padding: 7px;
-  border-radius: 18px;
-  border: 1.5px solid var(--well-border);
+  gap: 4px;
+  padding: 5px;
+  border-radius: 14px;
+  border: 1px solid var(--well-border);
   background: var(--well-bg);
   box-shadow: var(--well-shadow);
 }
@@ -475,22 +475,21 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 7px;
   width: 100%;
-  min-height: 41px;
-  padding: 0 9px;
-  border: 1.5px solid #c2b293;
-  border-radius: 12px;
+  min-height: 34px;
+  padding: 0 7px;
+  border: 1px solid #d5cab2;
+  border-radius: 10px;
   color: var(--ink-strong);
   background: #ffffff;
   box-shadow:
-    0 3px 8px -2px rgba(14, 28, 54, 0.09),
-    0 1px 2px rgba(14, 28, 54, 0.05),
-    inset 0 1.5px 0 #ffffff;
+    0 2px 6px -2px rgba(14, 28, 54, 0.06),
+    inset 0 1px 0 #ffffff;
   text-decoration: none;
   font-family: inherit;
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 11px;
+  font-weight: 700;
   text-align: start;
   cursor: pointer;
   appearance: none;
@@ -500,11 +499,11 @@
 .dashboard[data-account-theme='dark'] .navTrack a,
 .dashboard[data-account-theme='dark'] .navTrack button {
   color: #f1f5f9;
-  border-color: rgba(148, 163, 184, 0.28);
+  border-color: rgba(148, 163, 184, 0.24);
   background: linear-gradient(180deg, #182b47 0%, #0e1c31 100%);
   box-shadow:
-    0 6px 14px -4px rgba(0, 0, 0, 0.65),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    0 5px 12px -4px rgba(0, 0, 0, 0.60),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .navExternalHint {
@@ -526,15 +525,20 @@
 .navIconWrap {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   flex: none;
-  border-radius: 9px;
-  border: 1px solid #c49f58;
+  border-radius: 7px;
+  border: 1px solid #c9a765;
   background: linear-gradient(145deg, #fbf2df 0%, #ebd5a7 100%);
   color: #6e4f16;
   box-shadow: inset 0 1px 0 #ffffff;
   transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.navIconWrap svg {
+  width: 13.5px;
+  height: 13.5px;
 }
 
 .dashboard[data-account-theme='dark'] .navIconWrap {
@@ -555,28 +559,28 @@
 .navBadge {
   display: inline-grid;
   place-items: center;
-  min-width: 20px;
-  height: 19px;
-  padding: 0 5px;
+  min-width: 18px;
+  height: 17px;
+  padding: 0 4.5px;
   border-radius: 999px;
-  border: 1px solid #c2b293;
+  border: 1px solid #cfc0a4;
   background: var(--well-bg);
   color: var(--ink-strong);
   font-family: var(--font-norwester), var(--font-sans);
-  font-size: 10.5px;
-  font-weight: 800;
+  font-size: 9.5px;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
 .navTrack a:hover,
 .navTrack button:hover {
   color: var(--ink-strong);
-  border-color: #a87e2f;
+  border-color: #b58d3e;
   background: #fffdf8;
   transform: translateY(-1px);
   box-shadow:
-    0 8px 16px -4px rgba(14, 28, 54, 0.14),
-    inset 0 1.5px 0 #ffffff;
+    0 5px 12px -4px rgba(14, 28, 54, 0.10),
+    inset 0 1px 0 #ffffff;
 }
 
 .dashboard[data-account-theme='dark'] .navTrack a:hover,
@@ -584,8 +588,8 @@
   color: #ffffff;
   border-color: rgba(217, 187, 129, 0.55);
   box-shadow:
-    0 10px 20px -4px rgba(0, 0, 0, 0.72),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    0 8px 16px -4px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
 .navTrack a:hover .navIconWrap,
@@ -594,29 +598,27 @@
   border-color: #9e7527;
 }
 
-/* Raised 3D Keycap Active State — Vivid Saturated Royal Gold Fill */
+/* Raised 3D Keycap Active State — Satin Gold Fill */
 .navTrack a[aria-current='page'],
 .navTrack button[aria-current='page'] {
-  color: #08162b;
-  font-weight: 900;
-  border-color: #8f6419;
-  background: linear-gradient(180deg, #edd08d 0%, #d4a64f 52%, #b88428 100%);
+  color: #131c2e;
+  font-weight: 700;
+  border-color: rgba(154, 114, 42, 0.66);
+  background: linear-gradient(180deg, #f3e0ad 0%, #dfc073 54%, #caa048 100%);
   box-shadow:
-    0 8px 18px -4px rgba(143, 100, 25, 0.42),
-    0 2px 5px rgba(14, 28, 54, 0.12),
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.75),
-    inset 0 -1.5px 0 rgba(92, 62, 10, 0.28);
+    0 5px 14px -4px rgba(143, 100, 25, 0.30),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
 .dashboard[data-account-theme='dark'] .navTrack a[aria-current='page'],
 .dashboard[data-account-theme='dark'] .navTrack button[aria-current='page'] {
   color: #08162b;
   border-color: #f5dfb2;
-  background: linear-gradient(180deg, #edd08d 0%, #d4a64f 52%, #b88428 100%);
+  background: linear-gradient(180deg, #f3e0ad 0%, #dfc073 54%, #caa048 100%);
   box-shadow:
-    0 10px 22px -4px rgba(0, 0, 0, 0.78),
-    0 0 18px rgba(217, 187, 129, 0.28),
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.82);
+    0 8px 18px -4px rgba(0, 0, 0, 0.72),
+    0 0 14px rgba(217, 187, 129, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.80);
 }
 
 .navTrack a[aria-current='page']::before,
@@ -652,7 +654,7 @@
 /* Bottom Concierge Utility Pod */
 .sidebarBottom {
   margin-top: auto;
-  padding-top: 14px;
+  padding-top: 10px;
 }
 
 .dockTray {
@@ -660,9 +662,9 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0;
-  padding: 5px;
-  min-height: 60px;
-  border-radius: 17px;
+  padding: 4px;
+  min-height: 50px;
+  border-radius: 14px;
   border: 1px solid var(--well-border);
   background: var(--well-bg);
   box-shadow: var(--well-shadow);
@@ -675,18 +677,23 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  min-height: 48px;
-  padding: 6px 4px;
+  gap: 3px;
+  min-height: 40px;
+  padding: 4px 3px;
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: 10px;
   background: transparent;
   color: var(--muted);
   text-decoration: none;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   cursor: pointer;
   transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dockTray svg {
+  width: 14px;
+  height: 14px;
 }
 
 .dockTray a:not(:last-child)::after,
@@ -780,8 +787,8 @@
 
   .sidebarCollapsed .navTrack a,
   .sidebarCollapsed .navTrack button {
-    width: 42px;
-    min-height: 38px;
+    width: 38px;
+    min-height: 34px;
     padding: 0;
     justify-content: center;
   }
@@ -865,18 +872,18 @@
 .workspace {
   min-width: 0;
   min-height: 100dvh;
-  margin-inline-start: 256px;
+  margin-inline-start: 220px;
   transition: margin-inline-start 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dashboard[data-sidebar-collapsed='true'] .workspace {
-  margin-inline-start: 86px;
+  margin-inline-start: 78px;
 }
 
 .content {
-  width: min(100%, 1480px);
+  width: min(100%, 1260px);
   margin: 0 auto;
-  padding: 12px clamp(12px, 1.6vw, 22px) 28px;
+  padding: 18px clamp(20px, 3vw, 44px) 40px;
 }
 
 /* Header itself has NO border/box — sits seamlessly on the creamy canvas,
@@ -1365,14 +1372,16 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
+  height: 36px;
   min-height: 36px;
-  padding: 3px 5px 3px 10px;
+  padding: 3px 4px 3px 10px;
   border-radius: 11px;
   border: 1px solid var(--line);
   background: var(--surface-grad);
   box-shadow: var(--pill-shadow);
   color: var(--ink-strong);
   text-decoration: none;
+  cursor: pointer;
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
@@ -1499,7 +1508,7 @@
   opacity: 0.42;
 }
 
-/* Tactile 3D Buttons */
+/* Refined Sleek Buttons */
 .primaryButton,
 .goldButton,
 .outlineButton,
@@ -1509,37 +1518,49 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 34px;
-  padding: 0 13px;
-  border-radius: 10px;
+  min-height: 31px;
+  padding: 0 12px;
+  border-radius: 9px;
   text-decoration: none;
-  font-size: 11.5px;
-  font-weight: 800;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.primaryButton svg,
+.goldButton svg,
+.outlineButton svg,
+.secondaryHeroButton svg {
+  width: 13.5px;
+  height: 13.5px;
+  flex-shrink: 0;
 }
 
 .primaryButton,
 .goldButton {
-  color: #08162b;
-  background: linear-gradient(180deg, #edd08d 0%, #d4a64f 52%, #b88428 100%);
-  border: 1.5px solid #8f6419;
+  color: #131c2e;
+  background: linear-gradient(180deg, #f3e0ad 0%, #dfc073 54%, #caa048 100%);
+  border: 1px solid rgba(154, 114, 42, 0.56);
   box-shadow:
-    0 5px 14px -3px rgba(143, 100, 25, 0.36),
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.78),
-    inset 0 -2px 0 rgba(92, 62, 10, 0.28);
+    0 3px 10px -3px rgba(143, 100, 25, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.74);
 }
 
 .primaryButton:hover,
 .goldButton:hover {
-  transform: translateY(-1.5px);
-  background: linear-gradient(180deg, #f3da9e 0%, #ddb35f 52%, #c49032 100%);
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, #f7e8be 0%, #e5ca84 54%, #d2ac55 100%);
+  border-color: rgba(154, 114, 42, 0.78);
   box-shadow:
-    0 8px 18px -4px rgba(143, 100, 25, 0.45),
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.88),
-    inset 0 -2px 0 rgba(92, 62, 10, 0.30);
+    0 6px 14px -4px rgba(143, 100, 25, 0.30),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
-.primaryButton:disabled {
+.primaryButton:disabled,
+.goldButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
@@ -1550,13 +1571,28 @@
   border: 1px solid var(--line-strong);
   color: var(--ink-strong);
   background: var(--surface-grad);
+  box-shadow:
+    0 2px 7px -3px rgba(14, 28, 54, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+.dashboard[data-account-theme='dark'] .outlineButton,
+.dashboard[data-account-theme='dark'] .secondaryHeroButton {
   box-shadow: var(--pill-shadow);
 }
 
 .outlineButton:hover,
 .secondaryHeroButton:hover {
-  transform: translateY(-1.5px);
+  transform: translateY(-1px);
   border-color: var(--line-hover);
+  box-shadow:
+    0 5px 12px -4px rgba(14, 28, 54, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88);
+}
+
+.dashboard[data-account-theme='dark'] .outlineButton:hover,
+.dashboard[data-account-theme='dark'] .secondaryHeroButton:hover {
+  box-shadow: var(--pill-shadow);
 }
 
 /* ==========================================================================
@@ -2161,8 +2197,8 @@
   color: #d9bb81;
 }
 
-.goldButton {
-  min-width: 178px;
+.auctionActionRow .goldButton {
+  min-width: 152px;
 }
 
 /* Left Showcase Column: Plain-Text Plate Info Above + Exact Small-Card Platinum Stage & Watermark */
@@ -3160,7 +3196,17 @@
   }
 
   .userPill {
-    padding: 4px;
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    padding: 3px;
+    justify-content: center;
+  }
+
+  .userPill .avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
   }
 }
 
@@ -3224,13 +3270,11 @@
 
 @media (max-width: 760px) {
   .header {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 
   .omniSearchRoot {
-    order: 3;
-    flex: 1 1 100%;
-    max-width: 100%;
+    display: none;
   }
 
   .auctionBody {
@@ -3299,6 +3343,21 @@
   .sidebarToggleBtn {
     width: 44px;
     height: 44px;
+  }
+
+  .userPill {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 3px;
+    justify-content: center;
+  }
+
+  .userPill .avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    font-size: 14px;
   }
 
   .auctionTimerChamber {

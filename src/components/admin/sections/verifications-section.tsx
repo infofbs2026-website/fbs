@@ -29,6 +29,7 @@ import {
   callAdminManage,
   formatAdminDate,
   formatFileSize,
+  matchesAdminSearch,
   minorToSarInput,
   sarToMinor,
 } from '../helpers';
@@ -36,6 +37,7 @@ import type { AdminDashboardData, AdminPlateRecord, AdminSectionKey } from '../t
 
 interface VerificationsProps {
   data: AdminDashboardData;
+  initialQuery?: string;
   onNavigate: (section: AdminSectionKey, opts?: { createAuctionForPlateId?: string }) => void;
   onNotify: (msg: string, kind?: 'success' | 'error') => void;
   onRequireMfa: () => void;
@@ -64,13 +66,14 @@ const PRESET_REASONS: Record<string, string[]> = {
 
 export function VerificationsSection({
   data,
+  initialQuery,
   onNavigate,
   onNotify,
   onRequireMfa,
   onRefresh,
 }: VerificationsProps) {
-  const [filter, setFilter] = useState<FilterMode>('PENDING');
-  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState<FilterMode>(initialQuery ? 'ALL' : 'PENDING');
+  const [query, setQuery] = useState(initialQuery ?? '');
   const [selectedPlate, setSelectedPlate] = useState<AdminPlateRecord | null>(null);
   const [decisionStatus, setDecisionStatus] = useState<'APPROVED' | 'UNDER_REVIEW' | 'CHANGES_REQUIRED' | 'REJECTED'>('APPROVED');
   const [publishTrack, setPublishTrack] = useState<'STORE_NOW' | 'AUCTION_READY' | 'DRAFT_ONLY'>('STORE_NOW');
@@ -93,7 +96,6 @@ export function VerificationsSection({
   }, [data.plates]);
 
   const filteredPlates = useMemo(() => {
-    const q = query.trim().toLowerCase();
     return data.plates.filter((p) => {
       if (filter === 'PENDING' && !['SUBMITTED', 'DOCUMENTS_PENDING', 'UNDER_REVIEW'].includes(p.verification_status)) {
         return false;
@@ -102,22 +104,23 @@ export function VerificationsSection({
       if (filter === 'APPROVED' && p.verification_status !== 'APPROVED') return false;
       if (filter === 'REJECTED' && p.verification_status !== 'REJECTED') return false;
 
-      if (!q) return true;
-      const haystack = [
+      if (!query.trim()) return true;
+      return matchesAdminSearch(
+        query,
         p.digits,
         p.letters_ar.join(' '),
         p.letters_ar.join(''),
+        `${p.letters_ar.join('')}${p.digits}`,
         p.letters_en.join(' '),
         p.letters_en.join(''),
+        `${p.letters_en.join('')}${p.digits}`,
         p.owner_name,
-        p.owner_phone ?? '',
+        p.owner_phone,
         p.city_name,
         p.type_name,
         p.slug,
-      ]
-        .join(' ')
-        .toLowerCase();
-      return haystack.includes(q);
+        VERIFICATION_LABELS[p.verification_status]?.label ?? p.verification_status,
+      );
     });
   }, [data.plates, filter, query]);
 

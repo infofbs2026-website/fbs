@@ -5,11 +5,9 @@ import {
   CheckCircle2,
   Crown,
   KeyRound,
-  Lock,
   Mail,
   Phone,
   Save,
-  Shield,
   ShieldAlert,
   ShieldCheck,
   User,
@@ -18,6 +16,15 @@ import {
 import accountStyles from '@/components/account-dashboard.module.css';
 import styles from '../admin-dashboard.module.css';
 import type { AdminDashboardData } from '../types';
+
+const ROLE_LABELS_AR: Record<string, string> = {
+  super_admin: 'المدير التنفيذي الأعلى',
+  admin: 'مشرف النظام',
+  moderator: 'مراقب المنصة',
+  finance: 'المراقبة المالية',
+  auditor: 'مدقق السجلات',
+  user: 'عضو مسجل',
+};
 
 interface ProfileSectionProps {
   data: AdminDashboardData;
@@ -69,34 +76,36 @@ export function ProfileSection({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* 1. Executive Monogram & Status Overview */}
-      <div className={accountStyles.greeting}>
+      <div className={accountStyles.greeting} style={{ marginBottom: 0 }}>
         <div className={accountStyles.greetingInner}>
-          <div className="flex flex-col sm:flex-row items-center gap-5 z-10 w-full sm:w-auto">
-            <div className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#edd08d] via-[#d4a64f] to-[#b88428] text-navy-deep font-black text-2xl shadow-lg border-2 border-white/80">
+          <div className="flex flex-col sm:flex-row items-center gap-4 z-10 w-full sm:w-auto">
+            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#edd08d] via-[#d4a64f] to-[#b88428] text-[#131c2e] font-black text-xl shadow-md border border-white/80">
               <span>{name.charAt(0) || 'أ'}</span>
               <span
-                className="absolute -bottom-1 -start-1 h-5 w-5 rounded-full border-2 border-white bg-emerald-500"
+                className="absolute -bottom-0.5 -start-0.5 h-4 w-4 rounded-full border-2 border-white bg-emerald-500"
                 title="جلسة إدارية نشطة"
               />
             </div>
 
             <div className="text-center sm:text-start min-w-0">
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/15 px-3 py-0.5 text-xs font-bold text-gold border border-gold/30">
-                  <Crown size={12} />
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
+                <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${styles.sculptPillGold}`}>
+                  <Crown size={11} />
                   <span>حساب الإدارة والقيادة التنفيذية</span>
                 </span>
                 {viewer.mfaVerified && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 border border-emerald-200">
-                    <ShieldCheck size={12} className="text-emerald-600" />
+                  <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${styles.sculptPillEmerald}`}>
+                    <ShieldCheck size={11} />
                     <span>2FA مفعّل</span>
                   </span>
                 )}
               </div>
-              <h2 className="text-lg sm:text-xl font-black text-navy-deep">{name || 'الإدارة'}</h2>
-              <p className="text-xs text-slate-500 font-medium mt-0.5" dir="ltr">
+              <h2 className="text-base sm:text-lg font-extrabold text-[var(--ink-strong)]">
+                {name || 'مدير المنصة'}
+              </h2>
+              <p className="text-[11px] text-[var(--muted)] font-medium mt-0.5" dir="ltr">
                 {viewer.email}
               </p>
             </div>
@@ -109,7 +118,7 @@ export function ProfileSection({
               className={accountStyles.outlineButton}
               title="إعدادات التحقق بخطوتين"
             >
-              <KeyRound size={15} />
+              <KeyRound size={14} />
               <span>أمان الحساب (2FA)</span>
             </button>
           </div>
@@ -117,153 +126,235 @@ export function ProfileSection({
       </div>
 
       {/* 2. Grid: Edit Profile Form + Security & Roles Panels */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left 2 Cols: Editable Profile Details */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-3xl border border-slate-200/90 bg-white/95 p-5 sm:p-7 shadow-xs">
-            <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-slate-100">
-              <UserCheck size={18} className="text-gold" />
-              <h3 className="text-sm sm:text-base font-black text-navy-deep">
-                تعديل البيانات الشخصية للإدارة
-              </h3>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+        {/* Main Column: Editable Profile Details (stretches flush with stacked side cards) */}
+        <div className="lg:col-span-8 flex flex-col">
+          <div className={`${styles.sculptCard} flex-1 flex flex-col`}>
+            <div className={`${styles.sculptCardInner} flex-1 flex flex-col`}>
+              <div className={styles.sculptCardHeader}>
+                <span className={styles.sculptIconBadge}>
+                  <UserCheck size={16} />
+                </span>
+                <div>
+                  <h3 className={styles.sculptCardTitle}>تعديل البيانات الشخصية للإدارة</h3>
+                  <p className={styles.sculptCardSubtitle}>
+                    تحديث اسم العرض الإداري وبيانات التواصل المرتبطة بالبوابة التنفيذية.
+                  </p>
+                </div>
+              </div>
+
+              <form
+                onSubmit={handleSaveProfile}
+                className="flex-1 flex flex-col justify-between gap-5 pt-4"
+              >
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className={styles.sculptFieldLabel}>الاسم الكامل / الاسم الإداري</label>
+                      <div className={styles.sculptInputWrap}>
+                        <input
+                          type="text"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="مدير المنصة"
+                          required
+                          minLength={2}
+                          maxLength={120}
+                          className={`${styles.sculptInput} pe-10 ps-3.5`}
+                        />
+                        <User
+                          size={14}
+                          className="absolute text-[var(--muted)] pointer-events-none end-3.5 top-1/2 -translate-y-1/2"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className={styles.sculptFieldLabel}>رقم الجوال الإداري (اختياري)</label>
+                      <div className={styles.sculptInputWrap} dir="ltr">
+                        <input
+                          type="tel"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          placeholder="+966500000000"
+                          dir="ltr"
+                          className={`${styles.sculptInput} pl-3.5 pr-10 text-left`}
+                        />
+                        <Phone
+                          size={14}
+                          className="absolute text-[var(--muted)] pointer-events-none right-3.5 top-1/2 -translate-y-1/2"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className={styles.sculptFieldLabel}>
+                      البريد الإلكتروني المسجل (معتمد رسمياً)
+                    </label>
+                    <div className={styles.sculptInputWrap} dir="ltr">
+                      <input
+                        type="email"
+                        value={viewer.email}
+                        readOnly
+                        disabled
+                        dir="ltr"
+                        className={`${styles.sculptInput} pl-3.5 pr-10 text-left`}
+                      />
+                      <Mail
+                        size={14}
+                        className="absolute text-[var(--muted)] pointer-events-none right-3.5 top-1/2 -translate-y-1/2"
+                      />
+                    </div>
+                    <p className="mt-1.5 text-[11px] text-[var(--muted)]">
+                      لتعديل البريد الإلكتروني الإداري، يرجى مراجعة إدارة النظام المركزية.
+                    </p>
+                  </div>
+
+                  {/* Account Operational Summary Chamber — balances vertical rhythm & removes empty void */}
+                  <div className={styles.sculptChamber}>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-[11px]">
+                      <div className="space-y-0.5">
+                        <span className="block text-[10px] font-semibold text-[var(--muted)]">
+                          تصنيف الحساب
+                        </span>
+                        <strong className="block font-bold text-[var(--ink-strong)]">
+                          إدارة تنفيذية عليا
+                        </strong>
+                      </div>
+                      <div className="space-y-0.5">
+                        <span className="block text-[10px] font-semibold text-[var(--muted)]">
+                          حالة الجلسة الحالية
+                        </span>
+                        <strong className={`inline-flex items-center gap-1 font-bold ${styles.sculptStatusOk}`}>
+                          <CheckCircle2 size={12} />
+                          <span>نشطة وموثقة</span>
+                        </strong>
+                      </div>
+                      <div className="space-y-0.5">
+                        <span className="block text-[10px] font-semibold text-[var(--muted)]">
+                          مستوى حماية 2FA
+                        </span>
+                        <strong
+                          className={`inline-flex items-center gap-1 font-bold ${
+                            viewer.mfaVerified ? styles.sculptStatusOk : styles.sculptStatusWarn
+                          }`}
+                        >
+                          {viewer.mfaVerified ? (
+                            <>
+                              <ShieldCheck size={12} />
+                              <span>مصادقة ثنائية نشطة</span>
+                            </>
+                          ) : (
+                            <>
+                              <ShieldAlert size={12} />
+                              <span>يتطلب تفعيل 2FA</span>
+                            </>
+                          )}
+                        </strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-auto pt-3.5 border-t border-[var(--line)] flex flex-wrap items-center justify-between gap-3">
+                  <span className="text-[11px] text-[var(--muted)]">
+                    تُطبّق التعديلات فورياً على الهوية الإدارية وسجل المراقبة.
+                  </span>
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className={accountStyles.goldButton}
+                  >
+                    <Save size={14} />
+                    <span>{saving ? 'جارٍ الحفظ...' : 'حفظ التغييرات'}</span>
+                  </button>
+                </div>
+              </form>
             </div>
-
-            <form onSubmit={handleSaveProfile} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                    الاسم الكامل / الاسم الإداري
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="كارم محمد سالم"
-                      required
-                      minLength={2}
-                      maxLength={120}
-                      className="w-full rounded-xl border border-slate-300 bg-slate-50/70 px-3.5 py-2.5 text-xs font-bold text-navy-deep focus:bg-white focus:border-gold focus:outline-none transition-all"
-                    />
-                    <User size={15} className="absolute inset-inline-end-3 top-3 text-slate-400" />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                    رقم الجوال الإداري (اختياري)
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="+966500000000"
-                      dir="ltr"
-                      className="w-full rounded-xl border border-slate-300 bg-slate-50/70 px-3.5 py-2.5 text-xs font-bold text-navy-deep focus:bg-white focus:border-gold focus:outline-none transition-all"
-                    />
-                    <Phone size={15} className="absolute inset-inline-end-3 top-3 text-slate-400" />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  البريد الإلكتروني المسجل (معتمد رسمياً)
-                </label>
-                <div className="relative">
-                  <input
-                    type="email"
-                    value={viewer.email}
-                    readOnly
-                    disabled
-                    dir="ltr"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-100/80 px-3.5 py-2.5 text-xs font-bold text-slate-500 cursor-not-allowed"
-                  />
-                  <Mail size={15} className="absolute inset-inline-end-3 top-3 text-slate-400" />
-                </div>
-                <p className="mt-1 text-[11px] text-slate-400">
-                  لتعديل البريد الإلكتروني الإداري، يرجى مراجعة إدارة النظام المركزية.
-                </p>
-              </div>
-
-              <div className="pt-3 flex items-center justify-end">
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className={accountStyles.goldButton}
-                >
-                  <Save size={15} />
-                  <span>{saving ? 'جارٍ الحفظ...' : 'حفظ التغييرات'}</span>
-                </button>
-              </div>
-            </form>
           </div>
         </div>
 
-        {/* Right 1 Col: Security, Roles & Privileges */}
-        <div className="space-y-6">
+        {/* Side Column: Security, Roles & Privileges */}
+        <div className="lg:col-span-4 flex flex-col gap-5">
           {/* Security Card */}
-          <div className="rounded-3xl border border-slate-200/90 bg-white/95 p-5 shadow-xs space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
-              <ShieldCheck size={18} className="text-emerald-600" />
-              <h3 className="text-xs sm:text-sm font-black text-navy-deep">أمان الجلسة والتوثيق</h3>
-            </div>
-
-            <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold">
-                <span className="text-slate-600">التحقق بخطوتين (2FA)</span>
-                {viewer.mfaVerified ? (
-                  <span className="text-emerald-700 flex items-center gap-1">
-                    <CheckCircle2 size={13} />
-                    <span>مفعّل ونشط</span>
-                  </span>
-                ) : (
-                  <span className="text-amber-700 flex items-center gap-1">
-                    <ShieldAlert size={13} />
-                    <span>غير مفعل بالجلسة</span>
-                  </span>
-                )}
+          <div className={styles.sculptCard}>
+            <div className={`${styles.sculptCardInner} space-y-3.5`}>
+              <div className={styles.sculptCardHeader}>
+                <span className={styles.sculptIconBadge}>
+                  <ShieldCheck size={16} />
+                </span>
+                <div>
+                  <h3 className={styles.sculptCardTitle}>أمان الجلسة والتوثيق</h3>
+                  <p className={styles.sculptCardSubtitle}>حماية العمليات الحساسة</p>
+                </div>
               </div>
-              <p className="text-[11px] text-slate-500 leading-relaxed">
-                التحقق بخطوتين يوفر حماية مصرفية لجلسات الإدارة ويطلب إدخال رمز التحقق عند تنفيذ العمليات الحساسة.
-              </p>
-            </div>
 
-            <button
-              type="button"
-              onClick={onRequireMfa}
-              className="w-full rounded-xl border border-gold/30 bg-gold/10 hover:bg-gold/20 py-2.5 text-xs font-bold text-navy-deep transition-colors flex items-center justify-center gap-1.5"
-            >
-              <KeyRound size={14} className="text-gold" />
-              <span>إدارة مفاتيح الأمان 2FA</span>
-            </button>
+              <div className={`${styles.sculptChamber} space-y-2`}>
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span className="text-[var(--muted)]">التحقق بخطوتين (2FA)</span>
+                  {viewer.mfaVerified ? (
+                    <span className={`${styles.sculptStatusOk} flex items-center gap-1`}>
+                      <CheckCircle2 size={13} />
+                      <span>مفعّل ونشط</span>
+                    </span>
+                  ) : (
+                    <span className={`${styles.sculptStatusWarn} flex items-center gap-1`}>
+                      <ShieldAlert size={13} />
+                      <span>غير مفعل بالجلسة</span>
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-[var(--muted)] leading-relaxed">
+                  التحقق بخطوتين يوفر حماية مصرفية لجلسات الإدارة ويطلب إدخال رمز التحقق عند تنفيذ العمليات الحساسة.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={onRequireMfa}
+                className={`${styles.btnSecondary} w-full`}
+              >
+                <KeyRound size={13.5} />
+                <span>إدارة مفاتيح الأمان 2FA</span>
+              </button>
+            </div>
           </div>
 
           {/* Assigned Roles & Privileges */}
-          <div className="rounded-3xl border border-slate-200/90 bg-white/95 p-5 shadow-xs space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
-              <Crown size={18} className="text-gold" />
-              <h3 className="text-xs sm:text-sm font-black text-navy-deep">الأدوار والصلاحيات الممنوحة</h3>
-            </div>
-
-            <div className="space-y-2">
-              {(viewer.roles && viewer.roles.length > 0 ? viewer.roles : ['مدير تنفيذي']).map(
-                (role, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between p-2.5 rounded-xl border border-gold/20 bg-gold/5 text-xs font-bold text-navy-deep"
-                  >
-                    <span>{role}</span>
-                    <span className="text-[10px] text-gold font-semibold">صلاحية معتمدة</span>
+          <div className={`${styles.sculptCard} flex-1 flex flex-col`}>
+            <div className={`${styles.sculptCardInner} flex-1 flex flex-col justify-between gap-3.5`}>
+              <div className="space-y-3.5">
+                <div className={styles.sculptCardHeader}>
+                  <span className={styles.sculptIconBadge}>
+                    <Crown size={16} />
+                  </span>
+                  <div>
+                    <h3 className={styles.sculptCardTitle}>الأدوار والصلاحيات الممنوحة</h3>
+                    <p className={styles.sculptCardSubtitle}>نطاق الاعتماد الإداري</p>
                   </div>
-                ),
-              )}
-            </div>
+                </div>
 
-            <p className="text-[11px] text-slate-400 leading-relaxed">
-              تتيح لك هذه الصلاحيات الإشراف على المزادات، إدارة اللوحات والمخزون، واعتماد طلبات الملاك والتحويلات المالية.
-            </p>
+                <div className="space-y-2">
+                  {(viewer.roles && viewer.roles.length > 0 ? viewer.roles : ['super_admin']).map(
+                    (role, idx) => (
+                      <div key={idx} className={styles.sculptRoleRow}>
+                        <span className="text-xs font-bold text-[var(--ink-strong)]">
+                          {ROLE_LABELS_AR[role] ?? role}
+                        </span>
+                        <span className="text-[10.5px] text-[var(--gold)] font-bold">
+                          صلاحية معتمدة
+                        </span>
+                      </div>
+                    ),
+                  )}
+                </div>
+              </div>
+
+              <p className="text-[11px] text-[var(--muted)] leading-relaxed pt-1 border-t border-[var(--line)]">
+                تتيح لك هذه الصلاحيات الإشراف على المزادات، إدارة اللوحات والمخزون، واعتماد طلبات الملاك والتحويلات المالية.
+              </p>
+            </div>
           </div>
         </div>
       </div>

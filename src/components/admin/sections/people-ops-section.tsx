@@ -9,7 +9,6 @@ import {
   Lock,
   Mail,
   Send,
-  ShieldCheck,
   Trash2,
   UserCog,
   UserPlus,
@@ -24,12 +23,14 @@ import {
   ROLE_LABELS,
   callAdminManage,
   formatAdminDate,
+  matchesAdminSearch,
 } from '../helpers';
 import type { AdminDashboardData, AdminSectionKey, AdminUserRecord } from '../types';
 
 interface PeopleOpsProps {
   section: Extract<AdminSectionKey, 'identities' | 'users' | 'registrations' | 'messages' | 'notifications'>;
   data: AdminDashboardData;
+  initialQuery?: string;
   onNotify: (msg: string, kind?: 'success' | 'error') => void;
   onRequireMfa: () => void;
   onRefresh: () => void;
@@ -99,11 +100,12 @@ const ROLE_DESCRIPTIONS: Record<string, { title: string; subtitle: string; categ
 export function PeopleOpsSection({
   section,
   data,
+  initialQuery,
   onNotify,
   onRequireMfa,
   onRefresh,
 }: PeopleOpsProps) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(initialQuery ?? '');
   const [userFilter, setUserFilter] = useState<'all' | 'admins' | 'active' | 'suspended'>('all');
   const [busyId, setBusyId] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<AdminUserRecord | null>(null);
@@ -151,16 +153,23 @@ export function PeopleOpsSection({
   }, [data.users]);
 
   const filteredUsers = useMemo(() => {
-    const q = query.trim().toLowerCase();
     return data.users.filter((u) => {
       if (userFilter === 'admins' && !u.roles.some((r) => ADMIN_ROLE_CODES.has(r))) return false;
       if (userFilter === 'active' && u.status !== 'ACTIVE') return false;
       if (userFilter === 'suspended' && u.status === 'ACTIVE') return false;
-      if (!q) return true;
-      return [u.display_name, u.phone ?? '', u.id, u.roles.map((r) => ROLE_LABELS[r] || r).join(' '), u.roles.join(' ')]
-        .join(' ')
-        .toLowerCase()
-        .includes(q);
+      if (!query.trim()) return true;
+      const kycLabel = KYC_LABELS[u.kyc_status]?.label ?? u.kyc_status;
+      return matchesAdminSearch(
+        query,
+        u.display_name,
+        u.phone,
+        u.id,
+        kycLabel,
+        u.status === 'ACTIVE' ? 'نشط' : 'موقوف مؤقتا',
+        u.mfa_enabled ? '2fa مفعل' : '',
+        u.roles.map((r) => ROLE_LABELS[r] || r).join(' '),
+        u.roles.join(' '),
+      );
     });
   }, [data.users, query, userFilter]);
 
@@ -452,7 +461,7 @@ export function PeopleOpsSection({
     return (
       <div className="space-y-4">
         <div className={styles.toolbar}>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className={styles.filterPills}>
             <button
               type="button"
               onClick={() => setUserFilter('all')}
@@ -495,7 +504,7 @@ export function PeopleOpsSection({
             </button>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2">
             <div className={styles.searchBox}>
               <input
                 type="search"
@@ -511,8 +520,8 @@ export function PeopleOpsSection({
               onClick={() => setCreateUserOpen(true)}
               className={styles.btnPrimary}
             >
-              <UserPlus size={15} />
-              <span>+ إضافة مستخدم أو مشرف</span>
+              <UserPlus size={13.5} />
+              <span>إضافة مستخدم أو مشرف</span>
             </button>
           </div>
         </div>
@@ -545,23 +554,23 @@ export function PeopleOpsSection({
                     return (
                       <tr key={u.id}>
                         <td>
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2.5">
                             <span
-                              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] text-xs font-black text-[var(--adm-gold)]"
+                              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] text-[11px] font-bold text-[var(--adm-gold)]"
                               aria-hidden="true"
                             >
                               {initial}
                             </span>
                             <div className="min-w-0 text-right">
-                              <div className="font-black text-[13px] flex items-center gap-1.5">
+                              <div className="font-bold text-[12px] flex items-center gap-1.5">
                                 <span className="truncate">{u.display_name || 'عضو مسجل'}</span>
                                 {isSelf && (
-                                  <span className={`${styles.badge} ${styles.tone_gold} !min-h-[20px] !px-2 !text-[10px]`}>
+                                  <span className={`${styles.badge} ${styles.tone_gold} !min-h-[18px] !px-1.5 !text-[9.5px]`}>
                                     أنت
                                   </span>
                                 )}
                               </div>
-                              <div className="text-[10.5px] opacity-55 text-right">
+                              <div className="text-[10px] opacity-55 text-right">
                                 <span dir="ltr" className="font-mono tabular-nums">
                                   #{u.id.slice(0, 8)}
                                 </span>
@@ -570,7 +579,7 @@ export function PeopleOpsSection({
                           </div>
                         </td>
                         <td>
-                          <span dir="ltr" className="font-mono text-xs tabular-nums">
+                          <span dir="ltr" className="font-mono text-[11px] tabular-nums opacity-80">
                             {u.phone || '—'}
                           </span>
                         </td>
@@ -592,15 +601,24 @@ export function PeopleOpsSection({
                             </span>
                           </button>
                         </td>
-                        <td>
-                          <div className="flex flex-wrap items-center gap-1.5">
-                            <span className={`${styles.badge} ${styles[`tone_${kyc.tone}`]}`}>{kyc.label}</span>
-                            {u.mfa_enabled && (
-                              <span className={`${styles.badge} ${styles.tone_emerald}`} title="التحقق بخطوتين مفعل لهذا الحساب">
+                        <td className="text-[11px] whitespace-nowrap">
+                          <span
+                            className={
+                              u.kyc_status === 'VERIFIED'
+                                ? `${styles.sculptStatusOk} font-semibold`
+                                : 'opacity-70 font-medium'
+                            }
+                          >
+                            {kyc.label}
+                          </span>
+                          {u.mfa_enabled && (
+                            <>
+                              <span className="opacity-45"> • </span>
+                              <span className={`${styles.sculptStatusOk} font-medium`} title="التحقق بخطوتين مفعل لهذا الحساب">
                                 2FA مفعل
                               </span>
-                            )}
-                          </div>
+                            </>
+                          )}
                         </td>
                         <td>
                           <div className="flex flex-wrap items-center gap-1.5">
@@ -623,12 +641,12 @@ export function PeopleOpsSection({
                             )}
                           </div>
                         </td>
-                        <td className="text-xs whitespace-nowrap">
-                          <span dir="ltr" className="font-black tabular-nums">
+                        <td className="text-[11px] whitespace-nowrap">
+                          <span dir="ltr" className="font-bold tabular-nums">
                             {u.plates_count}
                           </span>{' '}
                           لوحات •{' '}
-                          <span dir="ltr" className="font-black tabular-nums">
+                          <span dir="ltr" className="font-bold tabular-nums">
                             {u.bids_count}
                           </span>{' '}
                           مزايدات
@@ -638,21 +656,21 @@ export function PeopleOpsSection({
                             <button
                               type="button"
                               onClick={() => setSelectedUser(u)}
-                              className={styles.btnSecondary}
+                              className={styles.tableActionBtn}
                               title="إدارة الدور والصلاحيات وحالة الحساب"
                             >
-                              <UserCog size={14} />
+                              <UserCog size={12.5} />
                               <span>إدارة الدور</span>
                             </button>
                             {!isSelf && (
                               <button
                                 type="button"
                                 onClick={() => setDeletingUser(u)}
-                                className={`${styles.iconBtn} !text-rose-500 hover:!border-rose-500/40 hover:!bg-rose-500/10`}
+                                className={styles.tableActionDangerBtn}
                                 title="حذف المستخدم"
                                 aria-label="حذف المستخدم"
                               >
-                                <Trash2 size={15} />
+                                <Trash2 size={13} />
                               </button>
                             )}
                           </div>
@@ -672,25 +690,25 @@ export function PeopleOpsSection({
             <div className={styles.drawer}>
               <div className={styles.drawerHeader}>
                 <div>
-                  <h3 className="text-base font-black m-0">
+                  <h3 className="text-[14px] font-extrabold m-0">
                     إدارة الحساب والصلاحيات — {selectedUser.display_name || 'عضو مسجل'}
                   </h3>
-                  <p className="text-xs opacity-70 m-0 mt-0.5 text-right">
+                  <p className="text-[11px] opacity-70 m-0 mt-0.5 text-right">
                     تحكم بحالة الحساب، توثيق الهوية، ومنح أو سحب صلاحيات الإدارة والمشرفين.
                   </p>
                 </div>
                 <button type="button" className={styles.iconBtn} onClick={() => setSelectedUser(null)} aria-label="إغلاق">
-                  <X size={17} />
+                  <X size={14} />
                 </button>
               </div>
 
               <div className={styles.drawerBody}>
                 {/* Status & KYC Row */}
                 <div className={styles.formRow}>
-                  <div className="rounded-2xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-3.5 flex items-center justify-between gap-3">
+                  <div className="rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5">
                     <div>
-                      <div className="text-xs font-black">حالة الحساب في المنصة</div>
-                      <div className="text-[11px] opacity-65 mt-0.5">
+                      <div className="text-[11.5px] font-bold">حالة الحساب في المنصة</div>
+                      <div className="text-[10.5px] opacity-65 mt-0.5 leading-snug">
                         {selectedUser.status === 'ACTIVE'
                           ? 'الحساب مفعل ويمكنه الدخول والتفاعل.'
                           : 'الحساب موقوف مؤقتاً ولا يمكنه المزايدة أو الإدراج.'}
@@ -719,10 +737,10 @@ export function PeopleOpsSection({
                     </button>
                   </div>
 
-                  <div className="rounded-2xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-3.5 flex items-center justify-between gap-3">
+                  <div className="rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5">
                     <div>
-                      <div className="text-xs font-black">اعتماد توثيق الهوية الوطنية (KYC)</div>
-                      <div className="text-[11px] opacity-65 mt-0.5">
+                      <div className="text-[11.5px] font-bold">اعتماد توثيق الهوية الوطنية (KYC)</div>
+                      <div className="text-[10.5px] opacity-65 mt-0.5 leading-snug">
                         {selectedUser.kyc_status === 'VERIFIED'
                           ? 'الهوية الوطنية معتمدة وموثقة رسمياً.'
                           : 'يمكنك اعتماد توثيق الهوية يدوياً لهذا العضو.'}
@@ -751,10 +769,10 @@ export function PeopleOpsSection({
                     </button>
                   </div>
 
-                  <div className="rounded-2xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-3.5 flex items-center justify-between gap-3 sm:col-span-2">
+                  <div className="rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5 sm:col-span-2">
                     <div>
-                      <div className="text-xs font-black">التحقق بخطوتين وتوثيق الحساب بطريقتين (2FA)</div>
-                      <div className="text-[11px] opacity-65 mt-0.5">
+                      <div className="text-[11.5px] font-bold">التحقق بخطوتين وتوثيق الحساب بطريقتين (2FA)</div>
+                      <div className="text-[10.5px] opacity-65 mt-0.5 leading-snug">
                         {selectedUser.mfa_enabled
                           ? 'التحقق بخطوتين (2FA) مفعل وموثق لهذا الحساب (مراجعة الهويات والإجراءات الحساسة مفعلة).'
                           : 'فعّل هذا الخيار لتوثيق الحساب بخطوتين وتمكينه من الإجراءات المحمية ومراجعة الهويات.'}
@@ -785,18 +803,18 @@ export function PeopleOpsSection({
                   <span className={styles.fieldLabel}>
                     صلاحيات الإدارة والمشرفين المفوضين (تحت الأدمن)
                   </span>
-                  <div className="grid gap-2.5 sm:grid-cols-2">
+                  <div className="grid gap-2 sm:grid-cols-2">
                     {ALL_ROLES.filter((r) => ROLE_DESCRIPTIONS[r]?.category === 'admin').map((role) => {
                       const active = selectedUser.roles.includes(role);
                       const info = ROLE_DESCRIPTIONS[role];
                       return (
                         <div
                           key={role}
-                          className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3.5 py-3 text-xs"
+                          className="flex items-center justify-between gap-2.5 rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2 text-xs"
                         >
                           <div className="min-w-0">
-                            <div className="font-black text-[12.5px]">{info?.title || ROLE_LABELS[role] || role}</div>
-                            <div className="text-[11px] opacity-65 mt-0.5 leading-relaxed">
+                            <div className="font-bold text-[11.5px]">{info?.title || ROLE_LABELS[role] || role}</div>
+                            <div className="text-[10px] opacity-65 mt-0.5 leading-snug">
                               {info?.subtitle}
                             </div>
                           </div>
@@ -822,18 +840,18 @@ export function PeopleOpsSection({
                 {/* Member Roles (Seller / Bidder) */}
                 <div className={styles.field}>
                   <span className={styles.fieldLabel}>صلاحيات البيع والمزايدة في المنصة</span>
-                  <div className="grid gap-2.5 sm:grid-cols-2">
+                  <div className="grid gap-2 sm:grid-cols-2">
                     {ALL_ROLES.filter((r) => ROLE_DESCRIPTIONS[r]?.category === 'member').map((role) => {
                       const active = selectedUser.roles.includes(role);
                       const info = ROLE_DESCRIPTIONS[role];
                       return (
                         <div
                           key={role}
-                          className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3.5 py-3 text-xs"
+                          className="flex items-center justify-between gap-2.5 rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2 text-xs"
                         >
                           <div className="min-w-0">
-                            <div className="font-black text-[12.5px]">{info?.title || ROLE_LABELS[role] || role}</div>
-                            <div className="text-[11px] opacity-65 mt-0.5 leading-relaxed">
+                            <div className="font-bold text-[11.5px]">{info?.title || ROLE_LABELS[role] || role}</div>
+                            <div className="text-[10px] opacity-65 mt-0.5 leading-snug">
                               {info?.subtitle}
                             </div>
                           </div>
@@ -877,7 +895,7 @@ export function PeopleOpsSection({
                     className={styles.btnDanger}
                     onClick={() => setDeletingUser(selectedUser)}
                   >
-                    <Trash2 size={14} />
+                    <Trash2 size={13} />
                     <span>حذف المستخدم نهائياً</span>
                   </button>
                 )}
@@ -892,8 +910,8 @@ export function PeopleOpsSection({
             <div className={styles.drawer}>
               <div className={styles.drawerHeader}>
                 <div>
-                  <h3 className="text-base font-black m-0">إضافة مستخدم أو مشرف جديد</h3>
-                  <p className="text-xs opacity-70 m-0 mt-0.5">
+                  <h3 className="text-[14px] font-extrabold m-0">إضافة مستخدم أو مشرف جديد</h3>
+                  <p className="text-[11px] opacity-70 m-0 mt-0.5">
                     أنشئ حساب عضو جديد، أو مدير أعلى (Admin)، أو مشرف بصلاحيات محددة تحت الأدمن.
                   </p>
                 </div>
@@ -903,7 +921,7 @@ export function PeopleOpsSection({
                   onClick={() => !creatingUser && setCreateUserOpen(false)}
                   aria-label="إغلاق"
                 >
-                  <X size={17} />
+                  <X size={14} />
                 </button>
               </div>
 
@@ -959,7 +977,7 @@ export function PeopleOpsSection({
 
                 <div className={styles.field}>
                   <label className={styles.fieldLabel}>نوع الحساب ومستوى الصلاحيات</label>
-                  <div className="grid gap-2.5 sm:grid-cols-2">
+                  <div className="grid gap-2 sm:grid-cols-2">
                     {(
                       [
                         'user',
@@ -979,16 +997,16 @@ export function PeopleOpsSection({
                           key={rCode}
                           type="button"
                           onClick={() => setNewUserForm((f) => ({ ...f, roleCode: rCode }))}
-                          className={`text-right rounded-2xl border p-3.5 transition-all ${
+                          className={`text-right rounded-xl border p-2.5 transition-all ${
                             selected
-                              ? 'border-[var(--adm-gold)] bg-[var(--adm-gold-soft)] shadow-sm'
+                              ? 'border-[var(--adm-gold)] bg-[var(--adm-gold-soft)] shadow-xs'
                               : 'border-[var(--adm-border)] bg-[var(--adm-surface-soft)] hover:border-[var(--adm-gold)]/40'
                           }`}
                         >
                           <div className="flex items-center justify-between gap-2">
-                            <span className="text-xs font-black">{info?.title || ROLE_LABELS[rCode]}</span>
+                            <span className="text-[11.5px] font-bold">{info?.title || ROLE_LABELS[rCode]}</span>
                             <span
-                              className={`${styles.badge} !min-h-[20px] !px-2 !text-[10px] ${
+                              className={`${styles.badge} !min-h-[18px] !px-1.5 !text-[9.5px] ${
                                 rCode === 'super_admin'
                                   ? styles.tone_gold
                                   : ADMIN_ROLE_CODES.has(rCode)
@@ -1003,7 +1021,7 @@ export function PeopleOpsSection({
                                   : 'عضو منصة'}
                             </span>
                           </div>
-                          <p className="text-[11px] opacity-70 m-0 mt-1 leading-relaxed">{info?.subtitle}</p>
+                          <p className="text-[10px] opacity-65 m-0 mt-1 leading-snug">{info?.subtitle}</p>
                         </button>
                       );
                     })}
@@ -1011,10 +1029,10 @@ export function PeopleOpsSection({
                 </div>
 
                 <div className={styles.formRow}>
-                  <div className="rounded-2xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-3.5 flex items-center justify-between gap-3">
+                  <div className="rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5">
                     <div>
-                      <div className="text-xs font-black">اعتماد توثيق الهوية تلقائياً (KYC)</div>
-                      <div className="text-[11px] opacity-65 mt-0.5">
+                      <div className="text-[11.5px] font-bold">اعتماد توثيق الهوية تلقائياً (KYC)</div>
+                      <div className="text-[10px] opacity-65 mt-0.5 leading-snug">
                         يجعل هوية الحساب موثقة رسمياً وجاهزة للمزايدة أو الإدراج فوراً.
                       </div>
                     </div>
@@ -1036,10 +1054,10 @@ export function PeopleOpsSection({
                     </button>
                   </div>
 
-                  <div className="rounded-2xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-3.5 flex items-center justify-between gap-3">
+                  <div className="rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5">
                     <div>
-                      <div className="text-xs font-black">تفعيل التحقق بخطوتين تلقائياً (2FA)</div>
-                      <div className="text-[11px] opacity-65 mt-0.5">
+                      <div className="text-[11.5px] font-bold">تفعيل التحقق بخطوتين تلقائياً (2FA)</div>
+                      <div className="text-[10px] opacity-65 mt-0.5 leading-snug">
                         يمنح المشرف أو العضو توثيق الحساب بطريقتين (2FA) فور إنشائه.
                       </div>
                     </div>
@@ -1070,7 +1088,7 @@ export function PeopleOpsSection({
                   onClick={createNewUser}
                   className={styles.btnPrimary}
                 >
-                  <UserPlus size={15} />
+                  <UserPlus size={13.5} />
                   <span>{creatingUser ? 'جارٍ إنشاء الحساب…' : 'إنشاء الحساب وتعيين الصلاحيات'}</span>
                 </button>
                 <button
@@ -1098,7 +1116,7 @@ export function PeopleOpsSection({
             <div className={styles.modalCard} onClick={(e) => e.stopPropagation()}>
               <div className={styles.modalHeader}>
                 <div className={`${styles.modalIconWrap} ${styles.modalIconWrapDanger}`}>
-                  <Trash2 size={19} />
+                  <Trash2 size={15} />
                 </div>
                 <div className={styles.modalTitleGroup}>
                   <h3 className={styles.modalTitle}>حذف حساب المستخدم نهائياً</h3>
@@ -1112,15 +1130,15 @@ export function PeopleOpsSection({
                   onClick={() => setDeletingUser(null)}
                   aria-label="إغلاق"
                 >
-                  <X size={16} />
+                  <X size={14} />
                 </button>
               </div>
 
               <div className={styles.modalBody}>
-                <div className="rounded-2xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-3.5 flex items-center justify-between gap-3">
+                <div className="rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5">
                   <div className="text-right">
-                    <div className="text-sm font-black">{deletingUser.display_name || 'عضو مسجل'}</div>
-                    <div className="text-xs opacity-65 mt-0.5 text-right">
+                    <div className="text-[12.5px] font-bold">{deletingUser.display_name || 'عضو مسجل'}</div>
+                    <div className="text-[11px] opacity-65 mt-0.5 text-right">
                       <span dir="ltr" className="font-mono tabular-nums">
                         {deletingUser.phone || `#${deletingUser.id.slice(0, 8)}`}
                       </span>
@@ -1133,8 +1151,8 @@ export function PeopleOpsSection({
                 </div>
 
                 {(deletingUser.plates_count > 0 || deletingUser.bids_count > 0) && (
-                  <div className="rounded-xl border border-amber-500/35 bg-amber-500/10 px-3.5 py-2.5 text-xs font-bold text-amber-800 flex items-start gap-2 leading-relaxed">
-                    <AlertTriangle size={16} className="shrink-0 mt-0.5 text-amber-600" />
+                  <div className={`rounded-xl border border-amber-500/35 bg-amber-500/10 px-3 py-2 text-[11px] font-bold ${styles.sculptStatusWarn} flex items-start gap-2 leading-relaxed`}>
+                    <AlertTriangle size={14} className="shrink-0 mt-0.5" />
                     <span>
                       تنبيه: هذا المستخدم يملك{' '}
                       <strong dir="ltr" className="tabular-nums">{deletingUser.plates_count}</strong> لوحات و
@@ -1161,7 +1179,7 @@ export function PeopleOpsSection({
                   className={styles.btnDanger}
                   onClick={confirmDeleteUser}
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={13} />
                   <span>{busyId === deletingUser.id ? 'جارٍ الحذف…' : 'تأكيد حذف المستخدم'}</span>
                 </button>
                 <button

@@ -9,12 +9,14 @@ import {
   callAdminManage,
   exportRowsToCsv,
   formatAdminDate,
+  matchesAdminSearch,
 } from '../helpers';
 import type { AdminDashboardData, AdminSectionKey } from '../types';
 
 interface FinanceAuditProps {
   section: Extract<AdminSectionKey, 'bids' | 'deposits' | 'payments' | 'settlements' | 'reports' | 'audit'>;
   data: AdminDashboardData;
+  initialQuery?: string;
   onNotify: (msg: string, kind?: 'success' | 'error') => void;
   onRequireMfa: () => void;
   onRefresh: () => void;
@@ -33,11 +35,12 @@ const SETTLEMENT_STAGES = [
 export function FinanceAuditSection({
   section,
   data,
+  initialQuery,
   onNotify,
   onRequireMfa,
   onRefresh,
 }: FinanceAuditProps) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(initialQuery ?? '');
   const [busyId, setBusyId] = useState<string | null>(null);
   const [clearConfirmOpen, setClearConfirmOpen] = useState(false);
   const [clearing, setClearing] = useState(false);
@@ -75,10 +78,9 @@ export function FinanceAuditSection({
   }
 
   const filteredAudit = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return data.auditLogs;
+    if (!query.trim()) return data.auditLogs;
     return data.auditLogs.filter((l) =>
-      [l.action, l.entity_type, l.reason ?? '', l.actor_name].join(' ').toLowerCase().includes(q),
+      matchesAdminSearch(query, l.action, l.entity_type, l.reason, l.actor_name, l.entity_id),
     );
   }, [data.auditLogs, query]);
 

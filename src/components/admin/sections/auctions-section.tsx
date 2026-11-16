@@ -28,6 +28,7 @@ import {
   formatAdminDate,
   formatCountdownLabel,
   fromDatetimeLocalValue,
+  matchesAdminSearch,
   minorToSarInput,
   sarToMinor,
   toDatetimeLocalValue,
@@ -37,6 +38,7 @@ import type { AdminAuctionRecord, AdminDashboardData } from '../types';
 interface AuctionsSectionProps {
   data: AdminDashboardData;
   liveOnly?: boolean;
+  initialQuery?: string;
   preselectedPlateId?: string | null;
   onClearPreselectedPlate?: () => void;
   onNotify: (msg: string, kind?: 'success' | 'error') => void;
@@ -47,6 +49,7 @@ interface AuctionsSectionProps {
 export function AuctionsSection({
   data,
   liveOnly = false,
+  initialQuery,
   preselectedPlateId,
   onClearPreselectedPlate,
   onNotify,
@@ -54,8 +57,8 @@ export function AuctionsSection({
   onRefresh,
 }: AuctionsSectionProps) {
   const [nowMs, setNowMs] = useState<number | null>(null);
-  const [statusFilter, setStatusFilter] = useState<string>(liveOnly ? 'ACTIVE' : 'ALL');
-  const [query, setQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>(initialQuery ? 'ALL' : liveOnly ? 'ACTIVE' : 'ALL');
+  const [query, setQuery] = useState(initialQuery ?? '');
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [expandedAuctionId, setExpandedAuctionId] = useState<string | null>(null);
 
@@ -325,7 +328,6 @@ export function AuctionsSection({
   }
 
   const filteredAuctions = useMemo(() => {
-    const q = query.trim().toLowerCase();
     return data.auctions.filter((a) => {
       if (statusFilter === 'ACTIVE') {
         if (!['LIVE', 'ENDING', 'REGISTRATION_OPEN', 'WAITING_ROOM', 'PAUSED', 'SCHEDULED'].includes(a.status)) {
@@ -335,19 +337,22 @@ export function AuctionsSection({
         return false;
       }
 
-      if (!q) return true;
-      const hay = [
+      if (!query.trim()) return true;
+      return matchesAdminSearch(
+        query,
         a.digits,
         a.letters_ar.join(' '),
         a.letters_ar.join(''),
+        `${a.letters_ar.join('')}${a.digits}`,
         a.letters_en.join(' '),
+        a.letters_en.join(''),
+        `${a.letters_en.join('')}${a.digits}`,
         a.plate_type,
         a.city_name,
         a.status,
-      ]
-        .join(' ')
-        .toLowerCase();
-      return hay.includes(q);
+        AUCTION_STATUS_LABELS[a.status]?.label,
+        a.slug,
+      );
     });
   }, [data.auctions, statusFilter, query]);
 

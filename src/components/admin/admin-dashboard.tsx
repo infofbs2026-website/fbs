@@ -1,11 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Activity,
   AlertCircle,
+  ArrowLeft,
   Bell,
   Car,
   CheckCircle2,
@@ -45,7 +46,16 @@ import { MfaSetup } from '@/components/mfa';
 import { sendJson } from '@/components/forms';
 import accountStyles from '@/components/account-dashboard.module.css';
 import styles from './admin-dashboard.module.css';
-import { EngravedFbsCrest } from './helpers';
+import {
+  AUCTION_STATUS_LABELS,
+  EngravedFbsCrest,
+  KYC_LABELS,
+  LISTING_LABELS,
+  MESSAGE_STATUS_LABELS,
+  ROLE_LABELS,
+  VERIFICATION_LABELS,
+  matchesAdminSearch,
+} from './helpers';
 import { OverviewSection } from './sections/overview-section';
 import { VerificationsSection } from './sections/verifications-section';
 import { PlatesSection } from './sections/plates-section';
@@ -232,9 +242,17 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
   const [totpBusy, setTotpBusy] = useState(false);
   const [totpErr, setTotpErr] = useState('');
 
-  // Omni-Search Modal (Ctrl+K)
+  // Inline Real-Time Omni-Search State
+  const omniRootRef = useRef<HTMLDivElement | null>(null);
+  const omniInputRef = useRef<HTMLInputElement | null>(null);
   const [omniOpen, setOmniOpen] = useState(false);
   const [omniQuery, setOmniQuery] = useState('');
+  const [omniActiveIndex, setOmniActiveIndex] = useState(0);
+  const [sectionSearch, setSectionSearch] = useState<{
+    key: AdminSectionKey;
+    query: string;
+    nonce: number;
+  } | null>(null);
 
   // Toast Stack
   const [toasts, setToasts] = useState<Array<{ id: number; message: string; kind: 'success' | 'error' }>>([]);
@@ -258,14 +276,24 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
     const onKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        setOmniOpen((v) => !v);
+        omniInputRef.current?.focus();
+        setOmniOpen(true);
       } else if (e.key === 'Escape') {
         setOmniOpen(false);
         setMobileOpen(false);
       }
     };
+    const onPointerDown = (e: MouseEvent) => {
+      if (omniRootRef.current && !omniRootRef.current.contains(e.target as Node)) {
+        setOmniOpen(false);
+      }
+    };
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    window.addEventListener('mousedown', onPointerDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('mousedown', onPointerDown);
+    };
   }, []);
 
   const notify = useCallback((message: string, kind: 'success' | 'error' = 'success') => {
@@ -283,11 +311,16 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
   }, [router]);
 
   const navigateSection = useCallback(
-    (next: AdminSectionKey, opts?: { createAuctionForPlateId?: string }) => {
+    (next: AdminSectionKey, opts?: { createAuctionForPlateId?: string; searchQuery?: string }) => {
       setSection(next);
       setMobileOpen(false);
       if (opts?.createAuctionForPlateId) {
         setPreselectedPlateId(opts.createAuctionForPlateId);
+      }
+      if (typeof opts?.searchQuery === 'string') {
+        setSectionSearch({ key: next, query: opts.searchQuery, nonce: Date.now() });
+      } else {
+        setSectionSearch(null);
       }
       if (typeof window !== 'undefined') {
         const targetUrl = next === 'overview' ? '/fbs-console' : `/fbs-console/${next}`;
@@ -347,22 +380,312 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
   );
 
   const omniResults = useMemo(() => {
-    const q = omniQuery.trim().toLowerCase();
+    const q = omniQuery.trim();
     const matchedNav = ALL_NAV_ITEMS.filter(
-      (n) => !q || n.label.toLowerCase().includes(q) || n.subtitle.toLowerCase().includes(q),
-    ).slice(0, 6);
-    const matchedPlates = q
-      ? data.plates
-          .filter((p) =>
-            [p.digits, p.letters_ar.join(' '), p.letters_ar.join(''), p.owner_name, p.slug]
-              .join(' ')
-              .toLowerCase()
-              .includes(q),
-          )
-          .slice(0, 5)
-      : [];
-    return { matchedNav, matchedPlates };
-  }, [omniQuery, data.plates]);
+      (n) => !q || matchesAdminSearch(q, n.label, n.subtitle, n.key),
+    ).slice(0, q ? 5 : 6);
+
+    if (!q) {
+      return {
+        matchedUsers: [] as typeof data.users,
+        matchedPlates: [] as typeof data.plates,
+        matchedAuctions: [] as typeof data.auctions,
+        matchedMessages: [] as typeof data.messages,
+        matchedIdentities: [] as typeof data.identities,
+        matchedRecords: [] as Array<{
+          id: string;
+          title: string;
+          subtitle: string;
+          badge: string;
+          targetSection: AdminSectionKey;
+          filterText?: string;
+        }>,
+        matchedNav,
+      };
+    }
+
+    const matchedUsers = data.users
+      .filter((u) => {
+        const kycLabel = KYC_LABELS[u.kyc_status]?.label ?? u.kyc_status;
+        return matchesAdminSearch(
+          q,
+          u.display_name,
+          u.phone,
+          u.id,
+          kycLabel,
+          u.status === 'ACTIVE' ? 'نشط' : 'موقوف مؤقتا',
+          u.mfa_enabled ? '2fa مفعل' : '',
+          u.roles.map((r) => ROLE_LABELS[r] || r).join(' '),
+          u.roles.join(' '),
+        );
+      })
+      .slice(0, 5);
+
+    const matchedPlates = data.plates
+      .filter((p) =>
+        matchesAdminSearch(
+          q,
+          p.digits,
+          p.letters_ar.join(' '),
+          p.letters_ar.join(''),
+          `${p.letters_ar.join('')}${p.digits}`,
+          p.letters_en.join(' '),
+          p.letters_en.join(''),
+          `${p.letters_en.join('')}${p.digits}`,
+          p.owner_name,
+          p.owner_phone,
+          p.type_name,
+          p.city_name,
+          p.slug,
+          LISTING_LABELS[p.listing_status]?.label ?? p.listing_status,
+          VERIFICATION_LABELS[p.verification_status]?.label ?? p.verification_status,
+        ),
+      )
+      .slice(0, 5);
+
+    const matchedAuctions = data.auctions
+      .filter((a) =>
+        matchesAdminSearch(
+          q,
+          a.digits,
+          a.letters_ar.join(' '),
+          a.letters_ar.join(''),
+          `${a.letters_ar.join('')}${a.digits}`,
+          a.letters_en.join(' '),
+          a.letters_en.join(''),
+          `${a.letters_en.join('')}${a.digits}`,
+          a.plate_type,
+          a.city_name,
+          a.status,
+          AUCTION_STATUS_LABELS[a.status]?.label,
+          a.slug,
+        ),
+      )
+      .slice(0, 4);
+
+    const matchedMessages = data.messages
+      .filter((m) =>
+        matchesAdminSearch(
+          q,
+          m.name,
+          m.email,
+          m.subject,
+          m.message,
+          MESSAGE_STATUS_LABELS[m.status]?.label ?? m.status,
+        ),
+      )
+      .slice(0, 3);
+
+    const matchedIdentities = data.identities
+      .filter((idReq) =>
+        matchesAdminSearch(
+          q,
+          idReq.full_name,
+          idReq.national_id,
+          idReq.phone,
+          idReq.email,
+          idReq.city,
+          KYC_LABELS[idReq.status]?.label ?? idReq.status,
+        ),
+      )
+      .slice(0, 3);
+
+    const matchedRecords: Array<{
+      id: string;
+      title: string;
+      subtitle: string;
+      badge: string;
+      targetSection: AdminSectionKey;
+      filterText?: string;
+    }> = [];
+
+    for (const reg of data.registrations) {
+      if (matchedRecords.length >= 4) break;
+      if (matchesAdminSearch(q, reg.plate_label, reg.user_name, reg.user_phone, reg.bidder_alias, reg.status)) {
+        matchedRecords.push({
+          id: `reg-${reg.id}`,
+          title: `${reg.user_name} — ${reg.plate_label}`,
+          subtitle: `تسجيل مزاد • ${reg.bidder_alias}`,
+          badge: 'تأهيل المسجلين',
+          targetSection: 'registrations',
+        });
+      }
+    }
+
+    for (const st of data.settlements) {
+      if (matchedRecords.length >= 4) break;
+      if (matchesAdminSearch(q, st.plate_label, st.seller_name, st.winner_name, st.status)) {
+        matchedRecords.push({
+          id: `settle-${st.id}`,
+          title: `تسوية ${st.plate_label}`,
+          subtitle: `البائع: ${st.seller_name} • المشتري: ${st.winner_name}`,
+          badge: 'التسويات والضمان',
+          targetSection: 'settlements',
+        });
+      }
+    }
+
+    for (const pg of data.cmsPages) {
+      if (matchedRecords.length >= 4) break;
+      if (matchesAdminSearch(q, pg.title_ar, pg.slug, pg.body_ar)) {
+        matchedRecords.push({
+          id: `cms-${pg.slug}`,
+          title: pg.title_ar,
+          subtitle: `صفحة موقع (${pg.slug})`,
+          badge: 'الصفحات والمدن',
+          targetSection: 'cms',
+        });
+      }
+    }
+
+    for (const faq of data.faqs) {
+      if (matchedRecords.length >= 4) break;
+      if (matchesAdminSearch(q, faq.question_ar, faq.answer_ar, faq.question_en)) {
+        matchedRecords.push({
+          id: `faq-${faq.id}`,
+          title: faq.question_ar,
+          subtitle: faq.answer_ar.slice(0, 75),
+          badge: 'الأسئلة الشائعة',
+          targetSection: 'cms',
+        });
+      }
+    }
+
+    for (const log of data.auditLogs) {
+      if (matchedRecords.length >= 5) break;
+      if (matchesAdminSearch(q, log.actor_name, log.action, log.entity_type, log.reason)) {
+        matchedRecords.push({
+          id: `audit-${log.id}`,
+          title: `${log.actor_name} — ${log.action}`,
+          subtitle: log.reason || log.entity_type,
+          badge: 'سجل التدقيق',
+          targetSection: 'audit',
+          filterText: q,
+        });
+      }
+    }
+
+    return {
+      matchedUsers,
+      matchedPlates,
+      matchedAuctions,
+      matchedMessages,
+      matchedIdentities,
+      matchedRecords,
+      matchedNav,
+    };
+  }, [
+    omniQuery,
+    data.users,
+    data.plates,
+    data.auctions,
+    data.messages,
+    data.identities,
+    data.registrations,
+    data.settlements,
+    data.cmsPages,
+    data.faqs,
+    data.auditLogs,
+  ]);
+
+  const flatOmniActions = useMemo(() => {
+    const actions: Array<{ key: string; run: () => void }> = [];
+
+    for (const u of omniResults.matchedUsers) {
+      actions.push({
+        key: `user-${u.id}`,
+        run: () => {
+          setOmniOpen(false);
+          navigateSection('users', { searchQuery: u.display_name || u.id.slice(0, 8) });
+        },
+      });
+    }
+
+    for (const p of omniResults.matchedPlates) {
+      const needsVerify = ['SUBMITTED', 'DOCUMENTS_PENDING', 'UNDER_REVIEW', 'CHANGES_REQUIRED'].includes(
+        p.verification_status,
+      );
+      actions.push({
+        key: `plate-${p.id}`,
+        run: () => {
+          setOmniOpen(false);
+          navigateSection(needsVerify ? 'verifications' : 'plates', {
+            searchQuery: `${p.letters_ar.join('')} ${p.digits}`.trim(),
+          });
+        },
+      });
+    }
+
+    for (const a of omniResults.matchedAuctions) {
+      const isLive = ['LIVE', 'ENDING', 'PAUSED'].includes(a.status);
+      actions.push({
+        key: `auction-${a.id}`,
+        run: () => {
+          setOmniOpen(false);
+          navigateSection(isLive ? 'live' : 'auctions', {
+            searchQuery: `${a.letters_ar.join('')} ${a.digits}`.trim(),
+          });
+        },
+      });
+    }
+
+    for (const m of omniResults.matchedMessages) {
+      actions.push({
+        key: `msg-${m.id}`,
+        run: () => {
+          setOmniOpen(false);
+          navigateSection('messages');
+        },
+      });
+    }
+
+    for (const idReq of omniResults.matchedIdentities) {
+      actions.push({
+        key: `id-${idReq.id}`,
+        run: () => {
+          setOmniOpen(false);
+          navigateSection('identities');
+        },
+      });
+    }
+
+    for (const rec of omniResults.matchedRecords) {
+      actions.push({
+        key: rec.id,
+        run: () => {
+          setOmniOpen(false);
+          navigateSection(rec.targetSection, rec.filterText ? { searchQuery: rec.filterText } : undefined);
+        },
+      });
+    }
+
+    for (const navItem of omniResults.matchedNav) {
+      actions.push({
+        key: `nav-${navItem.key}`,
+        run: () => {
+          setOmniOpen(false);
+          navigateSection(navItem.key);
+        },
+      });
+    }
+
+    return actions;
+  }, [omniResults, navigateSection]);
+
+  function onOmniInputKeyDown(e: ReactKeyboardEvent<HTMLInputElement>) {
+    if (!omniOpen && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+      setOmniOpen(true);
+      return;
+    }
+    if (!flatOmniActions.length) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setOmniActiveIndex((prev) => (prev + 1) % flatOmniActions.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setOmniActiveIndex((prev) => (prev - 1 + flatOmniActions.length) % flatOmniActions.length);
+    }
+  }
 
   return (
     <div
@@ -523,37 +846,371 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
               </Link>
             </div>
 
-            {/* Centered Omni-Search Bar — Matches AccountDashboard */}
-            <div className={accountStyles.omniSearchRoot}>
+            {/* Real-Time Inline Header Search Bar — Matches AccountDashboard GlobalOmniSearch */}
+            <div ref={omniRootRef} className={accountStyles.omniSearchRoot}>
               <form
                 className={accountStyles.omniSearchForm}
                 role="search"
                 aria-label="البحث الشامل في الإدارة"
                 onSubmit={(e) => {
                   e.preventDefault();
-                  setOmniOpen(true);
+                  const q = omniQuery.trim();
+                  if (omniOpen && flatOmniActions[omniActiveIndex]) {
+                    flatOmniActions[omniActiveIndex].run();
+                    return;
+                  }
+                  if (flatOmniActions[0]) {
+                    flatOmniActions[0].run();
+                    return;
+                  }
+                  if (q) {
+                    setOmniOpen(false);
+                    navigateSection(section, { searchQuery: q });
+                  } else {
+                    setOmniOpen(true);
+                  }
                 }}
               >
                 <span className={accountStyles.omniSearchIcon} aria-hidden="true">
                   <Search size={17} strokeWidth={2.2} />
                 </span>
                 <input
+                  ref={omniInputRef}
                   type="search"
                   value={omniQuery}
                   onFocus={() => setOmniOpen(true)}
                   onChange={(e) => {
                     setOmniQuery(e.target.value);
+                    setOmniActiveIndex(0);
                     setOmniOpen(true);
                   }}
-                  placeholder="ابحث في أقسام الإدارة، اللوحات، المزادات، أو الأعضاء..."
+                  onKeyDown={onOmniInputKeyDown}
+                  placeholder="ابحث بالنص: عضو، رقم لوحة، مزاد، رسالة، أو قسم إدارة..."
                   aria-label="ابحث في الإدارة"
                   autoComplete="off"
                   className={accountStyles.omniSearchInput}
                 />
+                {omniQuery ? (
+                  <button
+                    type="button"
+                    className={accountStyles.omniClearBtn}
+                    aria-label="مسح البحث"
+                    onClick={() => {
+                      setOmniQuery('');
+                      setOmniActiveIndex(0);
+                      setSectionSearch(null);
+                      omniInputRef.current?.focus();
+                    }}
+                  >
+                    <X size={13} />
+                  </button>
+                ) : (
+                  <kbd className={accountStyles.omniShortcut} aria-hidden="true" dir="ltr">
+                    Ctrl K
+                  </kbd>
+                )}
                 <button type="submit" className={accountStyles.omniSubmitBtn}>
                   <span>بحث</span>
                 </button>
               </form>
+
+              {omniOpen && (
+                <div
+                  id="fbs-admin-omni-search-results"
+                  role="region"
+                  aria-label="نتائج البحث الفوري في الإدارة"
+                  className={accountStyles.omniDropdown}
+                >
+                  {(() => {
+                    const userOffset = 0;
+                    const plateOffset = userOffset + omniResults.matchedUsers.length;
+                    const auctionOffset = plateOffset + omniResults.matchedPlates.length;
+                    const msgOffset = auctionOffset + omniResults.matchedAuctions.length;
+                    const idOffset = msgOffset + omniResults.matchedMessages.length;
+                    const recordOffset = idOffset + omniResults.matchedIdentities.length;
+                    const navOffset = recordOffset + omniResults.matchedRecords.length;
+                    const hasAnyResults = flatOmniActions.length > 0;
+
+                    if (!hasAnyResults) {
+                      return (
+                        <div className="p-4 text-center text-xs text-[var(--muted)]">
+                          لا توجد نتائج مطابقة لـ «<strong className="text-[var(--ink-strong)]">{omniQuery}</strong>» في السجلات أو الأقسام.
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <>
+                        {omniResults.matchedUsers.length > 0 && (
+                          <div className={accountStyles.omniGroup}>
+                            <div className={accountStyles.omniGroupHeader}>
+                              <span>الأعضاء والصلاحيات المطابقون</span>
+                              <small>{omniResults.matchedUsers.length}</small>
+                            </div>
+                            <div className={accountStyles.omniList}>
+                              {omniResults.matchedUsers.map((u, i) => {
+                                const idx = userOffset + i;
+                                const roleSummary =
+                                  u.roles
+                                    .filter((r) => r !== 'user')
+                                    .map((r) => ROLE_LABELS[r] || r)
+                                    .join(' · ') || 'عضو عام';
+                                const kycText = KYC_LABELS[u.kyc_status]?.label ?? u.kyc_status;
+                                return (
+                                  <button
+                                    key={u.id}
+                                    type="button"
+                                    onMouseEnter={() => setOmniActiveIndex(idx)}
+                                    onClick={() => flatOmniActions[idx]?.run()}
+                                    className={`w-full bg-transparent text-start cursor-pointer ${accountStyles.omniItem} ${
+                                      omniActiveIndex === idx ? accountStyles.omniItemActive : ''
+                                    }`}
+                                  >
+                                    <span className={accountStyles.omniItemIcon}>
+                                      <Users size={15} />
+                                    </span>
+                                    <span className={accountStyles.omniItemBody}>
+                                      <strong>{u.display_name || 'عضو مسجل'}</strong>
+                                      <small>
+                                        {roleSummary} · {kycText}
+                                        {u.phone ? ` · ${u.phone}` : ''}
+                                      </small>
+                                    </span>
+                                    <ArrowLeft size={14} className={accountStyles.omniArrow} />
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {omniResults.matchedPlates.length > 0 && (
+                          <div className={accountStyles.omniGroup}>
+                            <div className={accountStyles.omniGroupHeader}>
+                              <span>اللوحات والمخزون المطابقة</span>
+                              <small>{omniResults.matchedPlates.length}</small>
+                            </div>
+                            <div className={accountStyles.omniList}>
+                              {omniResults.matchedPlates.map((p, i) => {
+                                const idx = plateOffset + i;
+                                const statusText =
+                                  LISTING_LABELS[p.listing_status]?.label ?? p.listing_status;
+                                return (
+                                  <button
+                                    key={p.id}
+                                    type="button"
+                                    onMouseEnter={() => setOmniActiveIndex(idx)}
+                                    onClick={() => flatOmniActions[idx]?.run()}
+                                    className={`w-full bg-transparent text-start cursor-pointer ${accountStyles.omniItem} ${
+                                      omniActiveIndex === idx ? accountStyles.omniItemActive : ''
+                                    }`}
+                                  >
+                                    <span className={accountStyles.omniPlateTag} dir="ltr">
+                                      <strong>{p.letters_en.join(' ')}</strong>
+                                      <span>{p.digits}</span>
+                                    </span>
+                                    <span className={accountStyles.omniItemBody}>
+                                      <strong>
+                                        لوحة {p.letters_ar.join(' ')} · {p.digits}
+                                      </strong>
+                                      <small>
+                                        {p.type_name} · {p.city_name} · {p.owner_name} · {statusText}
+                                      </small>
+                                    </span>
+                                    <ArrowLeft size={14} className={accountStyles.omniArrow} />
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {omniResults.matchedAuctions.length > 0 && (
+                          <div className={accountStyles.omniGroup}>
+                            <div className={accountStyles.omniGroupHeader}>
+                              <span>المزادات المطابقة</span>
+                              <small>{omniResults.matchedAuctions.length}</small>
+                            </div>
+                            <div className={accountStyles.omniList}>
+                              {omniResults.matchedAuctions.map((a, i) => {
+                                const idx = auctionOffset + i;
+                                const stLabel = AUCTION_STATUS_LABELS[a.status]?.label ?? a.status;
+                                return (
+                                  <button
+                                    key={a.id}
+                                    type="button"
+                                    onMouseEnter={() => setOmniActiveIndex(idx)}
+                                    onClick={() => flatOmniActions[idx]?.run()}
+                                    className={`w-full bg-transparent text-start cursor-pointer ${accountStyles.omniItem} ${
+                                      omniActiveIndex === idx ? accountStyles.omniItemActive : ''
+                                    }`}
+                                  >
+                                    <span className={accountStyles.omniPlateTag} dir="ltr">
+                                      <strong>{a.letters_en.join(' ')}</strong>
+                                      <span>{a.digits}</span>
+                                    </span>
+                                    <span className={accountStyles.omniItemBody}>
+                                      <strong>
+                                        مزاد {a.letters_ar.join(' ')} {a.digits}
+                                      </strong>
+                                      <small>
+                                        {a.plate_type} · {a.city_name} · {stLabel}
+                                      </small>
+                                    </span>
+                                    <ArrowLeft size={14} className={accountStyles.omniArrow} />
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {omniResults.matchedMessages.length > 0 && (
+                          <div className={accountStyles.omniGroup}>
+                            <div className={accountStyles.omniGroupHeader}>
+                              <span>رسائل التواصل</span>
+                              <small>{omniResults.matchedMessages.length}</small>
+                            </div>
+                            <div className={accountStyles.omniList}>
+                              {omniResults.matchedMessages.map((m, i) => {
+                                const idx = msgOffset + i;
+                                return (
+                                  <button
+                                    key={m.id}
+                                    type="button"
+                                    onMouseEnter={() => setOmniActiveIndex(idx)}
+                                    onClick={() => flatOmniActions[idx]?.run()}
+                                    className={`w-full bg-transparent text-start cursor-pointer ${accountStyles.omniItem} ${
+                                      omniActiveIndex === idx ? accountStyles.omniItemActive : ''
+                                    }`}
+                                  >
+                                    <span className={accountStyles.omniItemIcon}>
+                                      <Mail size={15} />
+                                    </span>
+                                    <span className={accountStyles.omniItemBody}>
+                                      <strong>{m.subject}</strong>
+                                      <small>
+                                        {m.name} · {m.email}
+                                      </small>
+                                    </span>
+                                    <ArrowLeft size={14} className={accountStyles.omniArrow} />
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {omniResults.matchedIdentities.length > 0 && (
+                          <div className={accountStyles.omniGroup}>
+                            <div className={accountStyles.omniGroupHeader}>
+                              <span>طلبات توثيق الهوية</span>
+                              <small>{omniResults.matchedIdentities.length}</small>
+                            </div>
+                            <div className={accountStyles.omniList}>
+                              {omniResults.matchedIdentities.map((idReq, i) => {
+                                const idx = idOffset + i;
+                                return (
+                                  <button
+                                    key={idReq.id}
+                                    type="button"
+                                    onMouseEnter={() => setOmniActiveIndex(idx)}
+                                    onClick={() => flatOmniActions[idx]?.run()}
+                                    className={`w-full bg-transparent text-start cursor-pointer ${accountStyles.omniItem} ${
+                                      omniActiveIndex === idx ? accountStyles.omniItemActive : ''
+                                    }`}
+                                  >
+                                    <span className={accountStyles.omniItemIcon}>
+                                      <ShieldCheck size={15} />
+                                    </span>
+                                    <span className={accountStyles.omniItemBody}>
+                                      <strong>{idReq.full_name}</strong>
+                                      <small>
+                                        {idReq.city} · {idReq.phone}
+                                      </small>
+                                    </span>
+                                    <ArrowLeft size={14} className={accountStyles.omniArrow} />
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {omniResults.matchedRecords.length > 0 && (
+                          <div className={accountStyles.omniGroup}>
+                            <div className={accountStyles.omniGroupHeader}>
+                              <span>سجلات ومحتوى مطابق</span>
+                              <small>{omniResults.matchedRecords.length}</small>
+                            </div>
+                            <div className={accountStyles.omniList}>
+                              {omniResults.matchedRecords.map((rec, i) => {
+                                const idx = recordOffset + i;
+                                return (
+                                  <button
+                                    key={rec.id}
+                                    type="button"
+                                    onMouseEnter={() => setOmniActiveIndex(idx)}
+                                    onClick={() => flatOmniActions[idx]?.run()}
+                                    className={`w-full bg-transparent text-start cursor-pointer ${accountStyles.omniItem} ${
+                                      omniActiveIndex === idx ? accountStyles.omniItemActive : ''
+                                    }`}
+                                  >
+                                    <span className={accountStyles.omniItemIcon}>
+                                      <FileText size={15} />
+                                    </span>
+                                    <span className={accountStyles.omniItemBody}>
+                                      <strong>{rec.title}</strong>
+                                      <small>
+                                        {rec.badge} · {rec.subtitle}
+                                      </small>
+                                    </span>
+                                    <ArrowLeft size={14} className={accountStyles.omniArrow} />
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {omniResults.matchedNav.length > 0 && (
+                          <div className={accountStyles.omniGroup}>
+                            <div className={accountStyles.omniGroupHeader}>
+                              <span>{omniQuery.trim() ? 'أقسام لوحة التحكم' : 'وصول سريع لأقسام الإدارة'}</span>
+                            </div>
+                            <div className={accountStyles.omniList}>
+                              {omniResults.matchedNav.map((item, i) => {
+                                const idx = navOffset + i;
+                                const Icon = item.icon;
+                                return (
+                                  <button
+                                    key={item.key}
+                                    type="button"
+                                    onMouseEnter={() => setOmniActiveIndex(idx)}
+                                    onClick={() => flatOmniActions[idx]?.run()}
+                                    className={`w-full bg-transparent text-start cursor-pointer ${accountStyles.omniItem} ${
+                                      omniActiveIndex === idx ? accountStyles.omniItemActive : ''
+                                    }`}
+                                  >
+                                    <span className={accountStyles.omniItemIcon}>
+                                      <Icon size={15} />
+                                    </span>
+                                    <span className={accountStyles.omniItemBody}>
+                                      <strong>{item.label}</strong>
+                                      <small>{item.subtitle}</small>
+                                    </span>
+                                    <ArrowLeft size={14} className={accountStyles.omniArrow} />
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
             </div>
 
             <div className={accountStyles.headerEnd}>
@@ -575,17 +1232,6 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
                 ) : (
                   <Moon size={17} aria-hidden="true" />
                 )}
-              </button>
-
-              {/* 2FA Status & Quick Unlock Icon Button */}
-              <button
-                type="button"
-                onClick={() => setMfaModalOpen(true)}
-                className={styles.mfaHeaderIconBtn}
-                aria-label={mfaVerifiedLocal ? 'التحقق بخطوتين (2FA) مفعل' : 'تفعيل التحقق بخطوتين (2FA)'}
-                title={mfaVerifiedLocal ? 'التحقق بخطوتين (2FA) مفعل' : 'تفعيل التحقق بخطوتين (2FA)'}
-              >
-                <ShieldCheck size={18} strokeWidth={2.1} aria-hidden="true" />
               </button>
 
               {/* Admin Avatar Pill - Clickable to open Admin Profile */}
@@ -662,7 +1308,9 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
 
           {section === 'verifications' && (
             <VerificationsSection
+              key={`verifications-${sectionSearch?.key === 'verifications' ? sectionSearch.nonce : 0}`}
               data={data}
+              initialQuery={sectionSearch?.key === 'verifications' ? sectionSearch.query : undefined}
               onNavigate={navigateSection}
               onNotify={notify}
               onRequireMfa={() => setMfaModalOpen(true)}
@@ -672,7 +1320,9 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
 
           {section === 'plates' && (
             <PlatesSection
+              key={`plates-${sectionSearch?.key === 'plates' ? sectionSearch.nonce : 0}`}
               data={data}
+              initialQuery={sectionSearch?.key === 'plates' ? sectionSearch.query : undefined}
               onNavigate={navigateSection}
               onNotify={notify}
               onRequireMfa={() => setMfaModalOpen(true)}
@@ -682,8 +1332,10 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
 
           {(section === 'auctions' || section === 'live') && (
             <AuctionsSection
+              key={`${section}-${sectionSearch?.key === section ? sectionSearch.nonce : 0}`}
               data={data}
               liveOnly={section === 'live'}
+              initialQuery={sectionSearch?.key === section ? sectionSearch.query : undefined}
               preselectedPlateId={preselectedPlateId}
               onClearPreselectedPlate={() => setPreselectedPlateId(null)}
               onNotify={notify}
@@ -725,11 +1377,13 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
             section === 'messages' ||
             section === 'notifications') && (
             <PeopleOpsSection
+              key={`${section}-${sectionSearch?.key === section ? sectionSearch.nonce : 0}`}
               section={section}
               data={{
                 ...data,
                 viewer: { ...data.viewer, mfaVerified: mfaVerifiedLocal },
               }}
+              initialQuery={sectionSearch?.key === section ? sectionSearch.query : undefined}
               onNotify={notify}
               onRequireMfa={() => setMfaModalOpen(true)}
               onRefresh={refreshData}
@@ -743,8 +1397,10 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
             section === 'reports' ||
             section === 'audit') && (
             <FinanceAuditSection
+              key={`${section}-${sectionSearch?.key === section ? sectionSearch.nonce : 0}`}
               section={section}
               data={data}
+              initialQuery={sectionSearch?.key === section ? sectionSearch.query : undefined}
               onNotify={notify}
               onRequireMfa={() => setMfaModalOpen(true)}
               onRefresh={refreshData}
@@ -867,82 +1523,6 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
                 )}
               </div>
             )}
-          </div>
-        </div>
-      )}
-
-      {/* Omni-Search Command Palette (Ctrl+K) */}
-      {omniOpen && (
-        <div className={styles.modalCenter} role="dialog" aria-modal="true" aria-label="البحث السريع">
-          <div className={styles.modalBox}>
-            <div className="flex items-center gap-2 pb-3 mb-3 border-b border-[var(--adm-border)]">
-              <Search size={17} className="text-[var(--adm-gold)] shrink-0" />
-              <input
-                type="search"
-                autoFocus
-                value={omniQuery}
-                onChange={(e) => setOmniQuery(e.target.value)}
-                placeholder="انتقل لأي قسم أو ابحث برقم لوحة أو اسم مالك…"
-                className={styles.searchInput}
-              />
-              <button type="button" className={styles.iconBtn} onClick={() => setOmniOpen(false)} aria-label="إغلاق">
-                <X size={15} />
-              </button>
-            </div>
-
-            <div className="space-y-3 max-h-[55vh] overflow-y-auto">
-              <div>
-                <div className="text-[11px] font-bold opacity-60 mb-1.5">أقسام لوحة التحكم</div>
-                <div className="space-y-1">
-                  {omniResults.matchedNav.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <button
-                        key={item.key}
-                        type="button"
-                        onClick={() => {
-                          setOmniOpen(false);
-                          setOmniQuery('');
-                          navigateSection(item.key);
-                        }}
-                        className="w-full flex items-center justify-between rounded-xl px-3 py-2 text-xs hover:bg-[var(--adm-surface-hover)] text-start cursor-pointer"
-                      >
-                        <span className="inline-flex items-center gap-2 font-bold">
-                          <Icon size={15} className="text-[var(--adm-gold)]" />
-                          <span>{item.label}</span>
-                        </span>
-                        <span className="opacity-60 truncate max-w-[200px]">{item.subtitle}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {omniResults.matchedPlates.length > 0 && (
-                <div>
-                  <div className="text-[11px] font-bold opacity-60 mb-1.5">اللوحات المطابقة</div>
-                  <div className="space-y-1">
-                    {omniResults.matchedPlates.map((p) => (
-                      <button
-                        key={p.id}
-                        type="button"
-                        onClick={() => {
-                          setOmniOpen(false);
-                          setOmniQuery('');
-                          navigateSection('plates');
-                        }}
-                        className="w-full flex items-center justify-between rounded-xl px-3 py-2 text-xs hover:bg-[var(--adm-surface-hover)] text-start cursor-pointer"
-                      >
-                        <span className="font-bold">
-                          {p.letters_ar.join(' ')} {p.digits} — {p.type_name}
-                        </span>
-                        <span className="opacity-70">{p.listing_status}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
         </div>
       )}

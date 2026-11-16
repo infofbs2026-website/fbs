@@ -335,3 +335,43 @@ export function EngravedFbsCrest({
     </div>
   );
 }
+
+/**
+ * Normalize Arabic and English text for tolerant full-text dashboard search
+ * (strips diacritics, unifies alef/teh-marbuta/alef-maksura variants, converts Arabic numerals).
+ */
+export function normalizeAdminSearchText(value: string | number | null | undefined): string {
+  if (value === null || value === undefined) return '';
+  return String(value)
+    .normalize('NFKC')
+    .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u200C-\u200F\u0640]/g, '')
+    .replace(/[أإآٱ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/ؤ/g, 'و')
+    .replace(/ئ/g, 'ي')
+    .replace(/[٠-٩]/g, (d) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
+    .replace(/[۰-۹]/g, (d) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Check whether every whitespace-separated word in `query` matches anywhere across `fields`.
+ */
+export function matchesAdminSearch(
+  query: string,
+  ...fields: Array<string | number | null | undefined>
+): boolean {
+  const normQuery = normalizeAdminSearchText(query);
+  if (!normQuery) return true;
+  const tokens = normQuery.split(' ').filter(Boolean);
+  if (tokens.length === 0) return true;
+
+  const haystack = fields.map((f) => normalizeAdminSearchText(f)).filter(Boolean).join(' ');
+  if (!haystack) return false;
+  const compactHaystack = haystack.replace(/\s+/g, '');
+
+  return tokens.every((tk) => haystack.includes(tk) || compactHaystack.includes(tk));
+}

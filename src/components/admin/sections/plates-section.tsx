@@ -22,6 +22,8 @@ import {
   SALE_MODE_LABELS,
   VERIFICATION_LABELS,
   callAdminManage,
+  formatAdminDate,
+  matchesAdminSearch,
   minorToSarInput,
   normalizeDigitsInput,
   sarToMinor,
@@ -30,6 +32,7 @@ import type { AdminDashboardData, AdminPlateRecord, AdminSectionKey } from '../t
 
 interface PlatesSectionProps {
   data: AdminDashboardData;
+  initialQuery?: string;
   onNavigate: (section: AdminSectionKey, opts?: { createAuctionForPlateId?: string }) => void;
   onNotify: (msg: string, kind?: 'success' | 'error') => void;
   onRequireMfa: () => void;
@@ -40,6 +43,7 @@ type ListingFilter = 'ALL' | 'PUBLISHED' | 'DRAFT' | 'SOLD' | 'ARCHIVED';
 
 export function PlatesSection({
   data,
+  initialQuery,
   onNavigate,
   onNotify,
   onRequireMfa,
@@ -47,7 +51,7 @@ export function PlatesSection({
 }: PlatesSectionProps) {
   const [filter, setFilter] = useState<ListingFilter>('ALL');
   const [typeFilter, setTypeFilter] = useState<string>('ALL');
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(initialQuery ?? '');
   const [busyId, setBusyId] = useState<string | null>(null);
 
   // Add / Edit Plate Drawer State
@@ -97,25 +101,28 @@ export function PlatesSection({
   }, [letter1Id, letter2Id, letter3Id, digits, typeId, letterById, data.plateTypes]);
 
   const filteredPlates = useMemo(() => {
-    const q = query.trim().toLowerCase();
     return data.plates.filter((p) => {
       if (filter !== 'ALL' && p.listing_status !== filter) return false;
       if (typeFilter !== 'ALL' && p.type_id !== typeFilter) return false;
-      if (!q) return true;
-      const hay = [
+      if (!query.trim()) return true;
+      return matchesAdminSearch(
+        query,
         p.digits,
         p.letters_ar.join(' '),
         p.letters_ar.join(''),
+        `${p.letters_ar.join('')}${p.digits}`,
         p.letters_en.join(' '),
         p.letters_en.join(''),
+        `${p.letters_en.join('')}${p.digits}`,
         p.slug,
         p.city_name,
         p.owner_name,
+        p.owner_phone,
         p.type_name,
-      ]
-        .join(' ')
-        .toLowerCase();
-      return hay.includes(q);
+        LISTING_LABELS[p.listing_status]?.label ?? p.listing_status,
+        VERIFICATION_LABELS[p.verification_status]?.label ?? p.verification_status,
+        SALE_MODE_LABELS[p.sale_mode] ?? p.sale_mode,
+      );
     });
   }, [data.plates, filter, typeFilter, query]);
 
