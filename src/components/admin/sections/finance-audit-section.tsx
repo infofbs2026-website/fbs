@@ -106,7 +106,7 @@ export function FinanceAuditSection({
               return (
                 <div
                   key={s.id}
-                  className="rounded-2xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-4 space-y-3"
+                  className="rounded-lg border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-4 space-y-3"
                 >
                   <div className="flex items-center justify-between gap-3 flex-wrap">
                     <div>

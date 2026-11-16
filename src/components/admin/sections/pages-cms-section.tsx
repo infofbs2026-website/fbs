@@ -586,7 +586,7 @@ export function PagesCmsSection({ data, onNotify, onRequireMfa, onRefresh }: Pag
               {data.plateTypes.map((pt) => (
                 <div
                   key={pt.id}
-                  className="flex items-center justify-between rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-3"
+                  className="flex items-center justify-between rounded-lg border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-3"
                 >
                   <div>
                     <div className="font-black text-sm">{pt.name_ar}</div>
@@ -623,7 +623,7 @@ export function PagesCmsSection({ data, onNotify, onRequireMfa, onRefresh }: Pag
               {data.cities.map((city) => (
                 <div
                   key={city.id}
-                  className="flex items-center justify-between rounded-xl border border-[var(--adm-border-subtle)] bg-[var(--adm-surface-soft)] px-3 py-2 text-xs"
+                  className="flex items-center justify-between rounded-lg border border-[var(--adm-border-subtle)] bg-[var(--adm-surface-soft)] px-3 py-2 text-xs"
                 >
                   <div>
                     <span className="font-bold">{city.name_ar}</span>{' '}

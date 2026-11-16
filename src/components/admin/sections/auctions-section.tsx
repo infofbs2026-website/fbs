@@ -559,7 +559,7 @@ export function AuctionsSection({
                               setDecisionReason('إنهاء وترسية المزاد يدوياً بأمر الإدارة');
                               setDecisionModal({ auction, mode: 'FINALIZE_NOW' });
                             }}
-                            className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-extrabold text-[var(--ink-strong)] hover:bg-amber-500/10 hover:text-[var(--gold)] transition-colors cursor-pointer whitespace-nowrap"
+                            className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-extrabold text-[var(--ink-strong)] hover:bg-amber-500/10 hover:text-[var(--gold)] transition-colors cursor-pointer whitespace-nowrap"
                           >
                             <Flag size={14} className="text-[var(--gold)] shrink-0" />
                             <span>إنهاء وترسية</span>
@@ -573,7 +573,7 @@ export function AuctionsSection({
                                 reason: 'بدء المزاد المباشر فوراً بأمر الإدارة',
                               })
                             }
-                            className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-extrabold text-emerald-700 hover:bg-emerald-500/10 transition-colors cursor-pointer whitespace-nowrap"
+                            className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-extrabold text-emerald-700 hover:bg-emerald-500/10 transition-colors cursor-pointer whitespace-nowrap"
                           >
                             <Play size={14} className="shrink-0" />
                             <span>بدء مباشر الآن</span>
@@ -589,7 +589,7 @@ export function AuctionsSection({
                             setDecisionReason('إلغاء المزاد بقرار تنظيمي من الإدارة');
                             setDecisionModal({ auction, mode: 'CANCEL' });
                           }}
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-extrabold text-rose-600 hover:bg-rose-500/10 transition-colors cursor-pointer whitespace-nowrap"
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg text-xs font-extrabold text-rose-600 hover:bg-rose-500/10 transition-colors cursor-pointer whitespace-nowrap"
                         >
                           <Trash2 size={14} className="shrink-0" />
                           <span>إلغاء المزاد</span>
@@ -602,14 +602,14 @@ export function AuctionsSection({
                   <div className="flex flex-col justify-between gap-3.5 min-w-0">
                     {/* 3 Clean RTL Financial & Activity Vaults (English Digits) */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                      <div className="rounded-xl border border-[var(--well-border)] bg-[var(--well-bg)] p-3 text-right">
+                      <div className="rounded-lg border border-[var(--well-border)] bg-[var(--well-bg)] p-3 text-right">
                         <div className="text-[11px] font-bold text-[var(--muted)]">المزايدة الحالية</div>
                         <div className="mt-1 text-lg font-black text-[var(--ink-strong)] tabular-nums">
                           <SarPrice amount={auction.current_price} />
                         </div>
                       </div>
 
-                      <div className="rounded-xl border border-[var(--well-border)] bg-[var(--well-bg)] p-3 text-right">
+                      <div className="rounded-lg border border-[var(--well-border)] bg-[var(--well-bg)] p-3 text-right">
                         <div className="text-[11px] font-bold text-[var(--muted)]">سعر البداية / الزيادة</div>
                         <div className="mt-1 text-xs font-black text-[var(--ink-strong)] tabular-nums">
                           <SarPrice amount={auction.starting_price} />
@@ -619,7 +619,7 @@ export function AuctionsSection({
                         </div>
                       </div>
 
-                      <div className="rounded-xl border border-[var(--well-border)] bg-[var(--well-bg)] p-3 text-right">
+                      <div className="rounded-lg border border-[var(--well-border)] bg-[var(--well-bg)] p-3 text-right">
                         <div className="text-[11px] font-bold text-[var(--muted)]">العطاءات والمشاركون</div>
                         <div className="mt-1 text-xs font-black text-[var(--ink-strong)] tabular-nums">
                           <span dir="ltr">{auction.sequence_no.toLocaleString('en-US')}</span> مزايدة
@@ -645,7 +645,7 @@ export function AuctionsSection({
                       </div>
 
                       {!isTerminal && (
-                        <div className="rounded-2xl border border-[var(--well-border)] bg-[var(--well-bg)] p-2.5 flex flex-col gap-2 justify-center">
+                        <div className="rounded-lg border border-[var(--well-border)] bg-[var(--well-bg)] p-2.5 flex flex-col gap-2 justify-center">
                           <div className="flex items-center justify-between gap-2 px-1">
                             <span className="text-[11px] font-extrabold flex items-center gap-1.5 text-[var(--gold)]">
                               <Timer size={13} />
@@ -699,7 +699,7 @@ export function AuctionsSection({
                     {/* Expandable Live Bids & Registrations Inspector */}
                     {isExpanded && (
                       <div className="pt-1 grid gap-3 md:grid-cols-2">
-                        <div className="rounded-xl border border-[var(--adm-border)] p-3">
+                        <div className="rounded-lg border border-[var(--adm-border)] p-3">
                           <h4 className="text-xs font-black m-0 mb-2">أحدث العطاءات المسجلة</h4>
                           {auctionBids.length === 0 ? (
                             <p className="text-xs opacity-65 m-0">لم تُسجّل أي مزايدات بعد.</p>
@@ -725,7 +725,7 @@ export function AuctionsSection({
                           )}
                         </div>
 
-                        <div className="rounded-xl border border-[var(--adm-border)] p-3">
+                        <div className="rounded-lg border border-[var(--adm-border)] p-3">
                           <h4 className="text-xs font-black m-0 mb-2">المزايدون المسجلون وتأهيلهم</h4>
                           {auctionRegs.length === 0 ? (
                             <p className="text-xs opacity-65 m-0">لا يوجد مسجلون في هذا المزاد بعد.</p>
@@ -1159,7 +1159,7 @@ export function AuctionsSection({
               )}
 
               {/* Anti-Sniping & Rules */}
-              <div className="rounded-2xl border border-[var(--well-border)] bg-[var(--well-bg)] p-4 space-y-3">
+              <div className="rounded-lg border border-[var(--well-border)] bg-[var(--well-bg)] p-4 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <label className={styles.checkboxRow}>
                     <input

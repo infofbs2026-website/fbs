@@ -400,7 +400,7 @@ export function PlatesSection({
                   </div>
 
                   {plate.active_auction_id && (
-                    <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs flex items-center justify-between">
+                    <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs flex items-center justify-between">
                       <span>مرتبطة بمزاد ({plate.active_auction_status})</span>
                       <button
                         type="button"

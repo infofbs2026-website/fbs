@@ -131,7 +131,7 @@ export function SettingsSection({ data, onNotify, onRequireMfa, onRefresh }: Set
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-2xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-4 space-y-3">
+          <div className="rounded-lg border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-4 space-y-3">
             <label className={styles.checkboxRow}>
               <input
                 type="checkbox"
@@ -434,7 +434,7 @@ export function SettingsSection({ data, onNotify, onRequireMfa, onRefresh }: Set
             return (
               <div
                 key={flagDef.key}
-                className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-4"
+                className="flex items-center justify-between gap-3 rounded-lg border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-4"
               >
                 <div>
                   <div className="text-sm font-black">{flagDef.label}</div>

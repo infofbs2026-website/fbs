@@ -335,7 +335,7 @@ export function VerificationsSection({
                   </div>
 
                   {/* Owner & Plate Specs — High contrast surface & crisp typography */}
-                  <div className="rounded-xl border border-[var(--line)] bg-[var(--surface)] p-3 space-y-2 text-xs text-[var(--ink-strong)]">
+                  <div className="rounded-lg border border-[var(--line)] bg-[var(--surface)] p-3 space-y-2 text-xs text-[var(--ink-strong)]">
                     <div className="flex items-center justify-between gap-2">
                       <span className="inline-flex items-center gap-1.5 font-extrabold text-[var(--ink-strong)]">
                         <User size={13} className="text-[var(--adm-gold)]" />
@@ -433,7 +433,7 @@ export function VerificationsSection({
                     type="button"
                     disabled={isApproved}
                     onClick={() => openReviewDrawer(plate, 'APPROVED')}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border text-xs font-extrabold transition-all cursor-pointer disabled:opacity-45 disabled:cursor-default"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg border text-xs font-extrabold transition-all cursor-pointer disabled:opacity-45 disabled:cursor-default"
                     style={{
                       borderColor: isApproved ? 'var(--line)' : 'rgba(5, 150, 105, 0.35)',
                       background: isApproved ? 'transparent' : 'rgba(16, 185, 129, 0.08)',
@@ -449,7 +449,7 @@ export function VerificationsSection({
                     type="button"
                     disabled={isChangesReq}
                     onClick={() => openReviewDrawer(plate, 'CHANGES_REQUIRED')}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border border-[var(--line)] bg-transparent hover:bg-[var(--surface)] text-xs font-extrabold text-[var(--ink-strong)] transition-all cursor-pointer disabled:opacity-45 disabled:cursor-default"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg border border-[var(--line)] bg-transparent hover:bg-[var(--surface)] text-xs font-extrabold text-[var(--ink-strong)] transition-all cursor-pointer disabled:opacity-45 disabled:cursor-default"
                     title="طلب استكمال البيانات أو المستندات"
                   >
                     <Clock size={14} />
@@ -460,7 +460,7 @@ export function VerificationsSection({
                     type="button"
                     disabled={isRejected}
                     onClick={() => openReviewDrawer(plate, 'REJECTED')}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border text-xs font-extrabold transition-all cursor-pointer disabled:opacity-45 disabled:cursor-default"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-lg border text-xs font-extrabold transition-all cursor-pointer disabled:opacity-45 disabled:cursor-default"
                     style={{
                       borderColor: isRejected ? 'var(--line)' : 'rgba(225, 29, 72, 0.3)',
                       background: isRejected ? 'transparent' : 'rgba(225, 29, 72, 0.06)',
@@ -542,7 +542,7 @@ export function VerificationsSection({
 
               {/* Approval Publishing Configuration */}
               {decisionStatus === 'APPROVED' && (
-                <div className="rounded-2xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-4 space-y-4">
+                <div className="rounded-lg border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-4 space-y-4">
                   <div className="text-xs font-black flex items-center gap-1.5 text-[var(--adm-gold)]">
                     <CheckCircle2 size={14} />
                     <span>خيارات النشر الفوري بعد الاعتماد</span>
@@ -653,7 +653,7 @@ export function VerificationsSection({
                     {selectedPlate.events.map((ev) => (
                       <div
                         key={ev.id}
-                        className="rounded-xl border border-[var(--adm-border-subtle)] bg-[var(--adm-surface-soft)] p-3 text-xs"
+                        className="rounded-lg border border-[var(--adm-border-subtle)] bg-[var(--adm-surface-soft)] p-3 text-xs"
                       >
                         <div className="flex items-center justify-between opacity-75 mb-1">
                           <span>
@@ -701,7 +701,7 @@ export function VerificationsSection({
                 </button>
               </div>
             </div>
-            <div className="rounded-xl overflow-hidden bg-black/40 border border-[var(--adm-border)] flex items-center justify-center min-h-[340px]">
+            <div className="rounded-lg overflow-hidden bg-black/40 border border-[var(--adm-border)] flex items-center justify-center min-h-[340px]">
               {docPreview.mimeType === 'application/pdf' ? (
                 <iframe src={docPreview.url} title={docPreview.title} className="w-full h-[65vh] border-0" />
               ) : (

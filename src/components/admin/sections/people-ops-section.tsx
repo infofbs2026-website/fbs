@@ -705,7 +705,7 @@ export function PeopleOpsSection({
               <div className={styles.drawerBody}>
                 {/* Status & KYC Row */}
                 <div className={styles.formRow}>
-                  <div className="rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5">
+                  <div className="rounded-lg border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5">
                     <div>
                       <div className="text-[11.5px] font-bold">حالة الحساب في المنصة</div>
                       <div className="text-[10.5px] opacity-65 mt-0.5 leading-snug">
@@ -737,7 +737,7 @@ export function PeopleOpsSection({
                     </button>
                   </div>
 
-                  <div className="rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5">
+                  <div className="rounded-lg border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5">
                     <div>
                       <div className="text-[11.5px] font-bold">اعتماد توثيق الهوية الوطنية (KYC)</div>
                       <div className="text-[10.5px] opacity-65 mt-0.5 leading-snug">
@@ -769,7 +769,7 @@ export function PeopleOpsSection({
                     </button>
                   </div>
 
-                  <div className="rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5 sm:col-span-2">
+                  <div className="rounded-lg border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5 sm:col-span-2">
                     <div>
                       <div className="text-[11.5px] font-bold">التحقق بخطوتين وتوثيق الحساب بطريقتين (2FA)</div>
                       <div className="text-[10.5px] opacity-65 mt-0.5 leading-snug">
@@ -810,7 +810,7 @@ export function PeopleOpsSection({
                       return (
                         <div
                           key={role}
-                          className="flex items-center justify-between gap-2.5 rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2 text-xs"
+                          className="flex items-center justify-between gap-2.5 rounded-lg border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2 text-xs"
                         >
                           <div className="min-w-0">
                             <div className="font-bold text-[11.5px]">{info?.title || ROLE_LABELS[role] || role}</div>
@@ -847,7 +847,7 @@ export function PeopleOpsSection({
                       return (
                         <div
                           key={role}
-                          className="flex items-center justify-between gap-2.5 rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2 text-xs"
+                          className="flex items-center justify-between gap-2.5 rounded-lg border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2 text-xs"
                         >
                           <div className="min-w-0">
                             <div className="font-bold text-[11.5px]">{info?.title || ROLE_LABELS[role] || role}</div>
@@ -997,7 +997,7 @@ export function PeopleOpsSection({
                           key={rCode}
                           type="button"
                           onClick={() => setNewUserForm((f) => ({ ...f, roleCode: rCode }))}
-                          className={`text-right rounded-xl border p-2.5 transition-all ${
+                          className={`text-right rounded-lg border p-2.5 transition-all ${
                             selected
                               ? 'border-[var(--adm-gold)] bg-[var(--adm-gold-soft)] shadow-xs'
                               : 'border-[var(--adm-border)] bg-[var(--adm-surface-soft)] hover:border-[var(--adm-gold)]/40'
@@ -1029,7 +1029,7 @@ export function PeopleOpsSection({
                 </div>
 
                 <div className={styles.formRow}>
-                  <div className="rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5">
+                  <div className="rounded-lg border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5">
                     <div>
                       <div className="text-[11.5px] font-bold">اعتماد توثيق الهوية تلقائياً (KYC)</div>
                       <div className="text-[10px] opacity-65 mt-0.5 leading-snug">
@@ -1054,7 +1054,7 @@ export function PeopleOpsSection({
                     </button>
                   </div>
 
-                  <div className="rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5">
+                  <div className="rounded-lg border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5">
                     <div>
                       <div className="text-[11.5px] font-bold">تفعيل التحقق بخطوتين تلقائياً (2FA)</div>
                       <div className="text-[10px] opacity-65 mt-0.5 leading-snug">
@@ -1135,7 +1135,7 @@ export function PeopleOpsSection({
               </div>
 
               <div className={styles.modalBody}>
-                <div className="rounded-xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5">
+                <div className="rounded-lg border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] px-3 py-2.5 flex items-center justify-between gap-2.5">
                   <div className="text-right">
                     <div className="text-[12.5px] font-bold">{deletingUser.display_name || 'عضو مسجل'}</div>
                     <div className="text-[11px] opacity-65 mt-0.5 text-right">
@@ -1151,7 +1151,7 @@ export function PeopleOpsSection({
                 </div>
 
                 {(deletingUser.plates_count > 0 || deletingUser.bids_count > 0) && (
-                  <div className={`rounded-xl border border-amber-500/35 bg-amber-500/10 px-3 py-2 text-[11px] font-bold ${styles.sculptStatusWarn} flex items-start gap-2 leading-relaxed`}>
+                  <div className={`rounded-lg border border-amber-500/35 bg-amber-500/10 px-3 py-2 text-[11px] font-bold ${styles.sculptStatusWarn} flex items-start gap-2 leading-relaxed`}>
                     <AlertTriangle size={14} className="shrink-0 mt-0.5" />
                     <span>
                       تنبيه: هذا المستخدم يملك{' '}
@@ -1301,7 +1301,7 @@ export function PeopleOpsSection({
               return (
                 <div
                   key={msg.id}
-                  className="rounded-2xl border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-4 space-y-2.5"
+                  className="rounded-lg border border-[var(--adm-border)] bg-[var(--adm-surface-soft)] p-4 space-y-2.5"
                 >
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <div className="flex items-center gap-2">
@@ -1357,7 +1357,7 @@ export function PeopleOpsSection({
 
   /* 5. NOTIFICATIONS SENDER & LOG */
   return (
-    <div className="grid gap-5 lg:grid-cols-[420px_1fr]">
+    <div className="grid gap-5 lg:grid-cols-[380px_1fr] xl:grid-cols-[410px_1fr] items-start">
       <section className={styles.panel}>
         <div className={styles.panelHeader}>
           <div>
@@ -1430,33 +1430,67 @@ export function PeopleOpsSection({
         <div className={styles.panelHeader}>
           <div>
             <h2 className={styles.panelTitle}>أحدث الإشعارات المرسلة بالنظام</h2>
+            <p className={styles.panelDesc}>سجل الإشعارات والتنبيهات الصادرة لأعضاء المنصة.</p>
           </div>
+          {data.notifications.length > 0 && (
+            <span className="text-[11px] font-bold text-[var(--muted)] whitespace-nowrap">
+              {data.notifications.length} إشعار
+            </span>
+          )}
         </div>
 
         {data.notifications.length === 0 ? (
           <div className={styles.emptyBox}>لا توجد إشعارات مسجلة بعد.</div>
         ) : (
-          <div className={styles.tableWrap}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>التاريخ</th>
-                  <th>المستخدم</th>
-                  <th>العنوان</th>
-                  <th>النص</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.notifications.map((n) => (
-                  <tr key={n.id}>
-                    <td className="text-xs opacity-75 whitespace-nowrap">{formatAdminDate(n.created_at)}</td>
-                    <td className="text-xs font-bold">{n.user_name}</td>
-                    <td className="font-bold text-xs">{n.title}</td>
-                    <td className="text-xs opacity-85 max-w-sm truncate">{n.body}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="space-y-2.5">
+            {data.notifications.map((n) => (
+              <article
+                key={n.id}
+                className="rounded-lg border border-[var(--well-border)] bg-[var(--well-bg)] p-3.5 space-y-2 transition-colors hover:border-[var(--line-hover)]"
+              >
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-[var(--line-hover)] bg-[var(--surface)] text-[var(--gold)] text-[11px] font-extrabold">
+                      {(n.user_name || 'ع').charAt(0)}
+                    </span>
+                    <span className="text-xs font-extrabold text-[var(--ink-strong)] truncate">
+                      {n.user_name || 'مستخدم'}
+                    </span>
+                    <span
+                      className={`text-[10.5px] font-bold ${
+                        n.read_at ? styles.sculptStatusOk : 'text-[var(--muted)]'
+                      }`}
+                    >
+                      {n.read_at ? '• مقروء' : '• غير مقروء'}
+                    </span>
+                  </div>
+
+                  <span className="text-[11px] font-medium text-[var(--muted)] whitespace-nowrap">
+                    {formatAdminDate(n.created_at)}
+                  </span>
+                </div>
+
+                <div className="space-y-1">
+                  <h3 className="m-0 text-[13px] font-extrabold text-[var(--ink-strong)] leading-snug">
+                    {n.title}
+                  </h3>
+                  <p className="m-0 text-xs text-[var(--ink)] leading-relaxed line-clamp-2">
+                    {n.body}
+                  </p>
+                </div>
+
+                {n.href && (
+                  <div className="pt-0.5 flex items-center justify-end">
+                    <span
+                      dir="ltr"
+                      className="inline-block rounded border border-[var(--line)] bg-[var(--surface)] px-2 py-0.5 text-[10.5px] font-semibold text-[var(--muted)]"
+                    >
+                      {n.href}
+                    </span>
+                  </div>
+                )}
+              </article>
+            ))}
           </div>
         )}
       </section>

@@ -80,38 +80,40 @@ export function ProfileSection({
       {/* 1. Executive Monogram & Status Overview */}
       <div className={accountStyles.greeting} style={{ marginBottom: 0 }}>
         <div className={accountStyles.greetingInner}>
-          <div className="flex flex-col sm:flex-row items-center gap-4 z-10 w-full sm:w-auto">
-            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#edd08d] via-[#d4a64f] to-[#b88428] text-[#131c2e] font-black text-xl shadow-md border border-white/80">
+          <div className="flex flex-col sm:flex-row items-center sm:items-stretch gap-4 z-10 w-full sm:w-auto">
+            <div className="relative flex h-20 w-20 sm:h-auto sm:w-[82px] shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#efe0b9] to-[#dcc07f] text-[#0f172a] font-extrabold text-2xl border border-amber-800/30">
               <span>{name.charAt(0) || 'أ'}</span>
               <span
-                className="absolute -bottom-0.5 -start-0.5 h-4 w-4 rounded-full border-2 border-white bg-emerald-500"
+                className="absolute -bottom-1 -start-1 h-3.5 w-3.5 rounded-full border-2 border-white bg-emerald-500"
                 title="جلسة إدارية نشطة"
               />
             </div>
 
-            <div className="text-center sm:text-start min-w-0">
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
-                <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${styles.sculptPillGold}`}>
+            <div className="flex flex-col justify-between text-center sm:text-start min-w-0 py-0.5">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                <span className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-0.5 text-[11px] font-bold ${styles.sculptPillGold}`}>
                   <Crown size={11} />
                   <span>حساب الإدارة والقيادة التنفيذية</span>
                 </span>
                 {viewer.mfaVerified && (
-                  <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${styles.sculptPillEmerald}`}>
+                  <span className={`inline-flex items-center gap-1 rounded-md px-2.5 py-0.5 text-[11px] font-bold ${styles.sculptPillEmerald}`}>
                     <ShieldCheck size={11} />
                     <span>2FA مفعّل</span>
                   </span>
                 )}
               </div>
-              <h2 className="text-base sm:text-lg font-extrabold text-[var(--ink-strong)]">
+              <h2 className="text-base sm:text-lg font-extrabold text-[var(--ink-strong)] leading-snug mt-1">
                 {name || 'مدير المنصة'}
               </h2>
-              <p className="text-[11px] text-[var(--muted)] font-medium mt-0.5" dir="ltr">
-                {viewer.email}
+              <p className="text-[12px] text-[var(--muted)] font-medium mt-0.5 text-center sm:text-start">
+                <span dir="ltr" className="inline-block">
+                  {viewer.email}
+                </span>
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 self-center sm:self-auto z-10">
+          <div className="w-full sm:w-auto flex items-center justify-center sm:justify-end gap-2 z-10">
             <button
               type="button"
               onClick={onRequireMfa}
@@ -160,25 +162,25 @@ export function ProfileSection({
                           required
                           minLength={2}
                           maxLength={120}
-                          className={`${styles.sculptInput} pe-10 ps-3.5`}
+                          className={`${styles.sculptInput} pr-11 pl-3.5 text-right`}
                         />
                         <User
                           size={14}
-                          className="absolute text-[var(--muted)] pointer-events-none end-3.5 top-1/2 -translate-y-1/2"
+                          className="absolute text-[var(--muted)] pointer-events-none right-3.5 top-1/2 -translate-y-1/2"
                         />
                       </div>
                     </div>
 
                     <div>
                       <label className={styles.sculptFieldLabel}>رقم الجوال الإداري (اختياري)</label>
-                      <div className={styles.sculptInputWrap} dir="ltr">
+                      <div className={styles.sculptInputWrap}>
                         <input
                           type="tel"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           placeholder="+966500000000"
                           dir="ltr"
-                          className={`${styles.sculptInput} pl-3.5 pr-10 text-left`}
+                          className={`${styles.sculptInput} pr-11 pl-3.5 text-right`}
                         />
                         <Phone
                           size={14}
@@ -192,14 +194,14 @@ export function ProfileSection({
                     <label className={styles.sculptFieldLabel}>
                       البريد الإلكتروني المسجل (معتمد رسمياً)
                     </label>
-                    <div className={styles.sculptInputWrap} dir="ltr">
+                    <div className={styles.sculptInputWrap}>
                       <input
                         type="email"
                         value={viewer.email}
                         readOnly
                         disabled
                         dir="ltr"
-                        className={`${styles.sculptInput} pl-3.5 pr-10 text-left`}
+                        className={`${styles.sculptInput} pr-11 pl-3.5 text-right`}
                       />
                       <Mail
                         size={14}

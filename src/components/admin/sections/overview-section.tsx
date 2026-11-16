@@ -531,13 +531,13 @@ export function OverviewSection({
             </div>
 
             <div className="grid grid-cols-2 gap-2.5 my-1">
-              <div className="rounded-xl border border-[var(--well-border)] bg-[var(--well-bg)] p-3 text-right">
+              <div className="rounded-lg border border-[var(--well-border)] bg-[var(--well-bg)] p-3 text-right">
                 <div className="text-[11px] font-bold text-[var(--muted)]">إجمالي الزيارات</div>
                 <div className="text-xl font-black text-[var(--ink-strong)] tabular-nums mt-0.5">
                   <span dir="ltr">{totalPeriodVisits.toLocaleString('en-US')}</span>
                 </div>
               </div>
-              <div className="rounded-xl border border-[var(--well-border)] bg-[var(--well-bg)] p-3 text-right">
+              <div className="rounded-lg border border-[var(--well-border)] bg-[var(--well-bg)] p-3 text-right">
                 <div className="text-[11px] font-bold text-[var(--muted)]">إجمالي المزايدات</div>
                 <div className="text-xl font-black text-[var(--gold)] tabular-nums mt-0.5">
                   <span dir="ltr">{data.bids.length.toLocaleString('en-US')}</span>
@@ -546,7 +546,7 @@ export function OverviewSection({
             </div>
 
             {/* Interactive Bar Chart */}
-            <div className="rounded-2xl border border-[var(--well-border)] bg-[var(--well-bg)] p-3.5 pt-4">
+            <div className="rounded-lg border border-[var(--well-border)] bg-[var(--well-bg)] p-3.5 pt-4">
               <div className="flex items-end justify-between gap-1.5 h-32">
                 {trafficSeries.map((item) => {
                   const heightPct = Math.max(18, Math.round((item.visits / maxTrafficVisits) * 100));
@@ -562,10 +562,10 @@ export function OverviewSection({
                       >
                         {item.visits >= 1000 ? `${(item.visits / 1000).toFixed(1)}k` : item.visits}
                       </span>
-                      <div className="w-full max-w-[28px] bg-black/5 rounded-t-lg h-full flex items-end overflow-hidden">
+                      <div className="w-full max-w-[28px] bg-black/5 rounded-t h-full flex items-end overflow-hidden">
                         <div
                           style={{ height: `${heightPct}%` }}
-                          className="w-full rounded-t-lg transition-all duration-300 bg-gradient-to-t from-[#08162b] via-[#b88428] to-[#edd08d]"
+                          className="w-full rounded-t transition-all duration-300 bg-gradient-to-t from-[#0f172a] via-[#9c7830] to-[#dec07f]"
                         />
                       </div>
                       <span className="text-[10.5px] font-extrabold text-[var(--ink-strong)] whitespace-nowrap leading-normal">
@@ -710,7 +710,7 @@ export function OverviewSection({
                 return (
                   <div
                     key={gauge.label}
-                    className="flex flex-col items-center justify-center p-2.5 rounded-2xl border border-[var(--well-border)] bg-[var(--well-bg)] text-center"
+                    className="flex flex-col items-center justify-center p-2.5 rounded-lg border border-[var(--well-border)] bg-[var(--well-bg)] text-center"
                   >
                     <div className="relative w-16 h-16 flex items-center justify-center">
                       <svg viewBox="0 0 72 72" className="w-full h-full -rotate-90">
@@ -748,7 +748,7 @@ export function OverviewSection({
               })}
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border border-[var(--well-border)] bg-[var(--well-bg)] px-3.5 py-2.5 text-xs">
+            <div className="flex items-center justify-between rounded-lg border border-[var(--well-border)] bg-[var(--well-bg)] px-3.5 py-2.5 text-xs">
               <span className="font-bold text-[var(--muted)]">إجمالي حجم المزايدات النشطة:</span>
               <strong className="text-sm font-black text-[var(--ink-strong)]" dir="rtl">
                 <span dir="ltr">{formatEnglishAmount(totalLiveVolumeMinor.toString())}</span>{' '}

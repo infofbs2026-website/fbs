@@ -1441,7 +1441,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
 
             {mfaVerifiedLocal ? (
               <div className={styles.modalBody}>
-                <div className="rounded-2xl border border-emerald-500/35 bg-emerald-500/10 p-4 text-center space-y-2">
+                <div className="rounded-lg border border-emerald-500/35 bg-emerald-500/10 p-4 text-center space-y-2">
                   <CheckCircle2 size={32} className="mx-auto text-emerald-500" />
                   <p className="text-sm font-black m-0">جلسة التحقق بخطوتين (2FA) مفعّلة وموثقة حالياً</p>
                   <p className="text-xs opacity-75 m-0">
