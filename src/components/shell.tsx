@@ -14,6 +14,7 @@ import {
   UserRound,
   ChevronDown,
   ChevronLeft,
+  Home,
   LogOut,
   LayoutDashboard,
   Gavel,
@@ -110,12 +111,14 @@ export function Studio3DNavIcon({ className = 'w-4 h-4' }: { className?: string 
 }
 
 const primaryNav = [
+  { href: '/', label: 'الرئيسية', icon: Home },
   { href: '/auctions', label: 'المزادات', icon: Gavel },
   { href: '/plates', label: 'المتجر', icon: Store },
   { href: '/about', label: 'عن FBS', icon: AboutFbsNavIcon }
 ];
 
 const allNav = [
+  { href: '/', label: 'الرئيسية', icon: Home },
   { href: '/auctions', label: 'المزادات', icon: Gavel },
   { href: '/plates', label: 'المتجر', icon: Store },
   { href: '/sell-your-plate', label: 'اعرض لوحتك', icon: SellPlateNavIcon },
